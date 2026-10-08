@@ -28,6 +28,23 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `llm/ch12_kv_cache/` | 밑바닥부터 만드는 LLM 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/llm/12-kv-cache.html) |
 | `llm/ch13_scaling/` | 밑바닥부터 만드는 LLM 13장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/llm/13-scaling.html) |
 | `rl/ch00_map/` | 밑바닥부터 만드는 강화학습 0장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/rl/00-map.html) |
+| `rl/ch02_mdp_bellman/` | 밑바닥부터 만드는 강화학습 2장 | 웹 챕터 공개 준비 중 |
+| `rl/ch03_policy_evaluation/` | 밑바닥부터 만드는 강화학습 3장 | 웹 챕터 공개 준비 중 |
+| `rl/ch04_policy_value_iteration/` | 밑바닥부터 만드는 강화학습 4장 | 웹 챕터 공개 준비 중 |
+| `eval/ch01_mae_rmse/` | 모델 평가 1장 | 웹 챕터 공개 준비 중 |
+| `eval/ch02_rmse_mae_ratio/` | 모델 평가 2장 | 웹 챕터 공개 준비 중 |
+| `eval/ch03_r_squared/` | 모델 평가 3장 | 웹 챕터 공개 준비 중 |
+| `eval/ch04_mape/` | 모델 평가 4장 | 웹 챕터 공개 준비 중 |
+| `algorithms/ch01_complexity/` | 그림으로 익히는 알고리즘 1장 | 웹 챕터 공개 준비 중 |
+| `algorithms/ch02_binary_search/` | 그림으로 익히는 알고리즘 2장 | 웹 챕터 공개 준비 중 |
+| `algorithms/ch03_sorting_bound/` | 그림으로 익히는 알고리즘 3장 | 웹 챕터 공개 준비 중 |
+| `algorithms/ch04_hashing/` | 그림으로 익히는 알고리즘 4장 | 웹 챕터 공개 준비 중 |
+| `pipelines/ch02_hidden_debt/` | ML 파이프라인 구축 2장 | 웹 챕터 공개 준비 중 |
+| `pipelines/ch03_tracking/` | ML 파이프라인 구축 3장 | 웹 챕터 공개 준비 중 |
+| `pipelines/ch04_container/` | ML 파이프라인 구축 4장 | 웹 챕터 공개 준비 중 |
+| `productivity/ch02_figma_structure/` | 생산성 도구 워크플로 2장 | 웹 챕터 공개 준비 중 |
+| `productivity/ch03_handoff/` | 생산성 도구 워크플로 3장 | 웹 챕터 공개 준비 중 |
+| `productivity/ch04_notion_relations/` | 생산성 도구 워크플로 4장 | 웹 챕터 공개 준비 중 |
 
 모델 평가, 알고리즘, ML 파이프라인, 생산성 도구 트랙은 작성 중이에요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

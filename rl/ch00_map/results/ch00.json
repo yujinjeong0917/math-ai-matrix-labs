@@ -1,0 +1,106 @@
+{
+ "return_example": {
+  "rewards": [
+   1,
+   1,
+   10
+  ],
+  "gamma": 0.9,
+  "G": 10.0
+ },
+ "chain": {
+  "gamma": 0.9,
+  "alpha": 0.5,
+  "v0": {
+   "A": 0.5,
+   "B": 0.6
+  },
+  "p_win": 0.7,
+  "true": {
+   "A": 0.63,
+   "B": 0.7
+  },
+  "dp": {
+   "B": 0.7,
+   "A": 0.54
+  },
+  "mc": {
+   "G_A": 0.9,
+   "G_B": 1,
+   "A": 0.7,
+   "B": 0.8
+  },
+  "td": {
+   "target_A": 0.54,
+   "delta_A": 0.04,
+   "A": 0.52,
+   "target_B": 1.0,
+   "B": 0.8
+  }
+ },
+ "sarsa_vs_q": {
+  "q_sa": 3.0,
+  "r": 1.0,
+  "gamma": 0.9,
+  "alpha": 0.1,
+  "q_next": {
+   "left": 2.0,
+   "right": 5.0
+  },
+  "q_target": 5.5,
+  "q_new": 3.25,
+  "sarsa_target": 2.8,
+  "sarsa_new": 2.98
+ },
+ "reinforce": {
+  "pi": [
+   0.5,
+   0.5
+  ],
+  "G": 2.0,
+  "alpha": 0.1,
+  "grad": [
+   0.5,
+   -0.5
+  ],
+  "theta_new": [
+   0.1,
+   -0.1
+  ],
+  "pi_new": [
+   0.5498,
+   0.4502
+  ]
+ },
+ "actor_critic": {
+  "delta": 1.7,
+  "v_new": 2.17
+ },
+ "belief": {
+  "prior": 0.5,
+  "acc": 0.8,
+  "b1": 0.8,
+  "b2": 0.9412
+ },
+ "model_based": {
+  "many": {
+   "visits": 10,
+   "wins": 7
+  },
+  "few": {
+   "visits": 3,
+   "wins": 3
+  },
+  "R_hat_many": 0.7,
+  "V_A_many": 0.63,
+  "R_hat_few": 1.0,
+  "V_A_few": 0.9
+ },
+ "exercises": {
+  "ex1_G": 3.0,
+  "ex2_delta": 1.0,
+  "ex4_q_target": 3.0,
+  "ex4_sarsa_target": 2.0,
+  "ex5_b1": 0.7
+ }
+}

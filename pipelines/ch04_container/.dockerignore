@@ -1,0 +1,7 @@
+# 빌드 컨텍스트에 보내지 않을 것. 결과 파일과 캐시가 들어가면 COPY 체크섬이 쓸데없이 바뀐다.
+results/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.pkl
+*.npz

@@ -1,0 +1,7 @@
+reader,date,package,check,value,note
+example,2026-10-08,image(no scale note),unanswerable_of_20,14,"합성 모형"
+example,2026-10-08,image(no scale note),misread_of_20,3,"2배 이미지를 CSS px로 읽음"
+example,2026-10-08,image(scale note),state_completeness,4/11,"기본 상태만"
+example,2026-10-08,checklist+prototype,unanswerable_of_20,0,"16칸 모두 정함"
+example,2026-10-08,devmode(default-only file),unanswerable_of_20,11,"상태를 안 그린 파일"
+example,2026-10-08,devmode(default-only file),misread_of_20,1,"터치 영역 24px"

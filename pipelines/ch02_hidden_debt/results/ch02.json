@@ -1,0 +1,922 @@
+{
+  "env": {
+    "python": "3.12.13",
+    "numpy": "2.3.3",
+    "torch": "2.8.0",
+    "machine": "arm64",
+    "threads": 2,
+    "n_train": 4000,
+    "n_serve": 2000,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "total_seconds": 1.6529757499229163
+  },
+  "E1": {
+    "per_seed": [
+      {
+        "seed": 0,
+        "churn_rate_serve": 0.5005,
+        "majority_baseline": 0.5005,
+        "v1": {
+          "accuracy": 0.822,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.5055739623187143
+        },
+        "unit_only": {
+          "accuracy": 0.5025,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.02417134415273518
+        },
+        "codes_only": {
+          "accuracy": 0.785,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.4630272423228612
+        },
+        "v2": {
+          "accuracy": 0.501,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.018675375486808435
+        }
+      },
+      {
+        "seed": 1,
+        "churn_rate_serve": 0.4895,
+        "majority_baseline": 0.5105,
+        "v1": {
+          "accuracy": 0.8305,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.48852559891998026
+        },
+        "unit_only": {
+          "accuracy": 0.5155,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.02707924156310996
+        },
+        "codes_only": {
+          "accuracy": 0.761,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.4377459420066308
+        },
+        "v2": {
+          "accuracy": 0.5115,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.02015983070308782
+        }
+      },
+      {
+        "seed": 2,
+        "churn_rate_serve": 0.5135,
+        "majority_baseline": 0.5135,
+        "v1": {
+          "accuracy": 0.8355,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.5020848136566199
+        },
+        "unit_only": {
+          "accuracy": 0.4875,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.020018914179054055
+        },
+        "codes_only": {
+          "accuracy": 0.794,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.4516416600032303
+        },
+        "v2": {
+          "accuracy": 0.488,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.014632200524845778
+        }
+      },
+      {
+        "seed": 3,
+        "churn_rate_serve": 0.491,
+        "majority_baseline": 0.509,
+        "v1": {
+          "accuracy": 0.823,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.48230455499760416
+        },
+        "unit_only": {
+          "accuracy": 0.5115,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.018002855682491062
+        },
+        "codes_only": {
+          "accuracy": 0.7615,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.4311156665215502
+        },
+        "v2": {
+          "accuracy": 0.5095,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.014081779450946545
+        }
+      },
+      {
+        "seed": 4,
+        "churn_rate_serve": 0.4765,
+        "majority_baseline": 0.5235000000000001,
+        "v1": {
+          "accuracy": 0.835,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.48925025439302644
+        },
+        "unit_only": {
+          "accuracy": 0.5265,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.020486370455816222
+        },
+        "codes_only": {
+          "accuracy": 0.807,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.445164943717658
+        },
+        "v2": {
+          "accuracy": 0.525,
+          "exception": null,
+          "nan": 0,
+          "mean_pred": 0.014850922682720459
+        }
+      }
+    ],
+    "summary": {
+      "v1": {
+        "acc_mean": 0.8291999999999999,
+        "acc_min": 0.822,
+        "acc_max": 0.8355,
+        "exceptions": 0,
+        "nan_predictions": 0,
+        "mean_pred": 0.493547836857189
+      },
+      "unit_only": {
+        "acc_mean": 0.5086999999999999,
+        "acc_min": 0.4875,
+        "acc_max": 0.5265,
+        "exceptions": 0,
+        "nan_predictions": 0,
+        "mean_pred": 0.021951745206641296
+      },
+      "codes_only": {
+        "acc_mean": 0.7817,
+        "acc_min": 0.761,
+        "acc_max": 0.807,
+        "exceptions": 0,
+        "nan_predictions": 0,
+        "mean_pred": 0.44573909091438607
+      },
+      "v2": {
+        "acc_mean": 0.5069999999999999,
+        "acc_min": 0.488,
+        "acc_max": 0.525,
+        "exceptions": 0,
+        "nan_predictions": 0,
+        "mean_pred": 0.01648002176968181
+      },
+      "majority_baseline_mean": 0.5113999999999999,
+      "churn_rate_serve_mean": 0.49420000000000003,
+      "hand_example_seed0": {
+        "fee_mean": 55134.4,
+        "fee_std": 14905.498033947071,
+        "z_30000_krw": -1.6862502643492183,
+        "z_30_thousand": -3.696917732939917
+      }
+    }
+  },
+  "E2": {
+    "unit": {
+      "clean_acc_mean": 0.8291999999999999,
+      "none_acc_mean": 0.5086999999999999,
+      "schema_blocked_seeds": 5,
+      "drift_alert_seeds": 5,
+      "value_checks_blocked_seeds": 5,
+      "contract_blocked_seeds": 5,
+      "contract_acc_mean": null,
+      "perf_gate_fail_seeds": 5,
+      "example_schema_errors_seed0": [
+        "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+      ],
+      "example_drift_alerts_seed0": {
+        "monthly_fee": 3.695
+      },
+      "per_seed": [
+        {
+          "seed": 0,
+          "clean_acc": 0.822,
+          "none_acc": 0.5025,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.695
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 1,
+          "clean_acc": 0.8305,
+          "none_acc": 0.5155,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.686
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 2,
+          "clean_acc": 0.8355,
+          "none_acc": 0.4875,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.731
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 3,
+          "clean_acc": 0.823,
+          "none_acc": 0.5115,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.628
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 4,
+          "clean_acc": 0.835,
+          "none_acc": 0.5265,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.728
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        }
+      ]
+    },
+    "codes": {
+      "clean_acc_mean": 0.8291999999999999,
+      "none_acc_mean": 0.7817,
+      "schema_blocked_seeds": 0,
+      "drift_alert_seeds": 5,
+      "value_checks_blocked_seeds": 5,
+      "contract_blocked_seeds": 0,
+      "contract_acc_mean": 0.8291999999999999,
+      "perf_gate_fail_seeds": 0,
+      "example_schema_errors_seed0": [],
+      "example_drift_alerts_seed0": {
+        "plan": 0.298
+      },
+      "per_seed": [
+        {
+          "seed": 0,
+          "clean_acc": 0.822,
+          "none_acc": 0.785,
+          "schema_errors": [],
+          "drift_alerts": {
+            "plan": 0.298
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.822,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 1,
+          "clean_acc": 0.8305,
+          "none_acc": 0.761,
+          "schema_errors": [],
+          "drift_alerts": {
+            "plan": 0.295
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.8305,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 2,
+          "clean_acc": 0.8355,
+          "none_acc": 0.794,
+          "schema_errors": [],
+          "drift_alerts": {
+            "plan": 0.322
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.8355,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 3,
+          "clean_acc": 0.823,
+          "none_acc": 0.7615,
+          "schema_errors": [],
+          "drift_alerts": {
+            "plan": 0.311
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.823,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 4,
+          "clean_acc": 0.835,
+          "none_acc": 0.807,
+          "schema_errors": [],
+          "drift_alerts": {
+            "plan": 0.3
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.835,
+          "perf_gate_fail": false
+        }
+      ]
+    },
+    "codes_uniform": {
+      "clean_acc_mean": 0.8346,
+      "none_acc_mean": 0.7702000000000001,
+      "schema_blocked_seeds": 0,
+      "drift_alert_seeds": 0,
+      "value_checks_blocked_seeds": 0,
+      "contract_blocked_seeds": 0,
+      "contract_acc_mean": 0.8346,
+      "perf_gate_fail_seeds": 0,
+      "example_schema_errors_seed0": [],
+      "example_drift_alerts_seed0": {},
+      "per_seed": [
+        {
+          "seed": 0,
+          "clean_acc": 0.8305,
+          "none_acc": 0.7735,
+          "schema_errors": [],
+          "drift_alerts": {},
+          "contract_blocked": false,
+          "contract_acc": 0.8305,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 1,
+          "clean_acc": 0.8335,
+          "none_acc": 0.765,
+          "schema_errors": [],
+          "drift_alerts": {},
+          "contract_blocked": false,
+          "contract_acc": 0.8335,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 2,
+          "clean_acc": 0.8415,
+          "none_acc": 0.772,
+          "schema_errors": [],
+          "drift_alerts": {},
+          "contract_blocked": false,
+          "contract_acc": 0.8415,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 3,
+          "clean_acc": 0.8215,
+          "none_acc": 0.756,
+          "schema_errors": [],
+          "drift_alerts": {},
+          "contract_blocked": false,
+          "contract_acc": 0.8215,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 4,
+          "clean_acc": 0.846,
+          "none_acc": 0.7845,
+          "schema_errors": [],
+          "drift_alerts": {},
+          "contract_blocked": false,
+          "contract_acc": 0.846,
+          "perf_gate_fail": false
+        }
+      ]
+    },
+    "upstream_fix": {
+      "clean_acc_mean": 0.8291999999999999,
+      "none_acc_mean": 0.6849,
+      "schema_blocked_seeds": 0,
+      "drift_alert_seeds": 5,
+      "value_checks_blocked_seeds": 5,
+      "contract_blocked_seeds": 0,
+      "contract_acc_mean": 0.6849,
+      "perf_gate_fail_seeds": 0,
+      "example_schema_errors_seed0": [],
+      "example_drift_alerts_seed0": {
+        "usage_hours": 3.32
+      },
+      "per_seed": [
+        {
+          "seed": 0,
+          "clean_acc": 0.822,
+          "none_acc": 0.6995,
+          "schema_errors": [],
+          "drift_alerts": {
+            "usage_hours": 3.32
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.6995,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 1,
+          "clean_acc": 0.8305,
+          "none_acc": 0.691,
+          "schema_errors": [],
+          "drift_alerts": {
+            "usage_hours": 3.276
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.691,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 2,
+          "clean_acc": 0.8355,
+          "none_acc": 0.6605,
+          "schema_errors": [],
+          "drift_alerts": {
+            "usage_hours": 3.289
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.6605,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 3,
+          "clean_acc": 0.823,
+          "none_acc": 0.666,
+          "schema_errors": [],
+          "drift_alerts": {
+            "usage_hours": 3.277
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.666,
+          "perf_gate_fail": false
+        },
+        {
+          "seed": 4,
+          "clean_acc": 0.835,
+          "none_acc": 0.7075,
+          "schema_errors": [],
+          "drift_alerts": {
+            "usage_hours": 3.36
+          },
+          "contract_blocked": false,
+          "contract_acc": 0.7075,
+          "perf_gate_fail": false
+        }
+      ]
+    },
+    "v2_all": {
+      "clean_acc_mean": 0.8291999999999999,
+      "none_acc_mean": 0.5069999999999999,
+      "schema_blocked_seeds": 5,
+      "drift_alert_seeds": 5,
+      "value_checks_blocked_seeds": 5,
+      "contract_blocked_seeds": 5,
+      "contract_acc_mean": null,
+      "perf_gate_fail_seeds": 5,
+      "example_schema_errors_seed0": [
+        "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+      ],
+      "example_drift_alerts_seed0": {
+        "monthly_fee": 3.695,
+        "plan": 0.298
+      },
+      "per_seed": [
+        {
+          "seed": 0,
+          "clean_acc": 0.822,
+          "none_acc": 0.501,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.695,
+            "plan": 0.298
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 1,
+          "clean_acc": 0.8305,
+          "none_acc": 0.5115,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.686,
+            "plan": 0.295
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 2,
+          "clean_acc": 0.8355,
+          "none_acc": 0.488,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.731,
+            "plan": 0.322
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 3,
+          "clean_acc": 0.823,
+          "none_acc": 0.5095,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.628,
+            "plan": 0.311
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        },
+        {
+          "seed": 4,
+          "clean_acc": 0.835,
+          "none_acc": 0.525,
+          "schema_errors": [
+            "monthly_fee: 범위 [10000, 300000] 밖 100.0%"
+          ],
+          "drift_alerts": {
+            "monthly_fee": 3.728,
+            "plan": 0.3
+          },
+          "contract_blocked": true,
+          "contract_acc": null,
+          "perf_gate_fail": true
+        }
+      ]
+    }
+  },
+  "E3": {
+    "1.0": {
+      "acc_mean": 0.8291999999999999,
+      "schema_blocked_seeds": 0,
+      "drift_alert_seeds": 0,
+      "out_of_range_frac_mean": 0.0
+    },
+    "1.1": {
+      "acc_mean": 0.8176999999999998,
+      "schema_blocked_seeds": 0,
+      "drift_alert_seeds": 5,
+      "out_of_range_frac_mean": 0.0
+    },
+    "0.9": {
+      "acc_mean": 0.8177,
+      "schema_blocked_seeds": 0,
+      "drift_alert_seeds": 5,
+      "out_of_range_frac_mean": 0.0
+    },
+    "0.5": {
+      "acc_mean": 0.6146999999999999,
+      "schema_blocked_seeds": 2,
+      "drift_alert_seeds": 5,
+      "out_of_range_frac_mean": 0.009
+    },
+    "0.1": {
+      "acc_mean": 0.5126999999999999,
+      "schema_blocked_seeds": 5,
+      "drift_alert_seeds": 5,
+      "out_of_range_frac_mean": 0.9984
+    },
+    "0.01": {
+      "acc_mean": 0.509,
+      "schema_blocked_seeds": 5,
+      "drift_alert_seeds": 5,
+      "out_of_range_frac_mean": 1.0
+    },
+    "0.001": {
+      "acc_mean": 0.5086999999999999,
+      "schema_blocked_seeds": 5,
+      "drift_alert_seeds": 5,
+      "out_of_range_frac_mean": 1.0
+    }
+  },
+  "E3b": {
+    "max_out_of_range": 0.001,
+    "fee_x0.5_blocked_seeds": 5,
+    "false_reject_unchanged_100rows_of_40": 0
+  },
+  "E4": {
+    "false_alarm_on_unchanged_v1": {
+      "100": {
+        "batches": 40,
+        "drift_alarm_batches": 8,
+        "schema_reject_batches": 0,
+        "alarms_by_column": {
+          "region": 8,
+          "discount_rate": 1,
+          "plan": 1,
+          "tenure_months": 1,
+          "support_calls": 1
+        }
+      },
+      "300": {
+        "batches": 40,
+        "drift_alarm_batches": 0,
+        "schema_reject_batches": 0,
+        "alarms_by_column": {}
+      },
+      "1000": {
+        "batches": 40,
+        "drift_alarm_batches": 0,
+        "schema_reject_batches": 0,
+        "alarms_by_column": {}
+      },
+      "3000": {
+        "batches": 40,
+        "drift_alarm_batches": 0,
+        "schema_reject_batches": 0,
+        "alarms_by_column": {}
+      }
+    },
+    "check_ms_median_2000_rows": 0.11845910921692848,
+    "train_ms_median_4000_rows": 15.335249947384
+  },
+  "E5": {
+    "per_seed": [
+      {
+        "seed": 0,
+        "w_full": {
+          "tenure_months": -1.2881873843900815,
+          "monthly_fee": 1.4849937000207842,
+          "support_calls": 0.7490443447860077,
+          "usage_hours": -0.7332844095635199,
+          "age": 0.020230218181216758,
+          "discount_rate": -0.5066628510618288
+        },
+        "w_drop_calls": {
+          "tenure_months": -1.5152095780551031,
+          "monthly_fee": 1.3680372327865407,
+          "usage_hours": -0.6825529460123291,
+          "age": -0.007409954993317659,
+          "discount_rate": -0.4726256976369382
+        },
+        "corr_tenure_calls": -0.46003641640957593,
+        "acc_consistent_krw": 0.822,
+        "acc_consistent_thousand": 0.822
+      },
+      {
+        "seed": 1,
+        "w_full": {
+          "tenure_months": -1.3354011055576325,
+          "monthly_fee": 1.4366740103196045,
+          "support_calls": 0.7761775599879942,
+          "usage_hours": -0.7585678455305368,
+          "age": 0.044330122811334825,
+          "discount_rate": -0.5729829127127767
+        },
+        "w_drop_calls": {
+          "tenure_months": -1.5497019459736434,
+          "monthly_fee": 1.3300127386681027,
+          "usage_hours": -0.7156168000487658,
+          "age": 0.04171355436240315,
+          "discount_rate": -0.5017101443725205
+        },
+        "corr_tenure_calls": -0.44849173228608713,
+        "acc_consistent_krw": 0.8305,
+        "acc_consistent_thousand": 0.8305
+      },
+      {
+        "seed": 2,
+        "w_full": {
+          "tenure_months": -1.3088549054466847,
+          "monthly_fee": 1.5463454350368193,
+          "support_calls": 0.6772907080391309,
+          "usage_hours": -0.7831130729285171,
+          "age": -0.08519036310729731,
+          "discount_rate": -0.5721513338938752
+        },
+        "w_drop_calls": {
+          "tenure_months": -1.5293874615061342,
+          "monthly_fee": 1.4592664656086092,
+          "usage_hours": -0.7470304873731064,
+          "age": -0.0795700610490441,
+          "discount_rate": -0.5335909421330167
+        },
+        "corr_tenure_calls": -0.46400523883341044,
+        "acc_consistent_krw": 0.8355,
+        "acc_consistent_thousand": 0.8355
+      },
+      {
+        "seed": 3,
+        "w_full": {
+          "tenure_months": -1.2602175180984694,
+          "monthly_fee": 1.6216940451980473,
+          "support_calls": 0.7139389403775717,
+          "usage_hours": -0.838322845026209,
+          "age": 0.010600357026666101,
+          "discount_rate": -0.6194019579958548
+        },
+        "w_drop_calls": {
+          "tenure_months": -1.4692999120430519,
+          "monthly_fee": 1.509122441966568,
+          "usage_hours": -0.796145532318341,
+          "age": 0.01291980433769782,
+          "discount_rate": -0.5748558506925353
+        },
+        "corr_tenure_calls": -0.44832631945208423,
+        "acc_consistent_krw": 0.823,
+        "acc_consistent_thousand": 0.823
+      },
+      {
+        "seed": 4,
+        "w_full": {
+          "tenure_months": -1.3741087396322011,
+          "monthly_fee": 1.583775851571843,
+          "support_calls": 0.785551628765972,
+          "usage_hours": -0.7803621236050889,
+          "age": -0.028665380526045038,
+          "discount_rate": -0.6003829712139921
+        },
+        "w_drop_calls": {
+          "tenure_months": -1.6098853770443058,
+          "monthly_fee": 1.4809348159568918,
+          "usage_hours": -0.725980893173653,
+          "age": -0.030838832977253025,
+          "discount_rate": -0.558097653943046
+        },
+        "corr_tenure_calls": -0.4684529316264749,
+        "acc_consistent_krw": 0.835,
+        "acc_consistent_thousand": 0.835
+      }
+    ],
+    "mean_relative_weight_change_when_dropping_support_calls": {
+      "tenure_months": -0.16853964706950847,
+      "monthly_fee": -0.06873271929491202,
+      "usage_hours": 0.05837593174291755,
+      "age": -0.24326915586934578,
+      "discount_rate": 0.08026240783422223
+    },
+    "mean_weights_full": {
+      "tenure_months": -1.3133539306250142,
+      "monthly_fee": 1.5346966084294198,
+      "support_calls": 0.7404006363913352,
+      "usage_hours": -0.7787300593307744,
+      "age": -0.007739009122824933,
+      "discount_rate": -0.5743164053756655
+    },
+    "mean_weights_drop_calls": {
+      "tenure_months": -1.5346968549244475,
+      "monthly_fee": 1.4294747389973423,
+      "usage_hours": -0.7334653317852391,
+      "age": -0.012637098063902763,
+      "discount_rate": -0.5281760577556114
+    },
+    "mean_corr_tenure_calls": -0.45786252772152647,
+    "max_abs_acc_diff_consistent_unit": 0.0
+  },
+  "E6": {
+    "model_code_lines": 10,
+    "files": {
+      "experiments.py": 290,
+      "pipelines_ch02_checks.py": 96,
+      "pipelines_ch02_data.py": 78,
+      "pipelines_ch02_model_np.py": 56,
+      "pipelines_ch02_model_torch.py": 19,
+      "test_pipelines_ch02_hidden_debt.py": 90
+    },
+    "total_lines": 629,
+    "model_share": 0.01589825119236884,
+    "lines_without_experiments_and_tests": 249,
+    "model_share_without_experiments_and_tests": 0.040160642570281124,
+    "note": "빈 줄과 # 주석 줄은 세지 않음. 독스트링은 셈.",
+    "fit_logistic_source_lines": 8
+  },
+  "E7": {
+    "items": [
+      [
+        "data",
+        "Data 1 · 기대를 스키마로 적었다",
+        "manual"
+      ],
+      [
+        "data",
+        "Data 7 · 입력 피처 코드를 테스트했다",
+        "manual"
+      ],
+      [
+        "model",
+        "Model 5 · 더 단순한 모델보다 낫다(여기서는 다수 클래스 기준선만 비교)",
+        "manual"
+      ],
+      [
+        "model",
+        "Model 6 · 중요한 조각(요금제별)에서도 품질이 충분하다",
+        "manual"
+      ],
+      [
+        "infra",
+        "Infra 1 · 학습이 재현된다",
+        "manual"
+      ],
+      [
+        "infra",
+        "Infra 2 · 모델 명세를 단위 테스트했다(NumPy·PyTorch 대조)",
+        "manual"
+      ],
+      [
+        "infra",
+        "Infra 4 · 서빙 전에 품질을 확인한다",
+        "manual"
+      ],
+      [
+        "monitor",
+        "Monitor 2 · 입력이 불변식을 지킨다",
+        "manual"
+      ],
+      [
+        "monitor",
+        "Monitor 3 · 학습과 서빙 분포를 비교한다(분포 통계만, 같은 예제 대조는 없음)",
+        "manual"
+      ]
+    ],
+    "now": {
+      "by_section": {
+        "data": 1.0,
+        "model": 1.0,
+        "infra": 1.5,
+        "monitor": 1.0
+      },
+      "final": 1.0
+    },
+    "if_all_automated": {
+      "by_section": {
+        "data": 2.0,
+        "model": 2.0,
+        "infra": 3.0,
+        "monitor": 2.0
+      },
+      "final": 2.0
+    }
+  },
+  "E8": {
+    "max_abs_weight_diff": 1.1102230246251565e-16,
+    "bias_diff": 5.551115123125783e-17,
+    "max_abs_prob_diff": 2.220446049250313e-16
+  },
+  "slice_acc_v1_by_plan": {
+    "basic": 0.8319328567231803,
+    "standard": 0.8187962749738705,
+    "premium": 0.8381590481284377
+  }
+}

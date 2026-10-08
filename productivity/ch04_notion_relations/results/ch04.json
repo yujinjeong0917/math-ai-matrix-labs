@@ -1,0 +1,768 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": 4,
+  "n_seeds": 200,
+  "rates": [
+   1.0,
+   0.9,
+   0.8,
+   0.6
+  ],
+  "checked": "2026-10-08"
+ },
+ "e0_hand": {
+  "가 취소 규정": {
+   "linked": 3,
+   "done": 1,
+   "open": 2
+  },
+  "나 정렬": {
+   "linked": 1,
+   "done": 1,
+   "open": 0
+  },
+  "다 사진": {
+   "linked": 1,
+   "done": 0,
+   "open": 1
+  }
+ },
+ "e1_min_failure": {
+  "truth": {
+   "Q1": [
+    "T08",
+    "T09",
+    "T10",
+    "T14"
+   ],
+   "Q2": [
+    "D01",
+    "D04",
+    "D05",
+    "D07",
+    "D10"
+   ],
+   "Q3": [
+    "D02",
+    "D04",
+    "D07",
+    "D08",
+    "D09",
+    "D10"
+   ],
+   "Q4": {
+    "D01": "준호",
+    "D02": "민지",
+    "D03": "민지",
+    "D04": "서연",
+    "D05": "서연",
+    "D06": "도윤",
+    "D07": "준호",
+    "D08": "도윤",
+    "D09": "서연",
+    "D10": "준호"
+   },
+   "Q5": [
+    "S02",
+    "S03",
+    "S04"
+   ]
+  },
+  "pages": {
+   "Q1": {
+    "answer": [
+     "T08",
+     "T09",
+     "T10",
+     "T14"
+    ],
+    "grade": "correct",
+    "lines_read": 21
+   },
+   "Q2": {
+    "answer": [
+     "D01",
+     "D04",
+     "D05",
+     "D07",
+     "D10"
+    ],
+    "grade": "correct",
+    "lines_read": 76
+   },
+   "Q3": {
+    "answer": [
+     "D02",
+     "D04",
+     "D07",
+     "D08",
+     "D09",
+     "D10"
+    ],
+    "grade": "correct",
+    "lines_read": 97
+   },
+   "Q4": {
+    "answer": {
+     "D01": "준호",
+     "D02": "민지",
+     "D03": "민지",
+     "D04": "서연",
+     "D05": "서연",
+     "D06": "도윤",
+     "D07": "준호",
+     "D08": "도윤",
+     "D09": "서연",
+     "D10": "준호"
+    },
+    "grade": "correct",
+    "lines_read": 76
+   },
+   "Q5": {
+    "answer": "답할 수 없음",
+    "grade": "unanswerable",
+    "lines_read": 29
+   }
+  },
+  "relational": {
+   "Q1": {
+    "answer": [
+     "T08",
+     "T09",
+     "T10",
+     "T14"
+    ],
+    "grade": "correct"
+   },
+   "Q2": {
+    "answer": [
+     "D01",
+     "D04",
+     "D05",
+     "D07",
+     "D10"
+    ],
+    "grade": "correct"
+   },
+   "Q3": {
+    "answer": [
+     "D02",
+     "D04",
+     "D07",
+     "D08",
+     "D09",
+     "D10"
+    ],
+    "grade": "correct"
+   },
+   "Q4": {
+    "answer": {
+     "D01": "준호",
+     "D02": "민지",
+     "D03": "민지",
+     "D04": "서연",
+     "D05": "서연",
+     "D06": "도윤",
+     "D07": "준호",
+     "D08": "도윤",
+     "D09": "서연",
+     "D10": "준호"
+    },
+    "grade": "correct"
+   },
+   "Q5": {
+    "answer": [
+     "S02",
+     "S03",
+     "S04"
+    ],
+    "grade": "correct"
+   }
+  },
+  "relational_view_rows": {
+   "Q1": 4,
+   "Q2": 5,
+   "Q3": 10,
+   "Q4": 10,
+   "Q5": 19
+  },
+  "pages_total_lines": 105,
+  "pages_lines_read_total": 299,
+  "counts": {
+   "decisions": 10,
+   "tasks": 20,
+   "specs": 4,
+   "links": 44,
+   "links_by_kind": {
+    "owner": 10,
+    "spec": 12,
+    "task": 22
+   }
+  }
+ },
+ "e2_rates": {
+  "1.0": {
+   "tally": {
+    "pages": {
+     "Q1": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q5": {
+      "correct": 0,
+      "wrong": 0,
+      "unanswerable": 200
+     }
+    },
+    "relational": {
+     "Q1": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    },
+    "relational_fixed": {
+     "Q1": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    }
+   },
+   "mean_correct_of_5": {
+    "pages": 4.0,
+    "relational": 5.0,
+    "relational_fixed": 5.0
+   },
+   "mean_lost_links": 0.0,
+   "detected_share": null
+  },
+  "0.9": {
+   "tally": {
+    "pages": {
+     "Q1": {
+      "correct": 126,
+      "wrong": 74,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 121,
+      "wrong": 79,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 139,
+      "wrong": 61,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 66,
+      "wrong": 0,
+      "unanswerable": 134
+     },
+     "Q5": {
+      "correct": 0,
+      "wrong": 0,
+      "unanswerable": 200
+     }
+    },
+    "relational": {
+     "Q1": {
+      "correct": 126,
+      "wrong": 74,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 121,
+      "wrong": 79,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 139,
+      "wrong": 61,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 66,
+      "wrong": 0,
+      "unanswerable": 134
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    },
+    "relational_fixed": {
+     "Q1": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 162,
+      "wrong": 38,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 178,
+      "wrong": 22,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    }
+   },
+   "mean_correct_of_5": {
+    "pages": 2.26,
+    "relational": 3.26,
+    "relational_fixed": 4.7
+   },
+   "mean_lost_links": 4.31,
+   "detected_share": 0.8016241299303944
+  },
+  "0.8": {
+   "tally": {
+    "pages": {
+     "Q1": {
+      "correct": 75,
+      "wrong": 124,
+      "unanswerable": 1
+     },
+     "Q2": {
+      "correct": 63,
+      "wrong": 137,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 97,
+      "wrong": 103,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 21,
+      "wrong": 0,
+      "unanswerable": 179
+     },
+     "Q5": {
+      "correct": 0,
+      "wrong": 0,
+      "unanswerable": 200
+     }
+    },
+    "relational": {
+     "Q1": {
+      "correct": 75,
+      "wrong": 124,
+      "unanswerable": 1
+     },
+     "Q2": {
+      "correct": 63,
+      "wrong": 137,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 97,
+      "wrong": 103,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 21,
+      "wrong": 0,
+      "unanswerable": 179
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    },
+    "relational_fixed": {
+     "Q1": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 127,
+      "wrong": 73,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 166,
+      "wrong": 34,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    }
+   },
+   "mean_correct_of_5": {
+    "pages": 1.28,
+    "relational": 2.28,
+    "relational_fixed": 4.465
+   },
+   "mean_lost_links": 9.04,
+   "detected_share": 0.8257743362831859
+  },
+  "0.6": {
+   "tally": {
+    "pages": {
+     "Q1": {
+      "correct": 29,
+      "wrong": 164,
+      "unanswerable": 7
+     },
+     "Q2": {
+      "correct": 17,
+      "wrong": 183,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 30,
+      "wrong": 170,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 0,
+      "wrong": 0,
+      "unanswerable": 200
+     },
+     "Q5": {
+      "correct": 0,
+      "wrong": 0,
+      "unanswerable": 200
+     }
+    },
+    "relational": {
+     "Q1": {
+      "correct": 29,
+      "wrong": 164,
+      "unanswerable": 7
+     },
+     "Q2": {
+      "correct": 17,
+      "wrong": 183,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 30,
+      "wrong": 170,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 0,
+      "wrong": 0,
+      "unanswerable": 200
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    },
+    "relational_fixed": {
+     "Q1": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q2": {
+      "correct": 99,
+      "wrong": 101,
+      "unanswerable": 0
+     },
+     "Q3": {
+      "correct": 152,
+      "wrong": 48,
+      "unanswerable": 0
+     },
+     "Q4": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     },
+     "Q5": {
+      "correct": 200,
+      "wrong": 0,
+      "unanswerable": 0
+     }
+    }
+   },
+   "mean_correct_of_5": {
+    "pages": 0.38,
+    "relational": 1.38,
+    "relational_fixed": 4.255
+   },
+   "mean_lost_links": 17.545,
+   "detected_share": 0.8697634653747507
+  }
+ },
+ "e3_detection_by_kind": {
+  "1.0": {
+   "owner": {
+    "lost": 0,
+    "detected": 0,
+    "share": null
+   },
+   "spec": {
+    "lost": 0,
+    "detected": 0,
+    "share": null
+   },
+   "task": {
+    "lost": 0,
+    "detected": 0,
+    "share": null
+   }
+  },
+  "0.9": {
+   "owner": {
+    "lost": 208,
+    "detected": 208,
+    "share": 1.0
+   },
+   "spec": {
+    "lost": 227,
+    "detected": 134,
+    "share": 0.5903083700440529
+   },
+   "task": {
+    "lost": 427,
+    "detected": 349,
+    "share": 0.8173302107728337
+   }
+  },
+  "0.8": {
+   "owner": {
+    "lost": 415,
+    "detected": 415,
+    "share": 1.0
+   },
+   "spec": {
+    "lost": 496,
+    "detected": 313,
+    "share": 0.6310483870967742
+   },
+   "task": {
+    "lost": 897,
+    "detected": 765,
+    "share": 0.8528428093645485
+   }
+  },
+  "0.6": {
+   "owner": {
+    "lost": 808,
+    "detected": 808,
+    "share": 1.0
+   },
+   "spec": {
+    "lost": 945,
+    "detected": 662,
+    "share": 0.7005291005291006
+   },
+   "task": {
+    "lost": 1756,
+    "detected": 1582,
+    "share": 0.9009111617312073
+   }
+  }
+ },
+ "e3_examples": {
+  "T10 근거 결정(D04) 하나뿐인 할 일": {
+   "caught_by_empty_check": true,
+   "questions_changed": [
+    "Q1"
+   ]
+  },
+  "T13 근거 결정 둘 중 D10만 잃음": {
+   "caught_by_empty_check": false,
+   "questions_changed": []
+  },
+  "D04 영향 스펙 셋 중 S03만 잃음": {
+   "caught_by_empty_check": false,
+   "questions_changed": [
+    "Q2"
+   ]
+  },
+  "D01 영향 스펙 하나뿐(S03)": {
+   "caught_by_empty_check": true,
+   "questions_changed": [
+    "Q2"
+   ]
+  },
+  "D07 결정자": {
+   "caught_by_empty_check": true,
+   "questions_changed": [
+    "Q4"
+   ]
+  }
+ },
+ "e4_connection_trap": {
+  "direct": [
+   "D01",
+   "D04",
+   "D05",
+   "D07",
+   "D10"
+  ],
+  "via_tasks": [
+   "D01",
+   "D05",
+   "D07",
+   "D09",
+   "D10"
+  ],
+  "false_positive": [
+   "D09"
+  ],
+  "missed": [
+   "D04"
+  ],
+  "tasks_on_S03": [
+   "T05",
+   "T11",
+   "T12",
+   "T13",
+   "T17",
+   "T18",
+   "T19"
+  ]
+ },
+ "e5_reversal": {
+  "old": "D07",
+  "new": "D10",
+  "affected_tasks": {
+   "T13": "완료",
+   "T16": "진행"
+  },
+  "affected_open": [
+   "T16"
+  ],
+  "affected_done_needs_rework": [
+   "T13"
+  ],
+  "pages_old_page_shows_reversal": false,
+  "pages_new_page_shows_reversal": true,
+  "two_way_relation_old_shows_reversal": true,
+  "one_way_relation_old_shows_reversal": false
+ },
+ "e6_drift": {
+  "1.0": {
+   "share_of_steps_mismatched": 0.0,
+   "share_final_mismatched": 0.0,
+   "mean_abs_error_final": 0.0,
+   "rollup_mismatch_steps": 0,
+   "n_events": 60
+  },
+  "0.95": {
+   "share_of_steps_mismatched": 0.6609166666666667,
+   "share_final_mismatched": 0.9,
+   "mean_abs_error_final": 1.92,
+   "rollup_mismatch_steps": 0,
+   "n_events": 60
+  },
+  "0.9": {
+   "share_of_steps_mismatched": 0.8029166666666666,
+   "share_final_mismatched": 0.965,
+   "mean_abs_error_final": 3.32,
+   "rollup_mismatch_steps": 0,
+   "n_events": 60
+  },
+  "0.8": {
+   "share_of_steps_mismatched": 0.90375,
+   "share_final_mismatched": 1.0,
+   "mean_abs_error_final": 5.785,
+   "rollup_mismatch_steps": 0,
+   "n_events": 60
+  }
+ },
+ "e7_cross": {
+  "n": 500,
+  "mismatches": {
+   "Q1": 0,
+   "Q2": 0,
+   "Q3": 0,
+   "Q4": 0,
+   "Q5": 0,
+   "rollup_sql": 0,
+   "rollup_formula": 0,
+   "q2_via_tasks": 0
+  },
+  "trap_path_differs_from_direct": 487
+ }
+}

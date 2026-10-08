@@ -1,0 +1,3259 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "torch": "2.8.0",
+  "machine": "arm64",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "note": "다른 에이전트 작업이 같은 기기에서 동시에 돌던 상태에서 측정. 스레드 2개"
+ },
+ "E0_first_screen": {
+  "rows": [
+   {
+    "n": 3,
+    "orders": 6,
+    "bound": 3,
+    "two_pow_bound_minus1": 4,
+    "two_pow_bound": 8
+   },
+   {
+    "n": 4,
+    "orders": 24,
+    "bound": 5,
+    "two_pow_bound_minus1": 16,
+    "two_pow_bound": 32
+   },
+   {
+    "n": 8,
+    "orders": 40320,
+    "bound": 16,
+    "two_pow_bound_minus1": 32768,
+    "two_pow_bound": 65536
+   }
+  ],
+  "sorted8_lomuto_first": 28,
+  "sorted8_formula": 28,
+  "mixed8": [
+   5,
+   2,
+   7,
+   1,
+   8,
+   3,
+   6,
+   4
+  ],
+  "mixed8_lomuto_first": 15,
+  "sorted8_merge": 12
+ },
+ "E1_exhaustive": {
+  "1": {
+   "orders": 1,
+   "bound": 0,
+   "log2_fact": 0.0,
+   "algos": {
+    "insertion": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 0,
+     "mean": 0.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "2": {
+   "orders": 2,
+   "bound": 1,
+   "log2_fact": 0.9999999999999996,
+   "algos": {
+    "insertion": {
+     "max": 1,
+     "mean": 1.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 1,
+     "mean": 1.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 1,
+     "mean": 1.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 1,
+     "mean": 1.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 2,
+     "mean": 2.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 1,
+     "mean": 1.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 1,
+     "mean": 1.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "3": {
+   "orders": 6,
+   "bound": 3,
+   "log2_fact": 2.584962500721156,
+   "algos": {
+    "insertion": {
+     "max": 3,
+     "mean": 2.6666666666666665,
+     "inputs_below_bound": 2,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 3,
+     "mean": 2.6666666666666665,
+     "inputs_below_bound": 2,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 3,
+     "mean": 3.0,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 3,
+     "mean": 2.6666666666666665,
+     "inputs_below_bound": 2,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 6,
+     "mean": 5.166666666666667,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 3,
+     "mean": 2.6666666666666665,
+     "inputs_below_bound": 2,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 3,
+     "mean": 2.6666666666666665,
+     "inputs_below_bound": 2,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "4": {
+   "orders": 24,
+   "bound": 5,
+   "log2_fact": 4.584962500721154,
+   "algos": {
+    "insertion": {
+     "max": 6,
+     "mean": 4.916666666666667,
+     "inputs_below_bound": 8,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 5,
+     "mean": 4.666666666666667,
+     "inputs_below_bound": 8,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 7,
+     "mean": 6.5,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 6,
+     "mean": 4.833333333333333,
+     "inputs_below_bound": 12,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 11,
+     "mean": 8.708333333333334,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 6,
+     "mean": 4.916666666666667,
+     "inputs_below_bound": 8,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 6,
+     "mean": 4.916666666666667,
+     "inputs_below_bound": 8,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "5": {
+   "orders": 120,
+   "bound": 7,
+   "log2_fact": 6.90689059560852,
+   "algos": {
+    "insertion": {
+     "max": 10,
+     "mean": 7.716666666666667,
+     "inputs_below_bound": 26,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 8,
+     "mean": 7.166666666666667,
+     "inputs_below_bound": 24,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 12,
+     "mean": 10.95,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 10,
+     "mean": 7.4,
+     "inputs_below_bound": 40,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 17,
+     "mean": 12.116666666666667,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 10,
+     "mean": 7.716666666666667,
+     "inputs_below_bound": 26,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 10,
+     "mean": 7.716666666666667,
+     "inputs_below_bound": 26,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "6": {
+   "orders": 720,
+   "bound": 10,
+   "log2_fact": 9.491853096329676,
+   "algos": {
+    "insertion": {
+     "max": 15,
+     "mean": 11.05,
+     "inputs_below_bound": 172,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 11,
+     "mean": 9.833333333333334,
+     "inputs_below_bound": 240,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 17,
+     "mean": 15.133333333333333,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 15,
+     "mean": 10.3,
+     "inputs_below_bound": 360,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 24,
+     "mean": 16.505555555555556,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 15,
+     "mean": 11.05,
+     "inputs_below_bound": 172,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 15,
+     "mean": 11.05,
+     "inputs_below_bound": 172,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "7": {
+   "orders": 5040,
+   "bound": 13,
+   "log2_fact": 12.29920801838728,
+   "algos": {
+    "insertion": {
+     "max": 21,
+     "mean": 14.907142857142857,
+     "inputs_below_bound": 1014,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 14,
+     "mean": 12.733333333333333,
+     "inputs_below_bound": 1840,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 22,
+     "mean": 19.789285714285715,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 21,
+     "mean": 13.485714285714286,
+     "inputs_below_bound": 2160,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 33,
+     "mean": 20.860119047619047,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 21,
+     "mean": 14.907142857142857,
+     "inputs_below_bound": 1014,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 21,
+     "mean": 14.907142857142857,
+     "inputs_below_bound": 1014,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  },
+  "8": {
+   "orders": 40320,
+   "bound": 16,
+   "log2_fact": 15.29920801838728,
+   "algos": {
+    "insertion": {
+     "max": 28,
+     "mean": 19.28214285714286,
+     "inputs_below_bound": 5922,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "merge": {
+     "max": 17,
+     "mean": 15.733333333333333,
+     "inputs_below_bound": 14720,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "heap": {
+     "max": 29,
+     "mean": 25.814285714285713,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "lomuto_first": {
+     "max": 28,
+     "mean": 16.92142857142857,
+     "inputs_below_bound": 15008,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "hoare_random": {
+     "max": 41,
+     "mean": 25.423189484126983,
+     "inputs_below_bound": 0,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "median3": {
+     "max": 28,
+     "mean": 19.28214285714286,
+     "inputs_below_bound": 5922,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    },
+    "introsort": {
+     "max": 28,
+     "mean": 19.28214285714286,
+     "inputs_below_bound": 5922,
+     "max_ge_bound": true,
+     "mean_ge_log2_fact": true
+    }
+   }
+  }
+ },
+ "E3_recursion": {
+  "recursion_limit": 1000,
+  "first_failing_n": 996,
+  "works_500": true,
+  "fails_2000": true,
+  "random_2000_ok": {
+   "ok": true,
+   "max_depth": 22
+  },
+  "depth_at_500": 498
+ },
+ "E4_expectation": {
+  "rows": [
+   {
+    "n": 100,
+    "lomuto_random_mean": 660.2,
+    "lomuto_random_sd": 52.43243271106158,
+    "lomuto_exact_expected": 647.8502585632034,
+    "hoare_2nlnn": 921.0340371976183,
+    "hoare_random_mean": 764.4,
+    "bound": 525,
+    "ratio_exact_to_bound": 1.2340004925013397,
+    "n_log2_n": 664.3856189774724
+   },
+   {
+    "n": 1000,
+    "lomuto_random_mean": 11154.3,
+    "lomuto_random_sd": 497.13178333315204,
+    "lomuto_exact_expected": 10985.912662821791,
+    "hoare_2nlnn": 13815.510557964273,
+    "hoare_random_mean": 12204.5,
+    "bound": 8530,
+    "ratio_exact_to_bound": 1.287914731866564,
+    "n_log2_n": 9965.784284662088
+   },
+   {
+    "n": 10000,
+    "lomuto_random_mean": 154894.6,
+    "lomuto_random_sd": 3399.5575947467046,
+    "lomuto_exact_expected": 155771.69593295973,
+    "hoare_2nlnn": 184206.80743952366,
+    "hoare_random_mean": 165954.4,
+    "bound": 118459,
+    "ratio_exact_to_bound": 1.3149840529884578,
+    "n_log2_n": 132877.1237954945
+   }
+  ],
+  "two_ln2": 1.3862943611198906
+ },
+ "E6_killer": {
+  "rows": [
+   {
+    "n": 1000,
+    "theorem1_first_n_over_4_partitions": true,
+    "median3_comparisons": 199109,
+    "median3_max_depth": 273,
+    "median3_seconds": 0.004154999973252416,
+    "introsort_comparisons": 34678,
+    "introsort_partitions": 18,
+    "introsort_depth_limit": 18,
+    "introsort_heapsort_sizes": [
+     964
+    ],
+    "introsort_seconds": 0.001255291048437357,
+    "heap_comparisons": 16637,
+    "heap_seconds": 0.0009819997940212488,
+    "random_median3": 11665,
+    "random_introsort": 11665,
+    "random_heap": 16899,
+    "bound": 8530
+   },
+   {
+    "n": 2000,
+    "theorem1_first_n_over_4_partitions": true,
+    "median3_comparisons": 777424,
+    "median3_max_depth": 532,
+    "median3_seconds": 0.015664416830986738,
+    "introsort_comparisons": 78127,
+    "introsort_partitions": 20,
+    "introsort_depth_limit": 20,
+    "introsort_heapsort_sizes": [
+     1960
+    ],
+    "introsort_seconds": 0.0030142918694764376,
+    "heap_comparisons": 37225,
+    "heap_seconds": 0.0021209579426795244,
+    "random_median3": 27306,
+    "random_introsort": 27306,
+    "random_heap": 37761,
+    "bound": 19053
+   },
+   {
+    "n": 4000,
+    "theorem1_first_n_over_4_partitions": true,
+    "median3_comparisons": 3063066,
+    "median3_max_depth": 1040,
+    "median3_seconds": 0.06383558292873204,
+    "introsort_comparisons": 173122,
+    "introsort_partitions": 22,
+    "introsort_depth_limit": 22,
+    "introsort_heapsort_sizes": [
+     3956
+    ],
+    "introsort_seconds": 0.006800082977861166,
+    "heap_comparisons": 82356,
+    "heap_seconds": 0.004947624867781997,
+    "random_median3": 54705,
+    "random_introsort": 54705,
+    "random_heap": 83430,
+    "bound": 42100
+   },
+   {
+    "n": 8000,
+    "theorem1_first_n_over_4_partitions": true,
+    "median3_comparisons": 12146067,
+    "median3_max_depth": 2049,
+    "median3_seconds": 0.23921608389355242,
+    "introsort_comparisons": 379219,
+    "introsort_partitions": 24,
+    "introsort_depth_limit": 24,
+    "introsort_heapsort_sizes": [
+     7952
+    ],
+    "introsort_seconds": 0.01497437502257526,
+    "heap_comparisons": 180838,
+    "heap_seconds": 0.010737875010818243,
+    "random_median3": 126889,
+    "random_introsort": 126889,
+    "random_heap": 182742,
+    "bound": 92193
+   }
+  ],
+  "k8_example": [
+   1,
+   5,
+   3,
+   7,
+   2,
+   4,
+   6,
+   8
+  ],
+  "k16_example": [
+   1,
+   9,
+   3,
+   11,
+   5,
+   13,
+   7,
+   15,
+   2,
+   4,
+   6,
+   8,
+   10,
+   12,
+   14,
+   16
+  ],
+  "random2000_introsort_heapsort_calls_over_10_seeds": 0
+ },
+ "E7_topk": {
+  "n": 1000000,
+  "k": 10,
+  "same_indices_sort_vs_partition": true,
+  "same_indices_sort_vs_torch": true,
+  "ms_argsort": 64.67016693204641,
+  "ms_argpartition": 7.233707932755351,
+  "ms_torch_topk": 0.9928750805556774,
+  "bound_full_sort_log2_fact": 18488884.819967683,
+  "torch": "2.8.0"
+ },
+ "traces": {
+  "mixed": {
+   "input": [
+    5,
+    2,
+    7,
+    1,
+    8,
+    3,
+    6,
+    4
+   ],
+   "comparisons": 15,
+   "bound": 16,
+   "steps": [
+    [
+     "start",
+     [
+      5,
+      2,
+      7,
+      1,
+      8,
+      3,
+      6,
+      4
+     ],
+     null,
+     null,
+     null,
+     null,
+     0,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[1]=2 < 피벗 5",
+     [
+      5,
+      2,
+      7,
+      1,
+      8,
+      3,
+      6,
+      4
+     ],
+     0,
+     7,
+     1,
+     2,
+     1,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=7 >= 피벗 5",
+     [
+      5,
+      2,
+      7,
+      1,
+      8,
+      3,
+      6,
+      4
+     ],
+     0,
+     7,
+     1,
+     3,
+     2,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=1 < 피벗 5",
+     [
+      5,
+      2,
+      1,
+      7,
+      8,
+      3,
+      6,
+      4
+     ],
+     0,
+     7,
+     2,
+     4,
+     3,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=8 >= 피벗 5",
+     [
+      5,
+      2,
+      1,
+      7,
+      8,
+      3,
+      6,
+      4
+     ],
+     0,
+     7,
+     2,
+     5,
+     4,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=3 < 피벗 5",
+     [
+      5,
+      2,
+      1,
+      3,
+      8,
+      7,
+      6,
+      4
+     ],
+     0,
+     7,
+     3,
+     6,
+     5,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=6 >= 피벗 5",
+     [
+      5,
+      2,
+      1,
+      3,
+      8,
+      7,
+      6,
+      4
+     ],
+     0,
+     7,
+     3,
+     7,
+     6,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 < 피벗 5",
+     [
+      5,
+      2,
+      1,
+      3,
+      4,
+      7,
+      6,
+      8
+     ],
+     0,
+     7,
+     4,
+     8,
+     7,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 4번 칸으로 옮김(값 5)",
+     [
+      4,
+      2,
+      1,
+      3,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     7,
+     4,
+     8,
+     7,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[1]=2 < 피벗 4",
+     [
+      4,
+      2,
+      1,
+      3,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     3,
+     1,
+     2,
+     8,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=1 < 피벗 4",
+     [
+      4,
+      2,
+      1,
+      3,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     3,
+     2,
+     3,
+     9,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=3 < 피벗 4",
+     [
+      4,
+      2,
+      1,
+      3,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     3,
+     3,
+     4,
+     10,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 3번 칸으로 옮김(값 4)",
+     [
+      3,
+      2,
+      1,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     3,
+     3,
+     4,
+     10,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[1]=2 < 피벗 3",
+     [
+      3,
+      2,
+      1,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     2,
+     1,
+     2,
+     11,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=1 < 피벗 3",
+     [
+      3,
+      2,
+      1,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     2,
+     2,
+     3,
+     12,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 2번 칸으로 옮김(값 3)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     2,
+     2,
+     3,
+     12,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[1]=2 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     1,
+     0,
+     2,
+     13,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 0번 칸으로 옮김(값 1)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     0,
+     1,
+     0,
+     2,
+     13,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=6 < 피벗 7",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     5,
+     7,
+     6,
+     7,
+     14,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 7",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8
+     ],
+     5,
+     7,
+     6,
+     8,
+     15,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 6번 칸으로 옮김(값 7)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     5,
+     7,
+     6,
+     8,
+     15,
+     1,
+     [
+      true,
+      true
+     ]
+    ]
+   ]
+  },
+  "sorted": {
+   "input": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "comparisons": 28,
+   "bound": 16,
+   "steps": [
+    [
+     "start",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     null,
+     null,
+     null,
+     null,
+     0,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[1]=2 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     2,
+     1,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=3 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     3,
+     2,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=4 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     4,
+     3,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=5 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     5,
+     4,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=6 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     6,
+     5,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=7 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     7,
+     6,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 1",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     8,
+     7,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 0번 칸으로 옮김(값 1)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     0,
+     7,
+     0,
+     8,
+     7,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=3 >= 피벗 2",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     3,
+     8,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=4 >= 피벗 2",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     4,
+     9,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=5 >= 피벗 2",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     5,
+     10,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=6 >= 피벗 2",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     6,
+     11,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=7 >= 피벗 2",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     7,
+     12,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 2",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     8,
+     13,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 1번 칸으로 옮김(값 2)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     1,
+     7,
+     1,
+     8,
+     13,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=4 >= 피벗 3",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     2,
+     7,
+     2,
+     4,
+     14,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=5 >= 피벗 3",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     2,
+     7,
+     2,
+     5,
+     15,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=6 >= 피벗 3",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     2,
+     7,
+     2,
+     6,
+     16,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=7 >= 피벗 3",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     2,
+     7,
+     2,
+     7,
+     17,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 3",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     2,
+     7,
+     2,
+     8,
+     18,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 2번 칸으로 옮김(값 3)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     2,
+     7,
+     2,
+     8,
+     18,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=5 >= 피벗 4",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     3,
+     7,
+     3,
+     5,
+     19,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=6 >= 피벗 4",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     3,
+     7,
+     3,
+     6,
+     20,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=7 >= 피벗 4",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     3,
+     7,
+     3,
+     7,
+     21,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 4",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     3,
+     7,
+     3,
+     8,
+     22,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 3번 칸으로 옮김(값 4)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     3,
+     7,
+     3,
+     8,
+     22,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=6 >= 피벗 5",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     4,
+     7,
+     4,
+     6,
+     23,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=7 >= 피벗 5",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     4,
+     7,
+     4,
+     7,
+     24,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 5",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     4,
+     7,
+     4,
+     8,
+     25,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 4번 칸으로 옮김(값 5)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     4,
+     7,
+     4,
+     8,
+     25,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=7 >= 피벗 6",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     5,
+     7,
+     5,
+     7,
+     26,
+     5,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 6",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     5,
+     7,
+     5,
+     8,
+     27,
+     5,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 5번 칸으로 옮김(값 6)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     5,
+     7,
+     5,
+     8,
+     27,
+     5,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=8 >= 피벗 7",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     6,
+     7,
+     6,
+     8,
+     28,
+     6,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 6번 칸으로 옮김(값 7)",
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     6,
+     7,
+     6,
+     8,
+     28,
+     6,
+     [
+      true,
+      true
+     ]
+    ]
+   ]
+  },
+  "equal": {
+   "input": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "comparisons": 28,
+   "bound": 16,
+   "steps": [
+    [
+     "start",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     null,
+     null,
+     null,
+     null,
+     0,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[1]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     2,
+     1,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     3,
+     2,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     4,
+     3,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     5,
+     4,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     6,
+     5,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     7,
+     6,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     8,
+     7,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 0번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     0,
+     7,
+     0,
+     8,
+     7,
+     0,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[2]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     3,
+     8,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     4,
+     9,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     5,
+     10,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     6,
+     11,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     7,
+     12,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     8,
+     13,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 1번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     1,
+     7,
+     1,
+     8,
+     13,
+     1,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[3]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     2,
+     7,
+     2,
+     4,
+     14,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     2,
+     7,
+     2,
+     5,
+     15,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     2,
+     7,
+     2,
+     6,
+     16,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     2,
+     7,
+     2,
+     7,
+     17,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     2,
+     7,
+     2,
+     8,
+     18,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 2번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     2,
+     7,
+     2,
+     8,
+     18,
+     2,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[4]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     3,
+     7,
+     3,
+     5,
+     19,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     3,
+     7,
+     3,
+     6,
+     20,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     3,
+     7,
+     3,
+     7,
+     21,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     3,
+     7,
+     3,
+     8,
+     22,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 3번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     3,
+     7,
+     3,
+     8,
+     22,
+     3,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[5]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     4,
+     7,
+     4,
+     6,
+     23,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     4,
+     7,
+     4,
+     7,
+     24,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     4,
+     7,
+     4,
+     8,
+     25,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 4번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     4,
+     7,
+     4,
+     8,
+     25,
+     4,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[6]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     5,
+     7,
+     5,
+     7,
+     26,
+     5,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     5,
+     7,
+     5,
+     8,
+     27,
+     5,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 5번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     5,
+     7,
+     5,
+     8,
+     27,
+     5,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "a[7]=4 >= 피벗 4",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     6,
+     7,
+     6,
+     8,
+     28,
+     6,
+     [
+      true,
+      true
+     ]
+    ],
+    [
+     "피벗을 6번 칸으로 옮김(값 4)",
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     6,
+     7,
+     6,
+     8,
+     28,
+     6,
+     [
+      true,
+      true
+     ]
+    ]
+   ]
+  }
+ },
+ "E2_sorted_first_pivot": {
+  "rows": [
+   {
+    "n": 500,
+    "first_comparisons": 124750,
+    "formula": 124750,
+    "first_max_depth": 498,
+    "first_seconds": 0.0014408749993890524,
+    "hoare_random_mean": 5390.2,
+    "hoare_random_max": 6007,
+    "hoare_random_seconds": 0.0002437080256640911,
+    "introsort_first_comparisons": 15340,
+    "introsort_first_seconds": 0.0004636249504983425,
+    "introsort_first_heapsort_sizes": [
+     484
+    ],
+    "bound": 3768
+   },
+   {
+    "n": 1000,
+    "first_comparisons": 499500,
+    "formula": 499500,
+    "first_max_depth": 998,
+    "first_seconds": 0.005958541063591838,
+    "hoare_random_mean": 11993.6,
+    "hoare_random_max": 13639,
+    "hoare_random_seconds": 0.0005025418940931559,
+    "introsort_first_comparisons": 35055,
+    "introsort_first_seconds": 0.0011249161325395107,
+    "introsort_first_heapsort_sizes": [
+     982
+    ],
+    "bound": 8530
+   },
+   {
+    "n": 2000,
+    "first_comparisons": 1999000,
+    "formula": 1999000,
+    "first_max_depth": 1998,
+    "first_seconds": 0.022701959125697613,
+    "hoare_random_mean": 26855.3,
+    "hoare_random_max": 28283,
+    "hoare_random_seconds": 0.0011116249952465296,
+    "introsort_first_comparisons": 78644,
+    "introsort_first_seconds": 0.0026249168440699577,
+    "introsort_first_heapsort_sizes": [
+     1980
+    ],
+    "bound": 19053
+   },
+   {
+    "n": 4000,
+    "first_comparisons": 7998000,
+    "formula": 7998000,
+    "first_max_depth": 3998,
+    "first_seconds": 0.09622458321973681,
+    "hoare_random_mean": 57953.9,
+    "hoare_random_max": 63304,
+    "hoare_random_seconds": 0.0021915840916335583,
+    "introsort_first_comparisons": 173795,
+    "introsort_first_seconds": 0.005977957975119352,
+    "introsort_first_heapsort_sizes": [
+     3978
+    ],
+    "bound": 42100
+   },
+   {
+    "n": 8000,
+    "first_comparisons": 31996000,
+    "formula": 31996000,
+    "first_max_depth": 7998,
+    "first_seconds": 0.35221825004555285,
+    "hoare_random_mean": 128703.9,
+    "hoare_random_max": 138243,
+    "hoare_random_seconds": 0.004865291994065046,
+    "introsort_first_comparisons": 380457,
+    "introsort_first_seconds": 0.013516583014279604,
+    "introsort_first_heapsort_sizes": [
+     7976
+    ],
+    "bound": 92193
+   }
+  ]
+ },
+ "E5_grid": {
+  "n": 2000,
+  "seeds": 10,
+  "bound": 19053,
+  "log2_fact": 19052.98718786561,
+  "rows": {
+   "random": {
+    "lomuto_first": {
+     "mean": 24215.8,
+     "max": 26473,
+     "max_depth": 25,
+     "ms_median": 1.001958386041224,
+     "runs": 10,
+     "ratio_to_bound": 1.2709704508476356
+    },
+    "lomuto_random": {
+     "mean": 24857.7,
+     "max": 25956,
+     "max_depth": 26,
+     "ms_median": 1.2971250107511878,
+     "runs": 10,
+     "ratio_to_bound": 1.3046606833569516
+    },
+    "hoare_random": {
+     "mean": 26955.4,
+     "max": 28303,
+     "max_depth": 25,
+     "ms_median": 1.2617085594683886,
+     "runs": 10,
+     "ratio_to_bound": 1.414758830630347
+    },
+    "median3": {
+     "mean": 26255.8,
+     "max": 27306,
+     "max_depth": 16,
+     "ms_median": 0.7924374658614397,
+     "runs": 10,
+     "ratio_to_bound": 1.378040203642471
+    },
+    "introsort": {
+     "mean": 26255.8,
+     "max": 27306,
+     "max_depth": 16,
+     "ms_median": 0.7947505218908191,
+     "runs": 10,
+     "ratio_to_bound": 1.378040203642471
+    },
+    "merge": {
+     "mean": 19416,
+     "max": 19440,
+     "max_depth": 0,
+     "ms_median": 1.2879170244559646,
+     "runs": 10,
+     "ratio_to_bound": 1.019052117776728
+    },
+    "heap": {
+     "mean": 37719.5,
+     "max": 37762,
+     "max_depth": 0,
+     "ms_median": 2.18572944868356,
+     "runs": 10,
+     "ratio_to_bound": 1.9797144806592137
+    }
+   },
+   "sorted": {
+    "lomuto_first": {
+     "mean": 1999000,
+     "max": 1999000,
+     "max_depth": 1998,
+     "ms_median": 23.727874970063567,
+     "runs": 1,
+     "ratio_to_bound": 104.91786070435101
+    },
+    "lomuto_random": {
+     "mean": 24615.7,
+     "max": 27200,
+     "max_depth": 27,
+     "ms_median": 1.2026251060888171,
+     "runs": 10,
+     "ratio_to_bound": 1.2919592715057997
+    },
+    "hoare_random": {
+     "mean": 26855.3,
+     "max": 28283,
+     "max_depth": 26,
+     "ms_median": 1.1158125707879663,
+     "runs": 10,
+     "ratio_to_bound": 1.4095050648191885
+    },
+    "median3": {
+     "mean": 16380,
+     "max": 16380,
+     "max_depth": 6,
+     "ms_median": 0.3789158072322607,
+     "runs": 1,
+     "ratio_to_bound": 0.8597071327350023
+    },
+    "introsort": {
+     "mean": 16380,
+     "max": 16380,
+     "max_depth": 6,
+     "ms_median": 0.364125007763505,
+     "runs": 1,
+     "ratio_to_bound": 0.8597071327350023
+    },
+    "merge": {
+     "mean": 10864,
+     "max": 10864,
+     "max_depth": 0,
+     "ms_median": 1.0275831446051598,
+     "runs": 1,
+     "ratio_to_bound": 0.5701989188054375
+    },
+    "heap": {
+     "mean": 39159,
+     "max": 39159,
+     "max_depth": 0,
+     "ms_median": 2.4927910417318344,
+     "runs": 1,
+     "ratio_to_bound": 2.055266887104393
+    }
+   },
+   "reversed": {
+    "lomuto_first": {
+     "mean": 1999000,
+     "max": 1999000,
+     "max_depth": 1998,
+     "ms_median": 39.631458930671215,
+     "runs": 1,
+     "ratio_to_bound": 104.91786070435101
+    },
+    "lomuto_random": {
+     "mean": 24351.5,
+     "max": 27739,
+     "max_depth": 25,
+     "ms_median": 1.1620004661381245,
+     "runs": 10,
+     "ratio_to_bound": 1.2780926888154096
+    },
+    "hoare_random": {
+     "mean": 26472.9,
+     "max": 28826,
+     "max_depth": 29,
+     "ms_median": 1.0855625150725245,
+     "runs": 10,
+     "ratio_to_bound": 1.389434734687451
+    },
+    "median3": {
+     "mean": 16382,
+     "max": 16382,
+     "max_depth": 6,
+     "ms_median": 0.38970913738012314,
+     "runs": 1,
+     "ratio_to_bound": 0.8598121030808796
+    },
+    "introsort": {
+     "mean": 16382,
+     "max": 16382,
+     "max_depth": 6,
+     "ms_median": 0.372458016499877,
+     "runs": 1,
+     "ratio_to_bound": 0.8598121030808796
+    },
+    "merge": {
+     "mean": 11088,
+     "max": 11088,
+     "max_depth": 0,
+     "ms_median": 1.0082919616252184,
+     "runs": 1,
+     "ratio_to_bound": 0.5819555975436939
+    },
+    "heap": {
+     "mean": 35964,
+     "max": 35964,
+     "max_depth": 0,
+     "ms_median": 1.968541881069541,
+     "runs": 1,
+     "ratio_to_bound": 1.8875767595654227
+    }
+   },
+   "few_unique": {
+    "lomuto_first": {
+     "mean": 207137.6,
+     "max": 210477,
+     "max_depth": 245,
+     "ms_median": 2.978249918669462,
+     "runs": 10,
+     "ratio_to_bound": 10.871652758095838
+    },
+    "lomuto_random": {
+     "mean": 206775.3,
+     "max": 209656,
+     "max_depth": 248,
+     "ms_median": 3.307353937998414,
+     "runs": 10,
+     "ratio_to_bound": 10.852637379940166
+    },
+    "hoare_random": {
+     "mean": 21485.6,
+     "max": 22573,
+     "max_depth": 17,
+     "ms_median": 1.00220856256783,
+     "runs": 10,
+     "ratio_to_bound": 1.1276754316905473
+    },
+    "median3": {
+     "mean": 19267.5,
+     "max": 19918,
+     "max_depth": 12,
+     "ms_median": 0.5374165484681726,
+     "runs": 10,
+     "ratio_to_bound": 1.0112580695953393
+    },
+    "introsort": {
+     "mean": 19267.5,
+     "max": 19918,
+     "max_depth": 12,
+     "ms_median": 0.5333954468369484,
+     "runs": 10,
+     "ratio_to_bound": 1.0112580695953393
+    },
+    "merge": {
+     "mean": 18895.5,
+     "max": 18995,
+     "max_depth": 0,
+     "ms_median": 1.1780625209212303,
+     "runs": 10,
+     "ratio_to_bound": 0.9917335852621635
+    },
+    "heap": {
+     "mean": 34999.4,
+     "max": 35386,
+     "max_depth": 0,
+     "ms_median": 1.8976250430569053,
+     "runs": 10,
+     "ratio_to_bound": 1.836949561748806
+    }
+   },
+   "killer": {
+    "lomuto_first": {
+     "mean": 300433,
+     "max": 300433,
+     "max_depth": 501,
+     "ms_median": 7.928583072498441,
+     "runs": 1,
+     "ratio_to_bound": 15.768277961475883
+    },
+    "lomuto_random": {
+     "mean": 24614.9,
+     "max": 27077,
+     "max_depth": 26,
+     "ms_median": 1.2013751547783613,
+     "runs": 10,
+     "ratio_to_bound": 1.2919172833674488
+    },
+    "hoare_random": {
+     "mean": 27680.4,
+     "max": 29421,
+     "max_depth": 25,
+     "ms_median": 1.163979060947895,
+     "runs": 10,
+     "ratio_to_bound": 1.4528105810108645
+    },
+    "median3": {
+     "mean": 777424,
+     "max": 777424,
+     "max_depth": 532,
+     "ms_median": 14.676208142191172,
+     "runs": 1,
+     "ratio_to_bound": 40.80323308665302
+    },
+    "introsort": {
+     "mean": 78127,
+     "max": 78127,
+     "max_depth": 19,
+     "ms_median": 2.897040918469429,
+     "runs": 1,
+     "ratio_to_bound": 4.100509106177505
+    },
+    "merge": {
+     "mean": 14127,
+     "max": 14127,
+     "max_depth": 0,
+     "ms_median": 1.1626670602709055,
+     "runs": 1,
+     "ratio_to_bound": 0.7414580381042356
+    },
+    "heap": {
+     "mean": 37225,
+     "max": 37225,
+     "max_depth": 0,
+     "ms_median": 2.0917081274092197,
+     "runs": 1,
+     "ratio_to_bound": 1.953760562641054
+    }
+   }
+  }
+ },
+ "total_seconds": 5.176145875127986,
+ "E8_derived": {
+  "lomuto_expected_2000": 24729.829150648347,
+  "ratio_expected_2000_to_bound": 1.2979493597149188,
+  "n_log2_n_2000": 21931.568569324176,
+  "stirling_log2_fact_2000": 19052.987127753313,
+  "log2_fact_2000": 19052.98718786561,
+  "all_equal_1024_lomuto_random": 523776,
+  "all_equal_1024_hoare_random": 9218,
+  "ratio_2nlnn_to_exact": {
+   "100": 1.4216773475405868,
+   "1000": 1.257566028603006,
+   "10000": 1.1825435059704408
+  },
+  "first_pivot_8000_over_bound": 347.0545486099812
+ }
+}

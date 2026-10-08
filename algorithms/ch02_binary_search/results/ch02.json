@@ -1,0 +1,1329 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "machine": "arm64",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "note": "다른 에이전트 작업이 같은 기기에서 동시에 돌던 상태에서 측정"
+ },
+ "E0_first_screen": {
+  "cards": [
+   3,
+   5,
+   8,
+   12,
+   15,
+   19,
+   23,
+   30
+  ],
+  "x": 16,
+  "correct": {
+   "answer": 5,
+   "card": 19,
+   "steps": 3,
+   "states": [
+    {
+     "lo": 0,
+     "hi": 8,
+     "mid": null,
+     "size": 8
+    },
+    {
+     "lo": 5,
+     "hi": 8,
+     "mid": 4,
+     "size": 3,
+     "shrank": true
+    },
+    {
+     "lo": 5,
+     "hi": 6,
+     "mid": 6,
+     "size": 1,
+     "shrank": true
+    },
+    {
+     "lo": 5,
+     "hi": 5,
+     "mid": 5,
+     "size": 0,
+     "shrank": true
+    }
+   ]
+  },
+  "lo_eq_mid": {
+   "outcome": "no_stop",
+   "states_first6": [
+    {
+     "lo": 0,
+     "hi": 8,
+     "mid": null,
+     "size": 8
+    },
+    {
+     "lo": 4,
+     "hi": 8,
+     "mid": 4,
+     "size": 4,
+     "shrank": true
+    },
+    {
+     "lo": 4,
+     "hi": 6,
+     "mid": 6,
+     "size": 2,
+     "shrank": true
+    },
+    {
+     "lo": 4,
+     "hi": 5,
+     "mid": 5,
+     "size": 1,
+     "shrank": true
+    },
+    {
+     "lo": 4,
+     "hi": 5,
+     "mid": 4,
+     "size": 1,
+     "shrank": false
+    },
+    {
+     "lo": 4,
+     "hi": 5,
+     "mid": 4,
+     "size": 1,
+     "shrank": false
+    }
+   ]
+  },
+  "bound_8": 4,
+  "bound_1e6": 20,
+  "log2_1e6_plus_1": 19.931570012018494
+ },
+ "E1_exhaustive": {
+  "max_len": 5,
+  "values": [
+   0,
+   2,
+   4,
+   6,
+   8
+  ],
+  "targets": [
+   -1,
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "max_steps_cap": 64,
+  "n_arrays": 252,
+  "n_targets": 11,
+  "code": {
+   "a_le_with_hi_mid": "lo, hi = 0, len(a)\nwhile lo <= hi:\n    mid = (lo + hi) // 2\n    if a[mid] < x: lo = mid + 1\n    else:          hi = mid",
+   "b_lo_mid": "lo, hi = 0, len(a)\nwhile lo < hi:\n    mid = (lo + hi) // 2\n    if a[mid] < x: lo = mid\n    else:          hi = mid",
+   "c_closed_hi": "lo, hi = 0, len(a) - 1\nwhile lo < hi:\n    mid = (lo + hi) // 2\n    if a[mid] < x: lo = mid + 1\n    else:          hi = mid",
+   "d_correct": "lo, hi = 0, len(a)\nwhile lo < hi:\n    mid = (lo + hi) // 2\n    if a[mid] < x: lo = mid + 1\n    else:          hi = mid"
+  },
+  "results": {
+   "a_le_with_hi_mid": {
+    "counts": {
+     "ok": 0,
+     "wrong": 0,
+     "no_stop": 2100,
+     "out_of_range": 672
+    },
+    "total": 2772,
+    "fail": 2772,
+    "first_failure": {
+     "a": [],
+     "x": -1,
+     "outcome": "out_of_range",
+     "answer": null,
+     "truth": 0
+    },
+    "by_len": {
+     "0": {
+      "cases": 11,
+      "fail": 11
+     },
+     "1": {
+      "cases": 55,
+      "fail": 55
+     },
+     "2": {
+      "cases": 165,
+      "fail": 165
+     },
+     "3": {
+      "cases": 385,
+      "fail": 385
+     },
+     "4": {
+      "cases": 770,
+      "fail": 770
+     },
+     "5": {
+      "cases": 1386,
+      "fail": 1386
+     }
+    }
+   },
+   "b_lo_mid": {
+    "counts": {
+     "ok": 923,
+     "wrong": 0,
+     "no_stop": 1849,
+     "out_of_range": 0
+    },
+    "total": 2772,
+    "fail": 1849,
+    "first_failure": {
+     "a": [
+      0
+     ],
+     "x": 1,
+     "outcome": "no_stop",
+     "answer": null,
+     "truth": 1
+    },
+    "by_len": {
+     "0": {
+      "cases": 11,
+      "fail": 0
+     },
+     "1": {
+      "cases": 55,
+      "fail": 25
+     },
+     "2": {
+      "cases": 165,
+      "fail": 95
+     },
+     "3": {
+      "cases": 385,
+      "fail": 245
+     },
+     "4": {
+      "cases": 770,
+      "fail": 518
+     },
+     "5": {
+      "cases": 1386,
+      "fail": 966
+     }
+    }
+   },
+   "c_closed_hi": {
+    "counts": {
+     "ok": 2111,
+     "wrong": 661,
+     "no_stop": 0,
+     "out_of_range": 0
+    },
+    "total": 2772,
+    "fail": 661,
+    "first_failure": {
+     "a": [
+      0
+     ],
+     "x": 1,
+     "outcome": "wrong",
+     "answer": 0,
+     "truth": 1
+    },
+    "by_len": {
+     "0": {
+      "cases": 11,
+      "fail": 0
+     },
+     "1": {
+      "cases": 55,
+      "fail": 25
+     },
+     "2": {
+      "cases": 165,
+      "fail": 55
+     },
+     "3": {
+      "cases": 385,
+      "fail": 105
+     },
+     "4": {
+      "cases": 770,
+      "fail": 182
+     },
+     "5": {
+      "cases": 1386,
+      "fail": 294
+     }
+    }
+   },
+   "d_correct": {
+    "counts": {
+     "ok": 2772,
+     "wrong": 0,
+     "no_stop": 0,
+     "out_of_range": 0
+    },
+    "total": 2772,
+    "fail": 0,
+    "first_failure": null,
+    "by_len": {
+     "0": {
+      "cases": 11,
+      "fail": 0
+     },
+     "1": {
+      "cases": 55,
+      "fail": 0
+     },
+     "2": {
+      "cases": 165,
+      "fail": 0
+     },
+     "3": {
+      "cases": 385,
+      "fail": 0
+     },
+     "4": {
+      "cases": 770,
+      "fail": 0
+     },
+     "5": {
+      "cases": 1386,
+      "fail": 0
+     }
+    }
+   }
+  }
+ },
+ "E2_overflow": {
+  "low": 1500000000,
+  "high": 2000000000,
+  "int32_max": 2147483647,
+  "true_sum": 3500000000,
+  "wrapped_sum": -794967296,
+  "wrapped_sum_by_rule": -794967296,
+  "naive_mid": -397483648,
+  "safe_mid": 1750000000,
+  "python_int_mid": 1750000000,
+  "scalar_add_warnings": [
+   "overflow encountered in scalar add"
+  ],
+  "array_add_warnings": [],
+  "array_wrapped_sum": -794967296
+ },
+ "E3_random_props": {
+  "seed": 0,
+  "n_arrays": 3000,
+  "len_range": [
+   0,
+   40
+  ],
+  "value_range": [
+   0,
+   20
+  ],
+  "agree_with_bisect_left": 3000,
+  "steps_within_bound": 3000,
+  "invariant_and_shrink_every_step": 3000,
+  "states_checked": 15237,
+  "variant_fail": {
+   "a_le_with_hi_mid": 3000,
+   "b_lo_mid": 2488,
+   "c_closed_hi": 303,
+   "d_correct": 0
+  },
+  "variant_shortest_found": {
+   "a_le_with_hi_mid": {
+    "a": [],
+    "x": 9,
+    "outcome": "out_of_range"
+   },
+   "b_lo_mid": {
+    "a": [
+     9
+    ],
+    "x": 19,
+    "outcome": "no_stop"
+   },
+   "c_closed_hi": {
+    "a": [
+     9
+    ],
+    "x": 19,
+    "outcome": "wrong"
+   },
+   "d_correct": null
+  }
+ },
+ "E4_tight_bound": {
+  "rows": [
+   {
+    "n": 1,
+    "max_steps": 1,
+    "bound": 1
+   },
+   {
+    "n": 2,
+    "max_steps": 2,
+    "bound": 2
+   },
+   {
+    "n": 3,
+    "max_steps": 2,
+    "bound": 2
+   },
+   {
+    "n": 4,
+    "max_steps": 3,
+    "bound": 3
+   },
+   {
+    "n": 5,
+    "max_steps": 3,
+    "bound": 3
+   },
+   {
+    "n": 6,
+    "max_steps": 3,
+    "bound": 3
+   },
+   {
+    "n": 7,
+    "max_steps": 3,
+    "bound": 3
+   },
+   {
+    "n": 8,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 9,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 10,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 11,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 12,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 13,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 14,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 15,
+    "max_steps": 4,
+    "bound": 4
+   },
+   {
+    "n": 16,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 17,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 18,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 19,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 20,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 21,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 22,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 23,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 24,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 25,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 26,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 27,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 28,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 29,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 30,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 31,
+    "max_steps": 5,
+    "bound": 5
+   },
+   {
+    "n": 32,
+    "max_steps": 6,
+    "bound": 6
+   },
+   {
+    "n": 100,
+    "max_steps": 7,
+    "bound": 7
+   },
+   {
+    "n": 1000,
+    "max_steps": 10,
+    "bound": 10
+   },
+   {
+    "n": 1000000,
+    "max_steps": 20,
+    "bound": 20
+   }
+  ],
+  "all_tight": true
+ },
+ "E5_linear_vs_binary": {
+  "repeats": 10,
+  "n_queries": 20,
+  "seed": 0,
+  "rows": {
+   "1000": {
+    "comparisons_mean": {
+     "linear": 443.85,
+     "binary": 9.95
+    },
+    "comparisons_worst": {
+     "linear": 1000,
+     "binary": 9,
+     "bound": 10
+    },
+    "us_per_query_median": {
+     "linear": 5.336449248716235,
+     "binary_py": 0.3937515430152416,
+     "bisect_c": 0.05416804924607277,
+     "np_searchsorted_scalar": 0.4187517333775759
+    },
+    "us_per_query_min_max": {
+     "linear": [
+      5.291646812111139,
+      5.493755452334881
+     ],
+     "binary_py": [
+      0.3895489498972893,
+      0.4645437002182007
+     ],
+     "bisect_c": [
+      0.04789326339960098,
+      0.11664815247058868
+     ]
+    }
+   },
+   "10000": {
+    "comparisons_mean": {
+     "linear": 5002.6,
+     "binary": 13.2
+    },
+    "comparisons_worst": {
+     "linear": 10000,
+     "binary": 13,
+     "bound": 14
+    },
+    "us_per_query_median": {
+     "linear": 68.81249719299376,
+     "binary_py": 0.5541427526623011,
+     "bisect_c": 0.0667001586407423,
+     "np_searchsorted_scalar": 0.4229252226650715
+    },
+    "us_per_query_min_max": {
+     "linear": [
+      68.35419917479157,
+      70.83334494382143
+     ],
+     "binary_py": [
+      0.5416572093963623,
+      0.6562448106706142
+     ],
+     "bisect_c": [
+      0.0625033862888813,
+      0.10209623724222183
+     ]
+    }
+   },
+   "100000": {
+    "comparisons_mean": {
+     "linear": 58455.35,
+     "binary": 16.7
+    },
+    "comparisons_worst": {
+     "linear": 100000,
+     "binary": 16,
+     "bound": 17
+    },
+    "us_per_query_median": {
+     "linear": 816.8864471372217,
+     "binary_py": 0.6968795787543058,
+     "bisect_c": 0.08022761903703213,
+     "np_searchsorted_scalar": 0.4458299372345209
+    },
+    "us_per_query_min_max": {
+     "linear": [
+      807.0583455264568,
+      879.6833571977913
+     ],
+     "binary_py": [
+      0.6832997314631939,
+      1.4666467905044556
+     ],
+     "bisect_c": [
+      0.0750063918530941,
+      0.22085150703787804
+     ]
+    }
+   },
+   "1000000": {
+    "comparisons_mean": {
+     "linear": 436208.85,
+     "binary": 20
+    },
+    "comparisons_worst": {
+     "linear": 1000000,
+     "binary": 19,
+     "bound": 20
+    },
+    "us_per_query_median": {
+     "linear": 20147.99480093643,
+     "binary_py": 0.8760776836425066,
+     "bisect_c": 0.10520452633500099,
+     "np_searchsorted_scalar": 0.46248314902186394
+    },
+    "us_per_query_min_max": {
+     "linear": [
+      18588.487501256168,
+      22544.69790495932
+     ],
+     "binary_py": [
+      0.8624978363513947,
+      2.893758937716484
+     ],
+     "bisect_c": [
+      0.09789364412426949,
+      0.2625049091875553
+     ]
+    }
+   }
+  }
+ },
+ "E6_cpython_bpo13496": {
+  "python": "3.12.13",
+  "sys_maxsize": 9223372036854775807,
+  "bisect_result": 9223372036854775805,
+  "expected": 9223372036854775805,
+  "seconds": 7.4999406933784485e-06,
+  "old_formula_int64_first_negative_mid": {
+   "step": 2,
+   "lo": 4611686018427387904,
+   "hi": 9223372036854775807,
+   "mid": -2305843009213693953
+  }
+ },
+ "E7_sampling": {
+  "48": {
+   "agree": 2000,
+   "checked": 2000,
+   "comparisons_linear": 48,
+   "comparisons_bisect_max": 6
+  },
+  "32768": {
+   "agree": 2000,
+   "checked": 2000,
+   "comparisons_linear": 32768,
+   "comparisons_bisect_max": 16
+  }
+ },
+ "traces": {
+  "d_correct": {
+   "a": [
+    3,
+    5,
+    8,
+    12,
+    15,
+    19,
+    23,
+    30
+   ],
+   "x": 16,
+   "outcome": "ok",
+   "answer": 5,
+   "truth": 5,
+   "trace": [
+    {
+     "step": 0,
+     "op": "start",
+     "state": {
+      "lo": 0,
+      "hi": 8,
+      "mid": null,
+      "size": 8
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:0] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[8:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 1,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 8,
+      "mid": 4,
+      "size": 3,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[8:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 2,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 6,
+      "mid": 6,
+      "size": 1,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[6:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 3,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 5,
+      "mid": 5,
+      "size": 0,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    }
+   ]
+  },
+  "b_lo_mid": {
+   "a": [
+    3,
+    5,
+    8,
+    12,
+    15,
+    19,
+    23,
+    30
+   ],
+   "x": 16,
+   "outcome": "no_stop",
+   "answer": null,
+   "truth": 5,
+   "trace": [
+    {
+     "step": 0,
+     "op": "start",
+     "state": {
+      "lo": 0,
+      "hi": 8,
+      "mid": null,
+      "size": 8
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:0] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[8:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 1,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 8,
+      "mid": 4,
+      "size": 4,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[8:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 2,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 6,
+      "mid": 6,
+      "size": 2,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[6:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 3,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 5,
+      "mid": 5,
+      "size": 1,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 4,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 5,
+      "mid": 4,
+      "size": 1,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 5,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 5,
+      "mid": 4,
+      "size": 1,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 6,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 5,
+      "mid": 4,
+      "size": 1,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 7,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 5,
+      "mid": 4,
+      "size": 1,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    }
+   ]
+  },
+  "c_closed_hi": {
+   "a": [
+    3,
+    5,
+    8,
+    12,
+    15,
+    19,
+    23,
+    30
+   ],
+   "x": 31,
+   "outcome": "wrong",
+   "answer": 7,
+   "truth": 8,
+   "trace": [
+    {
+     "step": 0,
+     "op": "start",
+     "state": {
+      "lo": 0,
+      "hi": 7,
+      "mid": null,
+      "size": 7
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:0] < 31"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": false,
+       "detail": "a[7:8] >= 31"
+      }
+     ]
+    },
+    {
+     "step": 1,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 4,
+      "hi": 7,
+      "mid": 3,
+      "size": 3,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:4] < 31"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": false,
+       "detail": "a[7:8] >= 31"
+      }
+     ]
+    },
+    {
+     "step": 2,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 6,
+      "hi": 7,
+      "mid": 5,
+      "size": 1,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:6] < 31"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": false,
+       "detail": "a[7:8] >= 31"
+      }
+     ]
+    },
+    {
+     "step": 3,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 7,
+      "hi": 7,
+      "mid": 6,
+      "size": 0,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:7] < 31"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": false,
+       "detail": "a[7:8] >= 31"
+      }
+     ]
+    }
+   ]
+  },
+  "a_le_with_hi_mid": {
+   "a": [
+    3,
+    5,
+    8,
+    12,
+    15,
+    19,
+    23,
+    30
+   ],
+   "x": 16,
+   "outcome": "no_stop",
+   "answer": null,
+   "truth": 5,
+   "trace": [
+    {
+     "step": 0,
+     "op": "start",
+     "state": {
+      "lo": 0,
+      "hi": 8,
+      "mid": null,
+      "size": 8
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:0] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[8:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 1,
+     "op": "a[mid] < x 이므로 오른쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 8,
+      "mid": 4,
+      "size": 3,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[8:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 2,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 6,
+      "mid": 6,
+      "size": 1,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[6:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 3,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 5,
+      "mid": 5,
+      "size": 0,
+      "shrank": true
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 4,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 5,
+      "mid": 5,
+      "size": 0,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 5,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 5,
+      "mid": 5,
+      "size": 0,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 6,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 5,
+      "mid": 5,
+      "size": 0,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    },
+    {
+     "step": 7,
+     "op": "a[mid] >= x 이므로 왼쪽으로",
+     "state": {
+      "lo": 5,
+      "hi": 5,
+      "mid": 5,
+      "size": 0,
+      "shrank": false
+     },
+     "invariants": [
+      {
+       "name": "왼쪽은 모두 x보다 작다",
+       "holds": true,
+       "detail": "a[0:5] < 16"
+      },
+      {
+       "name": "오른쪽은 모두 x 이상이다",
+       "holds": true,
+       "detail": "a[5:8] >= 16"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

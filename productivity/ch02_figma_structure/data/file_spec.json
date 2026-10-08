@@ -1,0 +1,419 @@
+{
+ "mains": {
+  "Button/Primary": {
+   "name": "Button/Primary",
+   "kind": "frame",
+   "layout": "H",
+   "pad": [
+    16,
+    16,
+    12,
+    12
+   ],
+   "gap": 0,
+   "sx": "hug",
+   "sy": "hug",
+   "fill": "#1F6FEB",
+   "radius": 8,
+   "children": [
+    {
+     "name": "label",
+     "kind": "text",
+     "text": "예약",
+     "sx": "hug",
+     "sy": "hug"
+    }
+   ]
+  }
+ },
+ "screens": [
+  {
+   "name": "S01_목록_기본",
+   "kind": "frame",
+   "layout": "V",
+   "pad": [
+    16,
+    16,
+    0,
+    24
+   ],
+   "gap": 12,
+   "sx": "fixed",
+   "sy": "fixed",
+   "w": 375,
+   "h": 812,
+   "children": [
+    {
+     "name": "TopBar",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      16,
+      16
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "title",
+       "kind": "text",
+       "text": "스터디룸",
+       "sx": "hug",
+       "sy": "hug"
+      }
+     ]
+    },
+    {
+     "name": "Row1",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      12,
+      12
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "room",
+       "kind": "text",
+       "text": "1번 방 · 4인",
+       "sx": "fill",
+       "sy": "hug"
+      },
+      {
+       "kind": "instance",
+       "main": "Button/Primary",
+       "overrides": {},
+       "sx": "hug",
+       "intent": null,
+       "detached": false
+      }
+     ]
+    },
+    {
+     "name": "Row2",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      12,
+      12
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "room",
+       "kind": "text",
+       "text": "2번 방 · 4인",
+       "sx": "fill",
+       "sy": "hug"
+      },
+      {
+       "kind": "instance",
+       "main": "Button/Primary",
+       "overrides": {},
+       "sx": "hug",
+       "intent": null,
+       "detached": false
+      }
+     ]
+    },
+    {
+     "name": "Row3",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      12,
+      12
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "room",
+       "kind": "text",
+       "text": "3번 방 · 4인",
+       "sx": "fill",
+       "sy": "hug"
+      },
+      {
+       "kind": "instance",
+       "main": "Button/Primary",
+       "overrides": {},
+       "sx": "hug",
+       "intent": null,
+       "detached": false
+      }
+     ]
+    },
+    {
+     "name": "Row4",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      12,
+      12
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "room",
+       "kind": "text",
+       "text": "4번 방 · 4인",
+       "sx": "fill",
+       "sy": "hug"
+      },
+      {
+       "kind": "instance",
+       "main": "Button/Primary",
+       "overrides": {},
+       "sx": "hug",
+       "intent": null,
+       "detached": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "S02_상세_기본",
+   "kind": "frame",
+   "layout": "V",
+   "pad": [
+    16,
+    16,
+    0,
+    24
+   ],
+   "gap": 12,
+   "sx": "fixed",
+   "sy": "fixed",
+   "w": 375,
+   "h": 812,
+   "children": [
+    {
+     "name": "TopBar",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      16,
+      16
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "title",
+       "kind": "text",
+       "text": "3번 방",
+       "sx": "hug",
+       "sy": "hug"
+      }
+     ]
+    },
+    {
+     "name": "info",
+     "kind": "text",
+     "text": "창가 자리 · 화이트보드 있음",
+     "sx": "fill",
+     "sy": "hug"
+    },
+    {
+     "kind": "instance",
+     "main": "Button/Primary",
+     "overrides": {
+      "label.text": "예약하기"
+     },
+     "sx": "fill",
+     "intent": "stretch",
+     "detached": false
+    }
+   ]
+  },
+  {
+   "name": "S03_예약_기본",
+   "kind": "frame",
+   "layout": "V",
+   "pad": [
+    16,
+    16,
+    0,
+    24
+   ],
+   "gap": 12,
+   "sx": "fixed",
+   "sy": "fixed",
+   "w": 375,
+   "h": 812,
+   "children": [
+    {
+     "name": "TopBar",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      16,
+      16
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "title",
+       "kind": "text",
+       "text": "예약",
+       "sx": "hug",
+       "sy": "hug"
+      }
+     ]
+    },
+    {
+     "name": "Date",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      12,
+      12,
+      12,
+      12
+     ],
+     "gap": 0,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "hint",
+       "kind": "text",
+       "text": "날짜를 골라 주세요",
+       "sx": "fill",
+       "sy": "hug"
+      }
+     ]
+    },
+    {
+     "name": "Time",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      12,
+      12,
+      12,
+      12
+     ],
+     "gap": 0,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "hint",
+       "kind": "text",
+       "text": "시간을 골라 주세요",
+       "sx": "fill",
+       "sy": "hug"
+      }
+     ]
+    },
+    {
+     "kind": "instance",
+     "main": "Button/Primary",
+     "overrides": {
+      "label.text": "예약 확정"
+     },
+     "sx": "fill",
+     "intent": "stretch",
+     "detached": false
+    }
+   ]
+  },
+  {
+   "name": "S04_완료_기본",
+   "kind": "frame",
+   "layout": "V",
+   "pad": [
+    16,
+    16,
+    0,
+    24
+   ],
+   "gap": 12,
+   "sx": "fixed",
+   "sy": "fixed",
+   "w": 375,
+   "h": 812,
+   "children": [
+    {
+     "name": "TopBar",
+     "kind": "frame",
+     "layout": "H",
+     "pad": [
+      16,
+      16,
+      16,
+      16
+     ],
+     "gap": 8,
+     "sx": "fill",
+     "sy": "hug",
+     "intent": "stretch",
+     "children": [
+      {
+       "name": "title",
+       "kind": "text",
+       "text": "완료",
+       "sx": "hug",
+       "sy": "hug"
+      }
+     ]
+    },
+    {
+     "name": "msg",
+     "kind": "text",
+     "text": "예약이 끝났어요",
+     "sx": "fill",
+     "sy": "hug"
+    },
+    {
+     "kind": "instance",
+     "main": "Button/Primary",
+     "overrides": {
+      "label.text": "목록으로"
+     },
+     "sx": "fill",
+     "intent": "stretch",
+     "detached": false
+    }
+   ]
+  }
+ ]
+}

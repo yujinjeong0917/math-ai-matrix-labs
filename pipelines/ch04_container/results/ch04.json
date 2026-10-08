@@ -1,0 +1,568 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "machine": "arm64",
+  "system": "Darwin",
+  "numpy": "2.3.3",
+  "torch": "2.8.0",
+  "pytest": "8.4.2"
+ },
+ "uv": "uv 0.11.29 (Homebrew 2026-07-15 aarch64-apple-darwin)",
+ "checked": "2026-10-08",
+ "E1": {
+  "day1": "2024-06-10",
+  "day2": "2024-06-20",
+  "requirements_top_only": "onnxruntime==1.18.0",
+  "rows": {
+   "top_only_day1": {
+    "pins": {
+     "coloredlogs": "15.0.1",
+     "flatbuffers": "24.3.25",
+     "humanfriendly": "10.0",
+     "mpmath": "1.3.0",
+     "numpy": "1.26.4",
+     "onnxruntime": "1.18.0",
+     "packaging": "24.1",
+     "protobuf": "5.27.1",
+     "sympy": "1.12.1"
+    },
+    "n_packages": 9,
+    "numpy": "1.26.4",
+    "lock_digest": "sha256:dcb418780ef9fb3e96202e97de9b46a279c673d0b5573d5b1709a5dc289e1f8f",
+    "import_ok": true,
+    "error": null,
+    "stderr_first_line": null,
+    "seconds": 0.12313695787452161
+   },
+   "top_only_day2": {
+    "pins": {
+     "coloredlogs": "15.0.1",
+     "flatbuffers": "24.3.25",
+     "humanfriendly": "10.0",
+     "mpmath": "1.3.0",
+     "numpy": "2.0.0",
+     "onnxruntime": "1.18.0",
+     "packaging": "24.1",
+     "protobuf": "5.27.1",
+     "sympy": "1.12.1"
+    },
+    "n_packages": 9,
+    "numpy": "2.0.0",
+    "lock_digest": "sha256:cbf02908df59a452b7af8f7836fea05b541f08c86ea4dc3dbbe09761d4983f67",
+    "import_ok": false,
+    "error": "ImportError: ",
+    "stderr_first_line": "A module that was compiled using NumPy 1.x cannot be run in",
+    "seconds": 0.07763108401559293
+   },
+   "lock_day2": {
+    "pins": {
+     "coloredlogs": "15.0.1",
+     "flatbuffers": "24.3.25",
+     "humanfriendly": "10.0",
+     "mpmath": "1.3.0",
+     "numpy": "1.26.4",
+     "onnxruntime": "1.18.0",
+     "packaging": "24.1",
+     "protobuf": "5.27.1",
+     "sympy": "1.12.1"
+    },
+    "n_packages": 9,
+    "numpy": "1.26.4",
+    "lock_digest": "sha256:dcb418780ef9fb3e96202e97de9b46a279c673d0b5573d5b1709a5dc289e1f8f",
+    "import_ok": true,
+    "error": null,
+    "stderr_first_line": null,
+    "seconds": 0.07887816592119634
+   }
+  },
+  "changed_packages_top_only": {
+   "numpy": [
+    "1.26.4",
+    "2.0.0"
+   ]
+  },
+  "lock_same_on_both_days": true,
+  "loose_numpy_ge_1_24": {
+   "2024-06-10": "1.26.4",
+   "2024-06-20": "2.0.0",
+   "2026-10-08": "2.5.3"
+  }
+ },
+ "E2_E3": {
+  "lab": {
+   "python": "3.12.13",
+   "numpy": "2.3.3",
+   "data_hash": "a21adb9b4db64bdc13ffd5b47f65f212a29c38d014a658cc9ac3300eaf6df4ca",
+   "col_hashes": {
+    "tenure_months": "906a55154966",
+    "monthly_fee": "36651b8c2126",
+    "support_calls": "ed04be4229f3",
+    "usage_hours": "37f5d34de6f1",
+    "age": "b0a30ea24c49",
+    "discount_rate": "31f956e2d9de",
+    "plan": "4f3a99f6dba5",
+    "region": "735cc966d5f6",
+    "churned": "68f0d1095068"
+   },
+   "val_acc": 0.811,
+   "b": -0.10738090539515276,
+   "w_sha256": "891e1b7f010a3f569a52fce954fbb866b756768e3a526e9109f64dca756d03af",
+   "nep50_scalar": "float32",
+   "nep50_array": "float64",
+   "serve_dtype": "float64",
+   "serve_p_sha256": "8d7fbcb5b3380e539903e622e067461489d3cb150d42a9a4a7e082a44b064858",
+   "serve_p_head": [
+    0.9022066073967947,
+    0.3506323108641675,
+    0.36419641468893355
+   ],
+   "normal_eq_affine_frac": 0.9266666666666666,
+   "env": {
+    "python": "3.12.13",
+    "machine": "arm64",
+    "system": "Darwin",
+    "numpy": "2.3.3",
+    "torch": "2.8.0",
+    "pytest": "8.4.2"
+   }
+  },
+  "2.3.3": {
+   "python": "3.12.13",
+   "numpy": "2.3.3",
+   "data_hash": "a21adb9b4db64bdc13ffd5b47f65f212a29c38d014a658cc9ac3300eaf6df4ca",
+   "col_hashes": {
+    "tenure_months": "906a55154966",
+    "monthly_fee": "36651b8c2126",
+    "support_calls": "ed04be4229f3",
+    "usage_hours": "37f5d34de6f1",
+    "age": "b0a30ea24c49",
+    "discount_rate": "31f956e2d9de",
+    "plan": "4f3a99f6dba5",
+    "region": "735cc966d5f6",
+    "churned": "68f0d1095068"
+   },
+   "val_acc": 0.811,
+   "b": -0.10738090539515276,
+   "w_sha256": "891e1b7f010a3f569a52fce954fbb866b756768e3a526e9109f64dca756d03af",
+   "nep50_scalar": "float32",
+   "nep50_array": "float64",
+   "serve_dtype": "float64",
+   "serve_p_sha256": "8d7fbcb5b3380e539903e622e067461489d3cb150d42a9a4a7e082a44b064858",
+   "serve_p_head": [
+    0.9022066073967947,
+    0.3506323108641675,
+    0.36419641468893355
+   ],
+   "normal_eq_affine_frac": 0.9266666666666666,
+   "w_sha256_on_given": "891e1b7f010a3f569a52fce954fbb866b756768e3a526e9109f64dca756d03af",
+   "val_acc_on_given": 0.811,
+   "load": {
+    "pkl": {
+     "ok": true,
+     "same_w": true
+    },
+    "npz": {
+     "ok": true,
+     "same_w": true
+    }
+   },
+   "seconds_second_run": 0.10431779106147587,
+   "same_data_hash": true,
+   "data_col_diff": {},
+   "w_bitwise_same_on_lab_table": true,
+   "w_max_abs_diff": 0.0,
+   "w_bitwise_same": true,
+   "serve_p_max_abs_diff": 0.0,
+   "serve_p_n_diff": 0,
+   "serve_n": 100000,
+   "serve_label_flips": 0,
+   "serve_min_dist_to_half": 3.273838564687992e-07,
+   "env_diff_vs_lab": {
+    "python": [
+     "3.12.13",
+     "3.12.13"
+    ],
+    "numpy": [
+     "2.3.3",
+     "2.3.3"
+    ]
+   }
+  },
+  "2.0.0": {
+   "python": "3.12.13",
+   "numpy": "2.0.0",
+   "data_hash": "a21adb9b4db64bdc13ffd5b47f65f212a29c38d014a658cc9ac3300eaf6df4ca",
+   "col_hashes": {
+    "tenure_months": "906a55154966",
+    "monthly_fee": "36651b8c2126",
+    "support_calls": "ed04be4229f3",
+    "usage_hours": "37f5d34de6f1",
+    "age": "b0a30ea24c49",
+    "discount_rate": "31f956e2d9de",
+    "plan": "4f3a99f6dba5",
+    "region": "735cc966d5f6",
+    "churned": "68f0d1095068"
+   },
+   "val_acc": 0.811,
+   "b": -0.10738090539515276,
+   "w_sha256": "891e1b7f010a3f569a52fce954fbb866b756768e3a526e9109f64dca756d03af",
+   "nep50_scalar": "float32",
+   "nep50_array": "float64",
+   "serve_dtype": "float64",
+   "serve_p_sha256": "8d7fbcb5b3380e539903e622e067461489d3cb150d42a9a4a7e082a44b064858",
+   "serve_p_head": [
+    0.9022066073967947,
+    0.3506323108641675,
+    0.36419641468893355
+   ],
+   "normal_eq_affine_frac": 0.9266666666666666,
+   "w_sha256_on_given": "891e1b7f010a3f569a52fce954fbb866b756768e3a526e9109f64dca756d03af",
+   "val_acc_on_given": 0.811,
+   "load": {
+    "pkl": {
+     "ok": true,
+     "same_w": true
+    },
+    "npz": {
+     "ok": true,
+     "same_w": true
+    }
+   },
+   "seconds_second_run": 0.10876879189163446,
+   "same_data_hash": true,
+   "data_col_diff": {},
+   "w_bitwise_same_on_lab_table": true,
+   "w_max_abs_diff": 0.0,
+   "w_bitwise_same": true,
+   "serve_p_max_abs_diff": 0.0,
+   "serve_p_n_diff": 0,
+   "serve_n": 100000,
+   "serve_label_flips": 0,
+   "serve_min_dist_to_half": 3.273838564687992e-07,
+   "env_diff_vs_lab": {
+    "python": [
+     "3.12.13",
+     "3.12.13"
+    ],
+    "numpy": [
+     "2.3.3",
+     "2.0.0"
+    ]
+   }
+  },
+  "1.26.4": {
+   "python": "3.12.13",
+   "numpy": "1.26.4",
+   "data_hash": "ff2ed2ae849d763a26530864c4cb0caa84d10c3dd3d314718790d59d8460df0f",
+   "col_hashes": {
+    "tenure_months": "906a55154966",
+    "monthly_fee": "36651b8c2126",
+    "support_calls": "ed04be4229f3",
+    "usage_hours": "ba6f1bb72988",
+    "age": "b0a30ea24c49",
+    "discount_rate": "31f956e2d9de",
+    "plan": "4f3a99f6dba5",
+    "region": "735cc966d5f6",
+    "churned": "68f0d1095068"
+   },
+   "val_acc": 0.811,
+   "b": -0.10738090539515276,
+   "w_sha256": "c0f8d6e475139f61ef907c5d0097dd80be69671f85fc1d3ddf26f17d54657271",
+   "nep50_scalar": "float64",
+   "nep50_array": "float32",
+   "serve_dtype": "float32",
+   "serve_p_sha256": "8d38c9d0f035c358df62dba05090ce1b8c5d1cb6a62d89fff83a60724544788f",
+   "serve_p_head": [
+    0.9022066068303395,
+    0.3506322972188012,
+    0.36419640562558175
+   ],
+   "normal_eq_affine_frac": 1.0,
+   "w_sha256_on_given": "023089f36ffb16bac0174b1be6ffb6712c40c8d2f86cfa08a9e1f7da482cc32b",
+   "val_acc_on_given": 0.811,
+   "load": {
+    "pkl": {
+     "ok": true,
+     "same_w": false
+    },
+    "npz": {
+     "ok": true,
+     "same_w": false
+    }
+   },
+   "seconds_second_run": 0.1113510001450777,
+   "same_data_hash": false,
+   "data_col_diff": {
+    "usage_hours": {
+     "n_cells": 252,
+     "max_abs": 1.4210854715202004e-14
+    }
+   },
+   "w_bitwise_same_on_lab_table": false,
+   "w_max_abs_diff": 2.220446049250313e-16,
+   "w_bitwise_same": false,
+   "serve_p_max_abs_diff": 8.042426674625958e-08,
+   "serve_p_n_diff": 100000,
+   "serve_n": 100000,
+   "serve_label_flips": 0,
+   "serve_min_dist_to_half": 3.273838564687992e-07,
+   "env_diff_vs_lab": {
+    "python": [
+     "3.12.13",
+     "3.12.13"
+    ],
+    "numpy": [
+     "2.3.3",
+     "1.26.4"
+    ]
+   }
+  },
+  "1.26.0": {
+   "python": "3.12.13",
+   "numpy": "1.26.0",
+   "data_hash": "ff2ed2ae849d763a26530864c4cb0caa84d10c3dd3d314718790d59d8460df0f",
+   "col_hashes": {
+    "tenure_months": "906a55154966",
+    "monthly_fee": "36651b8c2126",
+    "support_calls": "ed04be4229f3",
+    "usage_hours": "ba6f1bb72988",
+    "age": "b0a30ea24c49",
+    "discount_rate": "31f956e2d9de",
+    "plan": "4f3a99f6dba5",
+    "region": "735cc966d5f6",
+    "churned": "68f0d1095068"
+   },
+   "val_acc": 0.811,
+   "b": -0.10738090539515276,
+   "w_sha256": "c0f8d6e475139f61ef907c5d0097dd80be69671f85fc1d3ddf26f17d54657271",
+   "nep50_scalar": "float64",
+   "nep50_array": "float32",
+   "serve_dtype": "float32",
+   "serve_p_sha256": "8d38c9d0f035c358df62dba05090ce1b8c5d1cb6a62d89fff83a60724544788f",
+   "serve_p_head": [
+    0.9022066068303395,
+    0.3506322972188012,
+    0.36419640562558175
+   ],
+   "normal_eq_affine_frac": 1.0,
+   "w_sha256_on_given": "023089f36ffb16bac0174b1be6ffb6712c40c8d2f86cfa08a9e1f7da482cc32b",
+   "val_acc_on_given": 0.811,
+   "load": {
+    "pkl": {
+     "ok": false,
+     "error": "ModuleNotFoundError: No module named 'numpy._core'"
+    },
+    "npz": {
+     "ok": true,
+     "same_w": false
+    }
+   },
+   "seconds_second_run": 0.10915483301505446,
+   "same_data_hash": false,
+   "data_col_diff": {
+    "usage_hours": {
+     "n_cells": 252,
+     "max_abs": 1.4210854715202004e-14
+    }
+   },
+   "w_bitwise_same_on_lab_table": false,
+   "w_max_abs_diff": 2.220446049250313e-16,
+   "w_bitwise_same": false,
+   "serve_p_max_abs_diff": 8.042426674625958e-08,
+   "serve_p_n_diff": 100000,
+   "serve_n": 100000,
+   "serve_label_flips": 0,
+   "serve_min_dist_to_half": 3.273838564687992e-07,
+   "env_diff_vs_lab": {
+    "python": [
+     "3.12.13",
+     "3.12.13"
+    ],
+    "numpy": [
+     "2.3.3",
+     "1.26.0"
+    ]
+   }
+  }
+ },
+ "E4": {
+  "pins": {
+   "iniconfig": "2.3.1",
+   "numpy": "2.3.3",
+   "packaging": "26.3",
+   "pluggy": "1.6.0",
+   "pygments": "2.21.0",
+   "pytest": "8.4.2"
+  },
+  "rows": {
+   "warm_cache": {
+    "seconds_each": [
+     0.047113334061577916,
+     0.04349120892584324,
+     0.04304037499241531
+    ],
+    "seconds_median": 0.04349120892584324,
+    "site_packages_bytes": 25745835
+   },
+   "no_cache": {
+    "seconds_each": [
+     2.3610135840717703,
+     2.435538541059941,
+     2.438700916012749
+    ],
+    "seconds_median": 2.435538541059941,
+    "site_packages_bytes": 25745835
+   }
+  }
+ },
+ "E5": {
+  "deps_before_source": {
+   "installs_first_build": 1,
+   "installs_during_edits": 0,
+   "rebuilt_steps_per_edit": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "new_layer_bytes_sim": 204800,
+   "lint_problems": []
+  },
+  "deps_after_source": {
+   "installs_first_build": 1,
+   "installs_during_edits": 10,
+   "rebuilt_steps_per_edit": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "new_layer_bytes_sim": 409600,
+   "lint_problems": [
+    "의존성 설치가 소스 복사보다 뒤에 있다(소스를 고칠 때마다 다시 설치)"
+   ]
+  },
+  "n_edits": 10
+ },
+ "E6": {
+  "tag_loose": {
+   "digest_day1": "sha256:687fff8acbd2c1901deb54c3ec27825ea83a3348dcdcf4767ed60c5f8faa1c8c",
+   "digest_day2": "sha256:47de6c96cbf385e1437f5c790e5ce394f973c74e01ff84594611da7b82fe351a",
+   "digest_day2_cached": "sha256:47de6c96cbf385e1437f5c790e5ce394f973c74e01ff84594611da7b82fe351a",
+   "same_digest_fresh": false,
+   "same_digest_cached": false,
+   "numpy_day1": "1.26.4",
+   "numpy_day2": "2.0.0",
+   "numpy_day2_cached": "2.0.0",
+   "same_files_fresh": false,
+   "day2_cached_log": [
+    "pull",
+    "meta",
+    "copy",
+    "run",
+    "copy",
+    "meta",
+    "meta"
+   ]
+  },
+  "digest_loose": {
+   "digest_day1": "sha256:687fff8acbd2c1901deb54c3ec27825ea83a3348dcdcf4767ed60c5f8faa1c8c",
+   "digest_day2": "sha256:c1047d71f2a6c375ef318add8612ca9b245338188419db6cd6b67056b039b85f",
+   "digest_day2_cached": "sha256:b1d4c3bbe392f1bd6bd4acc33c89e983cb797dc7acd6287ccd402e563e6f615c",
+   "same_digest_fresh": false,
+   "same_digest_cached": false,
+   "numpy_day1": "1.26.4",
+   "numpy_day2": "2.0.0",
+   "numpy_day2_cached": "1.26.4",
+   "same_files_fresh": false,
+   "day2_cached_log": [
+    "pull",
+    "meta",
+    "cache",
+    "cache",
+    "cache",
+    "meta",
+    "meta"
+   ]
+  },
+  "tag_lock": {
+   "digest_day1": "sha256:7521a43ce3bfb36101b0d25dd83150de308c0f2999a50147e954ee820851720c",
+   "digest_day2": "sha256:1e7e80d17a69a8f343efd0b6a159e36ceb57095d3602dd1b83957b075fac7adf",
+   "digest_day2_cached": "sha256:1e7e80d17a69a8f343efd0b6a159e36ceb57095d3602dd1b83957b075fac7adf",
+   "same_digest_fresh": false,
+   "same_digest_cached": false,
+   "numpy_day1": "1.26.4",
+   "numpy_day2": "1.26.4",
+   "numpy_day2_cached": "1.26.4",
+   "same_files_fresh": false,
+   "day2_cached_log": [
+    "pull",
+    "meta",
+    "copy",
+    "run",
+    "copy",
+    "meta",
+    "meta"
+   ]
+  },
+  "digest_lock": {
+   "digest_day1": "sha256:7521a43ce3bfb36101b0d25dd83150de308c0f2999a50147e954ee820851720c",
+   "digest_day2": "sha256:83d7392a23dbeec71ff613184d74cb8503309d7fc17565fc76c724535205c759",
+   "digest_day2_cached": "sha256:78139888de23a89e0c23d5062b2b2a2e05625273a147fe780a2b94df324bc2bf",
+   "same_digest_fresh": false,
+   "same_digest_cached": false,
+   "numpy_day1": "1.26.4",
+   "numpy_day2": "1.26.4",
+   "numpy_day2_cached": "1.26.4",
+   "same_files_fresh": true,
+   "day2_cached_log": [
+    "pull",
+    "meta",
+    "cache",
+    "cache",
+    "cache",
+    "meta",
+    "meta"
+   ]
+  },
+  "digest_lock_epoch": {
+   "digest_day1": "sha256:5b8883be3ea5638717021426e7952737583c9498af3c9719d960a1947297afea",
+   "digest_day2": "sha256:5b8883be3ea5638717021426e7952737583c9498af3c9719d960a1947297afea",
+   "digest_day2_cached": "sha256:5b8883be3ea5638717021426e7952737583c9498af3c9719d960a1947297afea",
+   "same_digest_fresh": true,
+   "same_digest_cached": true,
+   "numpy_day1": "1.26.4",
+   "numpy_day2": "1.26.4",
+   "numpy_day2_cached": "1.26.4",
+   "same_files_fresh": true,
+   "day2_cached_log": [
+    "pull",
+    "meta",
+    "cache",
+    "cache",
+    "cache",
+    "meta",
+    "meta"
+   ]
+  }
+ },
+ "E7": {
+  "w_max_abs_diff": 1.3877787807814457e-17,
+  "b_abs_diff": 0.0,
+  "val_acc_np": 0.811,
+  "val_acc_torch": 0.811
+ },
+ "total_seconds": 9.12679283390753
+}

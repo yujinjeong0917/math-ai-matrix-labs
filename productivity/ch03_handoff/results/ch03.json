@@ -1,0 +1,912 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": 3,
+  "checked": "2026-10-08",
+  "questions": 20
+ },
+ "e1_min_failure": {
+  "no_scale_note": {
+   "name": "이미지 + 메신저 (배율 설명 없음)",
+   "score": {
+    "correct": 3,
+    "misread": 3,
+    "guessed_right": 2,
+    "guessed_wrong": 12,
+    "unanswerable": 14,
+    "wrong_total": 15
+   },
+   "per_question": {
+    "Q01": "misread",
+    "Q02": "misread",
+    "Q03": "misread",
+    "Q04": "guessed_wrong",
+    "Q05": "guessed_wrong",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "guessed_wrong",
+    "Q10": "guessed_wrong",
+    "Q11": "guessed_wrong",
+    "Q12": "guessed_wrong",
+    "Q13": "guessed_wrong",
+    "Q14": "guessed_wrong",
+    "Q15": "guessed_wrong",
+    "Q16": "guessed_wrong",
+    "Q17": "guessed_wrong",
+    "Q18": "guessed_right",
+    "Q19": "guessed_right",
+    "Q20": "guessed_wrong"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 3
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 2,
+     "wrong": 2
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 3,
+     "wrong": 3
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 4
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 2
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 1,
+     "wrong": 1
+    }
+   },
+   "misread_values": {
+    "Q01": 32,
+    "Q02": 16,
+    "Q03": 96
+   }
+  },
+  "scale_note": {
+   "name": "이미지 + 메신저 (배율 설명 있음)",
+   "score": {
+    "correct": 6,
+    "misread": 0,
+    "guessed_right": 2,
+    "guessed_wrong": 12,
+    "unanswerable": 14,
+    "wrong_total": 12
+   },
+   "per_question": {
+    "Q01": "correct",
+    "Q02": "correct",
+    "Q03": "correct",
+    "Q04": "guessed_wrong",
+    "Q05": "guessed_wrong",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "guessed_wrong",
+    "Q10": "guessed_wrong",
+    "Q11": "guessed_wrong",
+    "Q12": "guessed_wrong",
+    "Q13": "guessed_wrong",
+    "Q14": "guessed_wrong",
+    "Q15": "guessed_wrong",
+    "Q16": "guessed_wrong",
+    "Q17": "guessed_wrong",
+    "Q18": "guessed_right",
+    "Q19": "guessed_right",
+    "Q20": "guessed_wrong"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 2,
+     "wrong": 2
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 3,
+     "wrong": 3
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 4
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 2
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 1,
+     "wrong": 1
+    }
+   },
+   "misread_values": {}
+  }
+ },
+ "e2_completeness": {
+  "이미지 + 메신저 (배율 설명 없음)": {
+   "defined": 4,
+   "required": 11,
+   "ratio": 0.3636,
+   "cells_decided_of_16": 4,
+   "transitions": 0,
+   "transitions_required": 18
+  },
+  "이미지 + 메신저 (배율 설명 있음)": {
+   "defined": 4,
+   "required": 11,
+   "ratio": 0.3636,
+   "cells_decided_of_16": 4,
+   "transitions": 3,
+   "transitions_required": 18
+  },
+  "체크리스트 + 프로토타입": {
+   "defined": 11,
+   "required": 11,
+   "ratio": 1.0,
+   "cells_decided_of_16": 16,
+   "transitions": 18,
+   "transitions_required": 18
+  },
+  "Dev Mode (기본 상태만 그린 파일)": {
+   "defined": 4,
+   "required": 11,
+   "ratio": 0.3636,
+   "cells_decided_of_16": 4,
+   "transitions": 3,
+   "transitions_required": 18
+  },
+  "Dev Mode + 체크리스트를 채운 파일": {
+   "defined": 11,
+   "required": 11,
+   "ratio": 1.0,
+   "cells_decided_of_16": 16,
+   "transitions": 18,
+   "transitions_required": 18
+  },
+  "required_by_screen": {
+   "S01": [
+    "기본",
+    "오류",
+    "빈",
+    "로딩"
+   ],
+   "S02": [
+    "기본",
+    "오류",
+    "로딩"
+   ],
+   "S03": [
+    "기본",
+    "오류",
+    "로딩"
+   ],
+   "S04": [
+    "기본"
+   ]
+  },
+  "not_here": {
+   "S02:빈": "방을 눌러야 열리는 화면이라 방이 없을 수 없음",
+   "S03:빈": "입력 화면이라 비어 있는 상태가 곧 기본",
+   "S04:오류": "예약 확정 응답을 받은 뒤에만 열림(오류는 S03에서)",
+   "S04:빈": "보여 줄 예약이 항상 하나 있음",
+   "S04:로딩": "확정 응답과 함께 열려 따로 기다리지 않음"
+  }
+ },
+ "e3_graph": {
+  "이미지 + 메신저 (배율 설명 없음)": {
+   "nodes": 4,
+   "edges": 0,
+   "start": "S01:기본",
+   "bfs": {
+    "unreachable": [
+     "S02:기본",
+     "S03:기본",
+     "S04:기본"
+    ],
+    "dead_ends": [
+     "S01:기본",
+     "S02:기본",
+     "S03:기본",
+     "S04:기본"
+    ],
+    "error_without_recovery": []
+   },
+   "agree": true
+  },
+  "이미지 + 메신저 (배율 설명 있음)": {
+   "nodes": 4,
+   "edges": 3,
+   "start": "S01:기본",
+   "bfs": {
+    "unreachable": [],
+    "dead_ends": [
+     "S04:기본"
+    ],
+    "error_without_recovery": []
+   },
+   "agree": true
+  },
+  "체크리스트 + 프로토타입": {
+   "nodes": 11,
+   "edges": 18,
+   "start": "S01:로딩",
+   "bfs": {
+    "unreachable": [],
+    "dead_ends": [],
+    "error_without_recovery": []
+   },
+   "agree": true
+  },
+  "Dev Mode (기본 상태만 그린 파일)": {
+   "nodes": 4,
+   "edges": 3,
+   "start": "S01:기본",
+   "bfs": {
+    "unreachable": [],
+    "dead_ends": [
+     "S04:기본"
+    ],
+    "error_without_recovery": []
+   },
+   "agree": true
+  },
+  "Dev Mode + 체크리스트를 채운 파일": {
+   "nodes": 11,
+   "edges": 18,
+   "start": "S01:로딩",
+   "bfs": {
+    "unreachable": [],
+    "dead_ends": [],
+    "error_without_recovery": []
+   },
+   "agree": true
+  },
+  "상태는 다 그렸고 연결은 앞으로만": {
+   "nodes": 11,
+   "edges": 10,
+   "start": "S01:로딩",
+   "bfs": {
+    "unreachable": [],
+    "dead_ends": [
+     "S01:빈",
+     "S01:오류",
+     "S02:오류",
+     "S03:오류",
+     "S04:기본"
+    ],
+    "error_without_recovery": [
+     "S01:오류",
+     "S02:오류",
+     "S03:오류"
+    ]
+   },
+   "agree": true
+  }
+ },
+ "e4_compare": {
+  "이미지 + 메신저 (배율 설명 없음)": {
+   "score": {
+    "correct": 3,
+    "misread": 3,
+    "guessed_right": 2,
+    "guessed_wrong": 12,
+    "unanswerable": 14,
+    "wrong_total": 15
+   },
+   "per_question": {
+    "Q01": "misread",
+    "Q02": "misread",
+    "Q03": "misread",
+    "Q04": "guessed_wrong",
+    "Q05": "guessed_wrong",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "guessed_wrong",
+    "Q10": "guessed_wrong",
+    "Q11": "guessed_wrong",
+    "Q12": "guessed_wrong",
+    "Q13": "guessed_wrong",
+    "Q14": "guessed_wrong",
+    "Q15": "guessed_wrong",
+    "Q16": "guessed_wrong",
+    "Q17": "guessed_wrong",
+    "Q18": "guessed_right",
+    "Q19": "guessed_right",
+    "Q20": "guessed_wrong"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 3
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 2,
+     "wrong": 2
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 3,
+     "wrong": 3
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 4
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 2
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 1,
+     "wrong": 1
+    }
+   },
+   "asking": {
+    "questions": 14,
+    "rounds": 4,
+    "by_screen": {
+     "S01": [
+      "Q09",
+      "Q10",
+      "Q12",
+      "Q17"
+     ],
+     "S02": [
+      "Q04",
+      "Q05",
+      "Q13",
+      "Q16",
+      "Q20"
+     ],
+     "S03": [
+      "Q11",
+      "Q14",
+      "Q15",
+      "Q18"
+     ],
+     "S04": [
+      "Q19"
+     ]
+    }
+   },
+   "designer_cost": {
+    "frames_drawn": 4,
+    "cells_decided": 4,
+    "transitions": 0
+   },
+   "token_names_visible": false,
+   "live_values": false
+  },
+  "이미지 + 메신저 (배율 설명 있음)": {
+   "score": {
+    "correct": 6,
+    "misread": 0,
+    "guessed_right": 2,
+    "guessed_wrong": 12,
+    "unanswerable": 14,
+    "wrong_total": 12
+   },
+   "per_question": {
+    "Q01": "correct",
+    "Q02": "correct",
+    "Q03": "correct",
+    "Q04": "guessed_wrong",
+    "Q05": "guessed_wrong",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "guessed_wrong",
+    "Q10": "guessed_wrong",
+    "Q11": "guessed_wrong",
+    "Q12": "guessed_wrong",
+    "Q13": "guessed_wrong",
+    "Q14": "guessed_wrong",
+    "Q15": "guessed_wrong",
+    "Q16": "guessed_wrong",
+    "Q17": "guessed_wrong",
+    "Q18": "guessed_right",
+    "Q19": "guessed_right",
+    "Q20": "guessed_wrong"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 2,
+     "wrong": 2
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 3,
+     "wrong": 3
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 4
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 2
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 1,
+     "wrong": 1
+    }
+   },
+   "asking": {
+    "questions": 14,
+    "rounds": 4,
+    "by_screen": {
+     "S01": [
+      "Q09",
+      "Q10",
+      "Q12",
+      "Q17"
+     ],
+     "S02": [
+      "Q04",
+      "Q05",
+      "Q13",
+      "Q16",
+      "Q20"
+     ],
+     "S03": [
+      "Q11",
+      "Q14",
+      "Q15",
+      "Q18"
+     ],
+     "S04": [
+      "Q19"
+     ]
+    }
+   },
+   "designer_cost": {
+    "frames_drawn": 4,
+    "cells_decided": 4,
+    "transitions": 3
+   },
+   "token_names_visible": false,
+   "live_values": false
+  },
+  "체크리스트 + 프로토타입": {
+   "score": {
+    "correct": 20,
+    "misread": 0,
+    "guessed_right": 0,
+    "guessed_wrong": 0,
+    "unanswerable": 0,
+    "wrong_total": 0
+   },
+   "per_question": {
+    "Q01": "correct",
+    "Q02": "correct",
+    "Q03": "correct",
+    "Q04": "correct",
+    "Q05": "correct",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "correct",
+    "Q10": "correct",
+    "Q11": "correct",
+    "Q12": "correct",
+    "Q13": "correct",
+    "Q14": "correct",
+    "Q15": "correct",
+    "Q16": "correct",
+    "Q17": "correct",
+    "Q18": "correct",
+    "Q19": "correct",
+    "Q20": "correct"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 0,
+     "wrong": 0
+    }
+   },
+   "asking": {
+    "questions": 0,
+    "rounds": 0,
+    "by_screen": {
+     "S01": [],
+     "S02": [],
+     "S03": [],
+     "S04": []
+    }
+   },
+   "designer_cost": {
+    "frames_drawn": 11,
+    "cells_decided": 16,
+    "transitions": 18
+   },
+   "token_names_visible": true,
+   "live_values": false
+  },
+  "Dev Mode (기본 상태만 그린 파일)": {
+   "score": {
+    "correct": 8,
+    "misread": 1,
+    "guessed_right": 2,
+    "guessed_wrong": 9,
+    "unanswerable": 11,
+    "wrong_total": 10
+   },
+   "per_question": {
+    "Q01": "correct",
+    "Q02": "correct",
+    "Q03": "correct",
+    "Q04": "correct",
+    "Q05": "correct",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "guessed_wrong",
+    "Q10": "guessed_wrong",
+    "Q11": "guessed_wrong",
+    "Q12": "guessed_wrong",
+    "Q13": "guessed_wrong",
+    "Q14": "guessed_wrong",
+    "Q15": "guessed_wrong",
+    "Q16": "guessed_wrong",
+    "Q17": "guessed_wrong",
+    "Q18": "guessed_right",
+    "Q19": "guessed_right",
+    "Q20": "misread"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 3,
+     "wrong": 3
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 4
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 4,
+     "wrong": 2
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 0,
+     "wrong": 1
+    }
+   },
+   "asking": {
+    "questions": 11,
+    "rounds": 4,
+    "by_screen": {
+     "S01": [
+      "Q09",
+      "Q10",
+      "Q12",
+      "Q17"
+     ],
+     "S02": [
+      "Q13",
+      "Q16"
+     ],
+     "S03": [
+      "Q11",
+      "Q14",
+      "Q15",
+      "Q18"
+     ],
+     "S04": [
+      "Q19"
+     ]
+    }
+   },
+   "designer_cost": {
+    "frames_drawn": 4,
+    "cells_decided": 4,
+    "transitions": 3
+   },
+   "token_names_visible": true,
+   "live_values": true
+  },
+  "Dev Mode + 체크리스트를 채운 파일": {
+   "score": {
+    "correct": 20,
+    "misread": 0,
+    "guessed_right": 0,
+    "guessed_wrong": 0,
+    "unanswerable": 0,
+    "wrong_total": 0
+   },
+   "per_question": {
+    "Q01": "correct",
+    "Q02": "correct",
+    "Q03": "correct",
+    "Q04": "correct",
+    "Q05": "correct",
+    "Q06": "correct",
+    "Q07": "correct",
+    "Q08": "correct",
+    "Q09": "correct",
+    "Q10": "correct",
+    "Q11": "correct",
+    "Q12": "correct",
+    "Q13": "correct",
+    "Q14": "correct",
+    "Q15": "correct",
+    "Q16": "correct",
+    "Q17": "correct",
+    "Q18": "correct",
+    "Q19": "correct",
+    "Q20": "correct"
+   },
+   "by_category": {
+    "치수": {
+     "n": 3,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "글자": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "색": {
+     "n": 2,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "문구": {
+     "n": 4,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "상태": {
+     "n": 4,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "동작": {
+     "n": 4,
+     "unanswerable": 0,
+     "wrong": 0
+    },
+    "접근성": {
+     "n": 1,
+     "unanswerable": 0,
+     "wrong": 0
+    }
+   },
+   "asking": {
+    "questions": 0,
+    "rounds": 0,
+    "by_screen": {
+     "S01": [],
+     "S02": [],
+     "S03": [],
+     "S04": []
+    }
+   },
+   "designer_cost": {
+    "frames_drawn": 11,
+    "cells_decided": 16,
+    "transitions": 18
+   },
+   "token_names_visible": true,
+   "live_values": true
+  }
+ },
+ "e5_token_drift": {
+  "copy_hex": {
+   "follow": 0,
+   "stale": 7,
+   "edit_locations": 7
+  },
+  "token_name": {
+   "follow": 7,
+   "stale": 0,
+   "edit_locations": 1
+  },
+  "sites": 7,
+  "old": "#0B7A55",
+  "new": "#0A6B4B"
+ },
+ "e6_accessibility": {
+  "text_pairs": [
+   {
+    "name": "본문 글자 / 흰 배경",
+    "fg": "#111827",
+    "bg": "#FFFFFF",
+    "inactive": false,
+    "ratio": 17.74,
+    "pass_4_5": true,
+    "exempt": false
+   },
+   {
+    "name": "안내 문구 / 흰 배경",
+    "fg": "#6B7280",
+    "bg": "#FFFFFF",
+    "inactive": false,
+    "ratio": 4.83,
+    "pass_4_5": true,
+    "exempt": false
+   },
+   {
+    "name": "입력창 예시 글자(placeholder) / 흰 배경",
+    "fg": "#9CA3AF",
+    "bg": "#FFFFFF",
+    "inactive": false,
+    "ratio": 2.54,
+    "pass_4_5": false,
+    "exempt": false
+   },
+   {
+    "name": "버튼 글자 흰색 / 버튼 색",
+    "fg": "#FFFFFF",
+    "bg": "#0B7A55",
+    "inactive": false,
+    "ratio": 5.34,
+    "pass_4_5": true,
+    "exempt": false
+   },
+   {
+    "name": "비활성 버튼 글자 / 비활성 버튼",
+    "fg": "#FFFFFF",
+    "bg": "#D1D5DB",
+    "inactive": true,
+    "ratio": 1.47,
+    "pass_4_5": false,
+    "exempt": true
+   }
+  ],
+  "targets": [
+   {
+    "name": "뒤로 가기(아이콘만 그린 파일)",
+    "w": 24,
+    "h": 24,
+    "pass_24_AA": true,
+    "pass_44_AAA": false
+   },
+   {
+    "name": "뒤로 가기(체크리스트대로 터치 영역 지정)",
+    "w": 44,
+    "h": 44,
+    "pass_24_AA": true,
+    "pass_44_AAA": true
+   },
+   {
+    "name": "목록 셀의 '예약' 버튼",
+    "w": 60,
+    "h": 36,
+    "pass_24_AA": true,
+    "pass_44_AAA": false
+   },
+   {
+    "name": "큰 버튼(예약하기·예약 확정·목록으로)",
+    "w": 343,
+    "h": 48,
+    "pass_24_AA": true,
+    "pass_44_AAA": true
+   },
+   {
+    "name": "날짜 바꾸기 칩",
+    "w": 72,
+    "h": 32,
+    "pass_24_AA": true,
+    "pass_44_AAA": false
+   }
+  ],
+  "sanity": {
+   "black_on_white": 21.0,
+   "same_color": 1.0
+  }
+ },
+ "e7_cross_check": {
+  "graphs": 2000,
+  "graph_disagree": 0,
+  "completeness_samples": 2000,
+  "completeness_disagree": 0
+ }
+}

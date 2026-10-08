@@ -1,0 +1,461 @@
+{
+ "e1_min_failure": {
+  "buttons_drawn": 7,
+  "copy_edits": {
+   "A": 7,
+   "B": 11
+  },
+  "copy_file_save_B_last": {
+   "lost": 7,
+   "silent": 0
+  },
+  "copy_file_save_A_last": {
+   "lost": 11,
+   "silent": 0
+  },
+  "component_edits": {
+   "A": 1,
+   "B": 2
+  },
+  "component_prop_merge": {
+   "lost": 0,
+   "silent": 0
+  },
+  "component_prop_merge_same_property": {
+   "lost": 0,
+   "silent": 1
+  },
+  "after_main_change_buttons": {
+   "with_new_fill": 7,
+   "list_buttons_new_label": 4,
+   "cta_labels_kept": [
+    "목록으로",
+    "예약 확정",
+    "예약하기"
+   ]
+  }
+ },
+ "e2_change_cost": {
+  "buttons_on_screens": 7,
+  "style_change_edit_locations": {
+   "copies": 14,
+   "component": 2
+  },
+  "style_change_places_to_open": {
+   "copies": 7,
+   "component": 1
+  },
+  "label_change": {
+   "text_layers_to_edit": {
+    "copies": 4,
+    "component": 1
+   },
+   "overflow_after": {
+    "copies_fixed": 4,
+    "component_auto": 0
+   },
+   "list_button_width": {
+    "before": 60,
+    "after_auto": 88
+   },
+   "label_width": {
+    "before": 28,
+    "after": 56
+   }
+  },
+  "drift_after_fill_change": {
+   "updated": 5,
+   "kept_by_override": 1,
+   "missed_by_detach": 1,
+   "where": {
+    "override": [
+     "S04_완료_기본"
+    ],
+    "detach": [
+     "S03_예약_기본"
+    ]
+   }
+  },
+  "variant_combinatorics": {
+   "1": {
+    "frames": 2,
+    "connections": 2
+   },
+   "2": {
+    "frames": 4,
+    "connections": 8
+   },
+   "3": {
+    "frames": 8,
+    "connections": 24
+   },
+   "4": {
+    "frames": 16,
+    "connections": 64
+   },
+   "5": {
+    "frames": 32,
+    "connections": 160
+   },
+   "6": {
+    "frames": 64,
+    "connections": 384
+   }
+  }
+ },
+ "e3_width": {
+  "stretch_intent_elements": 13,
+  "320": {
+   "fixed": {
+    "overflow": 15,
+    "stretch_fail": 13,
+    "stretch_fail_names": {
+     "Row": 4,
+     "TopBar": 4,
+     "Button/Primary": 3,
+     "Date": 1,
+     "Time": 1
+    }
+   },
+   "auto": {
+    "overflow": 0,
+    "stretch_fail": 0,
+    "stretch_fail_names": {}
+   }
+  },
+  "375": {
+   "fixed": {
+    "overflow": 0,
+    "stretch_fail": 0,
+    "stretch_fail_names": {}
+   },
+   "auto": {
+    "overflow": 0,
+    "stretch_fail": 0,
+    "stretch_fail_names": {}
+   }
+  },
+  "430": {
+   "fixed": {
+    "overflow": 0,
+    "stretch_fail": 13,
+    "stretch_fail_names": {
+     "Row": 4,
+     "TopBar": 4,
+     "Button/Primary": 3,
+     "Date": 1,
+     "Time": 1
+    }
+   },
+   "auto": {
+    "overflow": 0,
+    "stretch_fail": 0,
+    "stretch_fail_names": {}
+   }
+  },
+  "fixed_topbar_margins_at_430": {
+   "left": 16,
+   "right": 71,
+   "width": 343
+  },
+  "auto_topbar_margins_at_430": {
+   "left": 16,
+   "right": 16,
+   "width": 398
+  }
+ },
+ "e4_lint": {
+  "pingpong": {
+   "frame_name_violations": 4,
+   "frames_without_auto_layout": 21,
+   "spacing_off_token": 0,
+   "detached_instances": 0,
+   "width_checks": {
+    "375": {
+     "overflow": 0,
+     "stretch_fail": 0
+    },
+    "430": {
+     "overflow": 0,
+     "stretch_fail": 13
+    }
+   }
+  },
+  "spec": {
+   "frame_name_violations": 0,
+   "frames_without_auto_layout": 0,
+   "spacing_off_token": 0,
+   "detached_instances": 0,
+   "width_checks": {
+    "375": {
+     "overflow": 0,
+     "stretch_fail": 0
+    },
+    "430": {
+     "overflow": 0,
+     "stretch_fail": 0
+    }
+   }
+  },
+  "spec_with_drift": {
+   "frame_name_violations": 0,
+   "frames_without_auto_layout": 0,
+   "spacing_off_token": 0,
+   "detached_instances": 1,
+   "width_checks": {
+    "375": {
+     "overflow": 0,
+     "stretch_fail": 0
+    },
+    "430": {
+     "overflow": 0,
+     "stretch_fail": 0
+    }
+   }
+  }
+ },
+ "e5_adoption": {
+  "pingpong": {
+   "library_layers": 0,
+   "total_layers": 36,
+   "score": 0.0
+  },
+  "spec": {
+   "library_layers": 14,
+   "total_layers": 36,
+   "score": 0.3888888888888889
+  },
+  "spec_with_drift": {
+   "library_layers": 12,
+   "total_layers": 36,
+   "score": 0.3333333333333333
+  }
+ },
+ "e6_sync": {
+  "n_layers": 40,
+  "n_props": 6,
+  "trials": 500,
+  "by_k": {
+   "5": {
+    "measured": {
+     "file": {
+      "lost": 4.84,
+      "silent": 0.114
+     },
+     "object": {
+      "lost": 0.454,
+      "silent": 0.114
+     },
+     "prop": {
+      "lost": 0,
+      "silent": 0.114
+     },
+     "baton": {
+      "lost": 0,
+      "silent": 0
+     }
+    },
+    "theory": {
+     "file": {
+      "lost": 4.856061634996803,
+      "silent": 0.10244494805920747
+     },
+     "object": {
+      "lost": 0.4871428391720427,
+      "silent": 0.10244494805920747
+     },
+     "prop": {
+      "lost": 0.0,
+      "silent": 0.10244494805920747
+     },
+     "baton": {
+      "lost": 0.0,
+      "silent": 0.0
+     }
+    },
+    "touched_per_person_theory": 4.95850658305601,
+    "prop_trials_with_any_silent": 0.114,
+    "baton_wait_mean": 0.673888705645593
+   },
+   "10": {
+    "measured": {
+     "file": {
+      "lost": 9.404,
+      "silent": 0.396
+     },
+     "object": {
+      "lost": 1.828,
+      "silent": 0.396
+     },
+     "prop": {
+      "lost": 0,
+      "silent": 0.396
+     },
+     "baton": {
+      "lost": 0,
+      "silent": 0
+     }
+    },
+    "theory": {
+     "file": {
+      "lost": 9.413210929274436,
+      "silent": 0.40135728877838556
+     },
+     "object": {
+      "lost": 1.7938709056838462,
+      "silent": 0.40135728877838556
+     },
+     "prop": {
+      "lost": 0.0,
+      "silent": 0.40135728877838556
+     },
+     "baton": {
+      "lost": 0.0,
+      "silent": 0.0
+     }
+    },
+    "touched_per_person_theory": 9.814568218052822,
+    "prop_trials_with_any_silent": 0.336,
+    "baton_wait_mean": 0.8133067602523881
+   },
+   "20": {
+    "measured": {
+     "file": {
+      "lost": 17.768,
+      "silent": 1.48
+     },
+     "object": {
+      "lost": 6.124,
+      "silent": 1.48
+     },
+     "prop": {
+      "lost": 0,
+      "silent": 1.48
+     },
+     "baton": {
+      "lost": 0,
+      "silent": 0
+     }
+    },
+    "theory": {
+     "file": {
+      "lost": 17.687331268417303,
+      "silent": 1.5404478789099736
+     },
+     "object": {
+      "lost": 6.098985658349439,
+      "silent": 1.5404478789099736
+     },
+     "prop": {
+      "lost": 0.0,
+      "silent": 1.5404478789099736
+     },
+     "baton": {
+      "lost": 0.0,
+      "silent": 0.0
+     }
+    },
+    "touched_per_person_theory": 19.227779147327276,
+    "prop_trials_with_any_silent": 0.788,
+    "baton_wait_mean": 0.9048914234432283
+   },
+   "40": {
+    "measured": {
+     "file": {
+      "lost": 30.97,
+      "silent": 5.75
+     },
+     "object": {
+      "lost": 17.69,
+      "silent": 5.75
+     },
+     "prop": {
+      "lost": 0,
+      "silent": 5.75
+     },
+     "baton": {
+      "lost": 0,
+      "silent": 0
+     }
+    },
+    "theory": {
+     "file": {
+      "lost": 31.237088011550355,
+      "silent": 5.678022404194224
+     },
+     "object": {
+      "lost": 17.828322386508948,
+      "silent": 5.678022404194224
+     },
+     "prop": {
+      "lost": 0.0,
+      "silent": 5.678022404194224
+     },
+     "baton": {
+      "lost": 0.0,
+      "silent": 0.0
+     }
+    },
+    "touched_per_person_theory": 36.91511041574458,
+    "prop_trials_with_any_silent": 1.0,
+    "baton_wait_mean": 0.9511581925182797
+   },
+   "80": {
+    "measured": {
+     "file": {
+      "lost": 48.872,
+      "silent": 19.562
+     },
+     "object": {
+      "lost": 39.816,
+      "silent": 19.562
+     },
+     "prop": {
+      "lost": 0,
+      "silent": 19.562
+     },
+     "baton": {
+      "lost": 0,
+      "silent": 0
+     }
+    },
+    "theory": {
+     "file": {
+      "lost": 48.79918946698918,
+      "silent": 19.35300896030577
+     },
+     "object": {
+      "lost": 39.80733797419917,
+      "silent": 19.35300896030577
+     },
+     "prop": {
+      "lost": 0.0,
+      "silent": 19.35300896030577
+     },
+     "baton": {
+      "lost": 0.0,
+      "silent": 0.0
+     }
+    },
+    "touched_per_person_theory": 68.15219842729495,
+    "prop_trials_with_any_silent": 1.0,
+    "baton_wait_mean": 0.9734040688332202
+   }
+  }
+ },
+ "e7_cross_check": {
+  "prop_lww_log_vs_state_mismatch": 0,
+  "prop_trials": 2000,
+  "layout_vs_closed_form_mismatch": 0,
+  "layout_trials": 2000,
+  "help_doc_hug_example": {
+   "text40": 60,
+   "text50": 70
+  }
+ },
+ "env": {
+  "python": "3.12.13",
+  "machine": "arm64",
+  "system": "Darwin"
+ }
+}

@@ -1,0 +1,222 @@
+[
+ {
+  "id": "Q01",
+  "cat": "치수",
+  "screen": "S01",
+  "q": "목록 셀 좌우 여백",
+  "needs": [
+   "measure:cell.pad"
+  ],
+  "truth": 16,
+  "guess": 16
+ },
+ {
+  "id": "Q02",
+  "cat": "치수",
+  "screen": "S01",
+  "q": "목록 셀 사이 간격",
+  "needs": [
+   "measure:cell.gap"
+  ],
+  "truth": 8,
+  "guess": 8
+ },
+ {
+  "id": "Q03",
+  "cat": "치수",
+  "screen": "S02",
+  "q": "큰 버튼 높이",
+  "needs": [
+   "measure:button.h"
+  ],
+  "truth": 48,
+  "guess": 48
+ },
+ {
+  "id": "Q04",
+  "cat": "글자",
+  "screen": "S02",
+  "q": "제목 글자 크기",
+  "needs": [
+   "font:title"
+  ],
+  "truth": 20,
+  "guess": 16
+ },
+ {
+  "id": "Q05",
+  "cat": "글자",
+  "screen": "S02",
+  "q": "본문 글자 크기",
+  "needs": [
+   "font:body"
+  ],
+  "truth": 15,
+  "guess": 16
+ },
+ {
+  "id": "Q06",
+  "cat": "색",
+  "screen": "S01",
+  "q": "버튼 색",
+  "needs": [
+   "color:primary"
+  ],
+  "truth": "#0B7A55",
+  "guess": "#00A86B"
+ },
+ {
+  "id": "Q07",
+  "cat": "색",
+  "screen": "S03",
+  "q": "안내 문구 색",
+  "needs": [
+   "color:subtle"
+  ],
+  "truth": "#6B7280",
+  "guess": "#999999"
+ },
+ {
+  "id": "Q08",
+  "cat": "문구",
+  "screen": "S01",
+  "q": "목록 버튼 문구",
+  "needs": [
+   "copy:list.button"
+  ],
+  "truth": "예약",
+  "guess": "예약"
+ },
+ {
+  "id": "Q09",
+  "cat": "문구",
+  "screen": "S01",
+  "q": "빈 목록 문구",
+  "needs": [
+   "state:S01:빈"
+  ],
+  "truth": "조건에 맞는 방이 없어요. 날짜를 바꿔 보세요.",
+  "guess": "데이터가 없습니다."
+ },
+ {
+  "id": "Q10",
+  "cat": "문구",
+  "screen": "S01",
+  "q": "목록 불러오기 실패 문구",
+  "needs": [
+   "state:S01:오류"
+  ],
+  "truth": "목록을 불러오지 못했어요.",
+  "guess": "오류가 발생했습니다."
+ },
+ {
+  "id": "Q11",
+  "cat": "문구",
+  "screen": "S03",
+  "q": "예약 시간 겹침 문구",
+  "needs": [
+   "state:S03:오류"
+  ],
+  "truth": "이미 예약된 시간이에요. 다른 시간을 골라 주세요.",
+  "guess": "오류가 발생했습니다."
+ },
+ {
+  "id": "Q12",
+  "cat": "상태",
+  "screen": "S01",
+  "q": "목록 불러오는 중 모습",
+  "needs": [
+   "state:S01:로딩"
+  ],
+  "truth": "회색 셀 3개",
+  "guess": "가운데 스피너"
+ },
+ {
+  "id": "Q13",
+  "cat": "상태",
+  "screen": "S02",
+  "q": "상세 불러오는 중 모습",
+  "needs": [
+   "state:S02:로딩"
+  ],
+  "truth": "사진 자리 회색 상자",
+  "guess": "가운데 스피너"
+ },
+ {
+  "id": "Q14",
+  "cat": "상태",
+  "screen": "S03",
+  "q": "예약 확정 누른 뒤 버튼",
+  "needs": [
+   "state:S03:로딩"
+  ],
+  "truth": "비활성 + '예약 중…'",
+  "guess": "가운데 스피너"
+ },
+ {
+  "id": "Q15",
+  "cat": "상태",
+  "screen": "S03",
+  "q": "필수 입력 전 예약 버튼",
+  "needs": [
+   "variant:S03.button.disabled"
+  ],
+  "truth": "비활성(회색)",
+  "guess": "활성, 누르면 오류"
+ },
+ {
+  "id": "Q16",
+  "cat": "동작",
+  "screen": "S02",
+  "q": "상세에서 뒤로 가면",
+  "needs": [
+   "edge:S02:기본>S01:기본"
+  ],
+  "truth": "목록, 스크롤 위치 유지",
+  "guess": "목록 맨 위"
+ },
+ {
+  "id": "Q17",
+  "cat": "동작",
+  "screen": "S01",
+  "q": "목록 불러오기 실패 뒤 할 수 있는 일",
+  "needs": [
+   "edge:S01:오류>S01:로딩"
+  ],
+  "truth": "다시 시도 버튼",
+  "guess": "없음(새로고침)"
+ },
+ {
+  "id": "Q18",
+  "cat": "동작",
+  "screen": "S03",
+  "q": "시간 겹침 오류 뒤 입력값",
+  "needs": [
+   "edge:S03:오류>S03:기본"
+  ],
+  "truth": "유지",
+  "guess": "유지"
+ },
+ {
+  "id": "Q19",
+  "cat": "동작",
+  "screen": "S04",
+  "q": "완료에서 목록으로 가면",
+  "needs": [
+   "edge:S04:기본>S01:로딩"
+  ],
+  "truth": "목록 새로 불러오기",
+  "guess": "목록 새로 불러오기"
+ },
+ {
+  "id": "Q20",
+  "cat": "접근성",
+  "screen": "S02",
+  "q": "뒤로 가기 버튼 터치 영역(px)",
+  "needs": [
+   "hit:back"
+  ],
+  "truth": 44,
+  "guess": 24
+ }
+]

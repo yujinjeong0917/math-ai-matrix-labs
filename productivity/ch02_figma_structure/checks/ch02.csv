@@ -1,0 +1,7 @@
+reader,date,file,check,value,note
+example,2026-10-08,pingpong(synthetic),button_style_change_edit_locations,14,"버튼 7개 x 속성 2개"
+example,2026-10-08,spec(synthetic),button_style_change_edit_locations,2,"main component 1곳 x 속성 2개"
+example,2026-10-08,pingpong(synthetic),width_430_stretch_fail,13,"고정 좌표"
+example,2026-10-08,spec(synthetic),width_430_stretch_fail,0,"auto layout"
+example,2026-10-08,pingpong(synthetic),edits_lost_after_two_people,7,"B가 나중에 저장"
+example,2026-10-08,spec(synthetic),edits_lost_after_two_people,0,"속성 단위 동시 편집"

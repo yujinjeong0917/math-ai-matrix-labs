@@ -1,0 +1,95 @@
+{
+ "checked": "2026-10-10",
+ "note": "공식 가격·한도 문서에서 옮긴 값이에요. 값이 바뀌면 날짜가 다른 새 파일을 만들어요. 금액은 모두 미국 달러(USD), 세금 제외. GB는 계산 편의상 1,000 MB로 셉니다(문서는 단위를 따로 정의하지 않아요).",
+ "supabase": {
+  "free": {
+   "price_usd": 0,
+   "active_projects": 2,
+   "db_size_mb": 500,
+   "egress_gb": 5, "cached_egress_gb": 5,
+   "storage_gb": 1,
+   "mau": 50000,
+   "edge_invocations": 500000,
+   "max_upload_mb": 50,
+   "edge_wall_clock_s": 150,
+   "pause_after_inactive_days": 7,
+   "restore_window": "1 year",
+   "auth_emails_per_hour_builtin": 2,
+   "on_db_over": "read-only mode",
+   "on_other_over": "service restrictions will apply (구체적 방식은 Fair Use Policy, [확인 필요])"
+  },
+  "pro": {
+   "price_usd": 25,
+   "compute_credit_usd": 10,
+   "micro_compute_usd_month": 10,
+   "db_disk_gb": 8,
+   "egress_gb": 250, "cached_egress_gb": 250,
+   "storage_gb": 100,
+   "mau": 100000,
+   "edge_invocations": 2000000,
+   "max_upload_gb": 500,
+   "edge_wall_clock_s": 400,
+   "paused_for_inactivity": false,
+   "spend_cap_default": "on: 'The Pro Plan has a Spend Cap enabled by default to keep costs under control.' (Billing FAQ)",
+   "overage": {
+    "mau_usd_each": 0.00325,
+    "storage_usd_per_gb_month": 0.0213,
+    "db_disk_usd_per_gb": 0.125,
+    "egress_usd_per_gb": 0.09,
+    "cached_egress_usd_per_gb": 0.03,
+    "edge_usd_per_million": 2,
+    "edge_billing": "1,000,000회 묶음 단위로 올림"
+   }
+  },
+  "sources": {
+   "pricing": "https://supabase.com/pricing",
+   "billing": "https://supabase.com/docs/guides/platform/billing-on-supabase",
+   "billing_faq": "https://supabase.com/docs/guides/platform/billing-faq",
+   "mau": "https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users",
+   "edge": "https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations",
+   "storage": "https://supabase.com/docs/guides/platform/manage-your-usage/storage-size",
+   "egress": "https://supabase.com/docs/guides/platform/manage-your-usage/egress",
+   "compute": "https://supabase.com/docs/guides/platform/manage-your-usage/compute",
+   "db_size": "https://supabase.com/docs/guides/platform/database-size",
+   "spend_cap": "https://supabase.com/docs/guides/platform/spend-cap",
+   "pausing": "https://supabase.com/docs/guides/platform/free-project-pausing",
+   "file_limits": "https://supabase.com/docs/guides/storage/uploads/file-limits",
+   "edge_limits": "https://supabase.com/docs/guides/functions/limits",
+   "auth_rate_limits": "https://supabase.com/docs/guides/auth/rate-limits"
+  }
+ },
+ "vercel": {
+  "hobby": {
+   "price_usd": 0,
+   "fast_data_transfer_gb": 100,
+   "cdn_requests": 1000000,
+   "function_invocations": 1000000,
+   "active_cpu_hours": 4,
+   "deployments_per_day": 100,
+   "commercial_use": false,
+   "on_over": "In most cases, if you exceed your usage limits on the Hobby plan, you will have to wait until 30 days have passed before you can use the feature again."
+  },
+  "pro": {
+   "price_usd_per_developer_seat": 20,
+   "fast_data_transfer_note": "가격 페이지는 '1TB/month included; then $0.15/GB', 공정 사용 문서는 'Flat Rate CDN'·'Regional'로 적어 서로 달라 계산에 넣지 않음 [확인 필요]"
+  },
+  "sources": {
+   "pricing": "https://vercel.com/pricing",
+   "hobby": "https://vercel.com/docs/plans/hobby",
+   "fair_use": "https://vercel.com/docs/limits/fair-use-guidelines"
+  }
+ },
+ "netlify": {
+  "free": {"price_usd": 0, "credits": 300, "hard_limit": true},
+  "personal": {"price_usd": 9, "credits": 1000},
+  "pro": {"price_usd": 20, "credits": 3000},
+  "credit_costs": {"production_deploy": 15, "bandwidth_per_gb": 20, "web_requests_per_10k": 2, "compute_per_gb_hour": 10},
+  "on_over_free": "all web projects paused ('Site not available') until the next billing cycle; free plan cannot buy credits",
+  "commercial_use_free": "[확인 필요] 이번에 읽은 문서에서 무료 요금제의 상업적 사용 제한 문구를 찾지 못함",
+  "sources": {
+   "pricing": "https://www.netlify.com/pricing/",
+   "credits": "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/",
+   "paused": "https://docs.netlify.com/manage/accounts-and-billing/billing/resume-paused-projects/"
+  }
+ }
+}

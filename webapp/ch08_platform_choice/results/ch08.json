@@ -1,0 +1,1155 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "fees_file": "fees_2026-10-10.json",
+  "note": "구독 가격·구독자 수·환율·맥 사용 연수는 이 장의 가정이에요. 율은 공식 문서 값이에요."
+ },
+ "e0_shares": {
+  "KR": {
+   "country": "KR",
+   "months": [
+    "2025-10",
+    "2026-09"
+   ],
+   "last_month": "2026-09",
+   "android_last": 62.06,
+   "ios_last": 37.94,
+   "android_avg": 69.12,
+   "ios_avg": 30.63,
+   "android_range": [
+    62.06,
+    77.19
+   ],
+   "ios_range": [
+    22.47,
+    37.94
+   ]
+  },
+  "US": {
+   "country": "US",
+   "months": [
+    "2025-10",
+    "2026-09"
+   ],
+   "last_month": "2026-09",
+   "android_last": 46.47,
+   "ios_last": 53.51,
+   "android_avg": 40.13,
+   "ios_avg": 59.73,
+   "android_range": [
+    36.77,
+    46.47
+   ],
+   "ios_range": [
+    53.51,
+    63.08
+   ]
+  },
+  "JP": {
+   "country": "JP",
+   "months": [
+    "2025-10",
+    "2026-09"
+   ],
+   "last_month": "2026-09",
+   "android_last": 39.53,
+   "ios_last": 60.46,
+   "android_avg": 38.6,
+   "ios_avg": 61.33,
+   "android_range": [
+    35.04,
+    41.09
+   ],
+   "ios_range": [
+    58.9,
+    64.95
+   ]
+  },
+  "WW": {
+   "country": "WW",
+   "months": [
+    "2025-10",
+    "2026-09"
+   ],
+   "last_month": "2026-09",
+   "android_last": 69.31,
+   "ios_last": 30.66,
+   "android_avg": 69.36,
+   "ios_avg": 30.49,
+   "android_range": [
+    67.37,
+    72.68
+   ],
+   "ios_range": [
+    27.04,
+    32.56
+   ]
+  }
+ },
+ "e1_one_payment": [
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": 0,
+   "pg_fee": 167,
+   "net": 4288,
+   "net_share_of_gross": 0.8751,
+   "unverified": false,
+   "id": "web_pg",
+   "label": "웹 결제(PG 카드)",
+   "store_rate_used": 0.0,
+   "pg_rate_used": 0.034,
+   "sources": [
+    "toss_fee"
+   ]
+  },
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": 668,
+   "pg_fee": 0,
+   "net": 3786,
+   "net_share_of_gross": 0.7727,
+   "unverified": false,
+   "id": "gp_15_tier",
+   "label": "구글 플레이 결제(자동 갱신 구독, 매출과 관계없이 15%)",
+   "store_rate_used": 0.15,
+   "pg_rate_used": 0.0,
+   "sources": [
+    "gp_service_fee"
+   ]
+  },
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": 490,
+   "pg_fee": 167,
+   "net": 3798,
+   "net_share_of_gross": 0.7751,
+   "unverified": false,
+   "id": "gp_alt_billing_kr",
+   "label": "구글 플레이 대체 결제(한국, 15%에서 4% 인하를 4%p로 읽어 11%) + PG",
+   "store_rate_used": 0.11,
+   "pg_rate_used": 0.034,
+   "sources": [
+    "gp_alt_billing_kr",
+    "toss_fee"
+   ]
+  },
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": 1336,
+   "pg_fee": 0,
+   "net": 3118,
+   "net_share_of_gross": 0.6364,
+   "unverified": false,
+   "id": "apple_standard_sub",
+   "label": "애플 IAP 표준(구독, 첫해 30%·1년 넘은 구독자 15%)",
+   "store_rate_used": 0.3,
+   "pg_rate_used": 0.0,
+   "sources": [
+    "apple_subs"
+   ]
+  },
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": 668,
+   "pg_fee": 0,
+   "net": 3786,
+   "net_share_of_gross": 0.7727,
+   "unverified": false,
+   "id": "apple_sbp",
+   "label": "애플 IAP 소규모 사업자 프로그램(15%)",
+   "store_rate_used": 0.15,
+   "pg_rate_used": 0.0,
+   "sources": [
+    "apple_sbp"
+   ]
+  },
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": 1274,
+   "pg_fee": 167,
+   "net": 3014,
+   "net_share_of_gross": 0.6151,
+   "unverified": false,
+   "id": "apple_kr_external",
+   "label": "애플 한국 외부 결제(제3자 결제, 부가세 포함 금액의 26%) + PG",
+   "store_rate_used": 0.26,
+   "pg_rate_used": 0.034,
+   "sources": [
+    "apple_kr_external",
+    "toss_fee"
+   ]
+  },
+  {
+   "gross": 4900,
+   "vat": 445,
+   "base": 4455,
+   "store_fee": null,
+   "pg_fee": null,
+   "net": null,
+   "net_share_of_gross": null,
+   "unverified": true,
+   "id": "gp_kr_after_2026_12_31",
+   "label": "구글 플레이 한국 새 수수료 구조(2026-12-31부터, 결제 수수료 미발표)",
+   "store_rate_used": null,
+   "pg_rate_used": 0.0,
+   "sources": [
+    "gp_new_fee_rollout"
+   ]
+  }
+ ],
+ "e2_monthly": {
+  "gross": 980000,
+  "price": 4900,
+  "subscribers": 200,
+  "share_later_0": [
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 0,
+    "pg_fee": 33320,
+    "net": 857589,
+    "net_share_of_gross": 0.8751,
+    "unverified": false,
+    "id": "web_pg",
+    "label": "웹 결제(PG 카드)",
+    "store_rate_used": 0.0,
+    "pg_rate_used": 0.034,
+    "sources": [
+     "toss_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 133636,
+    "pg_fee": 0,
+    "net": 757273,
+    "net_share_of_gross": 0.7727,
+    "unverified": false,
+    "id": "gp_15_tier",
+    "label": "구글 플레이 결제(자동 갱신 구독, 매출과 관계없이 15%)",
+    "store_rate_used": 0.15,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "gp_service_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 98000,
+    "pg_fee": 33320,
+    "net": 759589,
+    "net_share_of_gross": 0.7751,
+    "unverified": false,
+    "id": "gp_alt_billing_kr",
+    "label": "구글 플레이 대체 결제(한국, 15%에서 4% 인하를 4%p로 읽어 11%) + PG",
+    "store_rate_used": 0.11,
+    "pg_rate_used": 0.034,
+    "sources": [
+     "gp_alt_billing_kr",
+     "toss_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 267273,
+    "pg_fee": 0,
+    "net": 623636,
+    "net_share_of_gross": 0.6364,
+    "unverified": false,
+    "id": "apple_standard_sub",
+    "label": "애플 IAP 표준(구독, 첫해 30%·1년 넘은 구독자 15%)",
+    "store_rate_used": 0.3,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "apple_subs"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 133636,
+    "pg_fee": 0,
+    "net": 757273,
+    "net_share_of_gross": 0.7727,
+    "unverified": false,
+    "id": "apple_sbp",
+    "label": "애플 IAP 소규모 사업자 프로그램(15%)",
+    "store_rate_used": 0.15,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "apple_sbp"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 254800,
+    "pg_fee": 33320,
+    "net": 602789,
+    "net_share_of_gross": 0.6151,
+    "unverified": false,
+    "id": "apple_kr_external",
+    "label": "애플 한국 외부 결제(제3자 결제, 부가세 포함 금액의 26%) + PG",
+    "store_rate_used": 0.26,
+    "pg_rate_used": 0.034,
+    "sources": [
+     "apple_kr_external",
+     "toss_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": null,
+    "pg_fee": null,
+    "net": null,
+    "net_share_of_gross": null,
+    "unverified": true,
+    "id": "gp_kr_after_2026_12_31",
+    "label": "구글 플레이 한국 새 수수료 구조(2026-12-31부터, 결제 수수료 미발표)",
+    "store_rate_used": null,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "gp_new_fee_rollout"
+    ]
+   }
+  ],
+  "share_later_40": [
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 0,
+    "pg_fee": 33320,
+    "net": 857589,
+    "net_share_of_gross": 0.8751,
+    "unverified": false,
+    "id": "web_pg",
+    "label": "웹 결제(PG 카드)",
+    "store_rate_used": 0.0,
+    "pg_rate_used": 0.034,
+    "sources": [
+     "toss_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 133636,
+    "pg_fee": 0,
+    "net": 757273,
+    "net_share_of_gross": 0.7727,
+    "unverified": false,
+    "id": "gp_15_tier",
+    "label": "구글 플레이 결제(자동 갱신 구독, 매출과 관계없이 15%)",
+    "store_rate_used": 0.15,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "gp_service_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 98000,
+    "pg_fee": 33320,
+    "net": 759589,
+    "net_share_of_gross": 0.7751,
+    "unverified": false,
+    "id": "gp_alt_billing_kr",
+    "label": "구글 플레이 대체 결제(한국, 15%에서 4% 인하를 4%p로 읽어 11%) + PG",
+    "store_rate_used": 0.11,
+    "pg_rate_used": 0.034,
+    "sources": [
+     "gp_alt_billing_kr",
+     "toss_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 213818,
+    "pg_fee": 0,
+    "net": 677091,
+    "net_share_of_gross": 0.6909,
+    "unverified": false,
+    "id": "apple_standard_sub",
+    "label": "애플 IAP 표준(구독, 첫해 30%·1년 넘은 구독자 15%)",
+    "store_rate_used": 0.24,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "apple_subs"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 133636,
+    "pg_fee": 0,
+    "net": 757273,
+    "net_share_of_gross": 0.7727,
+    "unverified": false,
+    "id": "apple_sbp",
+    "label": "애플 IAP 소규모 사업자 프로그램(15%)",
+    "store_rate_used": 0.15,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "apple_sbp"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": 254800,
+    "pg_fee": 33320,
+    "net": 602789,
+    "net_share_of_gross": 0.6151,
+    "unverified": false,
+    "id": "apple_kr_external",
+    "label": "애플 한국 외부 결제(제3자 결제, 부가세 포함 금액의 26%) + PG",
+    "store_rate_used": 0.26,
+    "pg_rate_used": 0.034,
+    "sources": [
+     "apple_kr_external",
+     "toss_fee"
+    ]
+   },
+   {
+    "gross": 980000,
+    "vat": 89091,
+    "base": 890909,
+    "store_fee": null,
+    "pg_fee": null,
+    "net": null,
+    "net_share_of_gross": null,
+    "unverified": true,
+    "id": "gp_kr_after_2026_12_31",
+    "label": "구글 플레이 한국 새 수수료 구조(2026-12-31부터, 결제 수수료 미발표)",
+    "store_rate_used": null,
+    "pg_rate_used": 0.0,
+    "sources": [
+     "gp_new_fee_rollout"
+    ]
+   }
+  ]
+ },
+ "e3_fixed": {
+  "web_only": {
+   "items": [
+    {
+     "item": "PG 가입비 + 연관리비",
+     "krw": 330000,
+     "sources": [
+      "toss_fee"
+     ]
+    }
+   ],
+   "first_year_cash": 330000,
+   "per_year_mac_spread": 0,
+   "net_share_used": 0.8751,
+   "payments_to_cover": 77
+  },
+  "android": {
+   "items": [
+    {
+     "item": "Google Play 개발자 등록비(한 번, 25달러를 가정 환율로)",
+     "krw": 35000,
+     "sources": [
+      "google_reg_fee"
+     ]
+    }
+   ],
+   "first_year_cash": 35000,
+   "per_year_mac_spread": 0,
+   "net_share_used": 0.7727,
+   "payments_to_cover": 10
+  },
+  "ios_no_mac": {
+   "items": [
+    {
+     "item": "Apple Developer Program 연회비(99달러를 가정 환율로)",
+     "krw": 138600,
+     "sources": [
+      "apple_dev_fee"
+     ]
+    },
+    {
+     "item": "Mac mini 가장 싼 구성(애플 한국 온라인 스토어 '부터' 가격)",
+     "krw": 1499000,
+     "sources": [
+      "apple_kr_mac_mini"
+     ]
+    }
+   ],
+   "first_year_cash": 1637600,
+   "per_year_mac_spread": 374750,
+   "net_share_used": 0.7727,
+   "payments_to_cover": 433
+  },
+  "ios_with_mac": {
+   "items": [
+    {
+     "item": "Apple Developer Program 연회비(99달러를 가정 환율로)",
+     "krw": 138600,
+     "sources": [
+      "apple_dev_fee"
+     ]
+    }
+   ],
+   "first_year_cash": 138600,
+   "per_year_mac_spread": 0,
+   "net_share_used": 0.7727,
+   "payments_to_cover": 37
+  },
+  "android_and_ios_no_mac": {
+   "items": [
+    {
+     "item": "Apple Developer Program 연회비(99달러를 가정 환율로)",
+     "krw": 138600,
+     "sources": [
+      "apple_dev_fee"
+     ]
+    },
+    {
+     "item": "Mac mini 가장 싼 구성(애플 한국 온라인 스토어 '부터' 가격)",
+     "krw": 1499000,
+     "sources": [
+      "apple_kr_mac_mini"
+     ]
+    },
+    {
+     "item": "Google Play 개발자 등록비(한 번, 25달러를 가정 환율로)",
+     "krw": 35000,
+     "sources": [
+      "google_reg_fee"
+     ]
+    }
+   ],
+   "first_year_cash": 1672600,
+   "per_year_mac_spread": 374750,
+   "net_share_used": 0.7727,
+   "payments_to_cover": 442
+  }
+ },
+ "e4_threshold": {
+  "usd": 1000000,
+  "krw_per_usd": 1400,
+  "krw": 1400000000,
+  "months_at_current_gross": 1571.4
+ },
+ "e5_select": {
+  "cardnews_kr_subscription": {
+   "platforms": [
+    {
+     "platform": "web",
+     "candidate_now": true,
+     "counts": {
+      "충족": 3,
+      "미충족": 0,
+      "확인 필요": 1
+     },
+     "items": [
+      {
+       "item": "설치 없이 주소로 열기",
+       "status": "충족",
+       "why": "브라우저만 있으면 열려요. 스토어 심사를 거치지 않아요",
+       "sources": []
+      },
+      {
+       "item": "개발 장비",
+       "status": "충족",
+       "why": "아무 컴퓨터와 브라우저로 만들고 시험할 수 있어요",
+       "sources": []
+      },
+      {
+       "item": "디지털 상품 결제",
+       "status": "충족",
+       "why": "PG(결제대행사)와 직접 계약해 웹에서 받아요. 스토어 수수료는 없고 PG 수수료·가입비가 있어요",
+       "sources": [
+        "toss_fee"
+       ]
+      },
+      {
+       "item": "푸시 알림",
+       "status": "확인 필요",
+       "why": "안드로이드 크롬은 되고, iPhone은 홈 화면에 추가한 웹앱에서만(iOS 16.4+) 사용자 동작에 이어 권한을 물을 수 있어요",
+       "sources": [
+        "webkit_push_164"
+       ]
+      }
+     ]
+    },
+    {
+     "platform": "android",
+     "candidate_now": true,
+     "counts": {
+      "충족": 5,
+      "미충족": 0,
+      "확인 필요": 1
+     },
+     "items": [
+      {
+       "item": "개발 장비",
+       "status": "충족",
+       "why": "Android Studio는 윈도우·맥·리눅스에서 돌아요(ARM 윈도우는 미지원)",
+       "sources": [
+        "android_studio_req"
+       ]
+      },
+      {
+       "item": "실기기 시험",
+       "status": "충족",
+       "why": "가진 안드로이드 폰으로 시험해요",
+       "sources": []
+      },
+      {
+       "item": "플레이 개발자 계정",
+       "status": "충족",
+       "why": "한 번만 내는 등록비 25달러",
+       "sources": [
+        "google_reg_fee"
+       ]
+      },
+      {
+       "item": "디지털 상품 결제",
+       "status": "충족",
+       "why": "플레이 결제가 기본이에요. 한국 사용자에게는 대체 결제를 함께 열 수 있고 수수료가 4% 인하돼요",
+       "sources": [
+        "gp_payments_policy",
+        "gp_service_fee",
+        "gp_alt_billing_kr",
+        "gp_new_fee_rollout"
+       ]
+      },
+      {
+       "item": "한국 수수료 구조 변경",
+       "status": "확인 필요",
+       "why": "2026-12-31부터 한국에도 새 수수료 구조가 적용되는데, 결제 수수료는 아직 발표되지 않았어요",
+       "sources": [
+        "gp_new_fee_rollout"
+       ]
+      },
+      {
+       "item": "기기 기능",
+       "status": "충족",
+       "why": "네이티브 API 또는 Capacitor 플러그인으로 닿아요",
+       "sources": [
+        "capacitor_plugins"
+       ]
+      }
+     ]
+    },
+    {
+     "platform": "ios",
+     "candidate_now": false,
+     "counts": {
+      "충족": 3,
+      "미충족": 1,
+      "확인 필요": 3
+     },
+     "items": [
+      {
+       "item": "빌드 장비(맥·Xcode)",
+       "status": "미충족",
+       "why": "Xcode 시스템 요구사항에 macOS만 적혀 있어 맥이 필요해요(빌려 쓰는 맥·클라우드 맥은 따로 확인)",
+       "sources": [
+        "apple_xcode_req",
+        "apple_kr_mac_mini"
+       ]
+      },
+      {
+       "item": "실기기 시험",
+       "status": "확인 필요",
+       "why": "시뮬레이터로 시작하고 iPhone을 빌릴 곳을 정해요",
+       "sources": []
+      },
+      {
+       "item": "애플 개발자 계정",
+       "status": "충족",
+       "why": "연 99달러(나라별 현지 통화로 표시)",
+       "sources": [
+        "apple_dev_fee"
+       ]
+      },
+      {
+       "item": "최소 기능 심사(4.2)",
+       "status": "확인 필요",
+       "why": "웹사이트를 감싸기만 한 앱은 걸릴 수 있어요. 6장 참고",
+       "sources": [
+        "apple_42"
+       ]
+      },
+      {
+       "item": "디지털 상품 결제",
+       "status": "충족",
+       "why": "앱 안 결제(IAP)가 기본이에요. 나라마다 외부 결제·링크 규칙이 달라요(한국, 미국, EU)",
+       "sources": [
+        "apple_sbp",
+        "apple_subs",
+        "apple_eu_terms"
+       ]
+      },
+      {
+       "item": "한국 외부 결제",
+       "status": "확인 필요",
+       "why": "제3자 결제를 열면 부가세 포함 금액의 26%에 PG 수수료가 더해져요. 15% 프로그램 회원에게도 26%인지는 문서에 없어요",
+       "sources": [
+        "apple_kr_external",
+        "apple_sbp"
+       ]
+      },
+      {
+       "item": "기기 기능",
+       "status": "충족",
+       "why": "네이티브 API 또는 Capacitor 플러그인으로 닿아요",
+       "sources": [
+        "capacitor_plugins"
+       ]
+      }
+     ]
+    }
+   ],
+   "shares": [
+    {
+     "country": "KR",
+     "months": [
+      "2025-10",
+      "2026-09"
+     ],
+     "last_month": "2026-09",
+     "android_last": 62.06,
+     "ios_last": 37.94,
+     "android_avg": 69.12,
+     "ios_avg": 30.63,
+     "android_range": [
+      62.06,
+      77.19
+     ],
+     "ios_range": [
+      22.47,
+      37.94
+     ]
+    }
+   ]
+  },
+  "event_order_guest_phones": {
+   "platforms": [
+    {
+     "platform": "web",
+     "candidate_now": true,
+     "counts": {
+      "충족": 3,
+      "미충족": 0,
+      "확인 필요": 0
+     },
+     "items": [
+      {
+       "item": "설치 없이 주소로 열기",
+       "status": "충족",
+       "why": "브라우저만 있으면 열려요. 스토어 심사를 거치지 않아요",
+       "sources": []
+      },
+      {
+       "item": "개발 장비",
+       "status": "충족",
+       "why": "아무 컴퓨터와 브라우저로 만들고 시험할 수 있어요",
+       "sources": []
+      },
+      {
+       "item": "실물·현장 결제",
+       "status": "충족",
+       "why": "PG로 받아요",
+       "sources": [
+        "toss_fee"
+       ]
+      }
+     ]
+    },
+    {
+     "platform": "android",
+     "candidate_now": true,
+     "counts": {
+      "충족": 4,
+      "미충족": 0,
+      "확인 필요": 0
+     },
+     "items": [
+      {
+       "item": "개발 장비",
+       "status": "충족",
+       "why": "Android Studio는 윈도우·맥·리눅스에서 돌아요(ARM 윈도우는 미지원)",
+       "sources": [
+        "android_studio_req"
+       ]
+      },
+      {
+       "item": "실기기 시험",
+       "status": "충족",
+       "why": "가진 안드로이드 폰으로 시험해요",
+       "sources": []
+      },
+      {
+       "item": "플레이 개발자 계정",
+       "status": "충족",
+       "why": "한 번만 내는 등록비 25달러",
+       "sources": [
+        "google_reg_fee"
+       ]
+      },
+      {
+       "item": "실물·현장 결제",
+       "status": "충족",
+       "why": "실물 상품·현장 서비스에는 플레이 결제를 쓰면 안 되고, PG로 받아요",
+       "sources": [
+        "gp_payments_policy"
+       ]
+      }
+     ]
+    },
+    {
+     "platform": "ios",
+     "candidate_now": false,
+     "counts": {
+      "충족": 2,
+      "미충족": 1,
+      "확인 필요": 2
+     },
+     "items": [
+      {
+       "item": "빌드 장비(맥·Xcode)",
+       "status": "미충족",
+       "why": "Xcode 시스템 요구사항에 macOS만 적혀 있어 맥이 필요해요(빌려 쓰는 맥·클라우드 맥은 따로 확인)",
+       "sources": [
+        "apple_xcode_req",
+        "apple_kr_mac_mini"
+       ]
+      },
+      {
+       "item": "실기기 시험",
+       "status": "확인 필요",
+       "why": "시뮬레이터로 시작하고 iPhone을 빌릴 곳을 정해요",
+       "sources": []
+      },
+      {
+       "item": "애플 개발자 계정",
+       "status": "충족",
+       "why": "연 99달러(나라별 현지 통화로 표시)",
+       "sources": [
+        "apple_dev_fee"
+       ]
+      },
+      {
+       "item": "최소 기능 심사(4.2)",
+       "status": "확인 필요",
+       "why": "웹사이트를 감싸기만 한 앱은 걸릴 수 있어요. 6장 참고",
+       "sources": [
+        "apple_42"
+       ]
+      },
+      {
+       "item": "실물·현장 결제",
+       "status": "충족",
+       "why": "앱 밖에서 쓰는 실물·서비스는 앱 안 결제가 아닌 방법으로 받아요(3.1.3(e))",
+       "sources": [
+        "apple_313e"
+       ]
+      }
+     ]
+    }
+   ],
+   "shares": [
+    {
+     "country": "KR",
+     "months": [
+      "2025-10",
+      "2026-09"
+     ],
+     "last_month": "2026-09",
+     "android_last": 62.06,
+     "ios_last": 37.94,
+     "android_avg": 69.12,
+     "ios_avg": 30.63,
+     "android_range": [
+      62.06,
+      77.19
+     ],
+     "ios_range": [
+      22.47,
+      37.94
+     ]
+    }
+   ]
+  },
+  "cardnews_us_subscription_with_mac": {
+   "platforms": [
+    {
+     "platform": "web",
+     "candidate_now": true,
+     "counts": {
+      "충족": 3,
+      "미충족": 0,
+      "확인 필요": 1
+     },
+     "items": [
+      {
+       "item": "설치 없이 주소로 열기",
+       "status": "충족",
+       "why": "브라우저만 있으면 열려요. 스토어 심사를 거치지 않아요",
+       "sources": []
+      },
+      {
+       "item": "개발 장비",
+       "status": "충족",
+       "why": "아무 컴퓨터와 브라우저로 만들고 시험할 수 있어요",
+       "sources": []
+      },
+      {
+       "item": "디지털 상품 결제",
+       "status": "충족",
+       "why": "PG(결제대행사)와 직접 계약해 웹에서 받아요. 스토어 수수료는 없고 PG 수수료·가입비가 있어요",
+       "sources": [
+        "toss_fee"
+       ]
+      },
+      {
+       "item": "푸시 알림",
+       "status": "확인 필요",
+       "why": "안드로이드 크롬은 되고, iPhone은 홈 화면에 추가한 웹앱에서만(iOS 16.4+) 사용자 동작에 이어 권한을 물을 수 있어요",
+       "sources": [
+        "webkit_push_164"
+       ]
+      }
+     ]
+    },
+    {
+     "platform": "android",
+     "candidate_now": true,
+     "counts": {
+      "충족": 4,
+      "미충족": 0,
+      "확인 필요": 3
+     },
+     "items": [
+      {
+       "item": "개발 장비",
+       "status": "충족",
+       "why": "Android Studio는 윈도우·맥·리눅스에서 돌아요(ARM 윈도우는 미지원)",
+       "sources": [
+        "android_studio_req"
+       ]
+      },
+      {
+       "item": "실기기 시험",
+       "status": "확인 필요",
+       "why": "에뮬레이터로 시작하고 실기기를 빌릴 곳을 정해요",
+       "sources": []
+      },
+      {
+       "item": "플레이 개발자 계정",
+       "status": "충족",
+       "why": "한 번만 내는 등록비 25달러",
+       "sources": [
+        "google_reg_fee"
+       ]
+      },
+      {
+       "item": "디지털 상품 결제",
+       "status": "충족",
+       "why": "플레이 결제가 기본이에요. 한국 사용자에게는 대체 결제를 함께 열 수 있고 수수료가 4% 인하돼요",
+       "sources": [
+        "gp_payments_policy",
+        "gp_service_fee",
+        "gp_alt_billing_kr",
+        "gp_new_fee_rollout"
+       ]
+      },
+      {
+       "item": "한국 수수료 구조 변경",
+       "status": "확인 필요",
+       "why": "2026-12-31부터 한국에도 새 수수료 구조가 적용되는데, 결제 수수료는 아직 발표되지 않았어요",
+       "sources": [
+        "gp_new_fee_rollout"
+       ]
+      },
+      {
+       "item": "미국 외부 링크·대체 결제",
+       "status": "확인 필요",
+       "why": "미국은 2026-06-30부터 새 구조이고, 외부 링크·대체 결제 프로그램도 2026-10-01부터 수수료를 내요",
+       "sources": [
+        "gp_service_fee",
+        "gp_us_programs"
+       ]
+      },
+      {
+       "item": "기기 기능",
+       "status": "충족",
+       "why": "네이티브 API 또는 Capacitor 플러그인으로 닿아요",
+       "sources": [
+        "capacitor_plugins"
+       ]
+      }
+     ]
+    },
+    {
+     "platform": "ios",
+     "candidate_now": true,
+     "counts": {
+      "충족": 5,
+      "미충족": 0,
+      "확인 필요": 3
+     },
+     "items": [
+      {
+       "item": "빌드 장비(맥·Xcode)",
+       "status": "충족",
+       "why": "Xcode는 macOS에서 돌아요",
+       "sources": [
+        "apple_xcode_req"
+       ]
+      },
+      {
+       "item": "실기기 시험",
+       "status": "충족",
+       "why": "가진 iPhone으로 시험해요",
+       "sources": []
+      },
+      {
+       "item": "애플 개발자 계정",
+       "status": "충족",
+       "why": "연 99달러(나라별 현지 통화로 표시)",
+       "sources": [
+        "apple_dev_fee"
+       ]
+      },
+      {
+       "item": "최소 기능 심사(4.2)",
+       "status": "확인 필요",
+       "why": "웹사이트를 감싸기만 한 앱은 걸릴 수 있어요. 6장 참고",
+       "sources": [
+        "apple_42"
+       ]
+      },
+      {
+       "item": "디지털 상품 결제",
+       "status": "충족",
+       "why": "앱 안 결제(IAP)가 기본이에요. 나라마다 외부 결제·링크 규칙이 달라요(한국, 미국, EU)",
+       "sources": [
+        "apple_sbp",
+        "apple_subs",
+        "apple_eu_terms"
+       ]
+      },
+      {
+       "item": "한국 외부 결제",
+       "status": "확인 필요",
+       "why": "제3자 결제를 열면 부가세 포함 금액의 26%에 PG 수수료가 더해져요. 15% 프로그램 회원에게도 26%인지는 문서에 없어요",
+       "sources": [
+        "apple_kr_external",
+        "apple_sbp"
+       ]
+      },
+      {
+       "item": "미국 외부 링크 수수료",
+       "status": "확인 필요",
+       "why": "미국 앱은 외부 링크를 넣을 수 있지만, 링크 구매에 붙을 수수료는 법원 절차가 끝나지 않아 정해지지 않았어요",
+       "sources": [
+        "apple_us_links",
+        "epic_apple_9th",
+        "scotus_25_1311"
+       ]
+      },
+      {
+       "item": "기기 기능",
+       "status": "충족",
+       "why": "네이티브 API 또는 Capacitor 플러그인으로 닿아요",
+       "sources": [
+        "capacitor_plugins"
+       ]
+      }
+     ]
+    }
+   ],
+   "shares": [
+    {
+     "country": "US",
+     "months": [
+      "2025-10",
+      "2026-09"
+     ],
+     "last_month": "2026-09",
+     "android_last": 46.47,
+     "ios_last": 53.51,
+     "android_avg": 40.13,
+     "ios_avg": 59.73,
+     "android_range": [
+      36.77,
+      46.47
+     ],
+     "ios_range": [
+      53.51,
+      63.08
+     ]
+    },
+    {
+     "country": "KR",
+     "months": [
+      "2025-10",
+      "2026-09"
+     ],
+     "last_month": "2026-09",
+     "android_last": 62.06,
+     "ios_last": 37.94,
+     "android_avg": 69.12,
+     "ios_avg": 30.63,
+     "android_range": [
+      62.06,
+      77.19
+     ],
+     "ios_range": [
+      22.47,
+      37.94
+     ]
+    }
+   ]
+  }
+ },
+ "e6_order": {
+  "combinations": 64,
+  "distinct_orders": [
+   [
+    "web",
+    "android",
+    "ios"
+   ]
+  ]
+ }
+}

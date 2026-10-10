@@ -1,0 +1,317 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "server": "http.server (ThreadingHTTPServer, 127.0.0.1)"
+ },
+ "e0_first_open": {
+  "open_files": 8,
+  "open_bytes": 7659,
+  "open_gzip_bytes": 2799,
+  "by_kind": {
+   "document": {
+    "files": 1,
+    "bytes": 1079
+   },
+   "img": {
+    "files": 2,
+    "bytes": 3559
+   },
+   "css": {
+    "files": 1,
+    "bytes": 1027
+   },
+   "font": {
+    "files": 1,
+    "bytes": 84
+   },
+   "js": {
+    "files": 1,
+    "bytes": 1487
+   },
+   "json": {
+    "files": 2,
+    "bytes": 423
+   }
+  },
+  "all_requests": 10,
+  "all_bytes": 8405
+ },
+ "e1_requests": [
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/",
+   "kind": "document",
+   "initiator": "주소창",
+   "status": 200,
+   "bytes": 1079,
+   "gzip_bytes": 658,
+   "cache_control": "no-cache"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/images/logo.svg",
+   "kind": "img",
+   "initiator": "HTML",
+   "status": 200,
+   "bytes": 360,
+   "gzip_bytes": 186,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/style.css",
+   "kind": "css",
+   "initiator": "HTML",
+   "status": 200,
+   "bytes": 1027,
+   "gzip_bytes": 598,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/fonts/card-sans.woff2",
+   "kind": "font",
+   "initiator": "CSS",
+   "status": 200,
+   "bytes": 84,
+   "gzip_bytes": 107,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/images/bg-dots.svg",
+   "kind": "img",
+   "initiator": "CSS",
+   "status": 200,
+   "bytes": 3199,
+   "gzip_bytes": 313,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/app.min.js",
+   "kind": "js",
+   "initiator": "HTML",
+   "status": 200,
+   "bytes": 1487,
+   "gzip_bytes": 636,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/templates/index.json",
+   "kind": "json",
+   "initiator": "JS fetch",
+   "status": 200,
+   "bytes": 168,
+   "gzip_bytes": 119,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "open",
+   "method": "GET",
+   "path": "/templates/notice.json",
+   "kind": "json",
+   "initiator": "JS fetch",
+   "status": 200,
+   "bytes": 255,
+   "gzip_bytes": 182,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "change_template",
+   "method": "GET",
+   "path": "/templates/quote.json",
+   "kind": "json",
+   "initiator": "JS fetch",
+   "status": 200,
+   "bytes": 255,
+   "gzip_bytes": 180,
+   "cache_control": "public, max-age=86400"
+  },
+  {
+   "step": "make_background",
+   "method": "POST",
+   "path": "/api/generate-image",
+   "kind": "api",
+   "initiator": "JS fetch",
+   "status": 200,
+   "bytes": 491,
+   "gzip_bytes": 215,
+   "cache_control": "no-store"
+  }
+ ],
+ "e2_inventory": [
+  {
+   "file": "public/app.min.js",
+   "bytes": 1487,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/app.min.js.map",
+   "bytes": 3286,
+   "where": "공개 폴더에 있지만 이번 방문에서는 요청되지 않음",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/fonts/card-sans.woff2",
+   "bytes": 84,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/images/bg-dots.svg",
+   "bytes": 3199,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/images/logo.svg",
+   "bytes": 360,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/index.html",
+   "bytes": 1079,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/style.css",
+   "bytes": 1027,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/templates/index.json",
+   "bytes": 168,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/templates/notice.json",
+   "bytes": 255,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "public/templates/quote.json",
+   "bytes": 255,
+   "where": "내려감",
+   "where_with_devtools_maps": "내려감"
+  },
+  {
+   "file": "server_only/ai_config.json",
+   "bytes": 219,
+   "where": "서버에만 있음",
+   "where_with_devtools_maps": "서버에만 있음"
+  },
+  {
+   "file": "server_only/prompt_rules.txt",
+   "bytes": 311,
+   "where": "서버에만 있음",
+   "where_with_devtools_maps": "서버에만 있음"
+  },
+  {
+   "file": "server_only/templates_master/notice_master_1080.svg",
+   "bytes": 42640,
+   "where": "서버에만 있음",
+   "where_with_devtools_maps": "서버에만 있음"
+  },
+  {
+   "file": "src/app.js",
+   "bytes": 2715,
+   "where": "서버에만 있음",
+   "where_with_devtools_maps": "지도 파일 안에 내용이 들어 있어 내려감"
+  }
+ ],
+ "e2_summary": {
+  "downloaded": 9,
+  "via_source_map_with_devtools": 1,
+  "public_not_requested": 1,
+  "server_only": 4,
+  "server_only_bytes": 45885
+ },
+ "e3_server_only_markers_in_downloads": {
+  "가짜 AI 키": 0,
+  "이미지 생성 지시문": 0,
+  "원본 템플릿의 작업 메모": 0,
+  "하루 사용 한도 설정 이름": 0
+ },
+ "e4_minify": {
+  "original_bytes": 2715,
+  "min_bytes": 1487,
+  "min_ratio": 0.5477,
+  "original_gzip": 1196,
+  "min_gzip": 636,
+  "comments_original": 4,
+  "comments_min": 1,
+  "comments_min_text": [
+   "//# sourceMappingURL=app.min.js.map"
+  ],
+  "renamed": 20,
+  "path_strings_original": [
+   "\"templates/index.json\"",
+   "\"/api/generate-image\""
+  ],
+  "path_strings_kept_in_min": [
+   "\"templates/index.json\"",
+   "\"/api/generate-image\""
+  ],
+  "public_file_matches_build": true
+ },
+ "e5_source_maps": {
+  "maps_served": {
+   "status": 200,
+   "bytes": 3286,
+   "original_recovered": true,
+   "comments_recovered": 4,
+   "names_listed": 20
+  },
+  "maps_hidden": {
+   "status": 404
+  }
+ },
+ "e6_cache": {
+  "stored": [
+   "/",
+   "/images/logo.svg",
+   "/style.css",
+   "/fonts/card-sans.woff2",
+   "/images/bg-dots.svg",
+   "/app.min.js",
+   "/templates/index.json",
+   "/templates/notice.json",
+   "/templates/quote.json"
+  ],
+  "stored_bytes": 7914,
+  "ask_server_again": [
+   "/"
+  ],
+  "not_stored": [
+   "/api/generate-image"
+  ]
+ },
+ "e7_outside_public": {
+  "/server_only/ai_config.json": 404,
+  "/src/app.js": 404,
+  "/templates/": 404,
+  "/images/": 404,
+  "/api/generate-image": 404
+ },
+ "e8_crosscheck": {
+  "checked": 9,
+  "mismatches": 0
+ }
+}

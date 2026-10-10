@@ -1,0 +1,493 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "note": "실제 APK를 만들지 않는 모형 값이에요. 키·비밀번호·주소는 모두 가짜예요."
+ },
+ "e0_files": {
+  "cardnews_good": {
+   "AndroidManifest.xml": {
+    "bytes": 721,
+    "lines": 22
+   },
+   "app_features.json": {
+    "bytes": 359,
+    "lines": 7
+   },
+   "build.gradle": {
+    "bytes": 916,
+    "lines": 29
+   },
+   "capacitor.config.json": {
+    "bytes": 239,
+    "lines": 12
+   },
+   "gitignore.txt": {
+    "bytes": 182,
+    "lines": 6
+   },
+   "keystore.properties.example": {
+    "bytes": 291,
+    "lines": 5
+   },
+   "variables.gradle": {
+    "bytes": 84,
+    "lines": 5
+   }
+  },
+  "cardnews_mistake": {
+   "AndroidManifest.xml": {
+    "bytes": 1094,
+    "lines": 27
+   },
+   "app_features.json": {
+    "bytes": 324,
+    "lines": 7
+   },
+   "build.gradle": {
+    "bytes": 605,
+    "lines": 23
+   },
+   "capacitor.config.json": {
+    "bytes": 260,
+    "lines": 13
+   },
+   "gitignore.txt": {
+    "bytes": 145,
+    "lines": 3
+   },
+   "keystore.properties": {
+    "bytes": 115,
+    "lines": 4
+   },
+   "release.jks": {
+    "bytes": 121,
+    "lines": 1
+   },
+   "variables.gradle": {
+    "bytes": 84,
+    "lines": 5
+   }
+  }
+ },
+ "e1_checker": {
+  "cardnews_good": {
+   "blocking": 0,
+   "review": 0,
+   "rules": [],
+   "findings": [],
+   "gradle": {
+    "applicationId": "invalid.demo.cardnews",
+    "versionCode": 10001,
+    "versionName": "1.0.1",
+    "minSdkVersion": 24,
+    "targetSdkVersion": 36,
+    "password_literals": 0
+   },
+   "appId": "invalid.demo.cardnews"
+  },
+  "cardnews_mistake": {
+   "blocking": 12,
+   "review": 7,
+   "rules": [
+    "app_id_format",
+    "server_url",
+    "server_cleartext",
+    "mixed_content",
+    "webview_debug",
+    "manifest_cleartext",
+    "manifest_debuggable",
+    "activity_exported",
+    "permission_unused",
+    "permission_unused",
+    "permission_unused",
+    "permission_unused",
+    "permission_unused",
+    "min_sdk",
+    "version_code_rule",
+    "password_in_gradle",
+    "properties_not_ignored",
+    "keystore_in_repo",
+    "key_validity"
+   ],
+   "findings": [
+    {
+     "rule": "app_id_format",
+     "level": "막음",
+     "file": "capacitor.config.json",
+     "line": 2,
+     "message": "appId 'cardnews-app'가 Application ID 규칙(두 토막 이상, 글자로 시작, 글자·숫자·밑줄)에 맞지 않아요",
+     "source": "android_app_id"
+    },
+    {
+     "rule": "server_url",
+     "level": "막음",
+     "file": "capacitor.config.json",
+     "line": 6,
+     "message": "server.url(http://192.168.0.10:5173)은 개발 중 라이브 리로드용이에요. 릴리스에서는 지워요",
+     "source": "cap_server_url"
+    },
+    {
+     "rule": "server_cleartext",
+     "level": "막음",
+     "file": "capacitor.config.json",
+     "line": 7,
+     "message": "server.cleartext: true는 암호화 안 된 HTTP를 허용해요. 운영용이 아니에요",
+     "source": "cap_server_cleartext"
+    },
+    {
+     "rule": "mixed_content",
+     "level": "막음",
+     "file": "capacitor.config.json",
+     "line": 10,
+     "message": "allowMixedContent: true는 https 화면 안에서 http 자원을 섞어 받게 해요",
+     "source": "cap_mixed_content"
+    },
+    {
+     "rule": "webview_debug",
+     "level": "막음",
+     "file": "capacitor.config.json",
+     "line": 11,
+     "message": "webContentsDebuggingEnabled: true면 릴리스 앱의 WebView를 개발자 도구로 열 수 있어요",
+     "source": "cap_webview_debug"
+    },
+    {
+     "rule": "manifest_cleartext",
+     "level": "막음",
+     "file": "AndroidManifest.xml",
+     "line": 8,
+     "message": "usesCleartextTraffic=\"true\"는 Android 9부터 꺼져 있던 HTTP를 다시 켜요",
+     "source": "android_cleartext_default"
+    },
+    {
+     "rule": "manifest_debuggable",
+     "level": "막음",
+     "file": "AndroidManifest.xml",
+     "line": 7,
+     "message": "debuggable을 직접 적지 말아요. 개발 빌드에는 도구가 알아서 붙여요",
+     "source": "android_debuggable"
+    },
+    {
+     "rule": "activity_exported",
+     "level": "막음",
+     "file": "AndroidManifest.xml",
+     "line": 11,
+     "message": "intent-filter가 있는 .MainActivity에 android:exported가 없어요",
+     "source": "android_exported"
+    },
+    {
+     "rule": "permission_unused",
+     "level": "확인",
+     "file": "AndroidManifest.xml",
+     "line": 22,
+     "message": "android.permission.CAMERA: 쓰는 플러그인(@capacitor/camera, @capacitor/filesystem)의 문서가 요구하지 않는 권한이에요",
+     "source": "cap_camera_perms"
+    },
+    {
+     "rule": "permission_unused",
+     "level": "확인",
+     "file": "AndroidManifest.xml",
+     "line": 23,
+     "message": "android.permission.READ_EXTERNAL_STORAGE: 갤러리 저장도, Documents·ExternalStorage도 안 쓰는데 넣었어요",
+     "source": "cap_camera_perms"
+    },
+    {
+     "rule": "permission_unused",
+     "level": "확인",
+     "file": "AndroidManifest.xml",
+     "line": 24,
+     "message": "android.permission.WRITE_EXTERNAL_STORAGE: 갤러리 저장도, Documents·ExternalStorage도 안 쓰는데 넣었어요",
+     "source": "cap_camera_perms"
+    },
+    {
+     "rule": "permission_unused",
+     "level": "확인",
+     "file": "AndroidManifest.xml",
+     "line": 25,
+     "message": "android.permission.ACCESS_FINE_LOCATION: 쓰는 플러그인(@capacitor/camera, @capacitor/filesystem)의 문서가 요구하지 않는 권한이에요",
+     "source": "cap_camera_perms"
+    },
+    {
+     "rule": "permission_unused",
+     "level": "확인",
+     "file": "AndroidManifest.xml",
+     "line": 26,
+     "message": "android.permission.RECORD_AUDIO: 쓰는 플러그인(@capacitor/camera, @capacitor/filesystem)의 문서가 요구하지 않는 권한이에요",
+     "source": "cap_camera_perms"
+    },
+    {
+     "rule": "min_sdk",
+     "level": "막음",
+     "file": "variables.gradle",
+     "line": 2,
+     "message": "minSdkVersion 22: Capacitor 8은 24 이상이에요",
+     "source": "cap8_sdk"
+    },
+    {
+     "rule": "version_code_rule",
+     "level": "확인",
+     "file": "build.gradle",
+     "line": 7,
+     "message": "versionName 1.0.1이면 예시 규칙으로는 versionCode 10001인데 1예요",
+     "source": "android_versioncode"
+    },
+    {
+     "rule": "password_in_gradle",
+     "level": "막음",
+     "file": "build.gradle",
+     "line": 13,
+     "message": "build.gradle에 비밀번호 글자 2개가 그대로 있어요. keystore.properties로 빼요",
+     "source": "android_no_password_in_gradle"
+    },
+    {
+     "rule": "properties_not_ignored",
+     "level": "막음",
+     "file": "keystore.properties",
+     "line": null,
+     "message": "keystore.properties가 .gitignore에 없어요",
+     "source": "android_no_password_in_gradle"
+    },
+    {
+     "rule": "keystore_in_repo",
+     "level": "막음",
+     "file": "release.jks",
+     "line": null,
+     "message": "키 저장소 파일이 프로젝트 폴더 안에 있어요. 저장소 밖으로 옮기고 백업해요",
+     "source": "android_key_lost"
+    },
+    {
+     "rule": "key_validity",
+     "level": "확인",
+     "file": "app_features.json",
+     "line": null,
+     "message": "키 유효기간 3650일은 10.0년이에요. 25년 이상을 권해요",
+     "source": "android_key_validity"
+    }
+   ],
+   "gradle": {
+    "applicationId": "cardnews-app",
+    "versionCode": 1,
+    "versionName": "1.0.1",
+    "minSdkVersion": 22,
+    "targetSdkVersion": 36,
+    "password_literals": 2
+   },
+   "appId": "cardnews-app"
+  }
+ },
+ "e2_permissions": {
+  "cardnews_good": {
+   "declared": [
+    "INTERNET"
+   ],
+   "declared_count": 1,
+   "flagged": 0,
+   "kept": 1
+  },
+  "cardnews_mistake": {
+   "declared": [
+    "INTERNET",
+    "CAMERA",
+    "READ_EXTERNAL_STORAGE",
+    "WRITE_EXTERNAL_STORAGE",
+    "ACCESS_FINE_LOCATION",
+    "RECORD_AUDIO"
+   ],
+   "declared_count": 6,
+   "flagged": 5,
+   "kept": 1
+  }
+ },
+ "e3_signing": {
+  "cardnews_good": {
+   "machine_pass": 6,
+   "machine_total": 6,
+   "human_total": 4,
+   "failed": []
+  },
+  "cardnews_mistake": {
+   "machine_pass": 0,
+   "machine_total": 6,
+   "human_total": 4,
+   "failed": [
+    "store_outside_repo",
+    "properties_ignored",
+    "no_password_in_gradle",
+    "validity_25y",
+    "release_not_debuggable",
+    "version_code_ok"
+   ]
+  },
+  "keytool_years": {
+   "10000": 27.4,
+   "3650": 10.0,
+   "days_for_25y": 9131
+  }
+ },
+ "e4_versions": {
+  "rule": "큰 변경 × 10000 + 중간 변경 × 100 + 작은 수정",
+  "examples": {
+   "1.0.0": 10000,
+   "1.0.1": 10001,
+   "1.0.3": 10003,
+   "1.1.0": 10100,
+   "1.2.3": 10203,
+   "2.0.0": 20000
+  },
+  "plan_ok": [
+   10000,
+   10001,
+   10003,
+   10100
+  ],
+  "plan_ok_first_break": null,
+  "plan_bad": [
+   10000,
+   10001,
+   10000,
+   10003
+  ],
+  "plan_bad_first_break": 2,
+  "play_max": 2100000000,
+  "max_major_under_play": 210000
+ },
+ "e5_event_fleet": {
+  "package": "invalid.demo.eventorder",
+  "tablets": 8,
+  "steps": [
+   {
+    "step": "S1 행사 전날 첫 설치",
+    "version_name": "1.0.0",
+    "version_code": 10000,
+    "cert": "DEMO-e03892e377a804fc",
+    "devices": 8,
+    "result": {
+     "installed": 8
+    }
+   },
+   {
+    "step": "S1b 창고 태블릿에도 설치",
+    "version_name": "1.0.0",
+    "version_code": 10000,
+    "cert": "DEMO-e03892e377a804fc",
+    "devices": 1,
+    "result": {
+     "refused_min_sdk": 1
+    }
+   },
+   {
+    "step": "S2 오타 고친 1.0.1",
+    "version_name": "1.0.1",
+    "version_code": 10001,
+    "cert": "DEMO-e03892e377a804fc",
+    "devices": 8,
+    "result": {
+     "updated": 8
+    }
+   },
+   {
+    "step": "S3 팀원 노트북 디버그 빌드 1.0.2",
+    "version_name": "1.0.2",
+    "version_code": 10002,
+    "cert": "DEMO-0086bbcf745d7778",
+    "devices": 8,
+    "result": {
+     "refused_signature": 8
+    }
+   },
+   {
+    "step": "S4 되돌리려고 1.0.0 다시 빌드",
+    "version_name": "1.0.0",
+    "version_code": 10000,
+    "cert": "DEMO-e03892e377a804fc",
+    "devices": 8,
+    "result": {
+     "refused_downgrade": 8
+    }
+   },
+   {
+    "step": "S4b 옛 코드를 1.0.3으로 올려 배포",
+    "version_name": "1.0.3",
+    "version_code": 10003,
+    "cert": "DEMO-e03892e377a804fc",
+    "devices": 8,
+    "result": {
+     "updated": 8
+    }
+   },
+   {
+    "step": "S4c 번호 안 올리고 다시 배포",
+    "version_name": "1.0.3",
+    "version_code": 10003,
+    "cert": "DEMO-e03892e377a804fc",
+    "devices": 8,
+    "result": {
+     "unknown_same_code": 8
+    }
+   },
+   {
+    "step": "S5 키를 잃고 새 키로 1.1.0",
+    "version_name": "1.1.0",
+    "version_code": 10100,
+    "cert": "DEMO-c434a4d04d313b6b",
+    "devices": 8,
+    "result": {
+     "refused_signature": 8
+    }
+   },
+   {
+    "step": "S5b 모두 지우고 새 키로 다시 설치",
+    "version_name": "1.1.0",
+    "version_code": 10100,
+    "cert": "DEMO-c434a4d04d313b6b",
+    "devices": 8,
+    "result": {
+     "installed": 8
+    }
+   }
+  ],
+  "data_items_lost_on_reinstall": 8,
+  "tablets_with_table_no_after_reinstall": 0,
+  "manual_touches_for_key_loss": 16
+ },
+ "e6_hash": {
+  "bytes": 50,
+  "sha256_original": "d2e6455813ea05f06ae227aaa268a5c4b01397c52c8f7cad1042f6aac3516d15",
+  "sha256_one_char_changed": "a5afc2fe01804963569a6f49eec16e7bc6a172f9dcf0744548576fbcac9589ff",
+  "hex_digits_same_position": 2,
+  "hex_digits": 64
+ },
+ "e7_change_table": [
+  {
+   "change": "메뉴 이름·가격(서버 DB의 행)",
+   "new_apk": false,
+   "why": "앱이 실행 중에 서버에서 읽어 오는 데이터",
+   "source": "[해석]"
+  },
+  {
+   "change": "화면 글자·CSS·JS(webDir에 묶은 웹 파일)",
+   "new_apk": true,
+   "why": "APK 안에 들어 있는 파일. 외부 라이브 업데이트 서비스를 쓰면 예외가 생길 수 있음",
+   "source": "cap_config_core, play_self_update_policy"
+  },
+  {
+   "change": "capacitor.config.json",
+   "new_apk": true,
+   "why": "빌드할 때 네이티브 프로젝트로 들어감",
+   "source": "[해석]"
+  },
+  {
+   "change": "새 플러그인·권한",
+   "new_apk": true,
+   "why": "네이티브 코드와 AndroidManifest가 바뀜",
+   "source": "cap_camera_perms"
+  },
+  {
+   "change": "서명 키",
+   "new_apk": true,
+   "why": "인증서가 다르면 업데이트가 안 되어 삭제 후 재설치",
+   "source": "android_signing_required"
+  }
+ ]
+}

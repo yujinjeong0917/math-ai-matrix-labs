@@ -1,0 +1,13 @@
+{
+  "name": "카드뉴스 편집기",
+  "start_url": "/",
+  "display": "standalone",
+  "prefer_related_applications": true,
+  "related_applications": [
+    {"platform": "play", "id": "com.example.cardnews"}
+  ],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

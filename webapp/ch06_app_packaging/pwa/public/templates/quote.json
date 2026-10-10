@@ -1,0 +1,8 @@
+{
+ "id": "quote",
+ "name": "인용형",
+ "size": [320, 320],
+ "background": "images/bg-dots.svg",
+ "title": {"x": 24, "y": 200, "size": 18, "color": "#555555", "maxChars": 24},
+ "body": {"x": 24, "y": 40, "size": 22, "color": "#222222", "maxChars": 60}
+}

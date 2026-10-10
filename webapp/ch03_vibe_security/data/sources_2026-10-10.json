@@ -1,0 +1,148 @@
+{
+ "checked": "2026-10-10",
+ "note": "이 장의 정책·점검 항목·사례 숫자는 아래 문서에서 확인했어요. quote는 원문 페이지를 받아 글자 그대로 있는지 확인한 문장이에요. 문서가 바뀌면 날짜가 다른 새 파일을 만들어요.",
+ "facts": [
+  {
+   "id": "supabase_rls_no_policy",
+   "claim": "RLS를 켜면 정책을 만들기 전까지 공개용 키로는 API에서 아무 데이터도 보이지 않는다",
+   "quote": "Once RLS is enabled, no data is accessible through the API when using a publishable key, until you create policies.",
+   "url": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "supabase_exposed_schema",
+   "claim": "노출된 스키마의 표에 RLS가 없으면 권한을 받은 모든 역할이 읽고 쓴다",
+   "quote": "A table in an exposed schema without RLS is readable and writable by any role with a grant on it. Enable RLS on every table in an exposed schema.",
+   "url": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "supabase_using_with_check",
+   "claim": "using은 고칠 수 있는 기존 행을, with check는 결과 행의 모양을 정한다",
+   "quote": "The `using` clause decides which existing rows can be updated. The `with check` clause decides what the resulting row is allowed to look like, which stops a user from reassigning `user_id` to someone else.",
+   "url": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "supabase_secret_bypassrls",
+   "claim": "비밀 키는 bypassrls 속성이 있는 service_role로 접근한다",
+   "quote": "has the `bypassrls` attribute",
+   "url": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "supabase_grants",
+   "claim": "권한(grant)은 역할이 명령을 쓸 수 있는지, 정책은 어느 줄에 닿는지를 정한다. 정책을 더해도 이미 준 권한은 거둬지지 않는다",
+   "quote": "Adding policies doesn't take those grants back.",
+   "url": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "supabase_lint_0013",
+   "claim": "Supabase 점검 도구 0013: public 표에 RLS가 꺼져 있으면 경고",
+   "quote": "Publicly exposing full CRUD to the internet is a critically unsafe configuration.",
+   "url": "https://supabase.com/docs/guides/database/database-advisors?queryGroups=lint&lint=0013_rls_disabled_in_public",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "supabase_security_advisor",
+   "claim": "Studio(대시보드)의 Security Advisor에서 점검을 돌릴 수 있다",
+   "url": "https://supabase.com/docs/guides/database/database-advisors?queryGroups=lint&lint=0013_rls_disabled_in_public",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "postgres_default_deny",
+   "claim": "RLS를 켰는데 맞는 정책이 없으면 default deny, 허용 정책끼리는 OR",
+   "quote": "If row-level security is enabled for a table, but no applicable policies exist, a “default deny” policy is assumed, so that no rows will be visible or updatable.",
+   "url": "https://www.postgresql.org/docs/current/sql-createpolicy.html",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "owasp_top10_2025_a01",
+   "claim": "OWASP Top 10:2025 A01 Broken Access Control: URL 추측으로 권한 페이지 접근, 기본 거부, 서버 쪽 판정",
+   "quote": "Access control is only effective when implemented in trusted server-side code or serverless APIs, where the attacker cannot modify the access control check or metadata.",
+   "url": "https://top10.owasp.org/2025/A01_2025-Broken_Access_Control/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "owasp_file_upload",
+   "claim": "확장자 허용 목록, Content-Type 불신, 이름 바꾸기, 크기 제한, 웹 루트 밖 저장. 서명 검사만으로는 부족",
+   "quote": "This should not be used on its own, as bypassing it is pretty common and easy.",
+   "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "whatwg_mimesniff",
+   "claim": "PNG·JPEG·WebP의 앞부분 바이트 패턴",
+   "url": "https://mimesniff.spec.whatwg.org/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "owasp_api4_2023",
+   "claim": "API4:2023 Unrestricted Resource Consumption: 사용량 제한, 외부 서비스 비용 한도와 청구 알림",
+   "quote": "Configure spending limits for all service providers/API integrations. When setting spending limits is not possible, billing alerts should be configured instead.",
+   "url": "https://api-security.owasp.org/editions/2023/en/0xa4-unrestricted-resource-consumption",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "rfc6585_429",
+   "claim": "429 Too Many Requests, Retry-After를 붙일 수 있고 캐시에 저장하면 안 된다",
+   "quote": "The 429 status code indicates that the user has sent too many requests in a given amount of time (\"rate limiting\").",
+   "url": "https://www.rfc-editor.org/rfc/rfc6585#section-4",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "aws_token_bucket",
+   "claim": "토큰 버킷: 요청 하나가 토큰 하나, rate는 초당 채우는 토큰 수, burst는 버킷 용량",
+   "quote": "API Gateway throttles requests to your API using the token bucket algorithm, where a token counts for a request.",
+   "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "cve_2025_48757",
+   "claim": "AI 앱 생성 서비스로 만든 사이트의 RLS 정책 부족 CVE. 공급사가 다툼(disputed), NVD 상태 Deferred",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-48757",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "palmer_statement",
+   "claim": "연구자가 밝힌 수치: 1,645개 프로젝트 중 170개(약 10.3%), 303개 엔드포인트",
+   "quote": "identified 303 endpoints across 170 projects (approximately 10.3% of the 1645 analyzed) with inadequate RLS settings",
+   "url": "https://mattpalmer.io/posts/statement-on-CVE-2025-48757/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "escape_vibe_apps",
+   "claim": "회사가 밝힌 수치: 공개 앱 5,600개 이상에서 취약점 2,000개 이상, 노출된 비밀 400개 이상, 개인정보 175건. 수동 점검이라 하한 추정",
+   "quote": "the results presented here are lower-bound estimates",
+   "url": "https://escape.tech/blog/methodology-how-we-discovered-vulnerabilities-apps-built-with-vibe-coding/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "veracode_2025",
+   "claim": "회사가 밝힌 수치: LLM이 만든 코드 표본의 45%가 보안 시험에 실패",
+   "quote": "45% of code samples failed security tests and introduced OWASP Top 10 security vulnerabilities into the code.",
+   "url": "https://www.veracode.com/blog/genai-code-security-report/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "pearce_2022",
+   "claim": "Copilot이 만든 1,689개 프로그램 중 약 40%가 취약(89개 시나리오)",
+   "url": "https://arxiv.org/abs/2108.09293v3",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "mdn_accept",
+   "claim": "input의 accept 속성은 파일 형식을 검사하지 않고 고르기 창에 힌트만 준다. 서버에서 확인해야 한다",
+   "quote": "The accept attribute doesn't validate the types of the selected files; it provides hints for browsers to guide users towards selecting the correct file types.",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "postgres_update_using_fallback",
+   "claim": "UPDATE 정책에 WITH CHECK가 없으면 USING 식을 그 자리에도 쓴다",
+   "url": "https://www.postgresql.org/docs/current/sql-createpolicy.html",
+   "checked": "2026-10-10"
+  }
+ ]
+}

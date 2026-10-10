@@ -1,0 +1,15 @@
+{
+ "checked": "2026-10-10",
+ "note": "이 장의 사실 출처예요. 점검표 항목의 근거는 1~7장 각 폴더의 sources 파일에 있고, 여기에는 9장에서 새로 확인한 것만 적어요.",
+ "facts": [
+  {"id": "revenuecat_sosa_2026", "claim": "구독 앱 115,000개 데이터: 월 신규 구독 앱 약 2,000(2022-01) → 14,700+(2026-01), 2025년 이후 출시 앱의 매출 비중 3%, 1년 뒤 월 매출 중앙값 약 72달러, $1K 도달 17.3%·$10K 4.6%, AI 앱은 결제자당 매출 41% 많고 30% 빨리 떠남", "url": "https://www.revenuecat.com/state-of-subscription-apps", "kind": "회사가 밝힌 수치(자사 고객 데이터)", "checked": "2026-10-10"},
+  {"id": "stackoverflow_2025", "claim": "AI 도구를 쓰거나 쓸 계획 84%(2024년 76%), 결과 정확도를 믿지 않음 46%(2024년 31%)", "url": "https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey/", "kind": "설문(회사 보도자료)", "checked": "2026-10-10"},
+  {"id": "pearce_2022", "claim": "Copilot이 89개 상황에서 만든 프로그램 1,689개 중 약 40%가 취약", "url": "https://arxiv.org/abs/2108.09293", "kind": "연구(IEEE S&P 2022)", "checked": "2026-10-10"},
+  {"id": "canva_2025", "claim": "2025년 월 사용자 2억 6천만 명, 매출 35억 달러", "url": "https://www.canva.com/newsroom/news/canva-2025-wrap/", "kind": "회사가 밝힌 수치", "checked": "2026-10-10"},
+  {"id": "apple_small_business", "claim": "직전 해 수익 100만 달러 이하 또는 신규 개발자는 수수료 15%", "url": "https://developer.apple.com/app-store/small-business-program/", "kind": "공식 문서", "checked": "2026-10-10"},
+  {"id": "apple_program_fee", "claim": "Apple Developer Program 99 USD/멤버십 연도(지역별 현지 통화로 다를 수 있음)", "url": "https://developer.apple.com/help/account/membership/program-enrollment/", "kind": "공식 문서", "checked": "2026-10-10"},
+  {"id": "google_service_fee", "claim": "연 수익 첫 100만 달러까지 15%, 일부 지역 자동 갱신 구독은 10% + 결제 수수료 5%", "url": "https://support.google.com/googleplay/android-developer/answer/112622", "kind": "공식 문서", "checked": "2026-10-10"},
+  {"id": "google_registration_fee", "claim": "구글 플레이 개발자 계정 등록비 25달러(한 번)", "url": "https://support.google.com/googleplay/android-developer/answer/6112435", "kind": "공식 문서", "checked": "2026-10-10"},
+  {"id": "google_closed_test", "claim": "2023-11-13 이후 개인 계정: 프로덕션 신청 때 비공개 테스트에 테스터 12명 이상이 14일 연속 참여", "url": "https://support.google.com/googleplay/android-developer/answer/14151465", "kind": "공식 문서", "checked": "2026-10-10"}
+ ]
+}

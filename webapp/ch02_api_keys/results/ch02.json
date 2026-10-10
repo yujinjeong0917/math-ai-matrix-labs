@@ -1,0 +1,333 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10"
+ },
+ "e0_rules": {
+  "rules": 12,
+  "by_kind": {
+   "public": 3,
+   "secret": 7,
+   "by_role": 1,
+   "depends": 1
+  },
+  "with_documented_prefix": 10,
+  "without_prefix": [
+   "ai_api_key",
+   "google_api_key"
+  ]
+ },
+ "e1_ch01": {
+  "ch01_public": {
+   "real": {
+    "summary": {
+     "public": 0,
+     "secret": 0,
+     "depends": 0,
+     "check": 0,
+     "files": 9,
+     "env_files": 0,
+     "pass": true
+    },
+    "findings": []
+   },
+   "demo": {
+    "summary": {
+     "public": 0,
+     "secret": 0,
+     "depends": 0,
+     "check": 0,
+     "files": 9,
+     "env_files": 0,
+     "pass": true
+    },
+    "findings": []
+   }
+  },
+  "ch01_server_only": {
+   "real": {
+    "summary": {
+     "public": 0,
+     "secret": 0,
+     "depends": 0,
+     "check": 1,
+     "files": 3,
+     "env_files": 0,
+     "pass": true
+    },
+    "findings": [
+     {
+      "file": "ai_config.json",
+      "line": 3,
+      "rule": "name:image_api_key",
+      "kind": "check",
+      "shown": "DEMO_N…"
+     }
+    ]
+   },
+   "demo": {
+    "summary": {
+     "public": 0,
+     "secret": 0,
+     "depends": 0,
+     "check": 1,
+     "files": 3,
+     "env_files": 0,
+     "pass": true
+    },
+    "findings": [
+     {
+      "file": "ai_config.json",
+      "line": 3,
+      "rule": "name:image_api_key",
+      "kind": "check",
+      "shown": "DEMO_N…"
+     }
+    ]
+   }
+  }
+ },
+ "e2_builds": {
+  "good": {
+   "inlined": [
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_PUBLISHABLE_KEY"
+   ],
+   "env_names": [
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "SUPABASE_SECRET_KEY",
+    "AI_IMAGE_KEY"
+   ],
+   "not_in_browser": [
+    "SUPABASE_SECRET_KEY",
+    "AI_IMAGE_KEY"
+   ],
+   "app_bytes": 908,
+   "values_in_source_map": [],
+   "scan": {
+    "real": {
+     "summary": {
+      "public": 0,
+      "secret": 0,
+      "depends": 0,
+      "check": 0,
+      "files": 2,
+      "env_files": 0,
+      "pass": true
+     },
+     "findings": []
+    },
+    "demo": {
+     "summary": {
+      "public": 1,
+      "secret": 0,
+      "depends": 0,
+      "check": 0,
+      "files": 2,
+      "env_files": 0,
+      "pass": true
+     },
+     "findings": [
+      {
+       "file": "app.js",
+       "line": 4,
+       "rule": "supabase_publishable",
+       "kind": "public",
+       "shown": "DEMO_SUPABASE_PUBLISHABLE_0001"
+      }
+     ]
+    }
+   }
+  },
+  "mistake": {
+   "inlined": [
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_SECRET_KEY",
+    "VITE_AI_IMAGE_KEY"
+   ],
+   "env_names": [
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_SECRET_KEY",
+    "VITE_AI_IMAGE_KEY"
+   ],
+   "not_in_browser": [
+    "VITE_SUPABASE_PUBLISHABLE_KEY"
+   ],
+   "app_bytes": 894,
+   "values_in_source_map": [],
+   "scan": {
+    "real": {
+     "summary": {
+      "public": 0,
+      "secret": 0,
+      "depends": 0,
+      "check": 0,
+      "files": 2,
+      "env_files": 0,
+      "pass": true
+     },
+     "findings": []
+    },
+    "demo": {
+     "summary": {
+      "public": 0,
+      "secret": 2,
+      "depends": 0,
+      "check": 0,
+      "files": 2,
+      "env_files": 0,
+      "pass": false
+     },
+     "findings": [
+      {
+       "file": "app.js",
+       "line": 4,
+       "rule": "supabase_secret",
+       "kind": "secret",
+       "shown": "DEMO_SUPABASE_SECRET_0002"
+      },
+      {
+       "file": "app.js",
+       "line": 5,
+       "rule": "ai_api_key",
+       "kind": "secret",
+       "shown": "DEMO_AI_SECRET_0003"
+      }
+     ]
+    }
+   }
+  },
+  "env_files_in_project_source": 2
+ },
+ "e3_rls": [
+  {
+   "scenario": "RLS 꺼짐 · 공개용 키만",
+   "key": "publishable",
+   "user": null,
+   "role": "anon",
+   "rls": false,
+   "policies": 2,
+   "rows": 12,
+   "python_rows": 12,
+   "owners": {
+    "alice": 5,
+    "bob": 3,
+    "carol": 4
+   }
+  },
+  {
+   "scenario": "RLS 켬 · 정책 없음 · 공개용 키만",
+   "key": "publishable",
+   "user": null,
+   "role": "anon",
+   "rls": true,
+   "policies": 0,
+   "rows": 0,
+   "python_rows": 0,
+   "owners": {
+    "alice": 0,
+    "bob": 0,
+    "carol": 0
+   }
+  },
+  {
+   "scenario": "RLS 켬 · 정책 2개 · 공개용 키만",
+   "key": "publishable",
+   "user": null,
+   "role": "anon",
+   "rls": true,
+   "policies": 2,
+   "rows": 3,
+   "python_rows": 3,
+   "owners": {
+    "alice": 2,
+    "bob": 1,
+    "carol": 0
+   }
+  },
+  {
+   "scenario": "RLS 켬 · 정책 2개 · alice 로그인",
+   "key": "publishable",
+   "user": "alice",
+   "role": "authenticated",
+   "rls": true,
+   "policies": 2,
+   "rows": 6,
+   "python_rows": 6,
+   "owners": {
+    "alice": 5,
+    "bob": 1,
+    "carol": 0
+   }
+  },
+  {
+   "scenario": "RLS 켬 · 정책 2개 · bob 로그인",
+   "key": "publishable",
+   "user": "bob",
+   "role": "authenticated",
+   "rls": true,
+   "policies": 2,
+   "rows": 5,
+   "python_rows": 5,
+   "owners": {
+    "alice": 2,
+    "bob": 3,
+    "carol": 0
+   }
+  },
+  {
+   "scenario": "RLS 켬 · 정책 2개 · carol 로그인",
+   "key": "publishable",
+   "user": "carol",
+   "role": "authenticated",
+   "rls": true,
+   "policies": 2,
+   "rows": 7,
+   "python_rows": 7,
+   "owners": {
+    "alice": 2,
+    "bob": 1,
+    "carol": 4
+   }
+  },
+  {
+   "scenario": "RLS 켬 · 정책 2개 · 비밀 키",
+   "key": "secret",
+   "user": null,
+   "role": "service_role",
+   "rls": true,
+   "policies": 2,
+   "rows": 12,
+   "python_rows": 12,
+   "owners": {
+    "alice": 5,
+    "bob": 3,
+    "carol": 4
+   }
+  },
+  {
+   "scenario": "RLS 꺼짐 · anon 권한(grant) 없음 · 공개용 키만",
+   "key": "publishable",
+   "user": null,
+   "role": "anon",
+   "rls": false,
+   "policies": 2,
+   "rows": null,
+   "error": "permission denied (42501)"
+  }
+ ],
+ "e4_real_rules_self_test": {
+  "samples": 11,
+  "detected": 11,
+  "kind_correct": 11,
+  "near_miss_samples": 2,
+  "near_miss_flagged": 0
+ },
+ "e5_crosscheck": {
+  "dist_matches_build": true,
+  "sql_equals_python": true
+ }
+}

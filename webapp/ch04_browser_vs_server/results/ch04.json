@@ -1,0 +1,667 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "prices": "data/prices_2026-10-10.json",
+  "assumptions": "data/assumptions.json"
+ },
+ "e0_decisions": [
+  {
+   "id": "edit",
+   "name": "편집(글자·위치 바꾸기)",
+   "where": "브라우저",
+   "rule": 3,
+   "why": "100ms 안에 반응해야 하고 카드 한 장에 120번 씀",
+   "uses_per_card": 120,
+   "budget_ms": 100
+  },
+  {
+   "id": "preview",
+   "name": "미리보기",
+   "where": "브라우저",
+   "rule": 3,
+   "why": "100ms 안에 반응해야 하고 카드 한 장에 120번 씀",
+   "uses_per_card": 120,
+   "budget_ms": 100
+  },
+  {
+   "id": "template",
+   "name": "템플릿 고르기",
+   "where": "브라우저",
+   "rule": 3,
+   "why": "지킬 것이 없고, 서버로 보내면 요청과 비용만 늘어남",
+   "uses_per_card": 3,
+   "budget_ms": 1000
+  },
+  {
+   "id": "ai_background",
+   "name": "AI 배경 생성",
+   "where": "서버",
+   "rule": 1,
+   "why": "보이면 안 되는 것을 씀: AI 비밀 키, 생성 지시문",
+   "uses_per_card": 2,
+   "budget_ms": 10000
+  },
+  {
+   "id": "export_png",
+   "name": "최종 PNG 출력(1080px)",
+   "where": "서버",
+   "rule": 1,
+   "why": "보이면 안 되는 것을 씀: 원본 고해상도 템플릿, 무료판 워터마크 판단",
+   "uses_per_card": 1,
+   "budget_ms": 10000
+  },
+  {
+   "id": "draft_save",
+   "name": "임시 저장(자동)",
+   "where": "브라우저",
+   "rule": 3,
+   "why": "100ms 안에 반응해야 하고 카드 한 장에 12번 씀",
+   "uses_per_card": 12,
+   "budget_ms": 100
+  },
+  {
+   "id": "archive_save",
+   "name": "보관 저장(다른 기기에서 열기)",
+   "where": "서버",
+   "rule": 2,
+   "why": "기기를 바꾸거나 브라우저 데이터가 지워져도 남아야 함",
+   "uses_per_card": 1,
+   "budget_ms": 1000
+  }
+ ],
+ "e1_requests_per_card": {
+  "png_in_browser": {
+   "label": "AI 배경만 서버, 최종 PNG까지 브라우저",
+   "rows": [
+    {
+     "what": "페이지 열기",
+     "kind": "static",
+     "count": 8,
+     "request_bytes": 0,
+     "response_bytes": 7659
+    },
+    {
+     "what": "템플릿 바꾸기",
+     "kind": "static",
+     "count": 3,
+     "request_bytes": 0,
+     "response_bytes": 255
+    },
+    {
+     "what": "AI 배경 생성",
+     "kind": "function",
+     "count": 2,
+     "request_bytes": 300,
+     "response_bytes": 1500000
+    },
+    {
+     "what": "보관 저장",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 200
+    }
+   ],
+   "requests": 14,
+   "function_requests": 3,
+   "bytes_to_visitor": 3062237
+  },
+  "decided": {
+   "label": "판단표대로(AI 배경·최종 PNG·보관 저장은 서버)",
+   "rows": [
+    {
+     "what": "페이지 열기",
+     "kind": "static",
+     "count": 8,
+     "request_bytes": 0,
+     "response_bytes": 7659
+    },
+    {
+     "what": "템플릿 바꾸기",
+     "kind": "static",
+     "count": 3,
+     "request_bytes": 0,
+     "response_bytes": 255
+    },
+    {
+     "what": "AI 배경 생성",
+     "kind": "function",
+     "count": 2,
+     "request_bytes": 300,
+     "response_bytes": 1500000
+    },
+    {
+     "what": "보관 저장",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 200
+    },
+    {
+     "what": "최종 PNG 출력",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 1800000
+    }
+   ],
+   "requests": 15,
+   "function_requests": 4,
+   "bytes_to_visitor": 4862237
+  },
+  "server_preview": {
+   "label": "판단표 + 미리보기도 서버(키마다 요청)",
+   "rows": [
+    {
+     "what": "페이지 열기",
+     "kind": "static",
+     "count": 8,
+     "request_bytes": 0,
+     "response_bytes": 7659
+    },
+    {
+     "what": "템플릿 바꾸기",
+     "kind": "static",
+     "count": 3,
+     "request_bytes": 0,
+     "response_bytes": 255
+    },
+    {
+     "what": "AI 배경 생성",
+     "kind": "function",
+     "count": 2,
+     "request_bytes": 300,
+     "response_bytes": 1500000
+    },
+    {
+     "what": "보관 저장",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 200
+    },
+    {
+     "what": "최종 PNG 출력",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 1800000
+    },
+    {
+     "what": "미리보기",
+     "kind": "function",
+     "count": 120,
+     "request_bytes": 600,
+     "response_bytes": 200000
+    }
+   ],
+   "requests": 135,
+   "function_requests": 124,
+   "bytes_to_visitor": 28862237
+  },
+  "server_preview_debounced": {
+   "label": "판단표 + 미리보기도 서버(300ms 디바운스)",
+   "rows": [
+    {
+     "what": "페이지 열기",
+     "kind": "static",
+     "count": 8,
+     "request_bytes": 0,
+     "response_bytes": 7659
+    },
+    {
+     "what": "템플릿 바꾸기",
+     "kind": "static",
+     "count": 3,
+     "request_bytes": 0,
+     "response_bytes": 255
+    },
+    {
+     "what": "AI 배경 생성",
+     "kind": "function",
+     "count": 2,
+     "request_bytes": 300,
+     "response_bytes": 1500000
+    },
+    {
+     "what": "보관 저장",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 200
+    },
+    {
+     "what": "최종 PNG 출력",
+     "kind": "function",
+     "count": 1,
+     "request_bytes": 600,
+     "response_bytes": 1800000
+    },
+    {
+     "what": "미리보기",
+     "kind": "function",
+     "count": 6,
+     "request_bytes": 600,
+     "response_bytes": 200000
+    }
+   ],
+   "requests": 21,
+   "function_requests": 10,
+   "bytes_to_visitor": 6062237
+  }
+ },
+ "e2_latency_ms": {
+  "icn1": {
+   "preview_browser": 8.0,
+   "preview_server": 102.48,
+   "preview_server_debounced_after_last_key": 402.48,
+   "export_browser": 1200.0,
+   "export_server": 1128.48,
+   "ai_background_server": 8330.24,
+   "archive_save_server": 65.512,
+   "draft_save_browser": 2.0
+  },
+  "iad1": {
+   "preview_browser": 8.0,
+   "preview_server": 262.48,
+   "preview_server_debounced_after_last_key": 562.48,
+   "export_browser": 1200.0,
+   "export_server": 1288.48,
+   "ai_background_server": 8490.24,
+   "archive_save_server": 225.512,
+   "draft_save_browser": 2.0
+  }
+ },
+ "e3_debounce": {
+  "keystrokes": 120,
+  "typing_ms": 23680,
+  "debounce_ms": 300,
+  "requests_without_debounce": 120,
+  "requests_with_debounce": 6,
+  "sent_at_ms": [
+   2580,
+   6860,
+   11140,
+   15420,
+   19700,
+   23980
+  ]
+ },
+ "e4_one_request_icn1": {
+  "preview": {
+   "cpu_ms": 30,
+   "wall_ms": 30.0,
+   "bytes": 200600,
+   "active_cpu_usd": 1.408e-06,
+   "memory_usd": 2.33e-07,
+   "invocation_usd": 6e-07,
+   "origin_transfer_usd": 4.8144e-05,
+   "total_usd": 5.0386e-05,
+   "total_krw": 0.0705
+  },
+  "export_png": {
+   "cpu_ms": 800,
+   "wall_ms": 800.0,
+   "bytes": 1800600,
+   "active_cpu_usd": 3.7556e-05,
+   "memory_usd": 6.222e-06,
+   "invocation_usd": 6e-07,
+   "origin_transfer_usd": 0.000432144,
+   "total_usd": 0.000476522,
+   "total_krw": 0.6671
+  },
+  "ai_background": {
+   "cpu_ms": 50,
+   "wall_ms": 8050.0,
+   "bytes": 1500300,
+   "active_cpu_usd": 2.347e-06,
+   "memory_usd": 6.2611e-05,
+   "invocation_usd": 6e-07,
+   "origin_transfer_usd": 0.000360072,
+   "total_usd": 0.00042563,
+   "total_krw": 0.5959
+  },
+  "archive_save": {
+   "cpu_ms": 5,
+   "wall_ms": 25.0,
+   "bytes": 800,
+   "active_cpu_usd": 2.35e-07,
+   "memory_usd": 1.94e-07,
+   "invocation_usd": 6e-07,
+   "origin_transfer_usd": 1.92e-07,
+   "total_usd": 1.221e-06,
+   "total_krw": 0.0017
+  }
+ },
+ "e5_vercel_month": {
+  "png_in_browser": {
+   "cards": 20000,
+   "requests": 280000,
+   "function_requests": 60000,
+   "cpu_hours": 0.5833,
+   "memory_gb_hours": 179.1667,
+   "parts_usd": {
+    "active_cpu": 0.0986,
+    "provisioned_memory": 2.5083,
+    "invocations": 0.036,
+    "fast_origin_transfer": 14.4067
+   },
+   "usage_usd": 17.0496,
+   "transfer_tb": 0.061269,
+   "cdn_tier_usd": 0,
+   "over_credit_usd": 0.0,
+   "bill_usd": 20.0,
+   "iad1_cpu_memory_usd": 1.9738,
+   "icn1_cpu_memory_usd": 2.6069
+  },
+  "decided": {
+   "cards": 20000,
+   "requests": 300000,
+   "function_requests": 80000,
+   "cpu_hours": 5.0278,
+   "memory_gb_hours": 188.0556,
+   "parts_usd": {
+    "active_cpu": 0.8497,
+    "provisioned_memory": 2.6328,
+    "invocations": 0.048,
+    "fast_origin_transfer": 23.0496
+   },
+   "usage_usd": 26.5801,
+   "transfer_tb": 0.097281,
+   "cdn_tier_usd": 0,
+   "over_credit_usd": 6.5801,
+   "bill_usd": 26.5801,
+   "iad1_cpu_memory_usd": 2.6369,
+   "icn1_cpu_memory_usd": 3.4825
+  },
+  "server_preview": {
+   "cards": 20000,
+   "requests": 2700000,
+   "function_requests": 2480000,
+   "cpu_hours": 25.0278,
+   "memory_gb_hours": 228.0556,
+   "parts_usd": {
+    "active_cpu": 4.2297,
+    "provisioned_memory": 3.1928,
+    "invocations": 1.488,
+    "fast_origin_transfer": 138.5952
+   },
+   "usage_usd": 147.5057,
+   "transfer_tb": 0.578721,
+   "cdn_tier_usd": 20,
+   "over_credit_usd": 127.5057,
+   "bill_usd": 167.5057,
+   "iad1_cpu_memory_usd": 5.6209,
+   "icn1_cpu_memory_usd": 7.4225
+  },
+  "server_preview_debounced": {
+   "cards": 20000,
+   "requests": 420000,
+   "function_requests": 200000,
+   "cpu_hours": 6.0278,
+   "memory_gb_hours": 190.0556,
+   "parts_usd": {
+    "active_cpu": 1.0187,
+    "provisioned_memory": 2.6608,
+    "invocations": 0.12,
+    "fast_origin_transfer": 28.8269
+   },
+   "usage_usd": 32.6264,
+   "transfer_tb": 0.121353,
+   "cdn_tier_usd": 0,
+   "over_credit_usd": 12.6264,
+   "bill_usd": 32.6264,
+   "iad1_cpu_memory_usd": 2.7861,
+   "icn1_cpu_memory_usd": 3.6795
+  }
+ },
+ "e6_vercel_hobby": {
+  "png_in_browser": {
+   "active_cpu_hours": {
+    "used": 0.5833,
+    "included": 4,
+    "over": false
+   },
+   "provisioned_memory_gb_hours": {
+    "used": 179.1667,
+    "included": 360,
+    "over": false
+   },
+   "invocations": {
+    "used": 60000.0,
+    "included": 1000000,
+    "over": false
+   },
+   "cdn_requests": {
+    "used": 280000.0,
+    "included": 1000000,
+    "over": false
+   },
+   "fast_data_transfer_gb": {
+    "used": 61.2687,
+    "included": 100,
+    "over": false
+   },
+   "fast_origin_transfer_gb": {
+    "used": 60.028,
+    "included": 10,
+    "over": true
+   }
+  },
+  "decided": {
+   "active_cpu_hours": {
+    "used": 5.0278,
+    "included": 4,
+    "over": true
+   },
+   "provisioned_memory_gb_hours": {
+    "used": 188.0556,
+    "included": 360,
+    "over": false
+   },
+   "invocations": {
+    "used": 80000.0,
+    "included": 1000000,
+    "over": false
+   },
+   "cdn_requests": {
+    "used": 300000.0,
+    "included": 1000000,
+    "over": false
+   },
+   "fast_data_transfer_gb": {
+    "used": 97.2807,
+    "included": 100,
+    "over": false
+   },
+   "fast_origin_transfer_gb": {
+    "used": 96.04,
+    "included": 10,
+    "over": true
+   }
+  },
+  "server_preview": {
+   "active_cpu_hours": {
+    "used": 25.0278,
+    "included": 4,
+    "over": true
+   },
+   "provisioned_memory_gb_hours": {
+    "used": 228.0556,
+    "included": 360,
+    "over": false
+   },
+   "invocations": {
+    "used": 2480000.0,
+    "included": 1000000,
+    "over": true
+   },
+   "cdn_requests": {
+    "used": 2700000.0,
+    "included": 1000000,
+    "over": true
+   },
+   "fast_data_transfer_gb": {
+    "used": 578.7207,
+    "included": 100,
+    "over": true
+   },
+   "fast_origin_transfer_gb": {
+    "used": 577.48,
+    "included": 10,
+    "over": true
+   }
+  },
+  "server_preview_debounced": {
+   "active_cpu_hours": {
+    "used": 6.0278,
+    "included": 4,
+    "over": true
+   },
+   "provisioned_memory_gb_hours": {
+    "used": 190.0556,
+    "included": 360,
+    "over": false
+   },
+   "invocations": {
+    "used": 200000.0,
+    "included": 1000000,
+    "over": false
+   },
+   "cdn_requests": {
+    "used": 420000.0,
+    "included": 1000000,
+    "over": false
+   },
+   "fast_data_transfer_gb": {
+    "used": 121.3527,
+    "included": 100,
+    "over": true
+   },
+   "fast_origin_transfer_gb": {
+    "used": 120.112,
+    "included": 10,
+    "over": true
+   }
+  }
+ },
+ "e7_netlify_month": {
+  "png_in_browser": {
+   "compute": 895.8333,
+   "requests": 56.0,
+   "bandwidth": 1224.8948,
+   "total": 2176.7281,
+   "plan": "Pro",
+   "usd": 20.0
+  },
+  "decided": {
+   "compute": 940.2778,
+   "requests": 60.0,
+   "bandwidth": 1944.8948,
+   "total": 2945.1726,
+   "plan": "Pro",
+   "usd": 20.0
+  },
+  "server_preview": {
+   "compute": 1140.2778,
+   "requests": 540.0,
+   "bandwidth": 11544.8948,
+   "total": 13225.1726,
+   "plan": "Pro + 충전 7번",
+   "usd": 90.0
+  },
+  "server_preview_debounced": {
+   "compute": 950.2778,
+   "requests": 84.0,
+   "bandwidth": 2424.8948,
+   "total": 3459.1726,
+   "plan": "Pro + 충전 1번",
+   "usd": 30.0
+  }
+ },
+ "e8_ai_vs_hosting": {
+  "ai_images": 40000,
+  "ai_krw": 2000000,
+  "hosting_usage_usd_decided": 26.5801,
+  "hosting_usage_krw_decided": 37212.0,
+  "usd_krw_assumed": 1400,
+  "png_on_server_extra_usage_usd": 9.5305,
+  "ai_one_call_krw": 0.5959
+ },
+ "e9_storage": {
+  "draft_chars_utf16": 232,
+  "draft_utf8_bytes": 328,
+  "draft_key": "draft:card-0001",
+  "local_storage_limit_bytes": 5242880,
+  "draft_bytes_in_local_storage": 494,
+  "drafts_that_fit": 10613,
+  "ai_png_bytes": 1500000,
+  "ai_png_base64_chars": 2000000,
+  "ai_png_bytes_in_local_storage": 4000020,
+  "ai_pngs_that_fit": 1,
+  "idb_example_disk_bytes": 128000000000,
+  "idb_caps_bytes": {
+   "Chrome·Edge(Chromium)": 76800000000,
+   "Safari 브라우저 앱(macOS 14, iOS 17부터)": 76800000000,
+   "웹 화면을 품은 다른 WebKit 앱": 19200000000,
+   "Firefox": 10737418240
+  },
+  "eviction": [
+   {
+    "scenario": "Chrome, 매일 쓰는 사용자",
+    "evicted": false,
+    "why": "남아 있음(best-effort)"
+   },
+   {
+    "scenario": "Chrome, 폰 저장 공간이 꽉 차고 우리 앱을 가장 오래 안 씀",
+    "evicted": true,
+    "why": "저장 공간 부족, 가장 오래 안 쓴 출처부터 지움(LRU)"
+   },
+   {
+    "scenario": "Safari, 매일 쓰지만 우리 앱만 열흘 안 연 사용자",
+    "evicted": true,
+    "why": "Safari 추적 방지: Safari를 쓴 최근 7일 동안 클릭·탭이 없음"
+   },
+   {
+    "scenario": "Safari, 우리 앱만 열흘 안 열었지만 영구 저장을 받음",
+    "evicted": false,
+    "why": "영구 저장: 사용자가 설정에서 지울 때만 지워짐"
+   },
+   {
+    "scenario": "아무 브라우저, 사생활 보호 창을 닫음",
+    "evicted": true,
+    "why": "사생활 보호 모드가 끝남(보통 지워짐)"
+   }
+  ]
+ },
+ "e10_crosscheck": {
+  "per_card_times_cards_equals_month": true,
+  "preview_server_hand_ms": 102.48,
+  "preview_server_model_ms": 102.48,
+  "hand_equals_model": true
+ },
+ "e11_derived_for_text": {
+  "preview_up_ms": 0.48,
+  "preview_down_ms": 32.0,
+  "export_down_ms": 288.0,
+  "ai_wall_s": 8.05,
+  "ai_memory_over_cpu": 26.68,
+  "preview_iad1_minus_icn1_ms": 160.0,
+  "server_preview_bill_over_decided": 6.3,
+  "idb_caps_gb_128gb_disk": {
+   "Chrome·Edge(Chromium)": 76.8,
+   "Safari 브라우저 앱(macOS 14, iOS 17부터)": 76.8,
+   "웹 화면을 품은 다른 WebKit 앱": 19.2,
+   "Firefox": 10.737
+  },
+  "firefox_10pct_gb": 12.8,
+  "exercise_double_users": {
+   "requests": 600000,
+   "usage_usd": 53.1601,
+   "bill_usd": 53.1601,
+   "cdn_tier_usd": 0
+  }
+ }
+}

@@ -82,6 +82,15 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `tools/ch06_agents/` | AI 도구 실전 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/06-agents.html) |
 | `tools/ch07_image_video/` | AI 도구 실전 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/07-image-video.html) |
 | `tools/ch08_choosing/` | AI 도구 실전 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/08-choosing.html) |
+| `webapp/ch01_everything_visible/` | 1인 개발 앱 출시 실전 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/01-everything-visible.html) |
+| `webapp/ch02_api_keys/` | 1인 개발 앱 출시 실전 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/02-api-keys.html) |
+| `webapp/ch03_vibe_security/` | 1인 개발 앱 출시 실전 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/03-vibe-security.html) |
+| `webapp/ch04_browser_vs_server/` | 1인 개발 앱 출시 실전 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/04-browser-vs-server.html) |
+| `webapp/ch05_static_supabase/` | 1인 개발 앱 출시 실전 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/05-static-supabase.html) |
+| `webapp/ch06_app_packaging/` | 1인 개발 앱 출시 실전 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/06-app-packaging.html) |
+| `webapp/ch07_capacitor_apk/` | 1인 개발 앱 출시 실전 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/07-capacitor-apk.html) |
+| `webapp/ch08_platform_choice/` | 1인 개발 앱 출시 실전 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/08-platform-choice.html) |
+| `webapp/ch09_ai_coding_era/` | 1인 개발 앱 출시 실전 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/09-ai-coding-era.html) |
 
 여기 있는 장은 모두 웹 챕터로 공개돼 있어요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

@@ -1,0 +1,291 @@
+{
+ "checked": "2026-10-10",
+ "note": "이 장의 점유율·수수료·계정 비용·장비·규제에 대한 사실은 아래 문서에서 확인했어요. 문서가 바뀌면 날짜가 다른 새 파일을 만들어요. 선택 도구와 수수료 파일의 sources 칸은 이 파일의 id를 가리켜요.",
+ "facts": [
+  {
+   "id": "statcounter_mobile_os",
+   "claim": "StatCounter 모바일 OS 월별 비율(2025-10~2026-09). 한국 2026-09 안드로이드 62.06·iOS 37.94, 미국 46.47·53.51, 일본 39.53·60.46, 전 세계 69.31·30.66. StatCounter는 추적 코드가 붙은 사이트의 페이지뷰를 세는 것이라 설치 기기 수가 아니에요. 원자료는 data/statcounter_2026-10-10/",
+   "url": "https://gs.statcounter.com/os-market-share/mobile/south-korea",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "kcc_app_market_2023",
+   "claim": "방송통신위원회·KISA '2024년도 앱 마켓 실태조사'(2025-04-11 발표, 2023년 기준). 국내 앱 마켓 거래액 8조 1,952억 원. 앱 개발자 조사에서 매출액 비중은 구글 플레이 67.5%, 애플 앱스토어 28.2%, 원스토어 2.9%, 갤럭시스토어 1.5%",
+   "quote": "매출액 비중도 구글 플레이가 67.5%로 가장 높았다. 그 뒤를 애플 앱스토어(28.2%), 원스토어(2.9%), 갤럭시스토어(1.5%)가 따랐다.",
+   "url": "https://m.korea.kr/briefing/pressReleaseView.do?newsId=156683616",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "sensortower_2025",
+   "claim": "Sensor Tower가 밝힌 2025년 전 세계 앱 내 결제(IAP) 매출 1,670억 달러(iOS와 구글 플레이 합계, 회사 추정). 스토어별 금액은 공개 페이지에서 확인하지 못함",
+   "quote": "in-app purchases (IAP) reached $167 billion globally, an increase of 10% year-over-year.",
+   "url": "https://sensortower.com/press/press-release-boosted-by-gen-ai-services-consumers-spent-more-money-in-apps-than-games-for-first-time",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_sbp",
+   "claim": "App Store 소규모 사업자 프로그램: 유료 앱과 IAP 수수료 15%. 전년도(달력 기준) 수익 100만 달러 이하 기존 개발자와 신규 개발자가 신청 가능, 올해 100만 달러를 넘으면 이후 판매는 표준 요율",
+   "quote": "It features a reduced commission rate of 15% on paid apps and Apple In-App Purchases",
+   "url": "https://developer.apple.com/app-store/small-business-program/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_subs",
+   "claim": "자동 갱신 구독: 구독자의 첫 유료 1년은 구독 가격의 70%, 유료 1년이 쌓인 뒤에는 85%를 받음(세금 제외). 표준 수수료 30%·15%는 여기서 거꾸로 계산한 값",
+   "quote": "During a subscriber’s first year of service, you receive 70% of the subscription price at each billing cycle, minus applicable taxes. After a subscriber accumulates one year of paid service, your net revenue increases to 85% of the subscription price, minus applicable taxes.",
+   "url": "https://developer.apple.com/app-store/subscriptions/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_eu_terms",
+   "claim": "EU 앱에 대한 애플의 새 통합 조건(2026-10-01 시행): App Store 앱의 IAP 26%, 소규모 사업자 등 프로그램과 1년 넘은 구독은 15%, 대체 결제 20%(프로그램 10%), 앱 밖 링크 결제 15%, App Store 밖 배포 앱은 Core Technology Commission 5%",
+   "quote": "For App Store apps using Apple In-App Purchase, the commission will be 26 percent.",
+   "url": "https://www.apple.com/newsroom/2026/08/apple-announces-changes-for-apps-in-the-european-union/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "gp_service_fee",
+   "claim": "구글 플레이 서비스 수수료. 한국을 포함한 '나머지 시장': 15% 등급에 가입한 개발자는 해마다 첫 100만 달러 15%, 넘는 몫 30%, 자동 갱신 구독은 매출과 관계없이 15%. 미국·EEA·영국은 2026-06-30, 호주·일본은 2026-09-30부터 새 구조(첫 100만 달러 10% + 결제 수수료 5% 등)",
+   "quote": "15% for automatically renewing subscription products purchased by subscribers, regardless of revenue earned by the developer each year",
+   "url": "https://support.google.com/googleplay/android-developer/answer/112622?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "gp_alt_billing_kr",
+   "claim": "한국·인도 사용자에게 구글 플레이 결제와 함께 대체 결제를 열면 그 거래의 수수료는 플레이 결제 수수료에서 4%를 뺀 값",
+   "quote": "the service fee for such transactions using the Alternative Billing System is equal to the service fee applicable for transactions via Google Play’s billing system reduced by 4%.",
+   "url": "https://support.google.com/googleplay/android-developer/answer/112622?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_dev_fee",
+   "claim": "Apple Developer Program 연 99달러, 지역별 가격은 가입 과정에서 현지 통화로 표시. 한국어 페이지도 '$99/ 연간 멤버십'으로만 적혀 원화 금액은 확인하지 못함",
+   "quote": "Prices may vary by region and are listed in local currency during the enrollment process.",
+   "url": "https://developer.apple.com/support/purchase-activation/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "google_reg_fee",
+   "claim": "Google Play 개발자 계정 등록비는 한 번 내는 25달러",
+   "quote": "There is a US$25 one-time registration fee",
+   "url": "https://support.google.com/googleplay/android-developer/answer/6112435?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "toss_fee",
+   "claim": "토스페이먼츠 평균 이용 요금: 가입비 220,000원(최초 1회), 연관리비 110,000원(연 1회), 신용·체크카드 일반 3.4%, 부가세 10% 별도. 영세·중소 우대는 국세청 명단을 받아 반기마다 반영",
+   "quote": "신용∙체크카드 일반 3.4%",
+   "url": "https://www.tosspayments.com/about/fee",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "stripe_us",
+   "claim": "Stripe 미국 카드 결제 2.9% + 30센트, 가입비·월 이용료 없음",
+   "quote": "2.9% + 30¢ per successful transaction",
+   "url": "https://stripe.com/pricing",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_kr_mac_mini",
+   "claim": "애플 한국 온라인 스토어 Mac mini ₩1,499,000부터(M6 칩), MacBook Air 13형 ₩2,190,000부터(M5 칩)",
+   "url": "https://www.apple.com/kr/shop/buy-mac/mac-mini",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_xcode_req",
+   "claim": "Xcode 시스템 요구사항 표는 macOS만 적음(Xcode 27은 macOS Tahoe 26.6 이상). 2026-04-28부터 App Store 업로드는 Xcode 26 이상·26 SDK로 빌드해야 함",
+   "url": "https://developer.apple.com/xcode/system-requirements/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_upload_req",
+   "claim": "2026-04-28부터 App Store Connect 업로드는 Xcode 26 이상과 iOS 26 SDK 등으로 빌드해야 함",
+   "url": "https://developer.apple.com/news/upcoming-requirements/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "android_studio_req",
+   "claim": "Android Studio는 64비트 Windows 10 이상, macOS 12 이상, 64비트 리눅스에서 돌고 ARM CPU 윈도우는 아직 지원하지 않음. RAM 8GB(에뮬레이터까지 16GB)",
+   "quote": "Windows machines with ARM-based CPUs aren't currently supported",
+   "url": "https://developer.android.com/studio/install",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "webkit_push_164",
+   "claim": "iOS·iPadOS 16.4부터 홈 화면에 추가한 웹앱에서 Web Push. 권한 요청은 사용자 동작에 이어서(6장에서 확인)",
+   "url": "https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "bcd_compat",
+   "claim": "MDN 호환성 데이터: Safari(iOS 포함)는 Web Bluetooth 미지원(6장에서 확인)",
+   "url": "https://github.com/mdn/browser-compat-data",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_42",
+   "claim": "App Review Guidelines 4.2 Minimum Functionality(6장에서 확인)",
+   "url": "https://developer.apple.com/app-store/review/guidelines/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "capacitor_plugins",
+   "claim": "Capacitor 플러그인은 JS가 네이티브 API에 닿게 한다(6장에서 확인)",
+   "url": "https://capacitorjs.com/docs/plugins",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_kr_external",
+   "claim": "애플 한국 스토어프론트 전용 앱의 제3자 결제(StoreKit External Purchase Entitlement): 고객이 낸 금액(부가세 포함)의 26%를 수수료로 받음. 결제 처리 몫을 뺀 '줄인 율'이라고 설명. 승인 PSP는 KCP·Inicis·Toss·NICE",
+   "quote": "Apple will charge a 26% commission on the price paid by the user, gross of any value-added taxes.",
+   "url": "https://developer.apple.com/support/storekit-external-entitlement-kr/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_schedule2",
+   "claim": "Apple Developer Program License Agreement Schedule 2 3.4(a): 수수료는 최종 사용자가 낸 가격에서 걷은 세금을 모두 뺀 금액 기준",
+   "quote": "the prices payable by End-Users shall be net of any and all taxes collected",
+   "url": "https://developer.apple.com/support/terms/apple-developer-program-license-agreement/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "google_tax",
+   "claim": "개발자가 VAT를 내는 나라에서는 구글이 걷은 세금을 개발자에게 넘기고 서비스 수수료를 세금 뺀 가격에서 계산. 한국 거래의 구체 처리는 원문으로 확인하지 못함",
+   "quote": "calculate the service fee off the net price of the product",
+   "url": "https://support.google.com/googleplay/android-developer/answer/138000",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "gp_new_fee_rollout",
+   "claim": "구글 플레이 새 수수료 구조 지역별 시작일: 2026-06-30 EEA·영국·미국, 2026-09-30 호주·일본, 2026-12-31 한국, 2027-09-30 그 밖. 결제 수수료(billing fee)는 호주·일본·미국·영국·EEA 5%, 다른 지역은 추후 발표",
+   "quote": "Billing fee details for other regions are forthcoming.",
+   "url": "https://support.google.com/googleplay/android-developer/answer/16954621?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "gp_payments_policy",
+   "claim": "플레이로 배포하는 앱의 앱 안 디지털 기능·서비스 결제는 플레이 결제 시스템을 써야 하고, 실물 상품·실물 서비스(음식 배달, 공연 티켓 등)에는 쓰면 안 됨",
+   "quote": "must use Google Play's billing system for those transactions",
+   "url": "https://support.google.com/googleplay/android-developer/answer/9858738?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "gp_alt_billing_kr_api",
+   "claim": "한국 대체 결제: 플레이 수수료 4% 감면, 2023-08-02부터 대체 결제 API 사용 의무",
+   "quote": "From August 2, 2023, developers offering alternative billing to users in South Korea must use alternative billing APIs.",
+   "url": "https://support.google.com/googleplay/android-developer/answer/11222040?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_313e",
+   "claim": "App Review Guidelines 3.1.3(e): 앱 밖에서 소비하는 실물 상품·서비스는 IAP가 아닌 결제 방법(Apple Pay, 카드 입력 등)으로 받아야 함",
+   "quote": "you must use purchase methods other than in-app purchase to collect those payments",
+   "url": "https://developer.apple.com/app-store/review/guidelines/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_us_links",
+   "claim": "App Review Guidelines 3.1.1(a)·3.1.3: 미국 스토어프론트 앱은 버튼·외부 링크 등 앱 밖 구매 안내를 넣을 수 있음(다른 스토어프론트는 금지가 원칙). 페이지에 개정일 표기 없음",
+   "quote": "These entitlements are not required for developers to include buttons, external links, or other calls to action in their United States storefront apps.",
+   "url": "https://developer.apple.com/app-store/review/guidelines/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "epic_apple_9th",
+   "claim": "Epic v. Apple 제9순회항소법원 No. 25-2935(2025-12-11): 법정모독 판단은 유지, 링크 구매 수수료 전면 금지는 일부 파기 환송. 애플은 외부 링크 조정에 실제로 드는 비용에 근거한 수수료는 받을 수 있다고 판시",
+   "quote": "Apple should be able to charge a commission on linked-out purchases based on the costs that are genuinely and reasonably necessary for its coordination of external links for linked-out purchases, but no more.",
+   "url": "https://cdn.ca9.uscourts.gov/datastore/opinions/2025/12/11/25-2935.pdf",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "scotus_25_1311",
+   "claim": "미국 연방대법원 사건 25-1311(Apple v. Epic): 2026-06-30 상고 허가(질문 1에 한정). 변론일 미정",
+   "quote": "Petition GRANTED limited to Question 1 presented by the petition.",
+   "url": "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/25-1311.html",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "gp_us_programs",
+   "claim": "구글 플레이 미국: 외부 콘텐츠 링크·대체 결제 프로그램 참여 개발자는 2026-10-01부터 거래를 보고하고 수수료를 냄",
+   "quote": "will need to report transactions and pay the relevant service fees starting on October 1, 2026",
+   "url": "https://support.google.com/googleplay/android-developer/answer/15582165?hl=en",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "ec_apple_fine",
+   "claim": "유럽연합 집행위원회 2025-04-23: 애플이 DMA의 안티스티어링 금지 의무를 어겼다며 5억 유로 과징금, 60일 안에 시정",
+   "quote": "the Commission has fined Apple and Meta with €500 million and €200 million respectively",
+   "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_25_1085",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "kr_telecom_act_50",
+   "claim": "전기통신사업법 제50조 제1항 제9호: 앱 마켓사업자가 거래상 지위를 부당하게 이용해 특정 결제방식을 강제하는 행위 금지. 법률 제18451호(2021-09-14) 공포일부터 시행. 현행본은 2026-10-01 시행",
+   "quote": "앱 마켓사업자가 모바일콘텐츠 등의 거래를 중개할 때 자기의 거래상의 지위를 부당하게 이용하여 모바일콘텐츠 등 제공사업자에게 특정한 결제방식을 강제하는 행위",
+   "url": "https://www.law.go.kr/법령/전기통신사업법",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "android_dev_verification",
+   "claim": "안드로이드 개발자 인증: 2026-09-30부터 브라질·인도네시아·싱가포르·태국의 인증 기기에서 인증되지 않은 개발자 앱 설치 제한, 2027년 전 세계로 확대. 스토어 밖 배포에도 적용, ADB 설치는 예외. 전체 배포 계정 25달러, 제한 배포 계정(기기 20대까지)은 무료",
+   "quote": "If you don't verify your identity and register your apps by September 30, 2026, your apps cannot be installed from participating stores in select regions on certified Android devices.",
+   "url": "https://developer.android.com/developer-verification/guides/faq",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "android_unknown_apps",
+   "claim": "Android 8.0(API 26) 이상은 사용자가 '출처를 알 수 없는 앱 설치' 화면에서 출처별로 허용해야 함",
+   "quote": "users must navigate to the Install unknown apps system settings screen",
+   "url": "https://developer.android.com/distribute/marketing-tools/alternative-distribution",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_testflight",
+   "claim": "TestFlight 외부 테스터 최대 10,000명, 내부 테스터 100명",
+   "quote": "You can also invite up to 10,000 external testers to join your beta program.",
+   "url": "https://developer.apple.com/testflight/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_adhoc",
+   "claim": "개발 계정에 등록할 수 있는 기기는 제품군별·멤버십 연도별 100대",
+   "quote": "can register up to 100 of the following devices, per product family, per membership year",
+   "url": "https://developer.apple.com/help/account/devices/devices-overview/",
+   "checked": "2026-10-10"
+  }
+ ],
+ "unverified": [
+  {
+   "what": "애플 미국 스토어프론트의 링크 구매 수수료가 지금 몇 %인지",
+   "why": "항소심이 비용 기반 수수료를 허용해 환송했고(2025-12-11), 애플이 2026-08 요율안을 냈다는 보도만 있음. 법원 결정은 1차 자료로 확인하지 못함"
+  },
+  {
+   "what": "구글 플레이 한국 새 구조의 결제 수수료(billing fee)",
+   "why": "구글 문서가 '다른 지역은 추후 발표'라고만 적음"
+  },
+  {
+   "what": "한국 거래에서 구글이 세금을 떼는 방식, PG 수수료에 붙는 부가세 처리",
+   "why": "원문 문장을 확보하지 못함. 계산은 공급가액 기준으로 가정"
+  },
+  {
+   "what": "애플 소규모 사업자 프로그램 회원의 한국 외부 결제 율",
+   "why": "한국 외부 결제 문서에 26%만 적혀 있고 소규모 사업자 프로그램 언급이 없음"
+  },
+  {
+   "what": "방송미디어통신위원회의 구글·애플 인앱결제 과징금 최종 의결",
+   "why": "2026-08-12 전체회의에서 의결을 미뤘다는 언론 보도만 확인(ddaily, 머니투데이). 원문 보도자료 미확인"
+  },
+  {
+   "what": "Apple Developer Program의 원화 가격",
+   "why": "공식 페이지가 99달러로만 표시하고 현지 통화는 가입 과정에서 보여 준다고 적음"
+  },
+  {
+   "what": "스토어별 전 세계 매출 비중",
+   "why": "Sensor Tower 공개 페이지는 합계(1,670억 달러)만 보여 줌. 스토어별 금액은 2차 자료에만 있음"
+  },
+  {
+   "what": "구글 한국 대체 결제 '4% 인하'가 퍼센트포인트(15%→11%)인지 비율(15%→14.4%)인지",
+   "why": "영어·한국어 문서 모두 '4% 인하'로만 적음. 계산은 퍼센트포인트로 읽음"
+  }
+ ]
+}

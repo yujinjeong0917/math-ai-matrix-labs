@@ -1,0 +1,826 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "server": "http.server (ThreadingHTTPServer, 127.0.0.1), sqlite3 :memory:"
+ },
+ "e0_checklist": {
+  "items": [
+   {
+    "check": "RLS: 로그인 안 한 사람이 비공개 카드를 읽을 수 없다",
+    "before_pass": false,
+    "after_pass": true
+   },
+   {
+    "check": "AI 비밀 키가 브라우저 번들에 없다",
+    "before_pass": false,
+    "after_pass": true
+   },
+   {
+    "check": "일반 사용자가 관리용 API에 닿지 않는다",
+    "before_pass": false,
+    "after_pass": true
+   },
+   {
+    "check": "그림이 아닌 파일은 업로드되지 않는다",
+    "before_pass": false,
+    "after_pass": true
+   },
+   {
+    "check": "한 사용자가 AI 배경을 몰아서 만들 수 없다(15초에 30번 시도)",
+    "before_pass": false,
+    "after_pass": true
+   }
+  ],
+  "before_pass": 0,
+  "after_pass": 5
+ },
+ "e1_rls": {
+  "off": {
+   "read": {
+    "로그인 안 함": {
+     "status": 200,
+     "rows": 5,
+     "ids": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    "alice": {
+     "status": 200,
+     "rows": 5,
+     "ids": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    "bob": {
+     "status": 200,
+     "rows": 5,
+     "ids": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   },
+   "writes": {
+    "alice가 bob 이름으로 카드 만들기": {
+     "status": 201,
+     "response": {
+      "id": 6
+     },
+     "table_changed": true
+    },
+    "alice가 자기 이름으로 카드 만들기": {
+     "status": 201,
+     "response": {
+      "id": 6
+     },
+     "table_changed": true
+    },
+    "로그인 안 하고 카드 만들기": {
+     "status": 201,
+     "response": {
+      "id": 6
+     },
+     "table_changed": true
+    },
+    "alice가 bob의 카드 4번 제목 고치기": {
+     "status": 200,
+     "response": {
+      "updated": 1
+     },
+     "table_changed": true
+    },
+    "alice가 자기 카드 2번 주인을 bob으로 바꾸기": {
+     "status": 200,
+     "response": {
+      "updated": 1
+     },
+     "table_changed": true
+    },
+    "alice가 자기 카드 2번 제목 고치기": {
+     "status": 200,
+     "response": {
+      "updated": 1
+     },
+     "table_changed": true
+    },
+    "alice가 bob의 카드 5번 지우기": {
+     "status": 200,
+     "response": {
+      "deleted": 1
+     },
+     "table_changed": true
+    }
+   },
+   "no_api_key_status": 401
+  },
+  "on_no_policy": {
+   "read": {
+    "로그인 안 함": {
+     "status": 200,
+     "rows": 0,
+     "ids": []
+    },
+    "alice": {
+     "status": 200,
+     "rows": 0,
+     "ids": []
+    },
+    "bob": {
+     "status": 200,
+     "rows": 0,
+     "ids": []
+    }
+   },
+   "writes": {
+    "alice가 bob 이름으로 카드 만들기": {
+     "status": 403,
+     "response": {
+      "error": "new row violates row-level security policy"
+     },
+     "table_changed": false
+    },
+    "alice가 자기 이름으로 카드 만들기": {
+     "status": 403,
+     "response": {
+      "error": "new row violates row-level security policy"
+     },
+     "table_changed": false
+    },
+    "로그인 안 하고 카드 만들기": {
+     "status": 403,
+     "response": {
+      "error": "new row violates row-level security policy"
+     },
+     "table_changed": false
+    },
+    "alice가 bob의 카드 4번 제목 고치기": {
+     "status": 200,
+     "response": {
+      "updated": 0
+     },
+     "table_changed": false
+    },
+    "alice가 자기 카드 2번 주인을 bob으로 바꾸기": {
+     "status": 200,
+     "response": {
+      "updated": 0
+     },
+     "table_changed": false
+    },
+    "alice가 자기 카드 2번 제목 고치기": {
+     "status": 200,
+     "response": {
+      "updated": 0
+     },
+     "table_changed": false
+    },
+    "alice가 bob의 카드 5번 지우기": {
+     "status": 200,
+     "response": {
+      "deleted": 0
+     },
+     "table_changed": false
+    }
+   },
+   "no_api_key_status": 401
+  },
+  "on_policies": {
+   "read": {
+    "로그인 안 함": {
+     "status": 200,
+     "rows": 1,
+     "ids": [
+      1
+     ]
+    },
+    "alice": {
+     "status": 200,
+     "rows": 3,
+     "ids": [
+      1,
+      2,
+      3
+     ]
+    },
+    "bob": {
+     "status": 200,
+     "rows": 3,
+     "ids": [
+      1,
+      4,
+      5
+     ]
+    }
+   },
+   "writes": {
+    "alice가 bob 이름으로 카드 만들기": {
+     "status": 403,
+     "response": {
+      "error": "new row violates row-level security policy"
+     },
+     "table_changed": false
+    },
+    "alice가 자기 이름으로 카드 만들기": {
+     "status": 201,
+     "response": {
+      "id": 6
+     },
+     "table_changed": true
+    },
+    "로그인 안 하고 카드 만들기": {
+     "status": 403,
+     "response": {
+      "error": "new row violates row-level security policy"
+     },
+     "table_changed": false
+    },
+    "alice가 bob의 카드 4번 제목 고치기": {
+     "status": 200,
+     "response": {
+      "updated": 0
+     },
+     "table_changed": false
+    },
+    "alice가 자기 카드 2번 주인을 bob으로 바꾸기": {
+     "status": 403,
+     "response": {
+      "error": "new row violates row-level security policy"
+     },
+     "table_changed": false
+    },
+    "alice가 자기 카드 2번 제목 고치기": {
+     "status": 200,
+     "response": {
+      "updated": 1
+     },
+     "table_changed": true
+    },
+    "alice가 bob의 카드 5번 지우기": {
+     "status": 200,
+     "response": {
+      "deleted": 0
+     },
+     "table_changed": false
+    }
+   },
+   "no_api_key_status": 401
+  },
+  "client_filter_before": {
+   "rows_in_response": 5,
+   "rows_on_screen": 3,
+   "other_users_rows_in_response": 2
+  }
+ },
+ "e2_keys": {
+  "before": {
+   "downloaded_bytes": 1459,
+   "ai_secret_key_count": 1,
+   "publishable_key_count": 1,
+   "admin_path_count": 1,
+   "calls_ai_provider_directly": true
+  },
+  "after": {
+   "downloaded_bytes": 1460,
+   "ai_secret_key_count": 0,
+   "publishable_key_count": 1,
+   "admin_path_count": 1,
+   "calls_ai_provider_directly": false
+  }
+ },
+ "e3_admin": {
+  "before": {
+   "로그인 안 함": {
+    "GET /admin": 200,
+    "GET /admin/api/users": 200,
+    "POST /admin/api/cards/delete?id=5": 200
+   },
+   "alice": {
+    "GET /admin": 200,
+    "GET /admin/api/users": 200,
+    "POST /admin/api/cards/delete?id=5": 200
+   },
+   "관리자": {
+    "GET /admin": 200,
+    "GET /admin/api/users": 200,
+    "POST /admin/api/cards/delete?id=5": 200
+   }
+  },
+  "after": {
+   "로그인 안 함": {
+    "GET /admin": 401,
+    "GET /admin/api/users": 401,
+    "POST /admin/api/cards/delete?id=5": 401
+   },
+   "alice": {
+    "GET /admin": 403,
+    "GET /admin/api/users": 403,
+    "POST /admin/api/cards/delete?id=5": 403
+   },
+   "관리자": {
+    "GET /admin": 200,
+    "GET /admin/api/users": 200,
+    "POST /admin/api/cards/delete?id=5": 200
+   }
+  },
+  "after_ignores_client_role_header": 403,
+  "before_users_listed_to_anon": 3
+ },
+ "e4_upload": {
+  "rows": [
+   {
+    "sample": "정상 PNG",
+    "filename": "autumn-bg.png",
+    "content_type": "image/png",
+    "bytes": 69,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/autumn-bg.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/files/5f009ba03a3f48df.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": true,
+      "same_bytes": true
+     }
+    },
+    "validate": {
+     "ok": true,
+     "reasons": [],
+     "detected": "image/png"
+    }
+   },
+   {
+    "sample": "정상 JPEG 머리",
+    "filename": "photo.jpg",
+    "content_type": "image/jpeg",
+    "bytes": 38,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/photo.jpg",
+     "served": {
+      "status": 200,
+      "content_type": "image/jpeg",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/files/2b3561709b78d771.jpg",
+     "served": {
+      "status": 200,
+      "content_type": "image/jpeg",
+      "nosniff": true,
+      "same_bytes": true
+     }
+    },
+    "validate": {
+     "ok": true,
+     "reasons": [],
+     "detected": "image/jpeg"
+    }
+   },
+   {
+    "sample": "정상 WebP 머리",
+    "filename": "pattern.webp",
+    "content_type": "image/webp",
+    "bytes": 30,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/pattern.webp",
+     "served": {
+      "status": 200,
+      "content_type": "image/webp",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/files/8807b73958c30425.webp",
+     "served": {
+      "status": 200,
+      "content_type": "image/webp",
+      "nosniff": true,
+      "same_bytes": true
+     }
+    },
+    "validate": {
+     "ok": true,
+     "reasons": [],
+     "detected": "image/webp"
+    }
+   },
+   {
+    "sample": "2 MiB보다 1바이트 큰 PNG",
+    "filename": "huge.png",
+    "content_type": "image/png",
+    "bytes": 2097153,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/huge.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 413,
+     "accepted": false,
+     "reasons": [
+      "크기 초과"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "크기 초과"
+     ],
+     "detected": "image/png"
+    }
+   },
+   {
+    "sample": "HTML 문서",
+    "filename": "notes.html",
+    "content_type": "text/html",
+    "bytes": 72,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/notes.html",
+     "served": {
+      "status": 200,
+      "content_type": "text/html",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "허용하지 않는 확장자",
+      "허용하지 않는 Content-Type"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "허용하지 않는 확장자",
+      "허용하지 않는 Content-Type"
+     ],
+     "detected": null
+    }
+   },
+   {
+    "sample": "이름만 .png인 HTML 문서",
+    "filename": "notes.png",
+    "content_type": "image/png",
+    "bytes": 72,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/notes.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "매직 바이트 불일치"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "매직 바이트 불일치"
+     ],
+     "detected": null
+    }
+   },
+   {
+    "sample": "SVG 그림",
+    "filename": "logo.svg",
+    "content_type": "image/svg+xml",
+    "bytes": 99,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/logo.svg",
+     "served": {
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "허용하지 않는 확장자",
+      "허용하지 않는 Content-Type"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "허용하지 않는 확장자",
+      "허용하지 않는 Content-Type"
+     ],
+     "detected": null
+    }
+   },
+   {
+    "sample": "확장자가 두 개(.png.html)",
+    "filename": "card.png.html",
+    "content_type": "text/html",
+    "bytes": 72,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/card.png.html",
+     "served": {
+      "status": 200,
+      "content_type": "text/html",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "허용하지 않는 확장자",
+      "허용하지 않는 Content-Type"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "허용하지 않는 확장자",
+      "허용하지 않는 Content-Type"
+     ],
+     "detected": null
+    }
+   },
+   {
+    "sample": "이름에 폴더 이동(../)이 든 PNG",
+    "filename": "../server_only/bg.png",
+    "content_type": "image/png",
+    "bytes": 69,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/../server_only/bg.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "이름 규칙 위반"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "이름 규칙 위반"
+     ],
+     "detected": "image/png"
+    }
+   },
+   {
+    "sample": "Content-Type이 다른 진짜 PNG",
+    "filename": "bg2.png",
+    "content_type": "application/octet-stream",
+    "bytes": 69,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/bg2.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "허용하지 않는 Content-Type"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "허용하지 않는 Content-Type"
+     ],
+     "detected": "image/png"
+    }
+   },
+   {
+    "sample": "빈 파일",
+    "filename": "empty.png",
+    "content_type": "image/png",
+    "bytes": 0,
+    "before": {
+     "status": 201,
+     "accepted": true,
+     "reasons": [],
+     "url": "/uploads/empty.png",
+     "served": {
+      "status": 200,
+      "content_type": "image/png",
+      "nosniff": false,
+      "same_bytes": true
+     }
+    },
+    "after": {
+     "status": 400,
+     "accepted": false,
+     "reasons": [
+      "빈 파일",
+      "매직 바이트 불일치"
+     ],
+     "url": null,
+     "served": null
+    },
+    "validate": {
+     "ok": false,
+     "reasons": [
+      "빈 파일",
+      "매직 바이트 불일치"
+     ],
+     "detected": null
+    }
+   }
+  ],
+  "summary": {
+   "samples": 11,
+   "accepted_before": 11,
+   "accepted_after": 3,
+   "served_as_html_before": 2,
+   "served_as_svg_before": 1,
+   "max_bytes": 2097152
+  }
+ },
+ "e5_rate_limit": {
+  "capacity_B": 5,
+  "refill_per_sec_r": "1/12",
+  "refill_seconds_per_token": 12,
+  "unit_price_won_virtual": 50,
+  "s1_burst_30_in_15s": {
+   "requests": 30,
+   "span_seconds": 14.5,
+   "allowed_no_limit": 30,
+   "allowed_bucket": 6,
+   "rejected_bucket": 24,
+   "first_retry_after": 10,
+   "bound_B_plus_rT": "149/24",
+   "bound_floor": 6,
+   "allowed_at_first_10": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    12
+   ],
+   "cost_won_no_limit": 1500,
+   "cost_won_bucket": 300
+  },
+  "s2_1_per_sec_for_1h": {
+   "requests": 3600,
+   "span_seconds": 3599,
+   "allowed_no_limit": 3600,
+   "allowed_bucket": 304,
+   "rejected_bucket": 3296,
+   "first_retry_after": 7,
+   "bound_B_plus_rT": "3659/12",
+   "bound_floor": 304,
+   "allowed_at_first_10": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    12,
+    24,
+    36,
+    48,
+    60
+   ],
+   "cost_won_no_limit": 180000,
+   "cost_won_bucket": 15200
+  },
+  "s3_two_users": {
+   "global_counter": {
+    "alice_allowed_of_20": 20,
+    "bob_first_allowed": false
+   },
+   "per_user_bucket": {
+    "alice_allowed_of_20": 5,
+    "bob_first_allowed": true
+   }
+  },
+  "http_s1": {
+   "before": {
+    "ok_200": 30,
+    "too_many_429": 0,
+    "first_retry_after_header": null,
+    "images_generated": 30,
+    "anon_status": 401
+   },
+   "after": {
+    "ok_200": 6,
+    "too_many_429": 24,
+    "first_retry_after_header": 10,
+    "images_generated": 6,
+    "anon_status": 401
+   }
+  }
+ },
+ "e6_crosscheck": {
+  "rls_python_vs_sqlite": {
+   "checked": 12,
+   "mismatches": 0
+  },
+  "bucket_bound": {
+   "scenarios": 32,
+   "over_bound": 0
+  },
+  "policies_sql_matches_python": true,
+  "policies": 5
+ }
+}

@@ -1,0 +1,738 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "read_results": {
+   "ch01_everything_visible/results/ch01.json": "6deaab018e12b6e880f65127755f3ed44415a344d7a843fa774172eb56764b76",
+   "ch02_api_keys/results/ch02.json": "10f333e469766556fe77252586dfac6999c1d8a36c0634aba4dc22a1a67d4440",
+   "ch03_vibe_security/results/ch03.json": "b07be7d81efc7eac9a5fd55dc5bbff1a9e0b48dd33339a1aa69721a37418f2d1",
+   "ch04_browser_vs_server/results/ch04.json": "be74fae255cbe7ca4e966a7fad6bca145a04dd4f755e6c02ef940a1e417ebc24",
+   "ch05_static_supabase/results/ch05.json": "0529b9b2bc21af05e35637ae969c8f674cf5236c1d7641188d55a24e97ca0835",
+   "ch06_app_packaging/results/ch06.json": "1fc55629e33e6a96fd4471839c779ef540c13f926381fdc509841e42d164defd",
+   "ch07_capacitor_apk/results/ch07.json": "01f295ff15667105e24c6f42352e1a44eefb64e85d869f5133549afefa5072e5"
+  },
+  "ch08_result": {
+   "ch08_platform_choice/results/ch08.json": "272d9ec214491849a1792cdde90caad0cd79ce1b9116d057470e57ad95f05263"
+  },
+  "ch08": "8장 항목은 판단이라 사람 확인. 공식 문서 값은 data/ch08_manual_2026-10-10.json, 8장 계산 값은 참고값으로 인용"
+ },
+ "e0_tally": {
+  "items": 31,
+  "recheck": 9,
+  "quoted": 11,
+  "auto": 20,
+  "manual": 11,
+  "release_pass": 20,
+  "release_fail": [],
+  "first_judged": 15,
+  "first_pass": 2,
+  "first_fail": [
+   "c1_source_map",
+   "c1_html_comment",
+   "c2_secret_in_build",
+   "c3_rls",
+   "c3_ai_key",
+   "c3_admin",
+   "c3_upload",
+   "c3_rate_limit",
+   "c4_secret_on_server",
+   "c6_manifest",
+   "c7_release_config",
+   "c7_permissions",
+   "c7_signing_machine"
+  ],
+  "first_fail_blocking": 11,
+  "gate_block": 18,
+  "manual_block": 2,
+  "by_ch": {
+   "1": {
+    "items": 3,
+    "auto": 3,
+    "manual": 0
+   },
+   "2": {
+    "items": 2,
+    "auto": 2,
+    "manual": 0
+   },
+   "3": {
+    "items": 5,
+    "auto": 5,
+    "manual": 0
+   },
+   "4": {
+    "items": 3,
+    "auto": 2,
+    "manual": 1
+   },
+   "5": {
+    "items": 5,
+    "auto": 3,
+    "manual": 2
+   },
+   "6": {
+    "items": 3,
+    "auto": 2,
+    "manual": 1
+   },
+   "7": {
+    "items": 4,
+    "auto": 3,
+    "manual": 1
+   },
+   "8": {
+    "items": 4,
+    "auto": 0,
+    "manual": 4
+   },
+   "9": {
+    "items": 2,
+    "auto": 0,
+    "manual": 2
+   }
+  }
+ },
+ "e1_items": [
+  {
+   "ch": 1,
+   "id": "c1_server_only",
+   "gate": "막음",
+   "question": "서버에만 둔 값(키·지시문·원본 템플릿 메모·한도 설정 이름)이 공개 폴더에 한 번도 없다",
+   "how": "다시 검사",
+   "first": true,
+   "release": true,
+   "evidence": "ch01_everything_visible/editor/public / ch06_app_packaging/pwa/public",
+   "value": {
+    "first": {
+     "가짜 AI 키": 0,
+     "이미지 생성 지시문": 0,
+     "원본 템플릿의 작업 메모": 0,
+     "하루 사용 한도 설정 이름": 0
+    },
+    "release": {
+     "가짜 AI 키": 0,
+     "이미지 생성 지시문": 0,
+     "원본 템플릿의 작업 메모": 0,
+     "하루 사용 한도 설정 이름": 0
+    }
+   },
+   "note": ""
+  },
+  {
+   "ch": 1,
+   "id": "c1_source_map",
+   "gate": "막음",
+   "question": "공개 폴더에 지도 파일(.map)과 sourceMappingURL 줄이 없다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "ch01_everything_visible/editor/public / ch06_app_packaging/pwa/public",
+   "value": {
+    "first": {
+     "map_files": [
+      "ch01_everything_visible/editor/public/app.min.js.map"
+     ],
+     "sourcemap_lines": [
+      "ch01_everything_visible/editor/public/app.min.js"
+     ]
+    },
+    "release": {
+     "map_files": [],
+     "sourcemap_lines": []
+    }
+   },
+   "note": ""
+  },
+  {
+   "ch": 1,
+   "id": "c1_html_comment",
+   "gate": "확인",
+   "question": "배포할 HTML에 계획·가격 메모 같은 주석이 남아 있지 않다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "ch01_everything_visible/editor/public / ch06_app_packaging/pwa/public",
+   "value": {
+    "first": {
+     "ch01_everything_visible/editor/public/index.html": 1
+    },
+    "release": {}
+   },
+   "note": ""
+  },
+  {
+   "ch": 2,
+   "id": "c2_secret_in_build",
+   "gate": "막음",
+   "question": "빌드 결과물(브라우저로 내려가는 폴더)에 비밀 키 모양이 0개다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "webapp_ch02_scan.scan_dir(demo)",
+   "value": {
+    "first": [
+     {
+      "folder": "ch02_api_keys/project/dist_mistake",
+      "secret": 2,
+      "public": 0,
+      "env_files": 0
+     },
+     {
+      "folder": "ch01_everything_visible/editor/public",
+      "secret": 0,
+      "public": 0,
+      "env_files": 0
+     },
+     {
+      "folder": "ch03_vibe_security/app/public_before",
+      "secret": 0,
+      "public": 0,
+      "env_files": 0
+     }
+    ],
+    "release": [
+     {
+      "folder": "ch02_api_keys/project/dist_good",
+      "secret": 0,
+      "public": 1,
+      "env_files": 0
+     },
+     {
+      "folder": "ch05_static_supabase/site/public",
+      "secret": 0,
+      "public": 1,
+      "env_files": 0
+     },
+     {
+      "folder": "ch06_app_packaging/pwa/public",
+      "secret": 0,
+      "public": 0,
+      "env_files": 0
+     }
+    ]
+   },
+   "note": ""
+  },
+  {
+   "ch": 2,
+   "id": "c2_env_in_build",
+   "gate": "막음",
+   "question": "빌드 결과물에 .env 같은 설정 파일이 없다",
+   "how": "다시 검사",
+   "first": true,
+   "release": true,
+   "evidence": "webapp_ch02_scan.scan_dir(demo)",
+   "value": {
+    "first": [
+     0,
+     0,
+     0
+    ],
+    "release": [
+     0,
+     0,
+     0
+    ]
+   },
+   "note": ""
+  },
+  {
+   "ch": 3,
+   "id": "c3_rls",
+   "gate": "막음",
+   "question": "RLS: 로그인 안 한 사람이 비공개 카드를 읽을 수 없다",
+   "how": "결과 인용",
+   "first": false,
+   "release": true,
+   "evidence": "ch03_vibe_security/results/ch03.json: e0_checklist.items[0]",
+   "value": {
+    "before_pass": false,
+    "after_pass": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 3,
+   "id": "c3_ai_key",
+   "gate": "막음",
+   "question": "AI 비밀 키가 브라우저 번들에 없다",
+   "how": "결과 인용",
+   "first": false,
+   "release": true,
+   "evidence": "ch03_vibe_security/results/ch03.json: e0_checklist.items[1]",
+   "value": {
+    "before_pass": false,
+    "after_pass": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 3,
+   "id": "c3_admin",
+   "gate": "막음",
+   "question": "일반 사용자가 관리용 API에 닿지 않는다",
+   "how": "결과 인용",
+   "first": false,
+   "release": true,
+   "evidence": "ch03_vibe_security/results/ch03.json: e0_checklist.items[2]",
+   "value": {
+    "before_pass": false,
+    "after_pass": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 3,
+   "id": "c3_upload",
+   "gate": "막음",
+   "question": "그림이 아닌 파일은 업로드되지 않는다",
+   "how": "결과 인용",
+   "first": false,
+   "release": true,
+   "evidence": "ch03_vibe_security/results/ch03.json: e0_checklist.items[3]",
+   "value": {
+    "before_pass": false,
+    "after_pass": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 3,
+   "id": "c3_rate_limit",
+   "gate": "막음",
+   "question": "한 사용자가 AI 배경을 몰아서 만들 수 없다(15초에 30번 시도)",
+   "how": "결과 인용",
+   "first": false,
+   "release": true,
+   "evidence": "ch03_vibe_security/results/ch03.json: e0_checklist.items[4]",
+   "value": {
+    "before_pass": false,
+    "after_pass": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 4,
+   "id": "c4_secret_on_server",
+   "gate": "막음",
+   "question": "비밀 키·원본·판단을 쓰는 기능(AI 배경, 최종 PNG, 보관 저장)이 서버에서 돈다",
+   "how": "결과 인용",
+   "first": false,
+   "release": true,
+   "evidence": "ch04_browser_vs_server/results/ch04.json: e0_decisions / ch03_vibe_security/results/ch03.json: e2_keys.*.calls_ai_provider_directly",
+   "value": {
+    "server_features": [
+     "AI 배경 생성",
+     "보관 저장(다른 기기에서 열기)",
+     "최종 PNG 출력(1080px)"
+    ],
+    "first_calls_ai_directly": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 4,
+   "id": "c4_draft_vs_archive",
+   "gate": "확인",
+   "question": "임시 저장은 브라우저, 기기를 바꿔도 남아야 하는 보관 저장은 서버에 둔다",
+   "how": "결과 인용",
+   "first": null,
+   "release": true,
+   "evidence": "ch04_browser_vs_server/results/ch04.json: e0_decisions(draft_save, archive_save)",
+   "value": {
+    "draft_save": "브라우저",
+    "archive_save": "서버"
+   },
+   "note": ""
+  },
+  {
+   "ch": 4,
+   "id": "c4_month_cost",
+   "gate": "확인",
+   "question": "내 사용량으로 한 달 서버비를 계산해 두었다(렌더링을 서버로 옮기면 얼마나 느는지 포함)",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch04_browser_vs_server/results/ch04.json: e5_vercel_month.*.bill_usd",
+   "value": {
+    "decided_bill_usd": 26.5801,
+    "server_preview_bill_usd": 167.5057
+   },
+   "note": "4장 가상 사용량(카드 20,000장) 기준 참고값"
+  },
+  {
+   "ch": 5,
+   "id": "c5_key_in_function",
+   "gate": "막음",
+   "question": "AI 키는 Edge Function 환경 변수에만 있고 정적 파일·함수 코드에는 값이 없다",
+   "how": "결과 인용",
+   "first": null,
+   "release": true,
+   "evidence": "ch05_static_supabase/results/ch05.json: e0_layout",
+   "value": {
+    "bundle_has_ai_key": false,
+    "function_has_key_value": false,
+    "function_reads_env": true
+   },
+   "note": ""
+  },
+  {
+   "ch": 5,
+   "id": "c5_table_writes",
+   "gate": "막음",
+   "question": "DB 쓰기 정책: 남의 이름으로 카드 만들기, 자기 사용량 늘리기가 거부된다",
+   "how": "결과 인용",
+   "first": null,
+   "release": true,
+   "evidence": "ch05_static_supabase/results/ch05.json: e10_tables.writes",
+   "value": {
+    "alice가 자기 카드 만들기": "허용",
+    "alice가 bob 이름으로 카드 만들기": "거부",
+    "로그인 안 한 사람이 카드 만들기": "거부",
+    "alice가 자기 사용량 늘리기": "거부",
+    "비밀 키로 사용량 늘리기": "허용"
+   },
+   "note": ""
+  },
+  {
+   "ch": 5,
+   "id": "c5_storage_policies",
+   "gate": "막음",
+   "question": "파일 보관함에도 정책이 있어, 남의 폴더 올리기·로그인 없는 올리기 같은 경우가 막힌다",
+   "how": "결과 인용",
+   "first": null,
+   "release": true,
+   "evidence": "ch05_static_supabase/results/ch05.json: e1_blocked_with_policies",
+   "value": {
+    "blocked_with_policies": 8
+   },
+   "note": ""
+  },
+  {
+   "ch": 5,
+   "id": "c5_free_tier_month",
+   "gate": "확인",
+   "question": "무료 한도가 넘치는 달과 상업적 사용에 드는 첫 달 비용을 내 숫자로 계산했다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch05_static_supabase/results/ch05.json: e6_costs",
+   "value": {
+    "mau100_storage_full_month": 6,
+    "commercial_month1_usd": 45
+   },
+   "note": "5장 가상 사용 패턴 기준 참고값"
+  },
+  {
+   "ch": 5,
+   "id": "c5_pause",
+   "gate": "확인",
+   "question": "드문드문 쓰는 앱이라면 무료 프로젝트 일시 정지에 대비했다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch05_static_supabase/results/ch05.json: e8_pause",
+   "value": {
+    "weekend_app_first_risk_day": 9
+   },
+   "note": "5장 모형 기준 참고값"
+  },
+  {
+   "ch": 6,
+   "id": "c6_manifest",
+   "gate": "막음",
+   "question": "manifest가 크롬 계열의 설치 조건을 모두 채운다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "ch06_app_packaging/data/manifests/broken_first_draft.json / ch06_app_packaging/pwa/public/manifest.json",
+   "value": {
+    "first": {
+     "installable": false,
+     "failed": [
+      "icons",
+      "start_url",
+      "display"
+     ]
+    },
+    "release": {
+     "installable": true,
+     "failed": []
+    }
+   },
+   "note": ""
+  },
+  {
+   "ch": 6,
+   "id": "c6_precache",
+   "gate": "확인",
+   "question": "서비스 워커가 미리 받을 목록에 빠진 파일이 없다",
+   "how": "결과 인용",
+   "first": null,
+   "release": true,
+   "evidence": "ch06_app_packaging/results/ch06.json: e6_crosscheck.precache_missing",
+   "value": {
+    "missing": []
+   },
+   "note": ""
+  },
+  {
+   "ch": 6,
+   "id": "c6_path_choice",
+   "gate": "확인",
+   "question": "꼭 필요한 조건(웹 코드 재사용, 앱스토어, 푸시, 기기 기능, 심사 없는 설치)을 적고 그 조건을 모두 만족하는 길을 골랐다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch06_app_packaging/results/ch06.json: e5_paths.cases",
+   "value": {
+    "case_E_fits": []
+   },
+   "note": "조건을 모두 만족하는 길이 없는 경우(6장 사례 E)도 있어요"
+  },
+  {
+   "ch": 7,
+   "id": "c7_release_config",
+   "gate": "막음",
+   "question": "Capacitor·안드로이드 설정에 개발용 값(server.url, cleartext, 디버깅 등) '막음' 항목이 0개다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "webapp_ch07_config.check_project",
+   "value": {
+    "first": 12,
+    "release": 0
+   },
+   "note": ""
+  },
+  {
+   "ch": 7,
+   "id": "c7_permissions",
+   "gate": "확인",
+   "question": "쓰는 플러그인이 요구하지 않는 권한이 없다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "webapp_ch07_config.check_project",
+   "value": {
+    "first": 5,
+    "release": 0
+   },
+   "note": ""
+  },
+  {
+   "ch": 7,
+   "id": "c7_signing_machine",
+   "gate": "막음",
+   "question": "서명 키 점검표의 기계 항목(키 파일 위치, 비밀번호, 유효기간, versionCode 등)을 모두 통과한다",
+   "how": "다시 검사",
+   "first": false,
+   "release": true,
+   "evidence": "webapp_ch07_signing.scorecard",
+   "value": {
+    "first": "0/6",
+    "release": "6/6"
+   },
+   "note": ""
+  },
+  {
+   "ch": 7,
+   "id": "c7_signing_human",
+   "gate": "막음",
+   "question": "서명 키 사람 항목 4개(두 곳 백업, 지문 기록, 담당자, 릴리스 키 서명)에 답했다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "webapp_ch07_signing.ITEMS(사람)",
+   "value": {
+    "human_items": 4
+   },
+   "note": ""
+  },
+  {
+   "ch": 8,
+   "id": "c8_target_platform",
+   "gate": "확인",
+   "question": "첫 출시 플랫폼(iOS, 안드로이드, 웹)을 내 사용자가 실제로 쓰는 기기 기준으로 골랐다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch09_ai_coding_era/data/ch08_manual_2026-10-10.json",
+   "value": {
+    "facts": null,
+    "ch08": {
+     "candidate_now": {
+      "web": true,
+      "android": true,
+      "ios": false
+     },
+     "where": "results/ch08.json: e5_select.cardnews_kr_subscription"
+    }
+   },
+   "note": "선택 기준표는 8장 /tracks/webapp/08-platform-choice.html"
+  },
+  {
+   "ch": 8,
+   "id": "c8_store_fee",
+   "gate": "확인",
+   "question": "스토어 수수료를 내 판매 방식(유료 앱, 앱 안 결제, 구독)과 지역에 맞춰 계산했다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch09_ai_coding_era/data/ch08_manual_2026-10-10.json",
+   "value": {
+    "facts": {
+     "apple_small_business": "직전 해 수익 100만 달러 이하 또는 신규 개발자는 Small Business Program으로 유료 앱·앱 안 결제 수수료 15%",
+     "apple_url": "https://developer.apple.com/app-store/small-business-program/",
+     "google_first_1m": "연 수익 첫 100만 달러까지 15% 단계. 호주·EEA·일본·영국·미국의 자동 갱신 구독은 '10% + 결제 수수료 5%'로 지역마다 달라요",
+     "google_url": "https://support.google.com/googleplay/android-developer/answer/112622"
+    },
+    "ch08": {
+     "gross_krw": 4900,
+     "net_web_pg": 4288,
+     "net_gp_15_tier": 3786,
+     "where": "results/ch08.json: e1_one_payment[].net"
+    }
+   },
+   "note": "회사 공식 문서 기준, 지역·조건별 예외는 문서를 직접 확인"
+  },
+  {
+   "ch": 8,
+   "id": "c8_account_cost",
+   "gate": "확인",
+   "question": "개발자 계정 비용과 개발 장비(iOS 빌드용 Mac 등)를 예산에 넣었다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch09_ai_coding_era/data/ch08_manual_2026-10-10.json",
+   "value": {
+    "facts": {
+     "apple_usd_per_year": 99,
+     "apple_url": "https://developer.apple.com/help/account/membership/program-enrollment/",
+     "google_usd_once": 25,
+     "google_url": "https://support.google.com/googleplay/android-developer/answer/6112435"
+    },
+    "ch08": {
+     "web_only": 330000,
+     "android": 35000,
+     "ios_no_mac": 1637600
+    }
+   },
+   "note": "장비 비용은 8장에서 다뤄요"
+  },
+  {
+   "ch": 8,
+   "id": "c8_play_closed_test",
+   "gate": "막음",
+   "question": "2023-11-13 이후 만든 구글 플레이 개인 계정이라면, 비공개 테스트 요건(테스터 12명 이상, 14일 연속)을 일정에 넣었다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "ch09_ai_coding_era/data/ch08_manual_2026-10-10.json",
+   "value": {
+    "facts": {
+     "testers": 12,
+     "days": 14,
+     "url": "https://support.google.com/googleplay/android-developer/answer/14151465"
+    },
+    "ch08": null
+   },
+   "note": "회사 공식 도움말 기준"
+  },
+  {
+   "ch": 9,
+   "id": "c9_backup_restore",
+   "gate": "확인",
+   "question": "사용자 카드·브랜드 설정을 백업하고, 실제로 한 번 되살려 봤다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "checks/ch09.csv",
+   "value": null,
+   "note": "[해석] 이 장에서 덧붙인 운영 항목"
+  },
+  {
+   "ch": 9,
+   "id": "c9_support_channel",
+   "gate": "확인",
+   "question": "문의를 받고 장애를 알릴 창구와, 키를 바꿔야 할 때 할 일을 적어 두었다",
+   "how": "사람 확인",
+   "first": null,
+   "release": null,
+   "evidence": "checks/ch09.csv",
+   "value": null,
+   "note": "[해석] 이 장에서 덧붙인 운영 항목"
+  }
+ ],
+ "e2_manual_by_kind": {
+  "돈": {
+   "count": 4,
+   "ids": [
+    "c4_month_cost",
+    "c5_free_tier_month",
+    "c8_store_fee",
+    "c8_account_cost"
+   ]
+  },
+  "운영": {
+   "count": 4,
+   "ids": [
+    "c5_pause",
+    "c7_signing_human",
+    "c8_play_closed_test",
+    "c9_support_channel"
+   ]
+  },
+  "선택": {
+   "count": 2,
+   "ids": [
+    "c6_path_choice",
+    "c8_target_platform"
+   ]
+  },
+  "데이터": {
+   "count": 1,
+   "ids": [
+    "c9_backup_restore"
+   ]
+  }
+ },
+ "e3_bookend_ch01": {
+  "visible_bytes": 8405,
+  "visible_responses": 10,
+  "server_only_bytes": 45885,
+  "server_only_files": 4,
+  "markers_in_downloads": {
+   "가짜 AI 키": 0,
+   "이미지 생성 지시문": 0,
+   "원본 템플릿의 작업 메모": 0,
+   "하루 사용 한도 설정 이름": 0
+  }
+ },
+ "e4_market_ratios": {
+  "launch_growth": 7.35,
+  "top10_over_median": 35.8,
+  "share_1k_to_10k_kept": 0.266,
+  "pearce_vulnerable_programs_approx": 676,
+  "so_ai_use_change_pt": 8,
+  "so_distrust_change_pt": 15
+ },
+ "e5_crosscheck": {
+  "ch03_quoted_equal": true,
+  "ch07_blocking_equal": true,
+  "ch07_permissions_equal": true,
+  "ch07_signing_equal": true,
+  "ch06_manifest_equal": true,
+  "ch06_no_sourcemap_line_equal": true,
+  "ch02_scan_equal": true,
+  "ch01_markers_equal": true,
+  "all": true
+ },
+ "e6_overlap": {
+  "ch02_scanner_secret_found": 0,
+  "ch03_counted_ai_secret_key": 1,
+  "scanner_missed": 1,
+  "caught_by_other_item": true
+ }
+}

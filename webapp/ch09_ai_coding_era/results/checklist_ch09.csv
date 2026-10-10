@@ -1,0 +1,32 @@
+장,id,막음/확인,점검,확인 방법,첫 판,출시 후보,근거
+1장,c1_server_only,막음,서버에만 둔 값(키·지시문·원본 템플릿 메모·한도 설정 이름)이 공개 폴더에 한 번도 없다,다시 검사,통과,통과,ch01_everything_visible/editor/public / ch06_app_packaging/pwa/public
+1장,c1_source_map,막음,공개 폴더에 지도 파일(.map)과 sourceMappingURL 줄이 없다,다시 검사,고칠 것,통과,ch01_everything_visible/editor/public / ch06_app_packaging/pwa/public
+1장,c1_html_comment,확인,배포할 HTML에 계획·가격 메모 같은 주석이 남아 있지 않다,다시 검사,고칠 것,통과,ch01_everything_visible/editor/public / ch06_app_packaging/pwa/public
+2장,c2_secret_in_build,막음,빌드 결과물(브라우저로 내려가는 폴더)에 비밀 키 모양이 0개다,다시 검사,고칠 것,통과,webapp_ch02_scan.scan_dir(demo)
+2장,c2_env_in_build,막음,빌드 결과물에 .env 같은 설정 파일이 없다,다시 검사,통과,통과,webapp_ch02_scan.scan_dir(demo)
+3장,c3_rls,막음,RLS: 로그인 안 한 사람이 비공개 카드를 읽을 수 없다,결과 인용,고칠 것,통과,ch03_vibe_security/results/ch03.json: e0_checklist.items[0]
+3장,c3_ai_key,막음,AI 비밀 키가 브라우저 번들에 없다,결과 인용,고칠 것,통과,ch03_vibe_security/results/ch03.json: e0_checklist.items[1]
+3장,c3_admin,막음,일반 사용자가 관리용 API에 닿지 않는다,결과 인용,고칠 것,통과,ch03_vibe_security/results/ch03.json: e0_checklist.items[2]
+3장,c3_upload,막음,그림이 아닌 파일은 업로드되지 않는다,결과 인용,고칠 것,통과,ch03_vibe_security/results/ch03.json: e0_checklist.items[3]
+3장,c3_rate_limit,막음,한 사용자가 AI 배경을 몰아서 만들 수 없다(15초에 30번 시도),결과 인용,고칠 것,통과,ch03_vibe_security/results/ch03.json: e0_checklist.items[4]
+4장,c4_secret_on_server,막음,"비밀 키·원본·판단을 쓰는 기능(AI 배경, 최종 PNG, 보관 저장)이 서버에서 돈다",결과 인용,고칠 것,통과,ch04_browser_vs_server/results/ch04.json: e0_decisions / ch03_vibe_security/results/ch03.json: e2_keys.*.calls_ai_provider_directly
+4장,c4_draft_vs_archive,확인,"임시 저장은 브라우저, 기기를 바꿔도 남아야 하는 보관 저장은 서버에 둔다",결과 인용,-,통과,"ch04_browser_vs_server/results/ch04.json: e0_decisions(draft_save, archive_save)"
+4장,c4_month_cost,확인,내 사용량으로 한 달 서버비를 계산해 두었다(렌더링을 서버로 옮기면 얼마나 느는지 포함),사람 확인,-,사람이 답함,ch04_browser_vs_server/results/ch04.json: e5_vercel_month.*.bill_usd
+5장,c5_key_in_function,막음,AI 키는 Edge Function 환경 변수에만 있고 정적 파일·함수 코드에는 값이 없다,결과 인용,-,통과,ch05_static_supabase/results/ch05.json: e0_layout
+5장,c5_table_writes,막음,"DB 쓰기 정책: 남의 이름으로 카드 만들기, 자기 사용량 늘리기가 거부된다",결과 인용,-,통과,ch05_static_supabase/results/ch05.json: e10_tables.writes
+5장,c5_storage_policies,막음,"파일 보관함에도 정책이 있어, 남의 폴더 올리기·로그인 없는 올리기 같은 경우가 막힌다",결과 인용,-,통과,ch05_static_supabase/results/ch05.json: e1_blocked_with_policies
+5장,c5_free_tier_month,확인,무료 한도가 넘치는 달과 상업적 사용에 드는 첫 달 비용을 내 숫자로 계산했다,사람 확인,-,사람이 답함,ch05_static_supabase/results/ch05.json: e6_costs
+5장,c5_pause,확인,드문드문 쓰는 앱이라면 무료 프로젝트 일시 정지에 대비했다,사람 확인,-,사람이 답함,ch05_static_supabase/results/ch05.json: e8_pause
+6장,c6_manifest,막음,manifest가 크롬 계열의 설치 조건을 모두 채운다,다시 검사,고칠 것,통과,ch06_app_packaging/data/manifests/broken_first_draft.json / ch06_app_packaging/pwa/public/manifest.json
+6장,c6_precache,확인,서비스 워커가 미리 받을 목록에 빠진 파일이 없다,결과 인용,-,통과,ch06_app_packaging/results/ch06.json: e6_crosscheck.precache_missing
+6장,c6_path_choice,확인,"꼭 필요한 조건(웹 코드 재사용, 앱스토어, 푸시, 기기 기능, 심사 없는 설치)을 적고 그 조건을 모두 만족하는 길을 골랐다",사람 확인,-,사람이 답함,ch06_app_packaging/results/ch06.json: e5_paths.cases
+7장,c7_release_config,막음,"Capacitor·안드로이드 설정에 개발용 값(server.url, cleartext, 디버깅 등) '막음' 항목이 0개다",다시 검사,고칠 것,통과,webapp_ch07_config.check_project
+7장,c7_permissions,확인,쓰는 플러그인이 요구하지 않는 권한이 없다,다시 검사,고칠 것,통과,webapp_ch07_config.check_project
+7장,c7_signing_machine,막음,"서명 키 점검표의 기계 항목(키 파일 위치, 비밀번호, 유효기간, versionCode 등)을 모두 통과한다",다시 검사,고칠 것,통과,webapp_ch07_signing.scorecard
+7장,c7_signing_human,막음,"서명 키 사람 항목 4개(두 곳 백업, 지문 기록, 담당자, 릴리스 키 서명)에 답했다",사람 확인,-,사람이 답함,webapp_ch07_signing.ITEMS(사람)
+8장,c8_target_platform,확인,"첫 출시 플랫폼(iOS, 안드로이드, 웹)을 내 사용자가 실제로 쓰는 기기 기준으로 골랐다",사람 확인,-,사람이 답함,ch09_ai_coding_era/data/ch08_manual_2026-10-10.json
+8장,c8_store_fee,확인,"스토어 수수료를 내 판매 방식(유료 앱, 앱 안 결제, 구독)과 지역에 맞춰 계산했다",사람 확인,-,사람이 답함,ch09_ai_coding_era/data/ch08_manual_2026-10-10.json
+8장,c8_account_cost,확인,개발자 계정 비용과 개발 장비(iOS 빌드용 Mac 등)를 예산에 넣었다,사람 확인,-,사람이 답함,ch09_ai_coding_era/data/ch08_manual_2026-10-10.json
+8장,c8_play_closed_test,막음,"2023-11-13 이후 만든 구글 플레이 개인 계정이라면, 비공개 테스트 요건(테스터 12명 이상, 14일 연속)을 일정에 넣었다",사람 확인,-,사람이 답함,ch09_ai_coding_era/data/ch08_manual_2026-10-10.json
+9장,c9_backup_restore,확인,"사용자 카드·브랜드 설정을 백업하고, 실제로 한 번 되살려 봤다",사람 확인,-,사람이 답함,checks/ch09.csv
+9장,c9_support_channel,확인,"문의를 받고 장애를 알릴 창구와, 키를 바꿔야 할 때 할 일을 적어 두었다",사람 확인,-,사람이 답함,checks/ch09.csv

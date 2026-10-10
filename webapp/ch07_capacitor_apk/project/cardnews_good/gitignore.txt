@@ -1,0 +1,6 @@
+# 실제 앱에서는 이 내용을 .gitignore에 둬요(실습 저장소에서 보이게 하려고 이름을 바꿨어요).
+keystore.properties
+*.jks
+*.keystore
+node_modules/
+dist/

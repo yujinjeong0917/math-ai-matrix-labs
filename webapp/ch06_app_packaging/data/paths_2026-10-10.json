@@ -1,0 +1,135 @@
+{
+ "checked": "2026-10-10",
+ "note": "네 가지 길의 비교표. 점수나 순위를 매기지 않고, 공식 문서로 확인한 '구조'와 '되는지/안 되는지'만 적어요. 조건 값의 근거는 sources 의 id 로 이어요. 문서가 바뀌면 날짜가 다른 새 파일을 만들어요.",
+ "conditions": {
+  "reuse_web_code": "지금 웹 코드(HTML·CSS·JS)를 거의 그대로 쓴다",
+  "ios_app_store": "iOS 앱스토어에 올린다",
+  "ios_push": "iOS 사용자에게 푸시 알림을 보낸다",
+  "ios_bluetooth": "iOS에서 블루투스 기기에 연결한다",
+  "link_install_no_review": "스토어 심사 없이 링크만으로 iOS·안드로이드에 설치하게 한다"
+ },
+ "paths": [
+  {
+   "id": "pwa",
+   "way": "1 PWA(홈 화면에 추가)",
+   "name": "PWA",
+   "ui": "브라우저 엔진이 웹 페이지를 그려요",
+   "code": "지금 웹 코드 + manifest.json + 서비스 워커(선택)",
+   "store": "스토어를 거치지 않고 링크로 설치. 구글 플레이에는 TWA로 올리는 길이 있어요(크롬 문서, 2020-02-04 갱신). iOS 앱스토어에는 PWA 그대로 올리는 길이 없어요",
+   "device": "웹 API 범위. iOS 웹 푸시와 배지는 16.4부터, 홈 화면에 추가한 웹앱에서만. Safari에는 Background Sync·Web Bluetooth·진동 API가 없어요",
+   "can": {
+    "reuse_web_code": true,
+    "ios_app_store": false,
+    "ios_push": true,
+    "ios_bluetooth": false,
+    "link_install_no_review": true
+   },
+   "notes": {
+    "ios_push": "홈 화면에 추가한 뒤에만, 버튼을 누르는 것 같은 사용자 동작에 이어서 권한을 물어야 해요(iOS·iPadOS 16.4+)",
+    "ios_bluetooth": "Safari(iOS 포함)는 Web Bluetooth를 지원하지 않아요(MDN 호환성 표)",
+    "ios_app_store": "앱스토어는 앱 파일을 받아요. PWA는 앱 파일이 아니라 사이트예요"
+   },
+   "sources": [
+    "mdn_installable",
+    "webdev_install_criteria",
+    "webkit_push_164",
+    "webkit_safari26_webapp",
+    "bcd_compat",
+    "chrome_twa"
+   ]
+  },
+  {
+   "id": "capacitor",
+   "way": "2 WebView 포장",
+   "name": "Capacitor",
+   "ui": "앱 안의 WebView(앱에 들어간 브라우저 화면)가 웹 코드를 그려요",
+   "code": "지금 웹 코드 + iOS·안드로이드 프로젝트(Xcode, Android Studio). 기기 기능은 플러그인(Swift·Kotlin 등)으로",
+   "store": "앱 파일로 만들어 앱스토어·플레이에 올려요. iOS 심사에서 4.2(최소 기능)를 따져요",
+   "device": "플러그인으로 네이티브 API를 불러요. 공식·커뮤니티 플러그인이 있고 직접 만들 수도 있어요",
+   "can": {
+    "reuse_web_code": true,
+    "ios_app_store": true,
+    "ios_push": true,
+    "ios_bluetooth": true,
+    "link_install_no_review": false
+   },
+   "notes": {
+    "ios_app_store": "웹사이트를 감싸기만 한 앱은 4.2에 걸릴 수 있어요. '웹사이트 이상'의 기능·화면이 필요해요",
+    "ios_push": "공식 플러그인 @capacitor/push-notifications. iOS에서 Push Notifications 기능을 켜야 해요",
+    "ios_bluetooth": "블루투스를 다루는 플러그인을 찾아 쓰거나, 공식 문서가 안내하는 방법으로 직접 만들어요",
+    "link_install_no_review": "iOS는 스토어(또는 애플이 정한 배포 경로)를 거쳐요. 안드로이드 APK 직접 배포는 7장에서 다뤄요"
+   },
+   "sources": [
+    "capacitor_docs",
+    "capacitor_env",
+    "capacitor_plugins",
+    "capacitor_push",
+    "apple_42"
+   ]
+  },
+  {
+   "id": "react-native",
+   "way": "3 크로스플랫폼",
+   "name": "React Native",
+   "ui": "React 코드가 플랫폼의 네이티브 화면 부품(View, Text 등)으로 그려져요. WebView가 아니에요",
+   "code": "JavaScript·TypeScript와 React로 새로 짜요. HTML·CSS 화면 코드는 그대로 못 써요. 기기 기능은 네이티브 모듈(Objective-C·Java·Kotlin·C++)로",
+   "store": "앱 파일로 만들어 앱스토어·플레이에 올려요",
+   "device": "네이티브 모듈로 플랫폼 API를 불러요",
+   "can": {
+    "reuse_web_code": false,
+    "ios_app_store": true,
+    "ios_push": true,
+    "ios_bluetooth": true,
+    "link_install_no_review": false
+   },
+   "notes": {
+    "reuse_web_code": "JS와 React 지식은 이어지지만 DOM(HTML 요소)을 쓰는 화면 코드는 다시 짜요[해석]"
+   },
+   "sources": [
+    "rn_home",
+    "rn_native_modules"
+   ]
+  },
+  {
+   "id": "flutter",
+   "way": "3 크로스플랫폼",
+   "name": "Flutter",
+   "ui": "자체 렌더링 엔진(Impeller)이 화면 부품을 직접 그려요. 시스템 부품도 WebView도 쓰지 않아요",
+   "code": "Dart로 새로 짜요. 기기 기능은 플랫폼 채널(Kotlin·Swift)이나 FFI(C)로",
+   "store": "앱 파일로 만들어 앱스토어·플레이에 올려요",
+   "device": "플랫폼 채널과 FFI로 플랫폼 API를 불러요",
+   "can": {
+    "reuse_web_code": false,
+    "ios_app_store": true,
+    "ios_push": true,
+    "ios_bluetooth": true,
+    "link_install_no_review": false
+   },
+   "notes": {},
+   "sources": [
+    "flutter_arch"
+   ]
+  },
+  {
+   "id": "native",
+   "way": "4 네이티브",
+   "name": "네이티브(Swift·Kotlin)",
+   "ui": "운영체제의 화면 도구로 그려요",
+   "code": "iOS는 Swift, 안드로이드는 Kotlin으로 두 벌을 짜요(안드로이드는 Kotlin으로 시작하기를 권해요)",
+   "store": "앱 파일로 만들어 앱스토어·플레이에 올려요",
+   "device": "운영체제가 여는 API를 바로 써요",
+   "can": {
+    "reuse_web_code": false,
+    "ios_app_store": true,
+    "ios_push": true,
+    "ios_bluetooth": true,
+    "link_install_no_review": false
+   },
+   "notes": {},
+   "sources": [
+    "apple_swift",
+    "android_kotlin_first"
+   ]
+  }
+ ]
+}

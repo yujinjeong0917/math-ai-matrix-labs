@@ -1,0 +1,6 @@
+{
+ "templates": [
+  {"id": "notice", "name": "공지형", "file": "templates/notice.json"},
+  {"id": "quote", "name": "인용형", "file": "templates/quote.json"}
+ ]
+}

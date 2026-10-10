@@ -1,0 +1,59 @@
+{
+ "checked": "2026-10-10",
+ "note": "시장 숫자는 모두 회사·조사 기관이 밝힌 수치를 그대로 옮겼어요. 이 실습은 이 값을 바꾸지 않고, 같은 출처 안의 두 값끼리만 나눠 봐요(분모가 다른 값끼리는 곱하거나 나누지 않아요).",
+ "revenuecat_sosa_2026": {
+  "url": "https://www.revenuecat.com/state-of-subscription-apps",
+  "who": "RevenueCat(구독 결제 도구 회사)가 자사 고객 앱 데이터로 낸 보고서, 2026년 3월",
+  "selection_bias": "RevenueCat을 쓰는 구독 앱만 들어 있어요. 유료 다운로드 앱, 광고 수익 앱, 다른 결제 도구를 쓰는 앱은 빠져요.",
+  "apps": 115000,
+  "revenue_usd": 16000000000,
+  "new_sub_apps_per_month_2022_01": 2000,
+  "new_sub_apps_per_month_2026_01": 14700,
+  "revenue_share_launched_before_2020": 0.69,
+  "revenue_share_launched_2025_or_later": 0.03,
+  "median_monthly_revenue_1y_usd": 72,
+  "top10_monthly_revenue_1y_usd": 2574,
+  "share_hit_1k_all": 0.173,
+  "share_hit_10k_all": 0.046,
+  "share_hit_1k_photo_video": 0.214,
+  "median_monthly_revenue_1y_photo_video_usd": 124,
+  "ai_revenue_per_payer_more": 0.41,
+  "ai_churn_faster": 0.30,
+  "quotes": [
+   "~2,000 new subscription apps launched per month in Jan 2022; 14,700+ by Jan 2026.",
+   "apps launched before 2020 generate 69% of all subscription revenue.",
+   "Apps launched in 2025 or later (aka, the vibe coding era) account for just 3%.",
+   "Cross-category median is ~$72, but the top 10% pull $2,500+, a 36× gap",
+   "All Categories: 17.3% hit $1K, 4.6% hit $10K.",
+   "AI-powered apps generate 41% more revenue per payer, but they churn 30% faster.",
+   "Vertical, opinionated products beat thin AI wrappers. (Olivia Moore, Andreessen Horowitz, 보고서 안 인터뷰 요약)",
+   "The cost to serve a marginal subscriber used to be near-zero, but that's not true for products using LLMs to support AI-powered features."
+  ]
+ },
+ "stackoverflow_2025": {
+  "url": "https://stackoverflow.co/company/press/archive/stack-overflow-2025-developer-survey/",
+  "who": "Stack Overflow 2025 개발자 설문 보도자료, 2025-07-29",
+  "respondents": 49000,
+  "countries": 177,
+  "use_or_plan_ai_2025": 0.84,
+  "use_or_plan_ai_2024": 0.76,
+  "distrust_accuracy_2025": 0.46,
+  "distrust_accuracy_2024": 0.31,
+  "debugging_ai_code_time_consuming": 0.45
+ },
+ "pearce_2022": {
+  "url": "https://arxiv.org/abs/2108.09293",
+  "who": "Pearce 외, \"Asleep at the Keyboard? Assessing the Security of GitHub Copilot's Code Contributions\", IEEE S&P 2022 (arXiv 2021)",
+  "scenarios": 89,
+  "programs": 1689,
+  "vulnerable_share_approx": 0.40,
+  "quote": "Of these, we found approximately 40% to be vulnerable.",
+  "caveat": "2021년 당시 Copilot으로 MITRE Top 25 약점과 관련된 상황을 일부러 골라 만든 실험이에요. 지금의 도구나 모든 코드에 그대로 옮길 수 없어요."
+ },
+ "canva_2025": {
+  "url": "https://www.canva.com/newsroom/news/canva-2025-wrap/",
+  "who": "Canva 뉴스룸 \"2025 in review\"(회사가 밝힌 수치)",
+  "monthly_users": 260000000,
+  "revenue_usd": 3500000000
+ }
+}

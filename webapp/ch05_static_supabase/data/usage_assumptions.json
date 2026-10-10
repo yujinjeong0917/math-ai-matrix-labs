@@ -1,0 +1,19 @@
+{
+ "note": "카드뉴스 편집기의 가상 사용 패턴이에요. 실제 앱의 측정값이 아니라 계산을 따라가기 쉽게 고른 둥근 숫자예요. 활성 사용자(MAU) 한 명이 한 달에 쓰는 양.",
+ "per_active_user_month": {
+  "new_cards": 6,
+  "card_row_kb": 2,
+  "uploads": 2, "upload_kb": 400,
+  "ai_backgrounds": 4, "ai_png_kb": 300,
+  "image_views": 30, "image_view_kb": 300,
+  "api_json_mb": 1,
+  "edge_calls": 5,
+  "full_bundle_loads": 2, "bundle_kb": 500,
+  "web_requests": 160
+ },
+ "derived_note": "저장(DB·스토리지)은 쌓이고, 내보내는 양(egress)·호출 수·MAU는 달마다 새로 세요.",
+ "hypothetical_ai_cost_usd_per_image": 0.04,
+ "hypothetical_ai_cost_note": "AI 이미지 단가는 가상 값이에요. 실제 단가는 쓰는 회사·모델·크기에 따라 달라요. 다른 장의 원화 가상 단가와 섞지 않으려고 달러로만 적었어요.",
+ "deploys_per_month": 10,
+ "kb_per_mb": 1000, "mb_per_gb": 1000
+}

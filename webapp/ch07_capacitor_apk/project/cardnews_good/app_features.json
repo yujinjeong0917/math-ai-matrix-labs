@@ -1,0 +1,7 @@
+{
+  "plugins": ["@capacitor/camera", "@capacitor/filesystem"],
+  "camera": {"save_to_gallery": false},
+  "filesystem": {"directories": ["Data", "Cache"]},
+  "keytool_validity_days": 10000,
+  "note": "사진을 찍거나 골라 카드 배경으로 쓰고, 완성한 카드는 앱 전용 폴더(Data)에 저장해요. 갤러리에는 저장하지 않아요."
+}

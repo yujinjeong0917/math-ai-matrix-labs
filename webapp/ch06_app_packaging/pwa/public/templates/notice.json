@@ -1,0 +1,8 @@
+{
+ "id": "notice",
+ "name": "공지형",
+ "size": [320, 320],
+ "background": "images/bg-dots.svg",
+ "title": {"x": 24, "y": 24, "size": 26, "color": "#2f5d8a", "maxChars": 20},
+ "body": {"x": 24, "y": 80, "size": 16, "color": "#222222", "maxChars": 80}
+}

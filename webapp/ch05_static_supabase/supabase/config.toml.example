@@ -1,0 +1,4 @@
+# Edge Function 설정 예시(실습용). verify_jwt 기본값은 true예요.
+# 로그인한 사람만 부르는 함수이니 기본값을 그대로 둬요.
+[functions.generate-background]
+verify_jwt = true

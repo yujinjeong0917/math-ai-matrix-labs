@@ -1,0 +1,7 @@
+{
+  "plugins": ["@capacitor/camera", "@capacitor/filesystem"],
+  "camera": {"save_to_gallery": false},
+  "filesystem": {"directories": ["Data", "Cache"]},
+  "keytool_validity_days": 3650,
+  "note": "기능은 바른 판과 같아요. 권한은 '혹시 몰라' 여러 개 넣었고, 키는 10년짜리로 만들었어요."
+}

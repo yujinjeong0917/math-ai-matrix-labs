@@ -1,0 +1,12 @@
+{
+  "appId": "invalid.demo.cardnews",
+  "appName": "카드뉴스 편집기",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
+}

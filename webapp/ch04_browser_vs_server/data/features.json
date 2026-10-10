@@ -1,0 +1,12 @@
+{
+ "_about": "카드뉴스 편집기의 기능 7개(저장은 임시 저장과 보관 저장으로 나눔). 값은 이 장에서 정한 가정이다. uses_per_card는 카드 한 장을 만들 때 그 기능을 쓰는 횟수, budget_ms는 사용자가 기다려도 괜찮다고 본 시간이다.",
+ "features": [
+  {"id": "edit", "name": "편집(글자·위치 바꾸기)", "touches": [], "must_survive_device_change": false, "uses_per_card": 120, "budget_ms": 100, "note": "키 하나 누를 때마다 화면이 바뀌어야 한다"},
+  {"id": "preview", "name": "미리보기", "touches": [], "must_survive_device_change": false, "uses_per_card": 120, "budget_ms": 100, "note": "공개 템플릿(320px)으로 그린다. 1장에서 이미 다 보이는 재료"},
+  {"id": "template", "name": "템플릿 고르기", "touches": [], "must_survive_device_change": false, "uses_per_card": 3, "budget_ms": 1000, "note": "무료 템플릿 JSON은 1장에서 이미 공개 폴더에 있다"},
+  {"id": "ai_background", "name": "AI 배경 생성", "touches": ["AI 비밀 키", "생성 지시문"], "must_survive_device_change": false, "uses_per_card": 2, "budget_ms": 10000, "note": "키와 지시문은 1장에서 서버에만 둔 것"},
+  {"id": "export_png", "name": "최종 PNG 출력(1080px)", "touches": ["원본 고해상도 템플릿", "무료판 워터마크 판단"], "must_survive_device_change": false, "uses_per_card": 1, "budget_ms": 10000, "note": "원본 템플릿(42,640바이트)은 1장에서 서버에만 둔 것"},
+  {"id": "draft_save", "name": "임시 저장(자동)", "touches": [], "must_survive_device_change": false, "uses_per_card": 12, "budget_ms": 100, "note": "새로고침해도 쓰던 카드가 남게"},
+  {"id": "archive_save", "name": "보관 저장(다른 기기에서 열기)", "touches": [], "must_survive_device_change": true, "uses_per_card": 1, "budget_ms": 1000, "note": "폰에서 만들고 노트북에서 이어 쓰기"}
+ ]
+}

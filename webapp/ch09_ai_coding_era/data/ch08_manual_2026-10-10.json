@@ -1,0 +1,22 @@
+{
+ "checked": "2026-10-10",
+ "note": "8장(첫 출시 플랫폼 고르기) 항목은 어느 플랫폼에 먼저 낼지, 어떤 결제 경로를 쓸지 고르는 판단이라 모두 사람 확인으로 둬요. 아래 공식 문서 값은 9장에서 2026-10-10에 따로 확인했고, 8장 results/ch08.json의 계산 값은 webapp_ch09_checklist.ch08_refs()가 참고값으로 덧붙여요.",
+ "items": [
+  {"id": "c8_target_platform", "gate": "확인", "question": "첫 출시 플랫폼(iOS, 안드로이드, 웹)을 내 사용자가 실제로 쓰는 기기 기준으로 골랐다",
+   "facts": null, "note": "선택 기준표는 8장 /tracks/webapp/08-platform-choice.html"},
+  {"id": "c8_store_fee", "gate": "확인", "question": "스토어 수수료를 내 판매 방식(유료 앱, 앱 안 결제, 구독)과 지역에 맞춰 계산했다",
+   "facts": {
+     "apple_small_business": "직전 해 수익 100만 달러 이하 또는 신규 개발자는 Small Business Program으로 유료 앱·앱 안 결제 수수료 15%",
+     "apple_url": "https://developer.apple.com/app-store/small-business-program/",
+     "google_first_1m": "연 수익 첫 100만 달러까지 15% 단계. 호주·EEA·일본·영국·미국의 자동 갱신 구독은 '10% + 결제 수수료 5%'로 지역마다 달라요",
+     "google_url": "https://support.google.com/googleplay/android-developer/answer/112622"},
+   "note": "회사 공식 문서 기준, 지역·조건별 예외는 문서를 직접 확인"},
+  {"id": "c8_account_cost", "gate": "확인", "question": "개발자 계정 비용과 개발 장비(iOS 빌드용 Mac 등)를 예산에 넣었다",
+   "facts": {"apple_usd_per_year": 99, "apple_url": "https://developer.apple.com/help/account/membership/program-enrollment/",
+             "google_usd_once": 25, "google_url": "https://support.google.com/googleplay/android-developer/answer/6112435"},
+   "note": "장비 비용은 8장에서 다뤄요"},
+  {"id": "c8_play_closed_test", "gate": "막음", "question": "2023-11-13 이후 만든 구글 플레이 개인 계정이라면, 비공개 테스트 요건(테스터 12명 이상, 14일 연속)을 일정에 넣었다",
+   "facts": {"testers": 12, "days": 14, "url": "https://support.google.com/googleplay/android-developer/answer/14151465"},
+   "note": "회사 공식 도움말 기준"}
+ ]
+}

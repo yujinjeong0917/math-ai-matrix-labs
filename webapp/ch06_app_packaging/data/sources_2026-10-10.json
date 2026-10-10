@@ -1,0 +1,164 @@
+{
+ "checked": "2026-10-10",
+ "note": "6장의 사실(설치 조건, iOS 웹앱·푸시, 서비스 워커, 캐시 전략, 심사 가이드라인, 각 도구의 구조)은 아래 문서에서 확인했어요. 문서가 바뀌면 날짜가 다른 새 파일을 만들어요.",
+ "facts": [
+  {
+   "id": "mdn_installable",
+   "claim": "크로미움 계열 설치 조건: name 또는 short_name, 192px·512px 아이콘, start_url, display 또는 display_override, prefer_related_applications는 없거나 false. https 또는 localhost·127.0.0.1. 서비스 워커는 설치 조건이 아님. iOS 16.4부터 여러 브라우저의 공유 메뉴에서 홈 화면에 추가",
+   "quote": "While not a requirement for a PWA to be installable, many PWAs use service workers to provide an offline experience.",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "webdev_install_criteria",
+   "claim": "크롬 설치 조건(display는 fullscreen, standalone, minimal-ui, window-controls-overlay 중 하나), 페이지 갱신 2024-09-19",
+   "url": "https://web.dev/articles/install-criteria",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "mdn_manifest",
+   "claim": "명세에서는 모든 항목이 선택. .webmanifest 확장자와 application/manifest+json, .json도 대개 받아 줌. <link rel=\"manifest\">로 연결",
+   "quote": "All members are optional in the specification, but some applications require some members to be present.",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "w3c_manifest_scope",
+   "claim": "start_url이 scope 안에 있지 않으면 scope 값을 쓰지 않는다(처리 규칙)",
+   "url": "https://w3c.github.io/manifest/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "webkit_push_164",
+   "claim": "iOS·iPadOS 16.4에서 홈 화면 웹앱에 Web Push와 Badging API 추가. 권한 요청은 직접적인 사용자 동작(구독 버튼 누르기 등)에 이어서",
+   "url": "https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/",
+   "published": "2023-02-16",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "webkit_safari26_webapp",
+   "claim": "iOS·iPadOS 26에서는 홈 화면에 추가한 모든 사이트가 기본으로 웹앱으로 열리고, 사용자가 'Open as Web App'을 끌 수 있다",
+   "quote": "By default, every website added to the Home Screen opens as a web app.",
+   "url": "https://webkit.org/blog/17333/webkit-features-in-safari-26-0/",
+   "published": "2025-09-15",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "webkit_storage_policy",
+   "claim": "홈 화면 웹앱은 브라우저에서 열 때와 같은 저장 한도. 영구 저장 요청(persist)은 홈 화면 웹앱인지 같은 기준으로 허락",
+   "url": "https://webkit.org/blog/14403/updates-to-storage-policy/",
+   "published": "2023-08-10",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "bcd_compat",
+   "claim": "MDN 호환성 데이터: PushManager Safari iOS 16.4(홈 화면 웹앱), setAppBadge Safari iOS 16.4, SyncManager·Bluetooth·vibrate는 Safari 미지원",
+   "url": "https://github.com/mdn/browser-compat-data",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "mdn_background_sync",
+   "claim": "Background Synchronization API는 Baseline이 아님(Limited availability)",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/API/Background_Synchronization_API",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "mdn_using_sw",
+   "claim": "서비스 워커는 HTTPS에서만(localhost 예외), 기본 범위는 스크립트가 있는 폴더 아래, install에서 캐시 채우기, activate에서 옛 캐시 지우기, DOM에 닿지 못함",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "mdn_pwa_caching",
+   "claim": "cache first, stale-while-revalidate(cache first with cache refresh), network first의 정의와 장단점",
+   "quote": "The drawback of 'cache first' is that once a response is in the cache, it is never refreshed until a new version of the service worker is installed.",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Caching",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "sw_spec_get_only",
+   "claim": "Cache의 put·addAll은 요청 방식이 GET이 아니면 TypeError",
+   "url": "https://w3c.github.io/ServiceWorker/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "chrome_twa",
+   "claim": "Trusted Web Activity로 PWA를 안드로이드 앱에서 열고, Bubblewrap으로 프로젝트를 만든다. 페이지 갱신 2020-02-04",
+   "url": "https://developer.chrome.com/docs/android/trusted-web-activity",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_42",
+   "claim": "App Review Guidelines 4.2 Minimum Functionality, 4.2.2(web clippings 등). 페이지에 갱신일 표시 없음",
+   "quote": "Your app should include features, content, and UI that elevate it beyond a repackaged website.",
+   "url": "https://developer.apple.com/app-store/review/guidelines/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "capacitor_docs",
+   "claim": "Capacitor는 iOS·안드로이드 등에서 웹 도구로 만든 앱을 돌리는 크로스플랫폼 네이티브 런타임, 웹 코드는 WebView에서 돈다. 문서 버전 v8",
+   "url": "https://capacitorjs.com/docs",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "capacitor_env",
+   "claim": "Node 22 이상, iOS는 macOS와 Xcode 26.0 이상, 안드로이드는 Android Studio 2025.2.1 이상",
+   "url": "https://capacitorjs.com/docs/getting-started/environment-setup",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "capacitor_plugins",
+   "claim": "플러그인은 JS가 네이티브 API에 닿게 한다. 공식·커뮤니티·직접 만든 플러그인",
+   "quote": "Plugins in Capacitor enable JavaScript to interface directly with Native APIs.",
+   "url": "https://capacitorjs.com/docs/plugins",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "capacitor_push",
+   "claim": "공식 Push Notifications 플러그인, iOS에서 Push Notifications 기능을 켜야 함",
+   "url": "https://capacitorjs.com/docs/apis/push-notifications",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "rn_home",
+   "claim": "React 부품이 네이티브 플랫폼 UI로 그려진다",
+   "quote": "React primitives render to native platform UI, meaning your app uses the same native platform APIs other apps do.",
+   "url": "https://reactnative.dev/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "rn_native_modules",
+   "claim": "React Native가 주지 않는 플랫폼 API는 Turbo Native Module로 직접 잇는다. 문서 버전 0.87",
+   "url": "https://reactnative.dev/docs/turbo-native-modules-introduction",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "flutter_arch",
+   "claim": "Flutter는 화면 부품을 직접 구현해 그리고(Impeller), Dart로 짜며, 플랫폼 API는 플랫폼 채널·FFI로 부른다",
+   "quote": "Flutter has its own implementations of each UI control, rather than deferring to those provided by the system",
+   "url": "https://docs.flutter.dev/resources/architectural-overview",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "mdn_request_cache",
+   "claim": "fetch의 cache 옵션: default는 HTTP 캐시에서 신선한 저장본을 그대로 쓰고, reload는 캐시를 보지 않고 서버에서 받은 뒤 캐시를 고친다. Cache.addAll은 URL이나 Request 객체를 받는다",
+   "url": "https://developer.mozilla.org/en-US/docs/Web/API/Request/cache",
+   "also": "https://developer.mozilla.org/en-US/docs/Web/API/Cache/addAll",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "apple_swift",
+   "claim": "Swift는 모든 애플 플랫폼용 프로그래밍 언어",
+   "quote": "Swift is a powerful and intuitive programming language for all Apple platforms.",
+   "url": "https://developer.apple.com/swift/",
+   "checked": "2026-10-10"
+  },
+  {
+   "id": "android_kotlin_first",
+   "claim": "안드로이드 개발은 Kotlin 우선, 새 앱은 Kotlin으로 시작하기를 권함",
+   "quote": "If you're looking to build an Android app, we recommend starting with Kotlin to take advantage of its best-in-class features.",
+   "url": "https://developer.android.com/kotlin/first",
+   "checked": "2026-10-10"
+  }
+ ]
+}

@@ -1,0 +1,621 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10"
+ },
+ "e0_layout": {
+  "static_files": [
+   "app.js",
+   "index.html",
+   "style.css"
+  ],
+  "static_bytes": 2138,
+  "bundle_has_publishable": true,
+  "bundle_has_ai_key": false,
+  "bundle_has_ai_key_name": false,
+  "function_reads_env": true,
+  "function_has_key_value": false,
+  "env_example_has_key": true
+ },
+ "e1_storage": [
+  {
+   "policies": "정책 없음",
+   "case": "alice가 내 폴더에 png 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "alice가 내 폴더에 txt 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "alice가 bob 폴더에 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "로그인 안 한 사람이 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "alice가 템플릿 버킷에 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "alice가 내 파일 받기",
+   "result": "거부(select)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "bob이 alice 파일 받기",
+   "result": "거부(select)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "alice가 bob 파일 받기",
+   "result": "거부(select)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "키 없이 템플릿 공개 주소로 받기",
+   "result": "허용"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "키 없이 비공개 버킷 주소로 받기",
+   "result": "거부(not public)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "alice가 내 png 덮어쓰기(upsert)",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "bob이 alice 파일 지우기",
+   "result": "0개(보이지 않음)"
+  },
+  {
+   "policies": "정책 없음",
+   "case": "비밀 키로 bob 파일 받기",
+   "result": "허용"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 내 폴더에 png 올리기",
+   "result": "허용"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 내 폴더에 txt 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 bob 폴더에 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "로그인 안 한 사람이 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 템플릿 버킷에 올리기",
+   "result": "거부(insert)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 내 파일 받기",
+   "result": "허용"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "bob이 alice 파일 받기",
+   "result": "거부(select)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 bob 파일 받기",
+   "result": "거부(select)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "키 없이 템플릿 공개 주소로 받기",
+   "result": "허용"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "키 없이 비공개 버킷 주소로 받기",
+   "result": "거부(not public)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "alice가 내 png 덮어쓰기(upsert)",
+   "result": "허용"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "bob이 alice 파일 지우기",
+   "result": "0개(보이지 않음)"
+  },
+  {
+   "policies": "정책 4개",
+   "case": "비밀 키로 bob 파일 받기",
+   "result": "허용"
+  }
+ ],
+ "e1_blocked_with_policies": 8,
+ "e2_upsert": {
+  "insert만": "거부(upsert)",
+  "insert+select+update": "덮어씀"
+ },
+ "e3_signed_url": {
+  "0": "받음",
+  "599": "받음",
+  "600": "만료",
+  "bob_create": "거부"
+ },
+ "e4_crosscheck": {
+  "paths": 8,
+  "comparisons": 6,
+  "agree": 6,
+  "by_user": {
+   "alice": {
+    "select": 3,
+    "insert_ok": 2
+   },
+   "bob": {
+    "select": 1,
+    "insert_ok": 1
+   },
+   "anon": {
+    "select": 0,
+    "insert_ok": 0
+   }
+  }
+ },
+ "e5_edge": {
+  "steps": [
+   {
+    "step": "사전 확인(OPTIONS)",
+    "status": 204,
+    "note": "사전 확인"
+   },
+   {
+    "step": "토큰 없이",
+    "status": 401,
+    "note": "플랫폼이 막음"
+   },
+   {
+    "step": "다른 비밀로 서명한 토큰",
+    "status": 401,
+    "note": "플랫폼이 막음"
+   },
+   {
+    "step": "만료된 토큰",
+    "status": 401,
+    "note": "플랫폼이 막음"
+   },
+   {
+    "step": "alice, 설명 글 201자",
+    "status": 400,
+    "note": "설명 글 길이"
+   },
+   {
+    "step": "alice 1번째",
+    "status": 200,
+    "note": "만듦"
+   },
+   {
+    "step": "alice 2번째",
+    "status": 200,
+    "note": "만듦"
+   },
+   {
+    "step": "alice 3번째",
+    "status": 200,
+    "note": "만듦"
+   },
+   {
+    "step": "alice 4번째",
+    "status": 200,
+    "note": "만듦"
+   },
+   {
+    "step": "alice 5번째",
+    "status": 200,
+    "note": "만듦"
+   },
+   {
+    "step": "alice 6번째",
+    "status": 429,
+    "note": "하루 한도"
+   },
+   {
+    "step": "bob 1번째",
+    "status": 200,
+    "note": "만듦"
+   }
+  ],
+  "status_counts": {
+   "200": 6,
+   "204": 1,
+   "400": 1,
+   "401": 3,
+   "429": 1
+  },
+  "billed_invocations": 8,
+  "rejected_by_platform": 3,
+  "preflight": 1,
+  "alice_usage": 5,
+  "bob_usage": 1,
+  "ai_files": [
+   "u-alice/ai/2026-10-10-001.png",
+   "u-alice/ai/2026-10-10-002.png",
+   "u-alice/ai/2026-10-10-003.png",
+   "u-alice/ai/2026-10-10-004.png",
+   "u-alice/ai/2026-10-10-005.png",
+   "u-bob/ai/2026-10-10-001.png"
+  ],
+  "ai_png_bytes": 74,
+  "who_can_read_alice_ai": {
+   "alice": "받음",
+   "bob": "거부"
+  },
+  "key_in_any_response": false,
+  "without_verify_jwt": {
+   "billed_invocations": 3,
+   "statuses": [
+    401,
+    401,
+    401
+   ]
+  }
+ },
+ "e6_costs": {
+  "per_user": {
+   "db_mb": 0.012,
+   "storage_mb": 2.0,
+   "egress_mb": 10.0,
+   "edge_calls": 5.0,
+   "static_mb": 1.0,
+   "web_requests": 160.0,
+   "ai_images": 4.0
+  },
+  "free_walls": {
+   "mau": 50000.0,
+   "egress_mau": 500.0,
+   "edge_mau": 100000.0,
+   "storage_user_months": 500.0,
+   "db_user_months": 41666.67
+  },
+  "grid": [
+   {
+    "mau": 100,
+    "m1_over": [],
+    "m6_over": [
+     "스토리지"
+    ],
+    "m12_over": [
+     "스토리지"
+    ],
+    "storage_full_month": 6,
+    "db_full_month": 417,
+    "pro_m12_total": 25.0,
+    "pro_m12_lines": {
+     "base": 25.0,
+     "compute_after_credit": 0.0,
+     "mau": 0.0,
+     "storage": 0.0,
+     "egress": 0.0,
+     "edge": 0.0,
+     "db_disk": 0.0
+    },
+    "pro_m12_capped_blocked": [],
+    "ai_cost_month": 16.0,
+    "netlify_credits": 155.2,
+    "netlify_within": true
+   },
+   {
+    "mau": 250,
+    "m1_over": [],
+    "m6_over": [
+     "스토리지"
+    ],
+    "m12_over": [
+     "스토리지"
+    ],
+    "storage_full_month": 3,
+    "db_full_month": 167,
+    "pro_m12_total": 25.0,
+    "pro_m12_lines": {
+     "base": 25.0,
+     "compute_after_credit": 0.0,
+     "mau": 0.0,
+     "storage": 0.0,
+     "egress": 0.0,
+     "edge": 0.0,
+     "db_disk": 0.0
+    },
+    "pro_m12_capped_blocked": [],
+    "ai_cost_month": 40.0,
+    "netlify_credits": 163.0,
+    "netlify_within": true
+   },
+   {
+    "mau": 600,
+    "m1_over": [
+     "egress",
+     "스토리지"
+    ],
+    "m6_over": [
+     "egress",
+     "스토리지"
+    ],
+    "m12_over": [
+     "egress",
+     "스토리지"
+    ],
+    "storage_full_month": 1,
+    "db_full_month": 70,
+    "pro_m12_total": 25.0,
+    "pro_m12_lines": {
+     "base": 25.0,
+     "compute_after_credit": 0.0,
+     "mau": 0.0,
+     "storage": 0.0,
+     "egress": 0.0,
+     "edge": 0.0,
+     "db_disk": 0.0
+    },
+    "pro_m12_capped_blocked": [],
+    "ai_cost_month": 96.0,
+    "netlify_credits": 181.2,
+    "netlify_within": true
+   },
+   {
+    "mau": 2000,
+    "m1_over": [
+     "egress",
+     "스토리지"
+    ],
+    "m6_over": [
+     "egress",
+     "스토리지"
+    ],
+    "m12_over": [
+     "egress",
+     "스토리지"
+    ],
+    "storage_full_month": 1,
+    "db_full_month": 21,
+    "pro_m12_total": 25.0,
+    "pro_m12_lines": {
+     "base": 25.0,
+     "compute_after_credit": 0.0,
+     "mau": 0.0,
+     "storage": 0.0,
+     "egress": 0.0,
+     "edge": 0.0,
+     "db_disk": 0.0
+    },
+    "pro_m12_capped_blocked": [],
+    "ai_cost_month": 320.0,
+    "netlify_credits": 254.0,
+    "netlify_within": true
+   },
+   {
+    "mau": 20000,
+    "m1_over": [
+     "egress",
+     "스토리지"
+    ],
+    "m6_over": [
+     "egress",
+     "스토리지",
+     "DB 크기"
+    ],
+    "m12_over": [
+     "egress",
+     "스토리지",
+     "DB 크기"
+    ],
+    "storage_full_month": 1,
+    "db_full_month": 3,
+    "pro_m12_total": 33.09,
+    "pro_m12_lines": {
+     "base": 25.0,
+     "compute_after_credit": 0.0,
+     "mau": 0.0,
+     "storage": 8.09,
+     "egress": 0.0,
+     "edge": 0.0,
+     "db_disk": 0.0
+    },
+    "pro_m12_capped_blocked": [
+     "storage_gb"
+    ],
+    "ai_cost_month": 3200.0,
+    "netlify_credits": 1190.0,
+    "netlify_within": false
+   },
+   {
+    "mau": 120000,
+    "m1_over": [
+     "MAU",
+     "egress",
+     "Edge Function 호출",
+     "스토리지",
+     "DB 크기"
+    ],
+    "m6_over": [
+     "MAU",
+     "egress",
+     "Edge Function 호출",
+     "스토리지",
+     "DB 크기"
+    ],
+    "m12_over": [
+     "MAU",
+     "egress",
+     "Edge Function 호출",
+     "스토리지",
+     "DB 크기"
+    ],
+    "storage_full_month": 1,
+    "db_full_month": 1,
+    "pro_m12_total": 235.87,
+    "pro_m12_lines": {
+     "base": 25.0,
+     "compute_after_credit": 0.0,
+     "mau": 65.0,
+     "storage": 59.21,
+     "egress": 85.5,
+     "edge": 0.0,
+     "db_disk": 1.16
+    },
+    "pro_m12_capped_blocked": [
+     "mau",
+     "storage_gb",
+     "egress_gb",
+     "db_gb"
+    ],
+    "ai_cost_month": 19200.0,
+    "netlify_credits": 6390.0,
+    "netlify_within": false
+   }
+  ],
+  "vercel_hobby": {
+   "transfer_mau": 100000.0,
+   "requests_mau": 6250.0
+  },
+  "netlify": {
+   "deploy_credits": 150.0,
+   "per_user_credit": 0.052,
+   "max_mau_10_deploys": 2884.6,
+   "max_mau_20_deploys": 0.0
+  },
+  "commercial_month1": {
+   "vercel_pro_seat": 20,
+   "supabase_pro": 25,
+   "total_min": 45
+  }
+ },
+ "e7_lockin": {
+  "policies": 7,
+  "use_supabase_functions": 7,
+  "on_storage_objects": 4,
+  "bucket_inserts": 2,
+  "app_supabase_calls": 3,
+  "function_supabase_calls": 5,
+  "function_deno_env": 1
+ },
+ "e8_pause": {
+  "매일 쓰는 편집기": {
+   "days": 30,
+   "requests": 360,
+   "first_risk_day": null
+  },
+  "주말 행사용 앱": {
+   "days": 30,
+   "requests": 170,
+   "first_risk_day": 9
+  },
+  "개발용 프로젝트(휴가)": {
+   "days": 30,
+   "requests": 50,
+   "first_risk_day": 17
+  }
+ },
+ "e9_exercises": {
+  "ex1": {
+   "mau": 400,
+   "egress_mb": 4000.0,
+   "storage_m1_mb": 800.0,
+   "storage_m2_mb": 1600.0,
+   "storage_full_month": 2,
+   "egress_over": false
+  },
+  "ex2": {
+   "mau": 100,
+   "upload_mb": 0.8,
+   "ai_mb": 1.2,
+   "fixed_mb": 120.0,
+   "left_mb": 880.0,
+   "per_month_mb": 80.0,
+   "months": 11.0,
+   "full_month": 12
+  },
+  "mid": {
+   "m120_storage_gb": 2880.0,
+   "m120_storage_over": 2780.0,
+   "m120_egress_gb": 1200.0,
+   "m120_egress_over": 950.0,
+   "m120_edge_calls": 600000,
+   "m120_db_gb": 17.28,
+   "m20_storage_gb": 480.0,
+   "m20_storage_over": 380.0,
+   "m20_egress_gb": 200.0,
+   "netlify_20_deploys_credits": 300.0,
+   "free_egress_mb": 5000,
+   "free_storage_mb": 1000
+  },
+  "docs_examples": {
+   "mau_160k_overage_usd": 195.0,
+   "edge_1000001_packs": 2,
+   "storage_188gb_overage_usd": 4.0
+  }
+ },
+ "e10_tables": {
+  "reads": {
+   "로그인 안 함": {
+    "cards": [
+     1,
+     4
+    ],
+    "usage_rows": 0
+   },
+   "alice": {
+    "cards": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "usage_rows": 1
+   },
+   "bob": {
+    "cards": [
+     1,
+     4,
+     5
+    ],
+    "usage_rows": 1
+   },
+   "비밀 키": {
+    "cards": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "usage_rows": 2
+   }
+  },
+  "writes": {
+   "alice가 자기 카드 만들기": "허용",
+   "alice가 bob 이름으로 카드 만들기": "거부",
+   "로그인 안 한 사람이 카드 만들기": "거부",
+   "alice가 자기 사용량 늘리기": "거부",
+   "비밀 키로 사용량 늘리기": "허용"
+  },
+  "sql_agree": true
+ }
+}

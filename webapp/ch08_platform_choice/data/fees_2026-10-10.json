@@ -1,0 +1,31 @@
+{
+ "checked": "2026-10-10",
+ "note": "한국 사용자에게 파는 경우의 수수료·계정 비용·장비 가격. 율은 공식 문서에서 읽은 값이고(근거 id는 sources 파일), assumptions 칸은 이 장에서 정한 가정이에요. 문서가 바뀌면 날짜가 다른 새 파일을 만들어요. 미국·EEA·영국·호주·일본은 구글 플레이 수수료 구조가 2026년에 바뀌어 이 표와 달라요(sources의 gp_service_fee).",
+ "assumptions": {
+  "vat_rate": 0.10,
+  "krw_per_usd": 1400,
+  "krw_per_usd_note": "계산 편의를 위한 가정 환율이에요. 실제 환율은 한국은행 등에서 그날 값을 확인해요",
+  "threshold_usd": 1000000,
+  "mac_years": 4,
+  "mac_years_note": "맥을 4년 쓴다고 보고 한 해 몫을 나눈 가정이에요",
+  "vat_basis": "스토어 수수료는 부가세를 뗀 금액에(애플 Schedule 2 'net of any and all taxes', 구글은 개발자가 VAT를 내는 나라에서 'net price'), 애플 한국 외부 결제는 부가세 포함 금액에('gross of any value-added taxes'), PG 수수료는 고객이 낸 금액 전체에 매긴다고 둬요. 한국 거래에서 구글이 세금을 어떻게 떼는지와 PG 수수료에 붙는 부가세 처리는 [확인 필요]예요"
+ },
+ "pg": {
+  "toss_card_general": {"label": "토스페이먼츠 카드 일반 등급", "rate": 0.034, "signup_krw": 220000, "yearly_krw": 110000, "sources": ["toss_fee"]},
+  "none": {"label": "PG 없음", "rate": 0.0, "signup_krw": 0, "yearly_krw": 0, "sources": []}
+ },
+ "channels": [
+  {"id": "web_pg", "label": "웹 결제(PG 카드)", "store_rate": 0.0, "pg": "toss_card_general", "sources": ["toss_fee"]},
+  {"id": "gp_15_tier", "label": "구글 플레이 결제(자동 갱신 구독, 매출과 관계없이 15%)", "store_rate": 0.15, "pg": null, "sources": ["gp_service_fee"]},
+  {"id": "gp_alt_billing_kr", "label": "구글 플레이 대체 결제(한국, 15%에서 4% 인하를 4%p로 읽어 11%) + PG", "store_rate": 0.11, "pg": "toss_card_general", "sources": ["gp_alt_billing_kr", "toss_fee"]},
+  {"id": "apple_standard_sub", "label": "애플 IAP 표준(구독, 첫해 30%·1년 넘은 구독자 15%)", "store_rate": 0.30, "subscription_later_rate": 0.15, "pg": null, "sources": ["apple_subs"]},
+  {"id": "apple_sbp", "label": "애플 IAP 소규모 사업자 프로그램(15%)", "store_rate": 0.15, "pg": null, "sources": ["apple_sbp"]},
+  {"id": "apple_kr_external", "label": "애플 한국 외부 결제(제3자 결제, 부가세 포함 금액의 26%) + PG", "store_rate": 0.26, "store_on": "gross", "pg": "toss_card_general", "sources": ["apple_kr_external", "toss_fee"]},
+  {"id": "gp_kr_after_2026_12_31", "label": "구글 플레이 한국 새 수수료 구조(2026-12-31부터, 결제 수수료 미발표)", "store_rate": null, "pg": null, "sources": ["gp_new_fee_rollout"]}
+ ],
+ "accounts": {
+  "apple": {"label": "Apple Developer Program 연회비(99달러를 가정 환율로)", "usd": 99, "sources": ["apple_dev_fee"]},
+  "google": {"label": "Google Play 개발자 등록비(한 번, 25달러를 가정 환율로)", "usd": 25, "sources": ["google_reg_fee"]}
+ },
+ "mac": {"label": "Mac mini 가장 싼 구성(애플 한국 온라인 스토어 '부터' 가격)", "krw": 1499000, "sources": ["apple_kr_mac_mini"]}
+}

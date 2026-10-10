@@ -1,0 +1,19 @@
+{
+ "_about": "4장 계산에 쓰는 가정값. 측정값이 아니라 이 장에서 정한 값이다. 바꿔 넣고 experiments.py를 다시 돌리면 결과가 바뀐다.",
+ "traffic": {"users_per_month": 1000, "cards_per_user_per_month": 20},
+ "network": {"rtt_ms": {"icn1": 40, "iad1": 200}, "down_mbps": 50, "up_mbps": 10},
+ "typing": {"bursts": 6, "keys_per_burst": 20, "key_gap_ms": 120, "burst_gap_ms": 2000, "debounce_ms": 300},
+ "page_open": {"requests": 8, "bytes": 7659, "note": "1장 실습에서 잰 처음 열 때 요청 8개, 7,659바이트"},
+ "template_change": {"requests": 1, "bytes": 255, "note": "1장 템플릿 JSON 하나 크기"},
+ "browser": {"preview_ms": 8, "export_ms": 1200, "draft_save_ms": 2},
+ "server": {
+  "preview": {"cpu_ms": 30, "request_bytes": 600, "response_bytes": 200000},
+  "export_png": {"cpu_ms": 800, "request_bytes": 600, "response_bytes": 1800000},
+  "ai_background": {"cpu_ms": 50, "wait_ms": 8000, "request_bytes": 300, "response_bytes": 1500000},
+  "archive_save": {"cpu_ms": 5, "wait_ms": 20, "request_bytes": 600, "response_bytes": 200}
+ },
+ "ai_model_cost_krw_per_image": 50,
+ "usd_krw": 1400,
+ "storage": {"utf16_bytes_per_char": 2, "ai_background_png_bytes": 1500000},
+ "gb_bytes": 1000000000
+}

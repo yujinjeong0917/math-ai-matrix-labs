@@ -1,0 +1,18 @@
+{
+ "checked": "2026-10-10",
+ "note": "이 장의 브라우저·개발자 도구 동작에 대한 사실은 아래 문서에서 확인했어요. 문서가 바뀌면 날짜가 다른 새 파일을 만들어요.",
+ "facts": [
+  {"id": "network_log_while_open", "claim": "Network 패널은 개발자 도구가 열려 있는 동안의 요청만 기록한다", "quote": "Use the Requests table to view a log of all requests made while DevTools has been open.", "url": "https://developer.chrome.com/docs/devtools/network/reference", "checked": "2026-10-10"},
+  {"id": "network_size_column", "claim": "Size 칸은 서버가 보낸 머리글 + 본문 크기, 큰 행 보기의 아래 값은 압축을 푼 크기", "quote": "The combined size of the response headers plus the response body, as delivered by the server.", "url": "https://developer.chrome.com/docs/devtools/network/reference", "checked": "2026-10-10"},
+  {"id": "disable_cache", "claim": "Disable cache를 켜면 처음 온 사용자처럼 캐시 없이 받는다", "quote": "DevTools disables the browser cache. This more accurately emulates a first-time user's experience, because requests are served from the browser cache on repeat visits.", "url": "https://developer.chrome.com/docs/devtools/network/reference", "checked": "2026-10-10"},
+  {"id": "network_filters", "claim": "Network 패널은 Fetch/XHR, JS, CSS, Img, Font, Doc 등으로 거를 수 있다", "url": "https://developer.chrome.com/docs/devtools/network/reference", "checked": "2026-10-10"},
+  {"id": "sources_page_pane", "claim": "Sources 패널의 Page 탭은 페이지가 불러온 모든 자원을 보여 준다", "quote": "Click the Page tab to view all of the resources that the page has loaded.", "url": "https://developer.chrome.com/docs/devtools/sources", "checked": "2026-10-10"},
+  {"id": "devtools_source_maps", "claim": "개발자 도구는 sourceMappingURL 주석으로 지도 파일을 찾고, 설정의 JavaScript source maps가 켜져 있어야 한다", "url": "https://developer.chrome.com/docs/devtools/javascript/source-maps", "checked": "2026-10-10"},
+  {"id": "mdn_source_map", "claim": "지도 파일은 받은 코드와 원래 코드를 잇는 JSON 형식이고, SourceMap 머리글이나 sourceMappingURL 주석으로 찾는다", "url": "https://developer.mozilla.org/en-US/docs/Glossary/Source_map", "checked": "2026-10-10"},
+  {"id": "ecma426_sources_content", "claim": "sourcesContent는 원본을 올려 둘 수 없을 때 쓰는 원본 내용 문자열 목록", "url": "https://tc39.es/ecma426/2024/", "checked": "2026-10-10"},
+  {"id": "mdn_minification", "claim": "압축(minification)은 브라우저가 처리하는 방식을 바꾸지 않고 불필요한 데이터를 지우는 일", "url": "https://developer.mozilla.org/en-US/docs/Glossary/Minification", "checked": "2026-10-10"},
+  {"id": "mdn_private_cache", "claim": "private cache는 한 사용자(대개 브라우저)에 묶인 캐시, no-store는 저장하지 말라는 뜻", "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching", "checked": "2026-10-10"},
+  {"id": "css_fonts_selective_download", "claim": "브라우저는 글자에 필요한 글꼴 면만 골라 받을 수 있다", "quote": "Using CSS font matching rules, a user agent can selectively download only those faces that are needed for a given piece of text.", "url": "https://www.w3.org/TR/css-fonts-4/", "checked": "2026-10-10"},
+  {"id": "owasp_wstg_info_05", "claim": "WSTG-INFO-05: HTML 주석·JS 변수·지도 파일에서 정보가 새는지 점검", "url": "https://github.com/OWASP/wstg/blob/master/document/4-Web_Application_Security_Testing/01-Information_Gathering/05-Review_Web_Page_Content_for_Information_Leakage.md", "checked": "2026-10-10"}
+ ]
+}

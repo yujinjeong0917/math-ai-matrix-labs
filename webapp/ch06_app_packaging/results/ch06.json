@@ -1,0 +1,1150 @@
+{
+ "meta": {
+  "checked": "2026-10-10",
+  "python": "3.12",
+  "note": "숫자는 이 폴더의 파일과 모형에서 나온 값이에요. 브라우저 실측은 checks/ch06.csv에 적어요."
+ },
+ "e0_files": {
+  "index_html_bytes": 1249,
+  "ch01_index_html_bytes": 1079,
+  "index_lines_added": [
+   "<link rel=\"manifest\" href=\"manifest.json\" />",
+   "<meta name=\"theme-color\" content=\"#2f5d8a\" />",
+   "<link rel=\"apple-touch-icon\" href=\"icons/icon-192.png\" />",
+   "<script>",
+   "  if (\"serviceWorker\" in navigator) {",
+   "    navigator.serviceWorker.register(\"/sw.js\");",
+   "  }",
+   "</script>"
+  ],
+  "index_lines_removed": [
+   "<!-- 메모: 유료 템플릿 3종은 다음 달에 공개. 가격은 아직 미정 -->"
+  ],
+  "app_min_js_bytes": 1451,
+  "ch01_app_min_js_bytes": 1487,
+  "manifest_bytes": 364,
+  "sw_bytes": 3015,
+  "icon_192_bytes": 521,
+  "icon_512_bytes": 2472,
+  "manifest_keys": [
+   "name",
+   "short_name",
+   "start_url",
+   "scope",
+   "display",
+   "background_color",
+   "theme_color",
+   "icons"
+  ]
+ },
+ "e1_manifests": {
+  "ours": {
+   "chromium_installable": true,
+   "failed": [],
+   "failed_messages": [],
+   "checks": 9
+  },
+  "broken_first_draft": {
+   "chromium_installable": false,
+   "failed": [
+    "icons",
+    "start_url",
+    "display"
+   ],
+   "failed_messages": [
+    "아이콘 192x192와 512x512가 모두 있어야 해요(빠진 크기: 512x512)",
+    "start_url 이 있어야 해요",
+    "display(또는 display_override)가 fullscreen, standalone, minimal-ui, window-controls-overlay 중 하나여야 해요"
+   ],
+   "checks": 7
+  },
+  "broken_prefer_store": {
+   "chromium_installable": false,
+   "failed": [
+    "prefer_related_applications"
+   ],
+   "failed_messages": [
+    "prefer_related_applications 는 없거나 false 여야 해요"
+   ],
+   "checks": 8
+  },
+  "broken_trailing_comma": {
+   "chromium_installable": false,
+   "failed": [
+    "json"
+   ],
+   "failed_messages": [
+    "JSON으로 읽을 수 없어요(Expecting value, 8번째 줄)"
+   ],
+   "checks": 1
+  },
+  "broken_wrong_size": {
+   "chromium_installable": true,
+   "failed": [
+    "icon1:icons/icon-192.png",
+    "scope"
+   ],
+   "failed_messages": [
+    "icons/icon-192.png: 적은 크기 512x512, 실제 192x192",
+    "start_url 이 scope 안에 있어야 scope 가 쓰여요(밖이면 scope 를 무시해요)"
+   ],
+   "checks": 9
+  },
+  "ours_on_plain_http": [
+   "https"
+  ]
+ },
+ "e2_precache": {
+  "version": "card-editor-v1",
+  "files": 12,
+  "rows": [
+   {
+    "path": "/",
+    "bytes": 1249
+   },
+   {
+    "path": "/style.css",
+    "bytes": 1027
+   },
+   {
+    "path": "/app.min.js",
+    "bytes": 1451
+   },
+   {
+    "path": "/fonts/card-sans.woff2",
+    "bytes": 84
+   },
+   {
+    "path": "/images/logo.svg",
+    "bytes": 360
+   },
+   {
+    "path": "/images/bg-dots.svg",
+    "bytes": 3199
+   },
+   {
+    "path": "/templates/index.json",
+    "bytes": 168
+   },
+   {
+    "path": "/templates/notice.json",
+    "bytes": 255
+   },
+   {
+    "path": "/templates/quote.json",
+    "bytes": 255
+   },
+   {
+    "path": "/manifest.json",
+    "bytes": 364
+   },
+   {
+    "path": "/icons/icon-192.png",
+    "bytes": 521
+   },
+   {
+    "path": "/icons/icon-512.png",
+    "bytes": 2472
+   }
+  ],
+  "total_bytes": 11405,
+  "page_files": 8,
+  "page_bytes": 7793,
+  "page_rows": [
+   {
+    "path": "/",
+    "bytes": 1249
+   },
+   {
+    "path": "/images/logo.svg",
+    "bytes": 360
+   },
+   {
+    "path": "/style.css",
+    "bytes": 1027
+   },
+   {
+    "path": "/fonts/card-sans.woff2",
+    "bytes": 84
+   },
+   {
+    "path": "/images/bg-dots.svg",
+    "bytes": 3199
+   },
+   {
+    "path": "/app.min.js",
+    "bytes": 1451
+   },
+   {
+    "path": "/templates/index.json",
+    "bytes": 168
+   },
+   {
+    "path": "/templates/notice.json",
+    "bytes": 255
+   }
+  ],
+  "extra_beyond_page": [
+   {
+    "path": "/templates/quote.json",
+    "bytes": 255
+   },
+   {
+    "path": "/manifest.json",
+    "bytes": 364
+   },
+   {
+    "path": "/icons/icon-192.png",
+    "bytes": 521
+   },
+   {
+    "path": "/icons/icon-512.png",
+    "bytes": 2472
+   }
+  ],
+  "routes": [
+   {
+    "match": "navigate",
+    "strategy": "network-first"
+   },
+   {
+    "match": "/templates/",
+    "strategy": "stale-while-revalidate"
+   },
+   {
+    "match": "/api/",
+    "strategy": "network-only"
+   },
+   {
+    "match": "*",
+    "strategy": "cache-first"
+   }
+  ]
+ },
+ "e3_first_visit": {
+  "page_gets": 8,
+  "post": 1,
+  "precache": 12,
+  "network_requests": 21,
+  "network_bytes": 19198
+ },
+ "e4_strategies": {
+  "scenario": [
+   "온라인 첫 방문",
+   "오프라인",
+   "배포: /, /templates/notice.json, /app.min.js",
+   "온라인",
+   "온라인",
+   "오프라인"
+  ],
+  "deploy_changed": [
+   "/",
+   "/templates/notice.json",
+   "/app.min.js"
+  ],
+  "runs": {
+   "none|bump": {
+    "total": {
+     "network_requests": 13,
+     "network_bytes": 10291,
+     "from_cache": 14,
+     "stale": 4,
+     "failed": 2,
+     "background_requests": 0,
+     "pages_opened": 3
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 9,
+      "network_bytes": 7793,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": false,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 1249,
+      "from_cache": 7,
+      "stale": 2,
+      "stale_paths": [
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 1249,
+      "from_cache": 7,
+      "stale": 2,
+      "stale_paths": [
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": false,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "none|no-bump": {
+    "total": {
+     "network_requests": 13,
+     "network_bytes": 10291,
+     "from_cache": 14,
+     "stale": 4,
+     "failed": 2,
+     "background_requests": 0,
+     "pages_opened": 3
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 9,
+      "network_bytes": 7793,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": false,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 1249,
+      "from_cache": 7,
+      "stale": 2,
+      "stale_paths": [
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 1249,
+      "from_cache": 7,
+      "stale": 2,
+      "stale_paths": [
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": false,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "cache-first|bump": {
+    "total": {
+     "network_requests": 37,
+     "network_bytes": 36633,
+     "from_cache": 32,
+     "stale": 3,
+     "failed": 2,
+     "background_requests": 0,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 14,
+      "network_bytes": 14420,
+      "from_cache": 8,
+      "stale": 3,
+      "stale_paths": [
+       "/",
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 3015,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "cache-first|no-bump": {
+    "total": {
+     "network_requests": 25,
+     "network_bytes": 25228,
+     "from_cache": 32,
+     "stale": 9,
+     "failed": 2,
+     "background_requests": 0,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 3015,
+      "from_cache": 8,
+      "stale": 3,
+      "stale_paths": [
+       "/",
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 2,
+      "network_bytes": 3015,
+      "from_cache": 8,
+      "stale": 3,
+      "stale_paths": [
+       "/",
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 3,
+      "stale_paths": [
+       "/",
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 1
+     }
+    ]
+   },
+   "network-first|bump": {
+    "total": {
+     "network_requests": 53,
+     "network_bytes": 52219,
+     "from_cache": 16,
+     "stale": 0,
+     "failed": 2,
+     "background_requests": 0,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 22,
+      "network_bytes": 22213,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 10,
+      "network_bytes": 10808,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "network-first|no-bump": {
+    "total": {
+     "network_requests": 41,
+     "network_bytes": 40814,
+     "from_cache": 16,
+     "stale": 0,
+     "failed": 2,
+     "background_requests": 0,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 10,
+      "network_bytes": 10808,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 10,
+      "network_bytes": 10808,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "stale-while-revalidate|bump": {
+    "total": {
+     "network_requests": 53,
+     "network_bytes": 52219,
+     "from_cache": 32,
+     "stale": 3,
+     "failed": 2,
+     "background_requests": 16,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 22,
+      "network_bytes": 22213,
+      "from_cache": 8,
+      "stale": 3,
+      "stale_paths": [
+       "/",
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 10,
+      "network_bytes": 10808,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "stale-while-revalidate|no-bump": {
+    "total": {
+     "network_requests": 41,
+     "network_bytes": 40814,
+     "from_cache": 32,
+     "stale": 3,
+     "failed": 2,
+     "background_requests": 16,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 10,
+      "network_bytes": 10808,
+      "from_cache": 8,
+      "stale": 3,
+      "stale_paths": [
+       "/",
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 10,
+      "network_bytes": 10808,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "mixed|bump": {
+    "total": {
+     "network_requests": 43,
+     "network_bytes": 39977,
+     "from_cache": 30,
+     "stale": 2,
+     "failed": 2,
+     "background_requests": 4,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 17,
+      "network_bytes": 16092,
+      "from_cache": 7,
+      "stale": 2,
+      "stale_paths": [
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 5,
+      "network_bytes": 4687,
+      "from_cache": 7,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     }
+    ]
+   },
+   "mixed|no-bump": {
+    "total": {
+     "network_requests": 31,
+     "network_bytes": 28572,
+     "from_cache": 30,
+     "stale": 4,
+     "failed": 2,
+     "background_requests": 4,
+     "pages_opened": 5
+    },
+    "per_visit": [
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 21,
+      "network_bytes": 19198,
+      "from_cache": 0,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 0,
+      "stale_paths": [],
+      "failed": 1
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 5,
+      "network_bytes": 4687,
+      "from_cache": 7,
+      "stale": 2,
+      "stale_paths": [
+       "/app.min.js",
+       "/templates/notice.json"
+      ],
+      "failed": 0
+     },
+     {
+      "online": true,
+      "page_opened": true,
+      "network_requests": 5,
+      "network_bytes": 4687,
+      "from_cache": 7,
+      "stale": 1,
+      "stale_paths": [
+       "/app.min.js"
+      ],
+      "failed": 0
+     },
+     {
+      "online": false,
+      "page_opened": true,
+      "network_requests": 0,
+      "network_bytes": 0,
+      "from_cache": 8,
+      "stale": 1,
+      "stale_paths": [
+       "/app.min.js"
+      ],
+      "failed": 1
+     }
+    ]
+   }
+  }
+ },
+ "e5_paths": {
+  "conditions": {
+   "reuse_web_code": "지금 웹 코드(HTML·CSS·JS)를 거의 그대로 쓴다",
+   "ios_app_store": "iOS 앱스토어에 올린다",
+   "ios_push": "iOS 사용자에게 푸시 알림을 보낸다",
+   "ios_bluetooth": "iOS에서 블루투스 기기에 연결한다",
+   "link_install_no_review": "스토어 심사 없이 링크만으로 iOS·안드로이드에 설치하게 한다"
+  },
+  "table": [
+   {
+    "way": "1 PWA(홈 화면에 추가)",
+    "name": "PWA",
+    "ui": "브라우저 엔진이 웹 페이지를 그려요",
+    "code": "지금 웹 코드 + manifest.json + 서비스 워커(선택)",
+    "store": "스토어를 거치지 않고 링크로 설치. 구글 플레이에는 TWA로 올리는 길이 있어요(크롬 문서, 2020-02-04 갱신). iOS 앱스토어에는 PWA 그대로 올리는 길이 없어요",
+    "device": "웹 API 범위. iOS 웹 푸시와 배지는 16.4부터, 홈 화면에 추가한 웹앱에서만. Safari에는 Background Sync·Web Bluetooth·진동 API가 없어요",
+    "can": {
+     "reuse_web_code": true,
+     "ios_app_store": false,
+     "ios_push": true,
+     "ios_bluetooth": false,
+     "link_install_no_review": true
+    }
+   },
+   {
+    "way": "2 WebView 포장",
+    "name": "Capacitor",
+    "ui": "앱 안의 WebView(앱에 들어간 브라우저 화면)가 웹 코드를 그려요",
+    "code": "지금 웹 코드 + iOS·안드로이드 프로젝트(Xcode, Android Studio). 기기 기능은 플러그인(Swift·Kotlin 등)으로",
+    "store": "앱 파일로 만들어 앱스토어·플레이에 올려요. iOS 심사에서 4.2(최소 기능)를 따져요",
+    "device": "플러그인으로 네이티브 API를 불러요. 공식·커뮤니티 플러그인이 있고 직접 만들 수도 있어요",
+    "can": {
+     "reuse_web_code": true,
+     "ios_app_store": true,
+     "ios_push": true,
+     "ios_bluetooth": true,
+     "link_install_no_review": false
+    }
+   },
+   {
+    "way": "3 크로스플랫폼",
+    "name": "React Native",
+    "ui": "React 코드가 플랫폼의 네이티브 화면 부품(View, Text 등)으로 그려져요. WebView가 아니에요",
+    "code": "JavaScript·TypeScript와 React로 새로 짜요. HTML·CSS 화면 코드는 그대로 못 써요. 기기 기능은 네이티브 모듈(Objective-C·Java·Kotlin·C++)로",
+    "store": "앱 파일로 만들어 앱스토어·플레이에 올려요",
+    "device": "네이티브 모듈로 플랫폼 API를 불러요",
+    "can": {
+     "reuse_web_code": false,
+     "ios_app_store": true,
+     "ios_push": true,
+     "ios_bluetooth": true,
+     "link_install_no_review": false
+    }
+   },
+   {
+    "way": "3 크로스플랫폼",
+    "name": "Flutter",
+    "ui": "자체 렌더링 엔진(Impeller)이 화면 부품을 직접 그려요. 시스템 부품도 WebView도 쓰지 않아요",
+    "code": "Dart로 새로 짜요. 기기 기능은 플랫폼 채널(Kotlin·Swift)이나 FFI(C)로",
+    "store": "앱 파일로 만들어 앱스토어·플레이에 올려요",
+    "device": "플랫폼 채널과 FFI로 플랫폼 API를 불러요",
+    "can": {
+     "reuse_web_code": false,
+     "ios_app_store": true,
+     "ios_push": true,
+     "ios_bluetooth": true,
+     "link_install_no_review": false
+    }
+   },
+   {
+    "way": "4 네이티브",
+    "name": "네이티브(Swift·Kotlin)",
+    "ui": "운영체제의 화면 도구로 그려요",
+    "code": "iOS는 Swift, 안드로이드는 Kotlin으로 두 벌을 짜요(안드로이드는 Kotlin으로 시작하기를 권해요)",
+    "store": "앱 파일로 만들어 앱스토어·플레이에 올려요",
+    "device": "운영체제가 여는 API를 바로 써요",
+    "can": {
+     "reuse_web_code": false,
+     "ios_app_store": true,
+     "ios_push": true,
+     "ios_bluetooth": true,
+     "link_install_no_review": false
+    }
+   }
+  ],
+  "cases": {
+   "A 링크로 퍼뜨리고, 새 템플릿 알림은 iOS에도": {
+    "needs": [
+     "reuse_web_code",
+     "ios_push"
+    ],
+    "fits": [
+     "PWA",
+     "Capacitor"
+    ],
+    "out": {
+     "React Native": [
+      "reuse_web_code"
+     ],
+     "Flutter": [
+      "reuse_web_code"
+     ],
+     "네이티브(Swift·Kotlin)": [
+      "reuse_web_code"
+     ]
+    },
+    "notes": {
+     "PWA": {
+      "ios_push": "홈 화면에 추가한 뒤에만, 버튼을 누르는 것 같은 사용자 동작에 이어서 권한을 물어야 해요(iOS·iPadOS 16.4+)"
+     },
+     "Capacitor": {
+      "ios_push": "공식 플러그인 @capacitor/push-notifications. iOS에서 Push Notifications 기능을 켜야 해요"
+     }
+    }
+   },
+   "B 앱스토어 검색에 나오되 웹 코드는 그대로": {
+    "needs": [
+     "reuse_web_code",
+     "ios_app_store"
+    ],
+    "fits": [
+     "Capacitor"
+    ],
+    "out": {
+     "PWA": [
+      "ios_app_store"
+     ],
+     "React Native": [
+      "reuse_web_code"
+     ],
+     "Flutter": [
+      "reuse_web_code"
+     ],
+     "네이티브(Swift·Kotlin)": [
+      "reuse_web_code"
+     ]
+    },
+    "notes": {
+     "Capacitor": {
+      "ios_app_store": "웹사이트를 감싸기만 한 앱은 4.2에 걸릴 수 있어요. '웹사이트 이상'의 기능·화면이 필요해요"
+     }
+    }
+   },
+   "C 행사장 블루투스 프린터에 카드 출력(iOS 포함)": {
+    "needs": [
+     "ios_bluetooth"
+    ],
+    "fits": [
+     "Capacitor",
+     "React Native",
+     "Flutter",
+     "네이티브(Swift·Kotlin)"
+    ],
+    "out": {
+     "PWA": [
+      "ios_bluetooth"
+     ]
+    },
+    "notes": {
+     "Capacitor": {
+      "ios_bluetooth": "블루투스를 다루는 플러그인을 찾아 쓰거나, 공식 문서가 안내하는 방법으로 직접 만들어요"
+     }
+    }
+   },
+   "D 심사 없이 오늘 바로 휴대폰에 설치": {
+    "needs": [
+     "link_install_no_review"
+    ],
+    "fits": [
+     "PWA"
+    ],
+    "out": {
+     "Capacitor": [
+      "link_install_no_review"
+     ],
+     "React Native": [
+      "link_install_no_review"
+     ],
+     "Flutter": [
+      "link_install_no_review"
+     ],
+     "네이티브(Swift·Kotlin)": [
+      "link_install_no_review"
+     ]
+    },
+    "notes": {}
+   },
+   "E 웹 코드 그대로 + iOS 블루투스 + 심사 없이": {
+    "needs": [
+     "reuse_web_code",
+     "ios_bluetooth",
+     "link_install_no_review"
+    ],
+    "fits": [],
+    "out": {
+     "PWA": [
+      "ios_bluetooth"
+     ],
+     "Capacitor": [
+      "link_install_no_review"
+     ],
+     "React Native": [
+      "reuse_web_code",
+      "link_install_no_review"
+     ],
+     "Flutter": [
+      "reuse_web_code",
+      "link_install_no_review"
+     ],
+     "네이티브(Swift·Kotlin)": [
+      "reuse_web_code",
+      "link_install_no_review"
+     ]
+    },
+    "notes": {}
+   }
+  }
+ },
+ "e6_crosscheck": {
+  "precache_missing": [],
+  "served_mismatch": [],
+  "manifest_content_type": "application/json",
+  "sw_cache_control": "no-cache",
+  "node_check": true,
+  "sourcemap_line_in_app_min_js": false
+ }
+}

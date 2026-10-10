@@ -1,0 +1,9 @@
+확인한 날,항목,우리 값(results/ch08.json 또는 data/),지금 공식 문서 값,같은가,확인한 URL,메모
+2026-10-10(예시),애플 소규모 사업자 프로그램 수수료,15%,(직접 적기),(직접 적기),https://developer.apple.com/app-store/small-business-program/,전년도 수익 100만 달러 이하
+2026-10-10(예시),구글 플레이 한국 구독 수수료,15%,(직접 적기),(직접 적기),https://support.google.com/googleplay/android-developer/answer/112622,2026-12-31부터 한국 새 구조
+2026-10-10(예시),구글 플레이 한국 결제 수수료(billing fee),미발표,(직접 적기),(직접 적기),https://support.google.com/googleplay/android-developer/answer/16954621,발표되면 fees 파일을 새 날짜로
+2026-10-10(예시),애플 한국 외부 결제 수수료,부가세 포함 금액의 26%,(직접 적기),(직접 적기),https://developer.apple.com/support/storekit-external-entitlement-kr/,
+2026-10-10(예시),애플 미국 링크 구매 수수료,확인 필요,(직접 적기),(직접 적기),https://developer.apple.com/app-store/review/guidelines/,법원 절차 진행 중
+2026-10-10(예시),PG 카드 수수료(일반 등급),3.4% + 부가세 별도,(직접 적기),(직접 적기),https://www.tosspayments.com/about/fee,영세·중소 우대는 반기마다 반영
+2026-10-10(예시),Mac mini 가장 싼 구성,1499000,(직접 적기),(직접 적기),https://www.apple.com/kr/shop/buy-mac/mac-mini,
+2026-10-10(예시),StatCounter 한국 모바일 iOS 비율(마지막 달),37.94(2026-09),(직접 적기),(직접 적기),https://gs.statcounter.com/os-market-share/mobile/south-korea,페이지뷰 기준

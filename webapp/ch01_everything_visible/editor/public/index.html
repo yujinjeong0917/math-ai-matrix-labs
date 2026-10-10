@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>카드뉴스 편집기 (실습용)</title>
+<link rel="icon" href="images/logo.svg" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<!-- 메모: 유료 템플릿 3종은 다음 달에 공개. 가격은 아직 미정 -->
+<header class="top">
+  <img src="images/logo.svg" alt="" width="32" height="32" />
+  <h1>카드뉴스 편집기</h1>
+</header>
+<main>
+  <section class="panel">
+    <label>템플릿 <select id="template"></select></label>
+    <label>제목 <input id="title" value="이번 주 소식" /></label>
+    <label>본문 <textarea id="body">새 기능 세 가지를 소개해요.</textarea></label>
+    <label>배경 설명 <input id="prompt" value="파란 하늘과 종이비행기" /></label>
+    <button id="make-bg" type="button">AI 배경 만들기</button>
+  </section>
+  <section class="stage">
+    <div id="card" class="card"></div>
+  </section>
+</main>
+<script src="app.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace "invalid.demo.cardnews"
+    defaultConfig {
+        applicationId "invalid.demo.cardnews"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 10001
+        versionName "1.0.1"
+    }
+    signingConfigs {
+        release {
+            storeFile file(keystoreProperties['storeFile'] ?: "missing.jks")
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}

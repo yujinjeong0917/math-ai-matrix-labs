@@ -1,0 +1,23 @@
+android {
+    namespace "invalid.demo.cardnews"
+    defaultConfig {
+        applicationId "cardnews-app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.1"
+    }
+    signingConfigs {
+        release {
+            storeFile file("release.jks")
+            storePassword "DEMO_NOT_A_REAL_PASSWORD"
+            keyAlias "release"
+            keyPassword "DEMO_NOT_A_REAL_PASSWORD"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}

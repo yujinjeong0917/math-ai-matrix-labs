@@ -1,0 +1,13 @@
+{
+  "appId": "cardnews-app",
+  "appName": "카드뉴스 편집기",
+  "webDir": "dist",
+  "server": {
+    "url": "http://192.168.0.10:5173",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

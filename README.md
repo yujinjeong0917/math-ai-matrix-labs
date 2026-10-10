@@ -68,12 +68,12 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `pipelines/ch07_kfp/` | ML 파이프라인 구축 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/pipelines/07-kfp.html) |
 | `pipelines/ch08_lineage/` | ML 파이프라인 구축 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/pipelines/08-lineage.html) |
 | `pipelines/ch09_drift/` | ML 파이프라인 구축 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/pipelines/09-drift.html) |
-| `productivity/ch01_source_of_truth/` | 생산성 도구 워크플로 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/01-source-of-truth.html) |
-| `productivity/ch02_figma_structure/` | 생산성 도구 워크플로 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/02-figma-structure.html) |
-| `productivity/ch03_handoff/` | 생산성 도구 워크플로 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/03-handoff.html) |
-| `productivity/ch04_notion_relations/` | 생산성 도구 워크플로 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/04-notion-relations.html) |
-| `productivity/ch05_sheets/` | 생산성 도구 워크플로 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html) |
-| `productivity/ch06_connect/` | 생산성 도구 워크플로 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html) |
+| `productivity/ch01_source_of_truth/` | AX 에세이 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/01-source-of-truth.html) |
+| `productivity/ch02_figma_structure/` | AX 에세이 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/02-figma-structure.html) |
+| `productivity/ch03_handoff/` | AX 에세이 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/03-handoff.html) |
+| `productivity/ch04_notion_relations/` | AX 에세이 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/04-notion-relations.html) |
+| `productivity/ch05_sheets/` | AX 에세이 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html) |
+| `productivity/ch06_connect/` | AX 에세이 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html) |
 
 AI 도구 실전 트랙은 작성 중이에요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

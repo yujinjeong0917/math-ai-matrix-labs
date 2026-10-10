@@ -1,0 +1,847 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "torch": "2.8.0",
+  "machine": "arm64",
+  "system": "Darwin",
+  "threads": 2
+ },
+ "problem": {
+  "name": "Baird(1995) 6상태 별 문제",
+  "features": [
+   [
+    1.0,
+    2.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    2.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0,
+    2.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    2.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.0,
+    0.0
+   ],
+   [
+    2.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "next_state(1-based)": [
+   6,
+   6,
+   6,
+   6,
+   6,
+   6
+  ],
+  "rewards": 0,
+  "true_values": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "w_baird_init": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   10.0
+  ],
+  "behavior": "모든 상태에서 6개 상태로 1/6씩(Baird Q-러닝 판의 행동 정책: 1/6로 상태 6, 5/6로 1~5 균등)",
+  "target": "모든 상태에서 상태 6으로"
+ },
+ "E0_hand": {
+  "gamma": 0.99,
+  "alpha": 0.01,
+  "w_before": [
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   10.0
+  ],
+  "values_before": [
+   3.0,
+   3.0,
+   3.0,
+   3.0,
+   3.0,
+   12.0
+  ],
+  "targets": [
+   11.88,
+   11.88,
+   11.88,
+   11.88,
+   11.88,
+   11.88
+  ],
+  "td_errors": [
+   8.88,
+   8.88,
+   8.88,
+   8.88,
+   8.88,
+   -0.12
+  ],
+  "dw": [
+   0.4416,
+   0.1776,
+   0.1776,
+   0.1776,
+   0.1776,
+   0.1776,
+   -0.0012
+  ],
+  "dw0_parts": {
+   "from_states_1_5": 0.444,
+   "from_state_6": -0.0024
+  },
+  "w_after": [
+   1.4416,
+   1.1776,
+   1.1776,
+   1.1776,
+   1.1776,
+   1.1776,
+   9.9988
+  ],
+  "values_after_linear": [
+   3.7968,
+   3.7968,
+   3.7968,
+   3.7968,
+   3.7968,
+   12.882
+  ],
+  "values_after_table": [
+   3.0888,
+   3.0888,
+   3.0888,
+   3.0888,
+   3.0888,
+   11.9988
+  ],
+  "note": "V(6)의 TD 오차는 음수(-0.12)라 혼자라면 내려가야 하지만, w0을 1~5번 상태가 다섯 번 올리고 6번이 한 번(특징 2배) 내려 V(6)이 올라간다."
+ },
+ "E1_fail": {
+  "gamma0.99": {
+   "gamma": 0.99,
+   "alpha": 0.01,
+   "sweeps": 10000,
+   "checkpoints": [
+    {
+     "sweep": 0,
+     "w_norm": 10.2956,
+     "value_max": 12.0,
+     "w0": 1.0,
+     "w6": 10.0,
+     "V6": 12.0,
+     "bellman_error": 8.10644
+    },
+    {
+     "sweep": 10,
+     "w_norm": 13.0894,
+     "value_max": 21.1486,
+     "w0": 5.58232,
+     "w6": 9.98394,
+     "V6": 21.1486,
+     "bellman_error": 8.82171
+    },
+    {
+     "sweep": 100,
+     "w_norm": 91.7396,
+     "value_max": 142.773,
+     "w0": 66.731,
+     "w6": 9.31051,
+     "V6": 142.773,
+     "bellman_error": 17.2866
+    },
+    {
+     "sweep": 1000,
+     "w_norm": 7561.18,
+     "value_max": 10180.3,
+     "w0": 5276.06,
+     "w6": -371.796,
+     "V6": 10180.3,
+     "bellman_error": 50.0056
+    },
+    {
+     "sweep": 2000,
+     "w_norm": 924619.0,
+     "value_max": 1290990.0,
+     "w0": -660841.0,
+     "w6": 30693.8,
+     "V6": -1290990.0,
+     "bellman_error": 36415.9
+    },
+    {
+     "sweep": 5000,
+     "w_norm": 193338000000.0,
+     "value_max": 287326000000.0,
+     "w0": 143822000000.0,
+     "w6": -318573000.0,
+     "V6": 287326000000.0,
+     "bellman_error": 22909200000.0
+    },
+    {
+     "sweep": 10000,
+     "w_norm": 5.37919e+20,
+     "value_max": 7.75549e+20,
+     "w0": 3.92454e+20,
+     "w6": -9.35843e+18,
+     "V6": 7.75549e+20,
+     "bellman_error": 4.24785e+19
+    }
+   ],
+   "sign_changes": {
+    "w0": 8,
+    "w6": 9
+   },
+   "first_sweep_norm_over": {
+    "1e3": 391,
+    "1e6": 2032
+   },
+   "incremental_final": {
+    "w_norm": 9.64841e+20,
+    "value_max": 1.40582e+21
+   },
+   "table_final_value_max": 4.41433,
+   "final_w": [
+    3.92454e+20,
+    1.64468e+20,
+    1.64468e+20,
+    1.64468e+20,
+    1.64468e+20,
+    1.64468e+20,
+    -9.35843e+18
+   ]
+  },
+  "gamma0.9": {
+   "gamma": 0.9,
+   "alpha": 0.01,
+   "sweeps": 10000,
+   "checkpoints": [
+    {
+     "sweep": 0,
+     "w_norm": 10.2956,
+     "value_max": 12.0,
+     "w0": 1.0,
+     "w6": 10.0,
+     "V6": 12.0,
+     "bellman_error": 7.13723
+    },
+    {
+     "sweep": 10,
+     "w_norm": 12.2222,
+     "value_max": 18.8859,
+     "w0": 4.51872,
+     "w6": 9.84842,
+     "V6": 18.8859,
+     "bellman_error": 6.8182
+    },
+    {
+     "sweep": 100,
+     "w_norm": 27.2005,
+     "value_max": 37.9154,
+     "w0": 15.6166,
+     "w6": 6.68215,
+     "V6": 37.9154,
+     "bellman_error": 1.6124
+    },
+    {
+     "sweep": 1000,
+     "w_norm": 8.61359,
+     "value_max": 0.852179,
+     "w0": -3.72133,
+     "w6": 6.59048,
+     "V6": -0.852179,
+     "bellman_error": 0.661655
+    },
+    {
+     "sweep": 2000,
+     "w_norm": 8.60013,
+     "value_max": 0.054722,
+     "w0": -3.42603,
+     "w6": 6.90678,
+     "V6": 0.054722,
+     "bellman_error": 0.0611509
+    },
+    {
+     "sweep": 5000,
+     "w_norm": 8.6,
+     "value_max": 6.49628e-05,
+     "w0": -3.43998,
+     "w6": 6.87998,
+     "V6": 1.45045e-05,
+     "bellman_error": 4.73897e-05
+    },
+    {
+     "sweep": 10000,
+     "w_norm": 8.6,
+     "value_max": 9.80556e-10,
+     "w0": -3.44,
+     "w6": 6.88,
+     "V6": -7.37961e-10,
+     "bellman_error": 2.90391e-10
+    }
+   ],
+   "sign_changes": {
+    "w0": 3,
+    "w6": 0
+   },
+   "first_sweep_norm_over": {
+    "1e3": null,
+    "1e6": null
+   },
+   "incremental_final": {
+    "w_norm": 8.6,
+    "value_max": 4.57982e-10
+   },
+   "table_final_value_max": 0.00054208,
+   "final_w": [
+    -3.44,
+    1.72,
+    1.72,
+    1.72,
+    1.72,
+    1.72,
+    6.88
+   ]
+  }
+ },
+ "E2_eigen": {
+  "rows": [
+   {
+    "gamma": 0.5,
+    "min_real": -3.67418e-17,
+    "complex_pair": [
+     0.541667,
+     0.23199
+    ],
+    "formula_7_6_minus_5g_4": 0.541667,
+    "eigs_real_sorted": [
+     -3.67418e-17,
+     0.541667,
+     0.541667,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.8,
+    "min_real": 8.53107e-17,
+    "complex_pair": [
+     0.166667,
+     0.333333
+    ],
+    "formula_7_6_minus_5g_4": 0.166667,
+    "eigs_real_sorted": [
+     8.53107e-17,
+     0.166667,
+     0.166667,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.9,
+    "min_real": 1.49105e-16,
+    "complex_pair": [
+     0.0416667,
+     0.260208
+    ],
+    "formula_7_6_minus_5g_4": 0.0416667,
+    "eigs_real_sorted": [
+     1.49105e-16,
+     0.0416667,
+     0.0416667,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.93,
+    "min_real": 2.14603e-16,
+    "complex_pair": [
+     0.00416667,
+     0.22044
+    ],
+    "formula_7_6_minus_5g_4": 0.00416667,
+    "eigs_real_sorted": [
+     2.14603e-16,
+     0.00416667,
+     0.00416667,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.933333,
+    "min_real": -1.29142e-16,
+    "complex_pair": [
+     -1.29142e-16,
+     0.215166
+    ],
+    "formula_7_6_minus_5g_4": 0.0,
+    "eigs_real_sorted": [
+     -1.29142e-16,
+     -1.29142e-16,
+     1.79604e-16,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.94,
+    "min_real": -0.00833333,
+    "complex_pair": [
+     -0.00833333,
+     0.203954
+    ],
+    "formula_7_6_minus_5g_4": -0.00833333,
+    "eigs_real_sorted": [
+     -0.00833333,
+     -0.00833333,
+     -3.6728e-17,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.95,
+    "min_real": -0.0208333,
+    "complex_pair": [
+     -0.0208333,
+     0.185171
+    ],
+    "formula_7_6_minus_5g_4": -0.0208333,
+    "eigs_real_sorted": [
+     -0.0208333,
+     -0.0208333,
+     -9.73747e-17,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   },
+   {
+    "gamma": 0.99,
+    "min_real": -0.0708333,
+    "complex_pair": [
+     -0.0708333,
+     0.0438986
+    ],
+    "formula_7_6_minus_5g_4": -0.0708333,
+    "eigs_real_sorted": [
+     -0.0708333,
+     -0.0708333,
+     -9.00026e-17,
+     0.666667,
+     0.666667,
+     0.666667,
+     0.666667
+    ]
+   }
+  ],
+  "threshold_gamma": 0.933333,
+  "threshold_exact": "14/15",
+  "trace": {
+   "0.5": 3.75,
+   "0.9": 2.75,
+   "0.99": 2.525
+  },
+  "rank_phi": 6,
+  "n_weights": 7,
+  "behavior_stationary": [
+   0.166667,
+   0.166667,
+   0.166667,
+   0.166667,
+   0.166667,
+   0.166667
+  ],
+  "on_policy_behavior_chain": {
+   "0.5": {
+    "min_real": 2.05174e-17,
+    "min_eig_symmetric_part": -1.02176e-16
+   },
+   "0.9": {
+    "min_real": -2.77556e-17,
+    "min_eig_symmetric_part": -2.77556e-17
+   },
+   "0.99": {
+    "min_real": -4.34636e-19,
+    "min_eig_symmetric_part": 1.37554e-16
+   }
+  },
+  "table_min_real": {
+   "0.5": 0.0833333,
+   "0.9": 0.0166667,
+   "0.99": 0.00166667
+  }
+ },
+ "E3_ablation": {
+  "gamma": 0.99,
+  "alpha": 0.01,
+  "sweeps": 10000,
+  "start_value_max_median": 3.9202,
+  "conditions": {
+   "all_three": {
+    "value_max_final_median": 3.03219e+19,
+    "value_max_final_min": 1.19965e+18,
+    "value_max_final_max": 6.58486e+19,
+    "diverged": 10,
+    "converged": 0,
+    "n": 10,
+    "sweeps_to_0.01_median": null
+   },
+   "no_function_approx_table": {
+    "value_max_final_median": 1.21431,
+    "value_max_final_min": 0.79103,
+    "value_max_final_max": 1.54061,
+    "diverged": 0,
+    "converged": 0,
+    "n": 10,
+    "sweeps_to_0.01_median": null,
+    "sweeps_to_0.01_long_median": 57990.5,
+    "sweeps_to_0.01_long_range": [
+     53706,
+     60371
+    ]
+   },
+   "no_bootstrap_regression": {
+    "value_max_final_median": 5.9952e-15,
+    "value_max_final_min": 2.9976e-15,
+    "value_max_final_max": 5.9952e-15,
+    "diverged": 0,
+    "converged": 10,
+    "n": 10,
+    "sweeps_to_0.01_median": 220.0
+   },
+   "no_off_policy_on_trajectory": {
+    "value_max_final_median": 7.32315e-05,
+    "value_max_final_min": 5.80744e-05,
+    "value_max_final_max": 8.61448e-05,
+    "diverged": 0,
+    "converged": 10,
+    "n": 10,
+    "sweeps_to_0.01_median": null,
+    "w_norm_final_median": 1.47662,
+    "steps": 60000
+   },
+   "all_three_trajectory_importance_ratio": {
+    "value_max_final_median": "inf",
+    "value_max_final_min": "inf",
+    "value_max_final_max": "inf",
+    "diverged": 10,
+    "converged": 0,
+    "n": 10,
+    "sweeps_to_0.01_median": null,
+    "steps": 60000,
+    "blowup_step_median": 22626.0
+   },
+   "residual_gradient": {
+    "value_max_final_median": 3.08703,
+    "value_max_final_min": 2.44522,
+    "value_max_final_max": 3.63552,
+    "diverged": 0,
+    "converged": 0,
+    "n": 10,
+    "sweeps_to_0.01_median": null,
+    "sweeps_to_0.01_long_median": null,
+    "bellman_error_ratio_after_median": 0.0180942
+   }
+  },
+  "gamma0.9_all_three_uniform": {
+   "value_max_final_median": 1.70849e-10,
+   "converged": 10,
+   "n": 10
+  },
+  "gamma0.9_all_three_trajectory": {
+   "value_max_final_median": 3.0501e-10,
+   "converged": 10,
+   "diverged": 0,
+   "n": 10
+  }
+ },
+ "E4_grid": {
+  "sweeps": 10000,
+  "start_value_max": 12.0,
+  "rows": [
+   {
+    "gamma": 0.5,
+    "alpha": 0.001,
+    "spectral_radius": 0.996751,
+    "theory": "수렴",
+    "value_max_after": 2.92211e-13,
+    "measured": "수렴"
+   },
+   {
+    "gamma": 0.5,
+    "alpha": 0.01,
+    "spectral_radius": 0.9676,
+    "theory": "수렴",
+    "value_max_after": 5.32907e-15,
+    "measured": "수렴"
+   },
+   {
+    "gamma": 0.5,
+    "alpha": 0.1,
+    "spectral_radius": 0.689202,
+    "theory": "수렴",
+    "value_max_after": 1.77636e-15,
+    "measured": "수렴"
+   },
+   {
+    "gamma": 0.9,
+    "alpha": 0.001,
+    "spectral_radius": 0.999751,
+    "theory": "수렴",
+    "value_max_after": 0.627701,
+    "measured": "덜 줄어듦"
+   },
+   {
+    "gamma": 0.9,
+    "alpha": 0.01,
+    "spectral_radius": 0.997622,
+    "theory": "수렴",
+    "value_max_after": 9.80556e-10,
+    "measured": "수렴"
+   },
+   {
+    "gamma": 0.9,
+    "alpha": 0.1,
+    "spectral_radius": 0.987421,
+    "theory": "수렴",
+    "value_max_after": 1.15463e-14,
+    "measured": "수렴"
+   },
+   {
+    "gamma": 0.95,
+    "alpha": 0.001,
+    "spectral_radius": 1.00013,
+    "theory": "발산",
+    "value_max_after": 244.906,
+    "measured": "발산"
+   },
+   {
+    "gamma": 0.95,
+    "alpha": 0.01,
+    "spectral_radius": 1.00131,
+    "theory": "발산",
+    "value_max_after": 32913800.0,
+    "measured": "발산"
+   },
+   {
+    "gamma": 0.95,
+    "alpha": 0.1,
+    "spectral_radius": 1.01858,
+    "theory": "발산",
+    "value_max_after": 1.68492e+81,
+    "measured": "발산"
+   },
+   {
+    "gamma": 0.99,
+    "alpha": 0.001,
+    "spectral_radius": 1.00043,
+    "theory": "발산",
+    "value_max_after": 10034.1,
+    "measured": "발산"
+   },
+   {
+    "gamma": 0.99,
+    "alpha": 0.01,
+    "spectral_radius": 1.00425,
+    "theory": "발산",
+    "value_max_after": 7.75549e+20,
+    "measured": "발산"
+   },
+   {
+    "gamma": 0.99,
+    "alpha": 0.1,
+    "spectral_radius": 1.04283,
+    "theory": "발산",
+    "value_max_after": 2.11938e+154,
+    "measured": "발산"
+   }
+  ]
+ },
+ "E5_residual": {
+  "hall_g0.9_direct": {
+   "alpha": 1.0,
+   "median": 60.0,
+   "min": 57,
+   "max": 65
+  },
+  "hall_g0.9_residual_gradient": {
+   "alpha": 0.5,
+   "median": 4981.0,
+   "min": 4704,
+   "max": 5183
+  },
+  "hall_g0.99_direct": {
+   "alpha": 1.0,
+   "median": 623.5,
+   "min": 591,
+   "max": 679
+  },
+  "hall_g0.99_residual_gradient": {
+   "alpha": 0.5,
+   "median": 722365.5,
+   "min": 679090,
+   "max": 750347
+  },
+  "star_g0.9_direct": {
+   "alpha": 0.1,
+   "median": 308.0,
+   "min": 287,
+   "max": 359
+  },
+  "star_g0.9_residual_gradient": {
+   "alpha": 0.15,
+   "median": 1756.0,
+   "min": 1683,
+   "max": 1806
+  },
+  "star_g0.99_direct": {
+   "alpha": null,
+   "median": null,
+   "note": "격자의 어떤 alpha로도 1000000 스윕 안에 시드 10개 모두 0.01 아래로 못 내려감"
+  },
+  "star_g0.99_residual_gradient": {
+   "alpha": 0.1,
+   "median": 315196.5,
+   "min": 302422,
+   "max": 324161
+  },
+  "residual_mix_threshold": {
+   "0.95": 0.0194932,
+   "0.99": 0.0584072
+  },
+  "residual_gradient_spectrum": {
+   "hall_g0.9": {
+    "min_nonzero": 0.00261017,
+    "max": 3.36905,
+    "ratio": 1290.74
+   },
+   "hall_g0.99": {
+    "min_nonzero": 1.75126e-05,
+    "max": 3.69483,
+    "ratio": 210981.0
+   },
+   "star_g0.9": {
+    "min_nonzero": 0.0221674,
+    "max": 11.2778,
+    "ratio": 508.758
+   },
+   "star_g0.99": {
+    "min_nonzero": 0.000182444,
+    "max": 13.7028,
+    "ratio": 75106.9
+   }
+  },
+  "cap": 1000000,
+  "alphas": [
+   0.02,
+   0.05,
+   0.1,
+   0.15,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.7,
+   1.0
+  ]
+ },
+ "E6_timing": {
+  "sweep_us": 1.74903,
+  "trajectory_step_us": 7.08653,
+  "eig_ms": {
+   "7": 0.00833301,
+   "70": 0.535834,
+   "700": 111.774
+  }
+ },
+ "E7_torch": {
+  "semi_gradient": {
+   "max_rel_diff": 1.11298e-16,
+   "allclose_rtol_1e-9": true
+  },
+  "residual_gradient": {
+   "max_rel_diff": 1.64816e-15,
+   "allclose_rtol_1e-9": true
+  }
+ },
+ "E8_log": {
+  "steps": 600,
+  "rho_values": [
+   0.0,
+   6.0
+  ],
+  "share_rho_nonzero": 0.18,
+  "w_norm_start": 10.2956,
+  "w_norm_end": 105.37
+ },
+ "runtime_s": 63.9612
+}

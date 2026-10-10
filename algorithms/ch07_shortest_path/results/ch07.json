@@ -1,0 +1,1332 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "omp_threads": "2"
+ },
+ "E0_first_screen": {
+  "bfs_example": {
+   "edges": "s->a 10, s->b 1, b->a 2",
+   "bfs_hops_a": 1,
+   "bfs_cost_a": 10,
+   "true_a": 3
+  },
+  "neg_example": {
+   "edges": "s->a 1, s->b 2, b->a -2",
+   "dijkstra": [
+    0,
+    1,
+    2
+   ],
+   "bellman_ford": [
+    0,
+    0,
+    2
+   ]
+  }
+ },
+ "E1_bfs_vs_weighted": {
+  "seeds": 100,
+  "n": 50,
+  "m": 200,
+  "weights": "1..20",
+  "reachable_vertices": 4673,
+  "wrong_vertices": 2511,
+  "wrong_ratio": 0.5373,
+  "graphs_with_wrong": 97,
+  "mean_excess_ratio_when_wrong": 0.5862,
+  "max_excess_ratio": 10.5
+ },
+ "E2_negative_edges": {
+  "seeds": 100,
+  "n": 50,
+  "m": 200,
+  "pos_weights": "1..20",
+  "neg_weights": "-5..-1",
+  "method": "rejection sampling: draw graph, pick exact count of edges to negate, reject if any negative cycle",
+  "rows": [
+   {
+    "neg_ratio_target": 0.0,
+    "neg_edges_per_graph": 0.0,
+    "rejected_draws": 0,
+    "reachable_vertices": 4583,
+    "wrong_vertices": 0,
+    "wrong_ratio": 0.0,
+    "graphs_with_wrong": 0,
+    "mean_error_when_wrong": 0,
+    "max_error": 0,
+    "reinsert_correct_graphs": 100,
+    "bf_matches_floyd_graphs": 100,
+    "pops_dijkstra_mean": 59.95,
+    "pops_reinsert_mean": 59.95,
+    "pops_reinsert_max": 73,
+    "relax_dijkstra_mean": 187.0,
+    "relax_reinsert_mean": 187.0
+   },
+   {
+    "neg_ratio_target": 0.05,
+    "neg_edges_per_graph": 10.0,
+    "rejected_draws": 31,
+    "reachable_vertices": 4636,
+    "wrong_vertices": 227,
+    "wrong_ratio": 0.049,
+    "graphs_with_wrong": 58,
+    "mean_error_when_wrong": 2.2335,
+    "max_error": 7,
+    "reinsert_correct_graphs": 100,
+    "bf_matches_floyd_graphs": 100,
+    "pops_dijkstra_mean": 63.55,
+    "pops_reinsert_mean": 65.58,
+    "pops_reinsert_max": 83,
+    "relax_dijkstra_mean": 189.15,
+    "relax_reinsert_mean": 193.15
+   },
+   {
+    "neg_ratio_target": 0.1,
+    "neg_edges_per_graph": 20.0,
+    "rejected_draws": 116,
+    "reachable_vertices": 4717,
+    "wrong_vertices": 760,
+    "wrong_ratio": 0.1611,
+    "graphs_with_wrong": 90,
+    "mean_error_when_wrong": 2.9921,
+    "max_error": 12,
+    "reinsert_correct_graphs": 100,
+    "bf_matches_floyd_graphs": 100,
+    "pops_dijkstra_mean": 66.7,
+    "pops_reinsert_mean": 73.57,
+    "pops_reinsert_max": 110,
+    "relax_dijkstra_mean": 192.19,
+    "relax_reinsert_mean": 206.0
+   },
+   {
+    "neg_ratio_target": 0.2,
+    "neg_edges_per_graph": 40.0,
+    "rejected_draws": 8872,
+    "reachable_vertices": 4721,
+    "wrong_vertices": 1479,
+    "wrong_ratio": 0.3133,
+    "graphs_with_wrong": 97,
+    "mean_error_when_wrong": 2.76,
+    "max_error": 12,
+    "reinsert_correct_graphs": 100,
+    "bf_matches_floyd_graphs": 100,
+    "pops_dijkstra_mean": 69.0,
+    "pops_reinsert_mean": 83.94,
+    "pops_reinsert_max": 118,
+    "relax_dijkstra_mean": 192.21,
+    "relax_reinsert_mean": 224.24
+   }
+  ]
+ },
+ "E3_compare": {
+  "small": {
+   "seeds": 100,
+   "n": 50,
+   "m": 200,
+   "dijkstra_relax_mean": 190.54,
+   "bf_relax_mean": 734.67,
+   "bf_rounds_mean": 4.45,
+   "bf_rounds_min": 1,
+   "bf_rounds_max": 6,
+   "bf_worst_bound_relax": 10000,
+   "dijkstra_ms_median": 0.0208,
+   "bf_ms_median": 0.046
+  },
+  "scale": [
+   {
+    "n": 1000,
+    "m": 4000,
+    "reachable": 976,
+    "dijkstra_relax": 3896,
+    "dijkstra_pops": 1255,
+    "bf_relax": 26998,
+    "bf_rounds": 8,
+    "dijkstra_ms": 0.57,
+    "bf_ms": 1.7497,
+    "reps": 3
+   },
+   {
+    "n": 10000,
+    "m": 40000,
+    "reachable": 9826,
+    "dijkstra_relax": 39258,
+    "dijkstra_pops": 12566,
+    "bf_relax": 391712,
+    "bf_rounds": 12,
+    "dijkstra_ms": 7.9617,
+    "bf_ms": 23.9673,
+    "reps": 3
+   },
+   {
+    "n": 50000,
+    "m": 200000,
+    "reachable": 49037,
+    "dijkstra_relax": 196125,
+    "dijkstra_pops": 62703,
+    "bf_relax": 2336429,
+    "bf_rounds": 14,
+    "dijkstra_ms": 55.0783,
+    "bf_ms": 152.7637,
+    "reps": 1
+   }
+  ]
+ },
+ "E4_negative_cycle": {
+  "graphs": 50,
+  "detected": 50,
+  "rounds_all": [
+   50
+  ],
+  "cycle": "a->b 1, b->c 1, c->a -5"
+ },
+ "E5_grid": {
+  "rows": 30,
+  "cols": 30,
+  "block_p": 0.25,
+  "seeds": 100,
+  "used": 73,
+  "skipped_no_path": 27,
+  "tie_break": "(f, h, insertion order); closed cells reopened when g improves; stop when goal is popped",
+  "expand_mean": {
+   "h0": 664.0411,
+   "man": 133.9041,
+   "man2": 94.5342
+  },
+  "expand_median": {
+   "h0": 665,
+   "man": 107,
+   "man2": 83
+  },
+  "man2_suboptimal": 62,
+  "man2_excess_mean": 5.0968,
+  "man2_excess_max": 14,
+  "man2_excess_ratio_mean": 0.0873,
+  "opt_cost_mean": 58.3836,
+  "excess_hist": {
+   "2": 12,
+   "4": 23,
+   "6": 14,
+   "8": 9,
+   "10": 3,
+   "14": 1
+  }
+ },
+ "E6_small_grid": {
+  "grid": [
+   "S..##",
+   "....#",
+   ".#...",
+   "...#T"
+  ],
+  "opt": 7,
+  "h0": {
+   "cost": 7,
+   "path": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "expanded": 15,
+   "steps": [
+    [
+     [
+      0,
+      0
+     ],
+     0,
+     0
+    ],
+    [
+     [
+      1,
+      0
+     ],
+     1,
+     0
+    ],
+    [
+     [
+      0,
+      1
+     ],
+     1,
+     0
+    ],
+    [
+     [
+      2,
+      0
+     ],
+     2,
+     0
+    ],
+    [
+     [
+      1,
+      1
+     ],
+     2,
+     0
+    ],
+    [
+     [
+      0,
+      2
+     ],
+     2,
+     0
+    ],
+    [
+     [
+      3,
+      0
+     ],
+     3,
+     0
+    ],
+    [
+     [
+      1,
+      2
+     ],
+     3,
+     0
+    ],
+    [
+     [
+      3,
+      1
+     ],
+     4,
+     0
+    ],
+    [
+     [
+      2,
+      2
+     ],
+     4,
+     0
+    ],
+    [
+     [
+      1,
+      3
+     ],
+     4,
+     0
+    ],
+    [
+     [
+      3,
+      2
+     ],
+     5,
+     0
+    ],
+    [
+     [
+      2,
+      3
+     ],
+     5,
+     0
+    ],
+    [
+     [
+      2,
+      4
+     ],
+     6,
+     0
+    ],
+    [
+     [
+      3,
+      4
+     ],
+     7,
+     0
+    ]
+   ]
+  },
+  "man": {
+   "cost": 7,
+   "path": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "expanded": 12,
+   "steps": [
+    [
+     [
+      0,
+      0
+     ],
+     0,
+     7
+    ],
+    [
+     [
+      1,
+      0
+     ],
+     1,
+     6
+    ],
+    [
+     [
+      2,
+      0
+     ],
+     2,
+     5
+    ],
+    [
+     [
+      3,
+      0
+     ],
+     3,
+     4
+    ],
+    [
+     [
+      3,
+      1
+     ],
+     4,
+     3
+    ],
+    [
+     [
+      3,
+      2
+     ],
+     5,
+     2
+    ],
+    [
+     [
+      1,
+      1
+     ],
+     2,
+     5
+    ],
+    [
+     [
+      1,
+      2
+     ],
+     3,
+     4
+    ],
+    [
+     [
+      2,
+      2
+     ],
+     4,
+     3
+    ],
+    [
+     [
+      2,
+      3
+     ],
+     5,
+     2
+    ],
+    [
+     [
+      2,
+      4
+     ],
+     6,
+     1
+    ],
+    [
+     [
+      3,
+      4
+     ],
+     7,
+     0
+    ]
+   ]
+  },
+  "man2": {
+   "cost": 9,
+   "path": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "expanded": 10,
+   "steps": [
+    [
+     [
+      0,
+      0
+     ],
+     0,
+     14
+    ],
+    [
+     [
+      1,
+      0
+     ],
+     1,
+     12
+    ],
+    [
+     [
+      2,
+      0
+     ],
+     2,
+     10
+    ],
+    [
+     [
+      3,
+      0
+     ],
+     3,
+     8
+    ],
+    [
+     [
+      3,
+      1
+     ],
+     4,
+     6
+    ],
+    [
+     [
+      3,
+      2
+     ],
+     5,
+     4
+    ],
+    [
+     [
+      2,
+      2
+     ],
+     6,
+     6
+    ],
+    [
+     [
+      2,
+      3
+     ],
+     7,
+     4
+    ],
+    [
+     [
+      2,
+      4
+     ],
+     8,
+     2
+    ],
+    [
+     [
+      3,
+      4
+     ],
+     9,
+     0
+    ]
+   ]
+  }
+ },
+ "E7_widget": {
+  "pos": {
+   "n": 5,
+   "edges": [
+    [
+     0,
+     1,
+     4
+    ],
+    [
+     0,
+     2,
+     1
+    ],
+    [
+     2,
+     1,
+     2
+    ],
+    [
+     1,
+     3,
+     1
+    ],
+    [
+     2,
+     3,
+     5
+    ],
+    [
+     3,
+     4,
+     3
+    ],
+    [
+     1,
+     4,
+     6
+    ]
+   ],
+   "pos": [
+    [
+     60,
+     140
+    ],
+    [
+     250,
+     50
+    ],
+    [
+     250,
+     230
+    ],
+    [
+     420,
+     140
+    ],
+    [
+     560,
+     140
+    ]
+   ],
+   "names": [
+    "s",
+    "a",
+    "b",
+    "c",
+    "t"
+   ],
+   "true": [
+    0,
+    3,
+    1,
+    4,
+    7
+   ],
+   "steps": [
+    [
+     "start",
+     0,
+     null,
+     [
+      0,
+      null,
+      null,
+      null,
+      null
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     0,
+     null,
+     [
+      0,
+      null,
+      null,
+      null,
+      null
+     ],
+     [
+      1,
+      0,
+      0,
+      0,
+      0
+     ],
+     [],
+     true,
+     true
+    ],
+    [
+     "improve",
+     0,
+     [
+      1,
+      4
+     ],
+     [
+      0,
+      4,
+      null,
+      null,
+      null
+     ],
+     [
+      1,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      [
+       4,
+       1
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     0,
+     [
+      2,
+      1
+     ],
+     [
+      0,
+      4,
+      1,
+      null,
+      null
+     ],
+     [
+      1,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      [
+       1,
+       2
+      ],
+      [
+       4,
+       1
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     2,
+     null,
+     [
+      0,
+      4,
+      1,
+      null,
+      null
+     ],
+     [
+      1,
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       4,
+       1
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     2,
+     [
+      1,
+      2
+     ],
+     [
+      0,
+      3,
+      1,
+      null,
+      null
+     ],
+     [
+      1,
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       3,
+       1
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     2,
+     [
+      3,
+      5
+     ],
+     [
+      0,
+      3,
+      1,
+      6,
+      null
+     ],
+     [
+      1,
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       3,
+       1
+      ],
+      [
+       6,
+       3
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     1,
+     null,
+     [
+      0,
+      3,
+      1,
+      6,
+      null
+     ],
+     [
+      1,
+      1,
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       6,
+       3
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     1,
+     [
+      3,
+      1
+     ],
+     [
+      0,
+      3,
+      1,
+      4,
+      null
+     ],
+     [
+      1,
+      1,
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       4,
+       3
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     1,
+     [
+      4,
+      6
+     ],
+     [
+      0,
+      3,
+      1,
+      4,
+      9
+     ],
+     [
+      1,
+      1,
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       4,
+       3
+      ],
+      [
+       9,
+       4
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     3,
+     null,
+     [
+      0,
+      3,
+      1,
+      4,
+      9
+     ],
+     [
+      1,
+      1,
+      1,
+      1,
+      0
+     ],
+     [
+      [
+       9,
+       4
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     3,
+     [
+      4,
+      3
+     ],
+     [
+      0,
+      3,
+      1,
+      4,
+      7
+     ],
+     [
+      1,
+      1,
+      1,
+      1,
+      0
+     ],
+     [
+      [
+       7,
+       4
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     4,
+     null,
+     [
+      0,
+      3,
+      1,
+      4,
+      7
+     ],
+     [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     [],
+     true,
+     true
+    ]
+   ]
+  },
+  "neg": {
+   "n": 3,
+   "edges": [
+    [
+     0,
+     1,
+     1
+    ],
+    [
+     0,
+     2,
+     2
+    ],
+    [
+     2,
+     1,
+     -2
+    ]
+   ],
+   "pos": [
+    [
+     90,
+     150
+    ],
+    [
+     300,
+     60
+    ],
+    [
+     500,
+     200
+    ]
+   ],
+   "names": [
+    "s",
+    "a",
+    "b"
+   ],
+   "true": [
+    0,
+    0,
+    2
+   ],
+   "steps": [
+    [
+     "start",
+     0,
+     null,
+     [
+      0,
+      null,
+      null
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     0,
+     null,
+     [
+      0,
+      null,
+      null
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [],
+     true,
+     true
+    ],
+    [
+     "improve",
+     0,
+     [
+      1,
+      1
+     ],
+     [
+      0,
+      1,
+      null
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       1,
+       1
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "improve",
+     0,
+     [
+      2,
+      2
+     ],
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       2
+      ]
+     ],
+     true,
+     true
+    ],
+    [
+     "settle",
+     1,
+     null,
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      [
+       2,
+       2
+      ]
+     ],
+     true,
+     false
+    ],
+    [
+     "settle",
+     2,
+     null,
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      1,
+      1
+     ],
+     [],
+     true,
+     false
+    ],
+    [
+     "skip",
+     2,
+     [
+      1,
+      -2
+     ],
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      1,
+      1
+     ],
+     [],
+     true,
+     false
+    ]
+   ]
+  }
+ },
+ "E8_common_failures": {
+  "shift_all_edges": {
+   "seeds": 100,
+   "neg_ratio": 0.1,
+   "reachable_vertices": 4717,
+   "wrong_vertices": 2310,
+   "wrong_ratio": 0.4897,
+   "graphs_with_wrong": 98,
+   "tiny_example_parent_of_a": 0
+  },
+  "stop_on_first_label": {
+   "seeds": 100,
+   "targets": 4673,
+   "wrong": 1218,
+   "wrong_ratio": 0.2606
+  }
+ },
+ "E9_numpy": {
+  "graphs": 50,
+  "sources_checked": 1500,
+  "agree": 1500
+ },
+ "total_seconds": 4.7
+}

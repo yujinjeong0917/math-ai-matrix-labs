@@ -1,0 +1,6 @@
+reader,date,failure,method,caught_before_result,check,note
+example,2026-10-08,범위 누락,free,no,,"합성 모형. AVERAGE(D2:D16)가 붙인 지점 5곳을 빼고 13.47%(전체 14.67%)"
+example,2026-10-08,범위 누락,spec,prevented,,"clean 열 끝까지 + lookup 지점 목록"
+example,2026-10-08,행 수 상한,free,no,,"75,000행 중 9,465행 사라짐"
+example,2026-10-08,행 수 상한,spec,yes,C6,
+example,2026-10-08,목록 안의 틀린 값,spec,no,,"노쇼 4.23% -> 2.80%로 기록"

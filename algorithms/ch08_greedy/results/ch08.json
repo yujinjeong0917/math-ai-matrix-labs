@@ -1,0 +1,960 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "omp_threads": "2"
+ },
+ "E0_first_screen": {
+  "coin": {
+   "coins": [
+    1,
+    3,
+    4
+   ],
+   "amount": 6,
+   "greedy": [
+    4,
+    1,
+    1
+   ],
+   "optimal": [
+    3,
+    3
+   ]
+  },
+  "coin_kr_760": {
+   "coins": [
+    1,
+    5,
+    10,
+    50,
+    100,
+    500
+   ],
+   "amount": 760,
+   "greedy": [
+    500,
+    100,
+    100,
+    50,
+    10
+   ],
+   "optimal": [
+    500,
+    100,
+    100,
+    50,
+    10
+   ]
+  },
+  "mst": {
+   "names": "ABCD",
+   "edges": [
+    [
+     1,
+     0,
+     1
+    ],
+    [
+     2,
+     1,
+     2
+    ],
+    [
+     3,
+     0,
+     2
+    ],
+    [
+     4,
+     2,
+     3
+    ],
+    [
+     5,
+     1,
+     3
+    ]
+   ],
+   "steps": [
+    [
+     [
+      1,
+      0,
+      1
+     ],
+     true
+    ],
+    [
+     [
+      2,
+      1,
+      2
+     ],
+     true
+    ],
+    [
+     [
+      3,
+      0,
+      2
+     ],
+     false
+    ],
+    [
+     [
+      4,
+      2,
+      3
+     ],
+     true
+    ]
+   ],
+   "total": 7,
+   "brute": 7
+  },
+  "coverage": {
+   "sets": [
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ]
+   ],
+   "k": 2,
+   "greedy_idx": [
+    0,
+    1
+   ],
+   "greedy": 3,
+   "opt_idx": [
+    1,
+    2
+   ],
+   "opt": 4,
+   "ratio": {
+    "num": 3,
+    "den": 4,
+    "value": 0.75
+   },
+   "bound_k2": {
+    "num": 3,
+    "den": 4,
+    "value": 0.75
+   }
+  },
+  "matching_path": {
+   "edges": [
+    [
+     3,
+     0,
+     1
+    ],
+    [
+     4,
+     1,
+     2
+    ],
+    [
+     3,
+     2,
+     3
+    ]
+   ],
+   "greedy": 4,
+   "greedy_edges": [
+    [
+     4,
+     1,
+     2
+    ]
+   ],
+   "opt": 6
+  }
+ },
+ "E1_coins": {
+  "rows": [
+   {
+    "name": "미국 센트",
+    "coins": [
+     1,
+     5,
+     10,
+     25
+    ],
+    "amounts": 200,
+    "fail_count": 0,
+    "fail_ratio": 0.0,
+    "smallest_counterexample": null,
+    "smallest_detail": null,
+    "kz_range": [
+     11,
+     35
+    ],
+    "smallest_in_kz_open_range": null,
+    "has_fail_up_to_kz_hi": false,
+    "max_excess_coins": 0,
+    "mean_excess_coins": 0,
+    "first_fails": []
+   },
+   {
+    "name": "한국 동전(원)",
+    "coins": [
+     1,
+     5,
+     10,
+     50,
+     100,
+     500
+    ],
+    "amounts": 200,
+    "fail_count": 0,
+    "fail_ratio": 0.0,
+    "smallest_counterexample": null,
+    "smallest_detail": null,
+    "kz_range": [
+     11,
+     600
+    ],
+    "smallest_in_kz_open_range": null,
+    "has_fail_up_to_kz_hi": false,
+    "max_excess_coins": 0,
+    "mean_excess_coins": 0,
+    "first_fails": []
+   },
+   {
+    "name": "유로 센트",
+    "coins": [
+     1,
+     2,
+     5,
+     10,
+     20,
+     50,
+     100,
+     200
+    ],
+    "amounts": 200,
+    "fail_count": 0,
+    "fail_ratio": 0.0,
+    "smallest_counterexample": null,
+    "smallest_detail": null,
+    "kz_range": [
+     6,
+     300
+    ],
+    "smallest_in_kz_open_range": null,
+    "has_fail_up_to_kz_hi": false,
+    "max_excess_coins": 0,
+    "mean_excess_coins": 0,
+    "first_fails": []
+   },
+   {
+    "name": "{1,3,4}",
+    "coins": [
+     1,
+     3,
+     4
+    ],
+    "amounts": 200,
+    "fail_count": 49,
+    "fail_ratio": 0.245,
+    "smallest_counterexample": 6,
+    "smallest_detail": {
+     "greedy": [
+      4,
+      1,
+      1
+     ],
+     "optimal": [
+      3,
+      3
+     ]
+    },
+    "kz_range": [
+     5,
+     7
+    ],
+    "smallest_in_kz_open_range": true,
+    "has_fail_up_to_kz_hi": true,
+    "max_excess_coins": 1,
+    "mean_excess_coins": 1.0,
+    "first_fails": [
+     6,
+     10,
+     14,
+     18,
+     22,
+     26,
+     30,
+     34
+    ]
+   },
+   {
+    "name": "{1,7,10}",
+    "coins": [
+     1,
+     7,
+     10
+    ],
+    "amounts": 200,
+    "fail_count": 57,
+    "fail_ratio": 0.285,
+    "smallest_counterexample": 14,
+    "smallest_detail": {
+     "greedy": [
+      10,
+      1,
+      1,
+      1,
+      1
+     ],
+     "optimal": [
+      7,
+      7
+     ]
+    },
+    "kz_range": [
+     11,
+     17
+    ],
+    "smallest_in_kz_open_range": true,
+    "has_fail_up_to_kz_hi": true,
+    "max_excess_coins": 3,
+    "mean_excess_coins": 3.0,
+    "first_fails": [
+     14,
+     15,
+     16,
+     24,
+     25,
+     26,
+     34,
+     35
+    ]
+   },
+   {
+    "name": "{1,10,25}",
+    "coins": [
+     1,
+     10,
+     25
+    ],
+    "amounts": 200,
+    "fail_count": 70,
+    "fail_ratio": 0.35,
+    "smallest_counterexample": 30,
+    "smallest_detail": {
+     "greedy": [
+      25,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "optimal": [
+      10,
+      10,
+      10
+     ]
+    },
+    "kz_range": [
+     26,
+     35
+    ],
+    "smallest_in_kz_open_range": true,
+    "has_fail_up_to_kz_hi": true,
+    "max_excess_coins": 3,
+    "mean_excess_coins": 3.0,
+    "first_fails": [
+     30,
+     31,
+     32,
+     33,
+     34,
+     40,
+     41,
+     42
+    ]
+   }
+  ],
+  "canonical_check_1_to_1000_fail_counts": {
+   "미국 센트": 0,
+   "한국 동전(원)": 0,
+   "유로 센트": 0
+  }
+ },
+ "E2_coverage": {
+  "exhaustive_u4_n4": {
+   "2": {
+    "cases": 65535,
+    "greedy_worse": 768,
+    "worse_ratio": 0.0117,
+    "min_ratio": {
+     "num": 3,
+     "den": 4,
+     "value": 0.75
+    },
+    "bound": {
+     "num": 3,
+     "den": 4,
+     "value": 0.75
+    },
+    "min_ratio_ge_bound": true,
+    "worst_case": {
+     "sets": [
+      [],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       4
+      ]
+     ],
+     "greedy_idx": [
+      1,
+      2
+     ],
+     "greedy": 3,
+     "opt": 4
+    }
+   },
+   "3": {
+    "cases": 65535,
+    "greedy_worse": 0,
+    "worse_ratio": 0.0,
+    "min_ratio": {
+     "num": 1,
+     "den": 1,
+     "value": 1.0
+    },
+    "bound": {
+     "num": 19,
+     "den": 27,
+     "value": 0.7037
+    },
+    "min_ratio_ge_bound": true,
+    "worst_case": null
+   }
+  },
+  "random_u12_n8_p03": {
+   "2": {
+    "instances": 1000,
+    "greedy_worse": 58,
+    "min_ratio": {
+     "num": 7,
+     "den": 9,
+     "value": 0.7778
+    },
+    "mean_ratio": 0.9933,
+    "p05_ratio": 0.9,
+    "bound": {
+     "num": 3,
+     "den": 4,
+     "value": 0.75
+    },
+    "all_ge_bound": true
+   },
+   "3": {
+    "instances": 1000,
+    "greedy_worse": 102,
+    "min_ratio": {
+     "num": 4,
+     "den": 5,
+     "value": 0.8
+    },
+    "mean_ratio": 0.9901,
+    "p05_ratio": 0.9091,
+    "bound": {
+     "num": 19,
+     "den": 27,
+     "value": 0.7037
+    },
+    "all_ge_bound": true
+   },
+   "4": {
+    "instances": 1000,
+    "greedy_worse": 74,
+    "min_ratio": {
+     "num": 9,
+     "den": 11,
+     "value": 0.8182
+    },
+    "mean_ratio": 0.9933,
+    "p05_ratio": 0.9167,
+    "bound": {
+     "num": 175,
+     "den": 256,
+     "value": 0.6836
+    },
+    "all_ge_bound": true
+   }
+  },
+  "no_tie_example": {
+   "sets": [
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     4,
+     5,
+     6
+    ],
+    [
+     1,
+     2,
+     4,
+     5
+    ]
+   ],
+   "greedy_idx": [
+    2,
+    0
+   ],
+   "greedy": 5,
+   "opt_idx": [
+    0,
+    1
+   ],
+   "opt": 6
+  },
+  "one_minus_inv_e": 0.6321
+ },
+ "E3_matroid_contrast": {
+  "forest": {
+   "graphs": 1000,
+   "greedy_worse": 0,
+   "worse_ratio": 0.0,
+   "min_ratio": {
+    "num": 1,
+    "den": 1,
+    "value": 1.0
+   }
+  },
+  "matching": {
+   "graphs": 1000,
+   "greedy_worse": 148,
+   "worse_ratio": 0.148,
+   "min_ratio": {
+    "num": 5,
+    "den": 9,
+    "value": 0.5556
+   }
+  }
+ },
+ "E4_mst": [
+  {
+   "n": 100,
+   "m": 400,
+   "seeds": 10,
+   "weights_equal": 10,
+   "mean_k_scan": 226.9,
+   "mean_k_find": 453.8,
+   "mean_k_steps": 390.1,
+   "mean_p_scan": 800.0,
+   "mean_p_push": 229.4,
+   "mean_p_pop": 229.4,
+   "mean_naive_steps": 3319.8,
+   "mean_rank_steps": 576.9,
+   "mean_comp_steps": 390.1,
+   "kruskal_ms_median": 0.0913,
+   "prim_ms_median": 0.0981
+  },
+  {
+   "n": 1000,
+   "m": 4000,
+   "seeds": 10,
+   "weights_equal": 10,
+   "mean_k_scan": 3069.6,
+   "mean_k_find": 6139.2,
+   "mean_k_steps": 5649.7,
+   "mean_p_scan": 8000.0,
+   "mean_p_push": 2295.5,
+   "mean_p_pop": 2295.5,
+   "mean_naive_steps": 480242.8,
+   "mean_rank_steps": 10073.6,
+   "mean_comp_steps": 5649.7,
+   "kruskal_ms_median": 1.5474,
+   "prim_ms_median": 1.3568
+  },
+  {
+   "n": 10000,
+   "m": 40000,
+   "seeds": 10,
+   "weights_equal": 10,
+   "mean_k_scan": 38053.7,
+   "mean_k_find": 76107.4,
+   "mean_k_steps": 71370.2,
+   "mean_p_scan": 80000.0,
+   "mean_p_push": 23019.5,
+   "mean_p_pop": 23019.5,
+   "mean_naive_steps": 66111980.9,
+   "mean_rank_steps": 134446.3,
+   "mean_comp_steps": 71370.2,
+   "kruskal_ms_median": 22.7868,
+   "prim_ms_median": 19.206
+  }
+ ],
+ "E5_common_failures": {
+  "size_instead_of_gain": {
+   "2": {
+    "instances": 1000,
+    "gain_worse_than_opt": 58,
+    "size_worse_than_opt": 447,
+    "size_worse_than_gain": 409,
+    "size_min_ratio": {
+     "num": 6,
+     "den": 11,
+     "value": 0.5455
+    },
+    "size_below_bound": true
+   },
+   "3": {
+    "instances": 1000,
+    "gain_worse_than_opt": 102,
+    "size_worse_than_opt": 631,
+    "size_worse_than_gain": 570,
+    "size_min_ratio": {
+     "num": 3,
+     "den": 5,
+     "value": 0.6
+    },
+    "size_below_bound": true
+   },
+   "4": {
+    "instances": 1000,
+    "gain_worse_than_opt": 74,
+    "size_worse_than_opt": 663,
+    "size_worse_than_gain": 623,
+    "size_min_ratio": {
+     "num": 7,
+     "den": 12,
+     "value": 0.5833
+    },
+    "size_below_bound": true
+   }
+  },
+  "size_hand": {
+   "sets": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     1,
+     2,
+     3,
+     5
+    ],
+    [
+     6,
+     7,
+     8
+    ]
+   ],
+   "size_pick": 5,
+   "gain_pick": 7
+  },
+  "prim_dijkstra_key": {
+   "graphs": 100,
+   "n": 50,
+   "m": 200,
+   "weights": "1..20",
+   "heavier_than_mst": 100,
+   "mean_excess_ratio": 0.4337,
+   "max_excess_ratio": 1.007
+  }
+ },
+ "E6_widget": {
+  "names": "ABCDEF",
+  "pos": [
+   [
+    70,
+    70
+   ],
+   [
+    250,
+    40
+   ],
+   [
+    430,
+    70
+   ],
+   [
+    90,
+    230
+   ],
+   [
+    290,
+    220
+   ],
+   [
+    520,
+    220
+   ]
+  ],
+  "edges": [
+   [
+    4,
+    0,
+    1
+   ],
+   [
+    2,
+    0,
+    3
+   ],
+   [
+    5,
+    1,
+    2
+   ],
+   [
+    3,
+    1,
+    3
+   ],
+   [
+    6,
+    1,
+    4
+   ],
+   [
+    1,
+    3,
+    4
+   ],
+   [
+    7,
+    2,
+    4
+   ],
+   [
+    8,
+    2,
+    5
+   ],
+   [
+    4,
+    4,
+    5
+   ]
+  ],
+  "steps": [
+   {
+    "edge": [
+     1,
+     3,
+     4
+    ],
+    "ok": true,
+    "comp": [
+     0,
+     1,
+     2,
+     3,
+     3,
+     5
+    ],
+    "cut": [
+     3
+    ],
+    "lightest_cut": 1,
+    "is_lightest": true
+   },
+   {
+    "edge": [
+     2,
+     0,
+     3
+    ],
+    "ok": true,
+    "comp": [
+     3,
+     1,
+     2,
+     3,
+     3,
+     5
+    ],
+    "cut": [
+     0
+    ],
+    "lightest_cut": 2,
+    "is_lightest": true
+   },
+   {
+    "edge": [
+     3,
+     1,
+     3
+    ],
+    "ok": true,
+    "comp": [
+     3,
+     3,
+     2,
+     3,
+     3,
+     5
+    ],
+    "cut": [
+     1
+    ],
+    "lightest_cut": 3,
+    "is_lightest": true
+   },
+   {
+    "edge": [
+     4,
+     0,
+     1
+    ],
+    "ok": false,
+    "comp": [
+     3,
+     3,
+     2,
+     3,
+     3,
+     5
+    ],
+    "cut": [
+     0,
+     1,
+     3,
+     4
+    ],
+    "lightest_cut": 4,
+    "is_lightest": null
+   },
+   {
+    "edge": [
+     4,
+     4,
+     5
+    ],
+    "ok": true,
+    "comp": [
+     3,
+     3,
+     2,
+     3,
+     3,
+     3
+    ],
+    "cut": [
+     0,
+     1,
+     3,
+     4
+    ],
+    "lightest_cut": 4,
+    "is_lightest": true
+   },
+   {
+    "edge": [
+     5,
+     1,
+     2
+    ],
+    "ok": true,
+    "comp": [
+     3,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "cut": [
+     0,
+     1,
+     3,
+     4,
+     5
+    ],
+    "lightest_cut": 5,
+    "is_lightest": true
+   }
+  ],
+  "total": 15,
+  "brute": 15,
+  "coins": [
+   {
+    "coins": [
+     1,
+     3,
+     4
+    ],
+    "amount": 6,
+    "greedy": [
+     4,
+     1,
+     1
+    ],
+    "optimal": [
+     3,
+     3
+    ]
+   },
+   {
+    "coins": [
+     1,
+     7,
+     10
+    ],
+    "amount": 14,
+    "greedy": [
+     10,
+     1,
+     1,
+     1,
+     1
+    ],
+    "optimal": [
+     7,
+     7
+    ]
+   },
+   {
+    "coins": [
+     1,
+     5,
+     10,
+     25
+    ],
+    "amount": 30,
+    "greedy": [
+     25,
+     5
+    ],
+    "optimal": [
+     25,
+     5
+    ]
+   }
+  ]
+ },
+ "total_seconds": 30.6
+}

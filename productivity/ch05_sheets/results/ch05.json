@@ -1,0 +1,342 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "platform": "Darwin arm64",
+  "seed": 5,
+  "checked": "2026-10-08",
+  "rows": 2460,
+  "branches": 20,
+  "days": 14,
+  "threshold": 0.15
+ },
+ "e0_hand": {
+  "rows": [
+   {
+    "branch": "가",
+    "bookings": 20,
+    "cancels": 2,
+    "rate": 0.1
+   },
+   {
+    "branch": "나",
+    "bookings": 25,
+    "cancels": 3,
+    "rate": 0.12
+   },
+   {
+    "branch": "다",
+    "bookings": 25,
+    "cancels": 2,
+    "rate": 0.08
+   },
+   {
+    "branch": "라",
+    "bookings": 20,
+    "cancels": 6,
+    "rate": 0.3
+   },
+   {
+    "branch": "마",
+    "bookings": 20,
+    "cancels": 5,
+    "rate": 0.25
+   }
+  ],
+  "formula_after_append": "D2:D4",
+  "avg_narrow": 0.1,
+  "avg_full": 0.17,
+  "threshold": 0.15,
+  "decision_narrow": false,
+  "decision_full": true
+ },
+ "e1_range": {
+  "truth_mean_rate_20": 0.1467,
+  "closed_D2:D16": {
+   "formula_after": "D2:D16",
+   "value": 0.1347,
+   "n_in_range": 15,
+   "decision": false
+  },
+  "open_D2:D": {
+   "formula_after": "D2:D",
+   "value": 0.1467,
+   "n_in_range": 20,
+   "decision": false
+  },
+  "closed_insert_inside": {
+   "formula_after": "D2:D21",
+   "value": 0.1467
+  },
+  "truth_decision": false,
+  "open_range_total_row": {
+   "sum_before": 2460,
+   "sum_after": 4920,
+   "ratio": 2.0
+  },
+  "spec_workbook": {
+   "value": 0.1467,
+   "n_branches": 20,
+   "pooled_rate": 0.1415
+  },
+  "spec_total_row_check": [
+   "C7 목록 밖 지점 0"
+  ],
+  "first15_mean": 0.1347,
+  "last5_mean": 0.1829
+ },
+ "e2_flip": {
+  "new_branches_differ": {
+   "n": 1000,
+   "decision_flips": 78,
+   "flip_rate": 0.078,
+   "mean_diff_pp": 2.54,
+   "max_abs_diff_pp": 5.25
+  },
+  "new_branches_same": {
+   "n": 1000,
+   "decision_flips": 0,
+   "flip_rate": 0.0,
+   "mean_diff_pp": 0.01,
+   "max_abs_diff_pp": 2.07
+  }
+ },
+ "e3_row_cap": {
+  "cap_rows_incl_header": 65536,
+  "events_per_booking": 3,
+  "runs": [
+   {
+    "bookings": 1000,
+    "rows": 3000,
+    "rows_saved": 3000,
+    "rows_lost": 0,
+    "bookings_missing_entirely": 0,
+    "bookings_incomplete": 0,
+    "days_total": 30,
+    "days_fully_kept": 29,
+    "last_day_seen": "2026-09-30",
+    "c6_pass": true,
+    "xlsx_cap_rows_lost": 0
+   },
+   {
+    "bookings": 10000,
+    "rows": 30000,
+    "rows_saved": 30000,
+    "rows_lost": 0,
+    "bookings_missing_entirely": 0,
+    "bookings_incomplete": 0,
+    "days_total": 30,
+    "days_fully_kept": 29,
+    "last_day_seen": "2026-09-30",
+    "c6_pass": true,
+    "xlsx_cap_rows_lost": 0
+   },
+   {
+    "bookings": 25000,
+    "rows": 75000,
+    "rows_saved": 65535,
+    "rows_lost": 9465,
+    "bookings_missing_entirely": 3155,
+    "bookings_incomplete": 3155,
+    "days_total": 30,
+    "days_fully_kept": 26,
+    "last_day_seen": "2026-09-27",
+    "c6_pass": false,
+    "xlsx_cap_rows_lost": 0
+   },
+   {
+    "bookings": 100000,
+    "rows": 300000,
+    "rows_saved": 65535,
+    "rows_lost": 234465,
+    "bookings_missing_entirely": 78155,
+    "bookings_incomplete": 78155,
+    "days_total": 30,
+    "days_fully_kept": 6,
+    "last_day_seen": "2026-09-07",
+    "c6_pass": false,
+    "xlsx_cap_rows_lost": 0
+   }
+  ]
+ },
+ "e4_overwrite": {
+  "rows": 2460,
+  "sort_one_column": {
+   "max_abs_branch_rate_change_pp": 17.65,
+   "branches_changed_over_5pp": 12,
+   "pooled_cancel_before": 0.1415,
+   "pooled_cancel_after": 0.1415,
+   "spec_raw_edit_blocked": true,
+   "spec_checks_failed_with_fingerprint": [
+    "C8 원본 지문 그대로"
+   ],
+   "spec_checks_failed_without_fingerprint": []
+  },
+  "delete_50_rows": {
+   "rows_after": 2410,
+   "spec_checks_failed": [
+    "C6 보낸 행 수 = 원본 행"
+   ]
+  }
+ },
+ "e5_messy": {
+  "rows": 2460,
+  "free_pivot_status_rows": 11,
+  "free_status_labels": [
+   "cancel",
+   "done",
+   "no-show",
+   "노쇼",
+   "예약",
+   "예약됨",
+   "완료",
+   "이용완료",
+   "취소",
+   "취소 ",
+   "취소됨"
+  ],
+  "free_cancel_count_exact_label": 230,
+  "true_cancel_count": 348,
+  "free_pooled_cancel_rate": 0.0935,
+  "true_pooled_cancel_rate": 0.1415,
+  "free_distinct_date_labels": 42,
+  "true_days": 14,
+  "rows_md_format": 357,
+  "rows_day_only": 379,
+  "spec_kept": 2081,
+  "spec_dropped": 379,
+  "spec_drop_reasons": {
+   "날짜 모름": 379
+  },
+  "spec_checks_failed": [
+   "C4 날짜 변환 실패 0"
+  ],
+  "spec_pooled_cancel_rate": 0.1466,
+  "spec_mean_branch_rate": 0.1506,
+  "true_mean_branch_rate": 0.1467
+ },
+ "e6_autoconvert": {
+  "rows": 2460,
+  "distinct_rooms": 12,
+  "free_converted_to_date": 2460,
+  "plain_text_converted": 0,
+  "examples": {
+   "1-01": [
+    "date",
+    "2026-01-01"
+   ],
+   "1-02": [
+    "date",
+    "2026-01-02"
+   ],
+   "1-03": [
+    "date",
+    "2026-01-03"
+   ],
+   "1-04": [
+    "date",
+    "2026-01-04"
+   ]
+  },
+  "other_examples": {
+   "007": [
+    "number",
+    7
+   ],
+   "B-12": [
+    "text",
+    "B-12"
+   ],
+   "13-05": [
+    "text",
+    "13-05"
+   ],
+   "10/5": [
+    "date",
+    "2026-10-05"
+   ]
+  }
+ },
+ "e7_valid_but_wrong": {
+  "q": 0.3,
+  "rows_changed": 35,
+  "true_noshow_rate": 0.0423,
+  "recorded_noshow_rate": 0.028,
+  "spec_checks_failed": []
+ },
+ "e8_unique": {
+  "sum_of_branch_unique_customers": 2202,
+  "overall_unique_customers": 596,
+  "ratio": 3.69,
+  "rows": 2460
+ },
+ "e9_correspondence": {
+  "datasets": 500,
+  "mismatches": 0,
+  "conservation_holds": 500
+ },
+ "e10_timing": {
+  "runs": [
+   {
+    "rows": 1000,
+    "seconds_median": 0.001,
+    "cells_raw_plus_clean": 15000
+   },
+   {
+    "rows": 10000,
+    "seconds_median": 0.013,
+    "cells_raw_plus_clean": 150000
+   },
+   {
+    "rows": 100000,
+    "seconds_median": 0.134,
+    "cells_raw_plus_clean": 1500000
+   }
+  ],
+  "sheets_cell_limit": 20000000,
+  "cells_per_row": 15,
+  "max_rows_under_limit": 1333333
+ },
+ "summary": [
+  {
+   "failure": "범위 누락(아래에 붙인 지점 5곳)",
+   "free": "못 잡음(값만 바뀜)",
+   "spec": "막음: clean 전체 열·lookup 지점 목록, 지점 20곳"
+  },
+  {
+   "failure": "행 수 상한(65,536행 형식)",
+   "free": "못 잡음(9465행 사라짐)",
+   "spec": "잡음: C6"
+  },
+  {
+   "failure": "원본 덮어쓰기(열 하나 정렬)",
+   "free": "못 잡음(합계 그대로)",
+   "spec": "막음: 보호 / 사본은 C8 원본 지문 그대로"
+  },
+  {
+   "failure": "원본 덮어쓰기(행 삭제)",
+   "free": "못 잡음",
+   "spec": "잡음: C6 보낸 행 수 = 원본 행"
+  },
+  {
+   "failure": "입력 혼재(날짜·상태 표기)",
+   "free": "못 잡음(상태 11줄)",
+   "spec": "고침 + 잡음: C4 날짜 변환 실패 0"
+  },
+  {
+   "failure": "자동 형식 변환(방 번호)",
+   "free": "못 잡음(2460칸 날짜로)",
+   "spec": "막음: 일반 텍스트 형식(0칸 변환)"
+  },
+  {
+   "failure": "열린 범위 아래의 합계 줄",
+   "free": "못 잡음(SUM 2배)",
+   "spec": "잡음: C7 목록 밖 지점 0"
+  },
+  {
+   "failure": "목록 안의 틀린 값(노쇼→완료)",
+   "free": "못 잡음",
+   "spec": "못 잡음"
+  }
+ ]
+}

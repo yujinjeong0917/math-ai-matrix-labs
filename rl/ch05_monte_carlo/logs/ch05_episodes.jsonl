@@ -1,0 +1,24 @@
+{"seed": 0, "episode": 0, "t": 0, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 1, "s": 0, "a": 1, "r": 0.0, "s_next": 1, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 2, "s": 1, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 3, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 4, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 5, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 6, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 7, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 8, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 9, "s": 0, "a": 1, "r": 0.0, "s_next": 1, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 10, "s": 1, "a": 1, "r": 1.0, "s_next": 2, "done": true, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 1, "t": 0, "s": 0, "a": 1, "r": 0.0, "s_next": 1, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 1, "t": 1, "s": 1, "a": 1, "r": 1.0, "s_next": 2, "done": true, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 2, "t": 0, "s": 0, "a": 1, "r": 0.0, "s_next": 1, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 2, "t": 1, "s": 1, "a": 1, "r": 1.0, "s_next": 2, "done": true, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 3, "t": 0, "s": 0, "a": 1, "r": 0.0, "s_next": 1, "done": false, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 3, "t": 1, "s": 1, "a": 1, "r": 1.0, "s_next": 2, "done": true, "info": {"env": "corridor", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 0, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 1, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 2, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 3, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 4, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 5, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9}}
+{"seed": 0, "episode": 0, "t": 9999, "s": 0, "a": 3, "r": 0.0, "s_next": 0, "done": false, "info": {"env": "ch02_grid_random_deterministic_policy", "gamma": 0.9, "truncated": true, "note": "상한 10000걸음에서 잘림, 리턴을 모름"}}

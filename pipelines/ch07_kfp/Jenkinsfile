@@ -1,0 +1,37 @@
+// 7장 Jenkinsfile: 5장 CI 뒤에 KFP run 제출을 붙였다. 이 저장소에는 Jenkins 서버도 KFP 클러스터도 없다.
+// test_pipelines_ch07_kfp.py가 pipelines_ch07_jenkinsfile.py로 이 파일의 단계 순서와 규칙만 검사한다.
+// ci/compile_pipeline.py, ci/decide.py는 kfp_pipeline.py 컴파일과 6장 decide()를 감싼다고 가정한 이름이다(이 저장소에는 없다).
+// 경계: Jenkins는 테스트·이미지·제출·판정만 하고, 학습은 KFP의 train task에서만 한다.
+pipeline {
+  agent any
+  environment {
+    OMP_NUM_THREADS = '2'
+    IMAGE = "registry.example.com/churn:${env.GIT_COMMIT}"   // 다시 안 바뀌는 커밋 SHA 태그. ':latest' 금지
+  }
+  stages {
+    stage('Unit/Data tests') {
+      steps { sh 'python -m pytest -q tests --junitxml=reports/unit.xml' }
+    }
+    stage('Build and push image') {
+      steps {
+        sh 'docker build -t "$IMAGE" .'
+        sh 'docker push "$IMAGE"'
+      }
+    }
+    stage('Compile pipeline') {
+      steps { sh 'python ci/compile_pipeline.py --image "$IMAGE" --out build/churn_ch07.yaml' }
+    }
+    stage('Submit KFP run') {
+      steps {
+        // run을 제출하고 끝날 때까지 기다린 뒤, evaluate task의 지표를 파일로 받아 온다.
+        sh 'python pipelines_ch07_submit.py --package build/churn_ch07.yaml --run-name "ch07-${GIT_COMMIT}" --out results/kfp_metrics.json'
+      }
+      post { always { archiveArtifacts 'results/kfp_metrics.json' } }
+    }
+    stage('Gate') {
+      // 6장 decide()로 넘길 숫자. 학습은 하지 않고 판정만 한다.
+      steps { sh 'python ci/decide.py --metrics results/kfp_metrics.json --min-accuracy 0.78' }
+    }
+  }
+  post { always { junit 'reports/*.xml' } }
+}

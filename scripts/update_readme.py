@@ -11,14 +11,14 @@ chs = sorted({"/".join(f.split("/")[:2]) for f in files if re.match(r"^(%s)/ch" 
 site_files = subprocess.run(["git", "-C", "../math-ai-matrix", "ls-files", "tracks"], capture_output=True, text=True).stdout.split()
 web = {}
 for f in site_files:
-    m = re.match(r"tracks/([a-z]+)/(\d\d)-.*\.html$", f)
-    if m: web[(m.group(1), int(m.group(2)))] = f[len("tracks/"):]
+    m = re.match(r"tracks/([a-z]+)/(\d\d|bridge)-.*\.html$", f)
+    if m: web[(m.group(1), int(m.group(2)) if m.group(2).isdigit() else "bridge")] = f[len("tracks/"):]
 rows = []
 for c in chs:
     d, ch = c.split("/")
     m = re.match(r"ch(\d+)", ch)
-    n = int(m.group(1)) if m else None
-    label = f"{NAMES[d]} {n}장" if n is not None else f"{NAMES[d]} {ch}"
+    n = int(m.group(1)) if m else ("bridge" if ch.startswith("chbridge") else None)
+    label = f"{NAMES[d]} {n}장" if isinstance(n, int) else (f"{NAMES[d]} 연결 장" if n == "bridge" else f"{NAMES[d]} {ch}")
     w = web.get((d, n))
     rows.append(f"| `{c}/` | {label} | " + (f"[웹 챕터]({SITE}{w})" if w else "웹 챕터 공개 준비 중") + " |")
 p = "README.md"; s = open(p, encoding="utf-8").read()

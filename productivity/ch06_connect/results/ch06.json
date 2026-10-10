@@ -1,0 +1,730 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "platform": "Darwin arm64",
+  "seeds": 1000,
+  "q": 0.9,
+  "checked": "2026-10-08",
+  "events": 12,
+  "items": 12,
+  "time_assumptions_min": {
+   "find_copies": 5,
+   "copy": 3,
+   "log": 1,
+   "comment": 2,
+   "setup": 30,
+   "fix_break": 20
+  },
+  "p_note": 0.3,
+  "review_day": 21,
+  "history_days_free": {
+   "notion": 7,
+   "figma": 30,
+   "sheets": null
+  }
+ },
+ "e0_hand": {
+  "places": [
+   "Notion 스펙",
+   "Figma 상세 화면",
+   "Figma 완료 화면",
+   "운영 시트 안내"
+  ],
+  "miss": 0.1,
+  "changes": 12,
+  "copy_hand_places": 3,
+  "rule_hand_places": 1,
+  "copy_p_any_wrong": 0.271,
+  "rule_p_any_wrong": 0.1,
+  "copy_expected_wrong_places": 0.3,
+  "rule_expected_wrong_places": 0.3,
+  "graph_formula_rule": {
+   "expected_wrong": 0.3,
+   "p_any": 0.1
+  },
+  "copy_hand_edits_per_week": 36,
+  "rule_hand_edits_per_week": 12,
+  "copy_expected_changes_with_miss": 3.252,
+  "rule_expected_changes_with_miss": 1.2
+ },
+ "e1_validate": {
+  "base_problems": [],
+  "injected": 3,
+  "found": [
+   "I03: 원본이 하나가 아님: 없음(고리)",
+   "I03: 고리가 있음(양방향 동기화 = 원본이 둘)",
+   "I04: 원본이 하나가 아님: ['sheets:branches', 'notion:Projects.지점수']",
+   "I04: 원본에서 닿지 않는 위치: ['notion:Projects.지점수', 'notion:Projects.주간리포트지점']",
+   "I05: 원본이 하나가 아님: ['notion:Specs/S02.운영시간', 'sheets:lookup!price']",
+   "I05: figma:S02_상세.운영시간이 값을 2곳에서 받음",
+   "I05: 원본에서 닿지 않는 위치: ['sheets:lookup!price']"
+  ],
+  "n_items": 12,
+  "n_locations": 34,
+  "edges": {
+   "ref": 9,
+   "human": 11,
+   "auto": 2
+  },
+  "max_human_hops": 1,
+  "tools_edges": {
+   "notion->figma": {
+    "ref": 0,
+    "human": 4,
+    "auto": 0
+   },
+   "notion->sheets": {
+    "ref": 1,
+    "human": 3,
+    "auto": 1
+   },
+   "sheets->notion": {
+    "ref": 1,
+    "human": 3,
+    "auto": 0
+   },
+   "sheets->figma": {
+    "ref": 0,
+    "human": 1,
+    "auto": 0
+   },
+   "figma->notion": {
+    "ref": 1,
+    "human": 0,
+    "auto": 0
+   }
+  }
+ },
+ "e2_week": {
+  "q": 0.9,
+  "seeds": 1000,
+  "means": {
+   "none": {
+    "mismatch": 2.27,
+    "checklist_unmet": 0.92,
+    "checks_false": 0.09,
+    "hidden_mismatch": 1.26,
+    "untraceable": 10.21,
+    "minutes": 126.0,
+    "setup_minutes": 0.0,
+    "blocked_by_permission": 0.0,
+    "silent_automation_failures": 0.0,
+    "dead_automation_unknown": 0.0,
+    "p_any_mismatch": 0.905
+   },
+   "registry": {
+    "mismatch": 1.83,
+    "checklist_unmet": 0.62,
+    "checks_false": 0.0,
+    "hidden_mismatch": 1.21,
+    "untraceable": 10.16,
+    "minutes": 46.82,
+    "setup_minutes": 0.0,
+    "blocked_by_permission": 0.0,
+    "silent_automation_failures": 0.0,
+    "dead_automation_unknown": 0.0,
+    "p_any_mismatch": 0.782
+   },
+   "rules": {
+    "mismatch": 1.53,
+    "checklist_unmet": 0.72,
+    "checks_false": 0.0,
+    "hidden_mismatch": 0.81,
+    "untraceable": 0.93,
+    "minutes": 63.68,
+    "setup_minutes": 0.0,
+    "blocked_by_permission": 2.0,
+    "silent_automation_failures": 0.0,
+    "dead_automation_unknown": 0.0,
+    "p_any_mismatch": 0.747
+   },
+   "auto_naive": {
+    "mismatch": 2.34,
+    "checklist_unmet": 0.61,
+    "checks_false": 0.0,
+    "hidden_mismatch": 1.73,
+    "untraceable": 0.83,
+    "minutes": 57.68,
+    "setup_minutes": 90.0,
+    "blocked_by_permission": 2.0,
+    "silent_automation_failures": 2.0,
+    "dead_automation_unknown": 2.0,
+    "p_any_mismatch": 1.0
+   },
+   "auto_guarded": {
+    "mismatch": 1.34,
+    "checklist_unmet": 0.61,
+    "checks_false": 2.0,
+    "hidden_mismatch": 0.73,
+    "untraceable": 0.83,
+    "minutes": 97.68,
+    "setup_minutes": 90.0,
+    "blocked_by_permission": 2.0,
+    "silent_automation_failures": 0.0,
+    "dead_automation_unknown": 0.0,
+    "p_any_mismatch": 0.696
+   }
+  },
+  "seed0_wrong": {
+   "none": [
+    "I08 figma:S03_예약.전화칸",
+    "I09 notion:Specs/지표정의.상태목록",
+    "I09 sheets:lookup!status",
+    "I12 sheets:metrics!기간"
+   ],
+   "registry": [
+    "I06 figma:S03_예약.요금"
+   ],
+   "rules": [
+    "I06 figma:S03_예약.요금",
+    "I08 notion:Tasks/T17-T18"
+   ],
+   "auto_naive": [
+    "I03 sheets:metrics!threshold",
+    "I08 figma:S03_예약.전화칸"
+   ],
+   "auto_guarded": [
+    "I08 figma:S03_예약.전화칸"
+   ]
+  },
+  "most_often_wrong": {
+   "none": [
+    {
+     "where": "I01 취소 규정 문구 @ figma:S04_완료.취소안내",
+     "rate": 0.126
+    },
+    {
+     "where": "I04 지점 목록 @ notion:Projects.지점수",
+     "rate": 0.118
+    },
+    {
+     "where": "I03 규정 변경 기준값 @ sheets:metrics!threshold",
+     "rate": 0.114
+    },
+    {
+     "where": "I09 예약 상태 표준값 @ sheets:lookup!status",
+     "rate": 0.111
+    },
+    {
+     "where": "I05 운영 시간 @ notion:Specs/S02.운영시간",
+     "rate": 0.109
+    },
+    {
+     "where": "I10 예약 버튼 문구 @ notion:Specs/S03.버튼문구",
+     "rate": 0.107
+    }
+   ],
+   "rules": [
+    {
+     "where": "I06 시간당 요금 @ figma:S03_예약.요금",
+     "rate": 0.119
+    },
+    {
+     "where": "I04 지점 목록 @ notion:Projects.지점수",
+     "rate": 0.116
+    },
+    {
+     "where": "I05 운영 시간 @ sheets:capacity!hours",
+     "rate": 0.109
+    },
+    {
+     "where": "I10 예약 버튼 문구 @ notion:Specs/S03.버튼문구",
+     "rate": 0.107
+    },
+    {
+     "where": "I02 취소율 지표 정의 @ sheets:metrics!B2수식",
+     "rate": 0.107
+    },
+    {
+     "where": "I08 D10 확정(전화 인증 철회) @ figma:S03_예약.전화칸",
+     "rate": 0.107
+    }
+   ],
+   "auto_naive": [
+    {
+     "where": "I03 규정 변경 기준값 @ sheets:metrics!threshold",
+     "rate": 1.0
+    },
+    {
+     "where": "I04 지점 목록 @ notion:Projects.지점수",
+     "rate": 0.116
+    },
+    {
+     "where": "I11 주간 취소율 값 @ notion:Projects.주간리포트",
+     "rate": 0.116
+    },
+    {
+     "where": "I06 시간당 요금 @ figma:S03_예약.요금",
+     "rate": 0.108
+    },
+    {
+     "where": "I10 예약 버튼 문구 @ notion:Specs/S03.버튼문구",
+     "rate": 0.107
+    },
+    {
+     "where": "I02 취소율 지표 정의 @ sheets:metrics!B2수식",
+     "rate": 0.107
+    }
+   ],
+   "auto_guarded": [
+    {
+     "where": "I04 지점 목록 @ notion:Projects.지점수",
+     "rate": 0.116
+    },
+    {
+     "where": "I11 주간 취소율 값 @ notion:Projects.주간리포트",
+     "rate": 0.116
+    },
+    {
+     "where": "I06 시간당 요금 @ figma:S03_예약.요금",
+     "rate": 0.108
+    },
+    {
+     "where": "I10 예약 버튼 문구 @ notion:Specs/S03.버튼문구",
+     "rate": 0.107
+    },
+    {
+     "where": "I02 취소율 지표 정의 @ sheets:metrics!B2수식",
+     "rate": 0.107
+    },
+    {
+     "where": "I05 운영 시간 @ figma:S02_상세.운영시간",
+     "rate": 0.102
+    }
+   ]
+  }
+ },
+ "e3_sweep": {
+  "0.7": {
+   "none": {
+    "mismatch": 6.72,
+    "checklist_unmet": 2.77,
+    "hidden_mismatch": 3.65,
+    "untraceable": 10.21,
+    "minutes": 126.0,
+    "p_any_mismatch": 1.0
+   },
+   "registry": {
+    "mismatch": 5.35,
+    "checklist_unmet": 1.84,
+    "hidden_mismatch": 3.51,
+    "untraceable": 10.14,
+    "minutes": 44.45,
+    "p_any_mismatch": 0.993
+   },
+   "rules": {
+    "mismatch": 4.59,
+    "checklist_unmet": 2.18,
+    "hidden_mismatch": 2.41,
+    "untraceable": 2.89,
+    "minutes": 63.16,
+    "p_any_mismatch": 0.993
+   },
+   "auto_naive": {
+    "mismatch": 5.0,
+    "checklist_unmet": 1.86,
+    "hidden_mismatch": 3.13,
+    "untraceable": 2.6,
+    "minutes": 57.16,
+    "p_any_mismatch": 1.0
+   },
+   "auto_guarded": {
+    "mismatch": 4.0,
+    "checklist_unmet": 1.86,
+    "hidden_mismatch": 2.13,
+    "untraceable": 2.6,
+    "minutes": 97.16,
+    "p_any_mismatch": 0.991
+   }
+  },
+  "0.8": {
+   "none": {
+    "mismatch": 4.49,
+    "checklist_unmet": 1.86,
+    "hidden_mismatch": 2.43,
+    "untraceable": 10.21,
+    "minutes": 126.0,
+    "p_any_mismatch": 0.997
+   },
+   "registry": {
+    "mismatch": 3.56,
+    "checklist_unmet": 1.19,
+    "hidden_mismatch": 2.37,
+    "untraceable": 10.16,
+    "minutes": 45.69,
+    "p_any_mismatch": 0.962
+   },
+   "rules": {
+    "mismatch": 3.08,
+    "checklist_unmet": 1.46,
+    "hidden_mismatch": 1.62,
+    "untraceable": 1.87,
+    "minutes": 63.42,
+    "p_any_mismatch": 0.944
+   },
+   "auto_naive": {
+    "mismatch": 3.67,
+    "checklist_unmet": 1.22,
+    "hidden_mismatch": 2.44,
+    "untraceable": 1.71,
+    "minutes": 57.42,
+    "p_any_mismatch": 1.0
+   },
+   "auto_guarded": {
+    "mismatch": 2.67,
+    "checklist_unmet": 1.22,
+    "hidden_mismatch": 1.45,
+    "untraceable": 1.71,
+    "minutes": 97.42,
+    "p_any_mismatch": 0.923
+   }
+  },
+  "0.9": {
+   "none": {
+    "mismatch": 2.27,
+    "checklist_unmet": 0.92,
+    "hidden_mismatch": 1.26,
+    "untraceable": 10.21,
+    "minutes": 126.0,
+    "p_any_mismatch": 0.905
+   },
+   "registry": {
+    "mismatch": 1.83,
+    "checklist_unmet": 0.62,
+    "hidden_mismatch": 1.21,
+    "untraceable": 10.16,
+    "minutes": 46.82,
+    "p_any_mismatch": 0.782
+   },
+   "rules": {
+    "mismatch": 1.53,
+    "checklist_unmet": 0.72,
+    "hidden_mismatch": 0.81,
+    "untraceable": 0.93,
+    "minutes": 63.68,
+    "p_any_mismatch": 0.747
+   },
+   "auto_naive": {
+    "mismatch": 2.34,
+    "checklist_unmet": 0.61,
+    "hidden_mismatch": 1.73,
+    "untraceable": 0.83,
+    "minutes": 57.68,
+    "p_any_mismatch": 1.0
+   },
+   "auto_guarded": {
+    "mismatch": 1.34,
+    "checklist_unmet": 0.61,
+    "hidden_mismatch": 0.73,
+    "untraceable": 0.83,
+    "minutes": 97.68,
+    "p_any_mismatch": 0.696
+   }
+  },
+  "0.95": {
+   "none": {
+    "mismatch": 1.14,
+    "checklist_unmet": 0.45,
+    "hidden_mismatch": 0.65,
+    "untraceable": 10.21,
+    "minutes": 126.0,
+    "p_any_mismatch": 0.695
+   },
+   "registry": {
+    "mismatch": 0.92,
+    "checklist_unmet": 0.32,
+    "hidden_mismatch": 0.6,
+    "untraceable": 10.14,
+    "minutes": 47.43,
+    "p_any_mismatch": 0.513
+   },
+   "rules": {
+    "mismatch": 0.78,
+    "checklist_unmet": 0.37,
+    "hidden_mismatch": 0.41,
+    "untraceable": 0.46,
+    "minutes": 63.84,
+    "p_any_mismatch": 0.512
+   },
+   "auto_naive": {
+    "mismatch": 1.67,
+    "checklist_unmet": 0.29,
+    "hidden_mismatch": 1.38,
+    "untraceable": 0.41,
+    "minutes": 57.84,
+    "p_any_mismatch": 1.0
+   },
+   "auto_guarded": {
+    "mismatch": 0.67,
+    "checklist_unmet": 0.29,
+    "hidden_mismatch": 0.38,
+    "untraceable": 0.41,
+    "minutes": 97.84,
+    "p_any_mismatch": 0.45
+   }
+  }
+ },
+ "e4_formula": [
+  {
+   "q": 0.7,
+   "events": 9,
+   "runs": 4000,
+   "theory": 3.3,
+   "sim_mean": 3.2713,
+   "sim_se": 0.0294
+  },
+  {
+   "q": 0.9,
+   "events": 9,
+   "runs": 4000,
+   "theory": 1.1,
+   "sim_mean": 1.1027,
+   "sim_se": 0.0195
+  }
+ ],
+ "e5_detection": {
+  "email_creator_here": {
+   "mean_days": 1,
+   "median": 1,
+   "p90": 1,
+   "still_unknown_after_14d": 0.0
+  },
+  "email_creator_gone": {
+   "mean_days": 10.57,
+   "median": 8,
+   "p90": 23,
+   "still_unknown_after_14d": 0.251
+  },
+  "silent": {
+   "mean_days": 10.57,
+   "median": 8,
+   "p90": 23,
+   "still_unknown_after_14d": 0.251
+  },
+  "heartbeat": {
+   "mean_days": 1,
+   "median": 1,
+   "p90": 1,
+   "still_unknown_after_14d": 0.0
+  },
+  "assumption_p_notice_per_day": 0.1
+ },
+ "e6_two_way": [
+  {
+   "delay_min": 1,
+   "hours_per_day": 8,
+   "two_way": {
+    "delay_min": 1,
+    "rate_per_hour": 1.0,
+    "days": 2000,
+    "edits": 31991,
+    "clobbered_edits": 491,
+    "clobbered_rate": 0.0153,
+    "days_diverged": 24,
+    "diverged_day_rate": 0.012
+   },
+   "one_way": {
+    "edits": 15998,
+    "clobbered_edits": 0,
+    "days_diverged": 0
+   }
+  },
+  {
+   "delay_min": 5,
+   "hours_per_day": 8,
+   "two_way": {
+    "delay_min": 5,
+    "rate_per_hour": 1.0,
+    "days": 2000,
+    "edits": 31991,
+    "clobbered_edits": 2418,
+    "clobbered_rate": 0.0756,
+    "days_diverged": 149,
+    "diverged_day_rate": 0.0745
+   },
+   "one_way": {
+    "edits": 15998,
+    "clobbered_edits": 0,
+    "days_diverged": 0
+   }
+  },
+  {
+   "delay_min": 30,
+   "hours_per_day": 8,
+   "two_way": {
+    "delay_min": 30,
+    "rate_per_hour": 1.0,
+    "days": 2000,
+    "edits": 31991,
+    "clobbered_edits": 9795,
+    "clobbered_rate": 0.3062,
+    "days_diverged": 753,
+    "diverged_day_rate": 0.3765
+   },
+   "one_way": {
+    "edits": 15998,
+    "clobbered_edits": 0,
+    "days_diverged": 0
+   }
+  }
+ ],
+ "e7_webhook": [
+  {
+   "gap_sec": 10,
+   "stale_rate_arrival_order": 0.4663,
+   "theory": 0.4672,
+   "stale_rate_refetch": 0.0
+  },
+  {
+   "gap_sec": 60,
+   "stale_rate_arrival_order": 0.322,
+   "theory": 0.32,
+   "stale_rate_refetch": 0.0
+  },
+  {
+   "gap_sec": 180,
+   "stale_rate_arrival_order": 0.0787,
+   "theory": 0.08,
+   "stale_rate_refetch": 0.0
+  },
+  {
+   "gap_sec": 600,
+   "stale_rate_arrival_order": 0.0,
+   "theory": 0.0,
+   "stale_rate_refetch": 0.0
+  }
+ ],
+ "e8_correspondence": {
+  "cases": 500,
+  "starts": 8049,
+  "disagreements": 0
+ },
+ "e9_breakeven": {
+  "setup_minutes": 90.0,
+  "saved_minutes_per_week": 6.0,
+  "weeks_to_break_even_no_breaks": 15.0,
+  "fix_minutes_this_week_guarded": 40.0,
+  "note": "saved = rules 방식 시간 - 자동화 방식 시간(자동화가 대신한 손 옮기기). 시간 값은 모두 가정."
+ },
+ "e10_handoff": {
+  "seed": 0,
+  "q": 0.9,
+  "design_to_dev": {
+   "date": "7일째",
+   "from": "민지",
+   "to": "준호",
+   "figma_named_version_before_handoff": true,
+   "rows_checked": 11,
+   "rows_ok": 9,
+   "failed": [
+    {
+     "item": "I06",
+     "name": "시간당 요금",
+     "location": "figma:S03_예약.요금",
+     "method": "human",
+     "ok": false
+    },
+    {
+     "item": "I08",
+     "name": "D10 확정(전화 인증 철회)",
+     "location": "notion:Tasks/T17-T18",
+     "method": "auto",
+     "ok": false
+    }
+   ],
+   "rows": [
+    {
+     "item": "I01",
+     "name": "취소 규정 문구",
+     "location": "figma:Components/취소안내",
+     "method": "human",
+     "ok": true
+    },
+    {
+     "item": "I01",
+     "name": "취소 규정 문구",
+     "location": "figma:S02_상세.취소안내",
+     "method": "ref",
+     "ok": true
+    },
+    {
+     "item": "I01",
+     "name": "취소 규정 문구",
+     "location": "figma:S04_완료.취소안내",
+     "method": "ref",
+     "ok": true
+    },
+    {
+     "item": "I05",
+     "name": "운영 시간",
+     "location": "figma:S02_상세.운영시간",
+     "method": "human",
+     "ok": true
+    },
+    {
+     "item": "I06",
+     "name": "시간당 요금",
+     "location": "figma:S03_예약.요금",
+     "method": "human",
+     "ok": false
+    },
+    {
+     "item": "I07",
+     "name": "예약 화면 프레임",
+     "location": "notion:Tasks.Figma링크",
+     "method": "ref",
+     "ok": true
+    },
+    {
+     "item": "I08",
+     "name": "D10 확정(전화 인증 철회)",
+     "location": "notion:Tasks/T17-T18",
+     "method": "auto",
+     "ok": false
+    },
+    {
+     "item": "I08",
+     "name": "D10 확정(전화 인증 철회)",
+     "location": "figma:S03_예약.전화칸",
+     "method": "human",
+     "ok": true
+    },
+    {
+     "item": "I10",
+     "name": "예약 버튼 문구",
+     "location": "figma:Components/버튼",
+     "method": "human",
+     "ok": true
+    },
+    {
+     "item": "I10",
+     "name": "예약 버튼 문구",
+     "location": "figma:S03_예약.버튼",
+     "method": "ref",
+     "ok": true
+    },
+    {
+     "item": "I12",
+     "name": "런칭일",
+     "location": "notion:Tasks/T19-T20",
+     "method": "ref",
+     "ok": true
+    }
+   ]
+  },
+  "ops_to_planning": {
+   "date": "7일째",
+   "from": "하린",
+   "to": "서연",
+   "checks": {
+    "C7 목록 밖 지점 0": true,
+    "C12 상태 표준값 일치": true
+   },
+   "change_log_rows": 10,
+   "changes": 12,
+   "untraceable": 2,
+   "mismatch_not_seen_by_any_check": []
+  }
+ }
+}

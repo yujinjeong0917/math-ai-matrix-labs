@@ -1,0 +1,39 @@
+// 6장 Jenkinsfile: 5장의 CI 뒤에 단계적 배포를 붙인 모양이다.
+// 이 저장소에는 Jenkins 서버가 없다. test_pipelines_ch06_release.py가 이 파일의 단계 순서와 규칙만 검사한다.
+// deploy/*.py 스크립트는 이 장의 pipelines_ch06_*.py를 감싼다고 가정한 이름이다(실제 클러스터에 붙이는 부분은 없다).
+pipeline {
+  agent none
+  environment { OMP_NUM_THREADS = '2' }
+  stages {
+    stage('Offline gate') {
+      agent any
+      steps {
+        sh 'python -m pytest -q tests/test_model.py --junitxml=reports/model.xml'
+        sh 'python deploy/model_card.py --out results/model_card.md'   // 지역별 정확도 표를 만든다
+      }
+      post { always { junit 'reports/*.xml'; archiveArtifacts 'results/model_card.md' } }
+    }
+    stage('Canary 5%') {
+      agent any
+      steps {
+        sh 'python deploy/set_weight.py --v2 0.05'
+        // 결정이 날 때까지 감시한다. rollback이면 0이 아닌 코드로 끝나 빌드가 실패한다.
+        sh 'python deploy/watch.py --guard segments --z 3.0 --min-n 50 --promote-n 400'
+      }
+      post { failure { sh 'python deploy/set_weight.py --v2 0.0' } }
+    }
+    stage('Approve 100%') {
+      // input은 agent 밖에서 기다린다. 사람이 누를 때까지 실행기(executor)를 붙잡지 않으려고.
+      input {
+        message 'Canary passed. Promote v2 to 100%?'
+        ok 'Promote'
+        submitter 'ml-release-owners'
+      }
+      steps { echo 'approved' }
+    }
+    stage('Promote 100%') {
+      agent any
+      steps { sh 'python deploy/set_weight.py --v2 1.0' }
+    }
+  }
+}

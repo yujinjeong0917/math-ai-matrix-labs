@@ -1,0 +1,416 @@
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 0, "r": 0.0, "s_next": [0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [0], "a": 5, "r": 0.0, "s_next": [0, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [0, 5], "a": 2, "r": 0.0, "s_next": [0, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [0, 5, 2], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [0, 5, 2, 1], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [0, 5, 2, 1, 1], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 1, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [0, 5, 2, 1, 1, 1], "a": 3, "r": 0.0, "s_next": [0, 5, 2, 1, 1, 1, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [0, 5, 2, 1, 1, 1, 3], "a": 5, "r": -0.3408, "s_next": [0, 5, 2, 1, 1, 1, 3, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "가바다나나나라바", "r_true": 2.4}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [4], "a": 5, "r": 0.0, "s_next": [4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [4, 5], "a": 5, "r": 0.0, "s_next": [4, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [4, 5, 5], "a": 4, "r": 0.0, "s_next": [4, 5, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [4, 5, 5, 4], "a": 4, "r": 0.0, "s_next": [4, 5, 5, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [4, 5, 5, 4, 4], "a": 5, "r": 0.0, "s_next": [4, 5, 5, 4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [4, 5, 5, 4, 4, 5], "a": 1, "r": 0.0, "s_next": [4, 5, 5, 4, 4, 5, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [4, 5, 5, 4, 4, 5, 1], "a": 5, "r": 0.9072, "s_next": [4, 5, 5, 4, 4, 5, 1, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마바바마마바나바", "r_true": 0.8}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [4], "a": 0, "r": 0.0, "s_next": [4, 0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [4, 0], "a": 4, "r": 0.0, "s_next": [4, 0, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [4, 0, 4], "a": 0, "r": 0.0, "s_next": [4, 0, 4, 0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [4, 0, 4, 0], "a": 5, "r": 0.0, "s_next": [4, 0, 4, 0, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [4, 0, 4, 0, 5], "a": 2, "r": 0.0, "s_next": [4, 0, 4, 0, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [4, 0, 4, 0, 5, 2], "a": 0, "r": 0.0, "s_next": [4, 0, 4, 0, 5, 2, 0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [4, 0, 4, 0, 5, 2, 0], "a": 1, "r": -0.3126, "s_next": [4, 0, 4, 0, 5, 2, 0, 1], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "마가마가바다가나", "r_true": 2.2}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [2], "a": 3, "r": 0.0, "s_next": [2, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [2, 3], "a": 0, "r": 0.0, "s_next": [2, 3, 0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [2, 3, 0], "a": 2, "r": 0.0, "s_next": [2, 3, 0, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [2, 3, 0, 2], "a": 4, "r": 0.0, "s_next": [2, 3, 0, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [2, 3, 0, 2, 4], "a": 5, "r": 0.0, "s_next": [2, 3, 0, 2, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [2, 3, 0, 2, 4, 5], "a": 3, "r": 0.0, "s_next": [2, 3, 0, 2, 4, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [2, 3, 0, 2, 4, 5, 3], "a": 5, "r": 0.3939, "s_next": [2, 3, 0, 2, 4, 5, 3, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 0, "text": "다라가다마바라바", "r_true": 4.8}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [5], "a": 1, "r": 0.0, "s_next": [5, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [5, 1], "a": 1, "r": 0.0, "s_next": [5, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [5, 1, 1], "a": 2, "r": 0.0, "s_next": [5, 1, 1, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [5, 1, 1, 2], "a": 3, "r": 0.0, "s_next": [5, 1, 1, 2, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [5, 1, 1, 2, 3], "a": 3, "r": 0.0, "s_next": [5, 1, 1, 2, 3, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [5, 1, 1, 2, 3, 3], "a": 3, "r": 0.0, "s_next": [5, 1, 1, 2, 3, 3, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [5, 1, 1, 2, 3, 3, 3], "a": 4, "r": 0.1829, "s_next": [5, 1, 1, 2, 3, 3, 3, 4], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바나나다라라라마", "r_true": 2.8}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [3], "a": 4, "r": 0.0, "s_next": [3, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [3, 4], "a": 5, "r": 0.0, "s_next": [3, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [3, 4, 5], "a": 0, "r": 0.0, "s_next": [3, 4, 5, 0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [3, 4, 5, 0], "a": 1, "r": 0.0, "s_next": [3, 4, 5, 0, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [3, 4, 5, 0, 1], "a": 1, "r": 0.0, "s_next": [3, 4, 5, 0, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [3, 4, 5, 0, 1, 1], "a": 4, "r": 0.0, "s_next": [3, 4, 5, 0, 1, 1, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [3, 4, 5, 0, 1, 1, 4], "a": 4, "r": 0.1479, "s_next": [3, 4, 5, 0, 1, 1, 4, 4], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라마바가나나마마", "r_true": 2.6}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [5], "a": 0, "r": 0.0, "s_next": [5, 0], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [5, 0], "a": 5, "r": 0.0, "s_next": [5, 0, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [5, 0, 5], "a": 5, "r": 0.0, "s_next": [5, 0, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [5, 0, 5, 5], "a": 1, "r": 0.0, "s_next": [5, 0, 5, 5, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [5, 0, 5, 5, 1], "a": 1, "r": 0.0, "s_next": [5, 0, 5, 5, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [5, 0, 5, 5, 1, 1], "a": 3, "r": 0.0, "s_next": [5, 0, 5, 5, 1, 1, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [5, 0, 5, 5, 1, 1, 3], "a": 5, "r": 0.1895, "s_next": [5, 0, 5, 5, 1, 1, 3, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "바가바바나나라바", "r_true": 1.0}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [3], "a": 1, "r": 0.0, "s_next": [3, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [3, 1], "a": 5, "r": 0.0, "s_next": [3, 1, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [3, 1, 5], "a": 4, "r": 0.0, "s_next": [3, 1, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [3, 1, 5, 4], "a": 5, "r": 0.0, "s_next": [3, 1, 5, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [3, 1, 5, 4, 5], "a": 4, "r": 0.0, "s_next": [3, 1, 5, 4, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [3, 1, 5, 4, 5, 4], "a": 4, "r": 0.0, "s_next": [3, 1, 5, 4, 5, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [3, 1, 5, 4, 5, 4, 4], "a": 3, "r": 0.7593, "s_next": [3, 1, 5, 4, 5, 4, 4, 3], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 60, "text": "라나바마바마마라", "r_true": 4.0}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [3], "a": 3, "r": 0.0, "s_next": [3, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [3, 3], "a": 1, "r": 0.0, "s_next": [3, 3, 1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [3, 3, 1], "a": 3, "r": 0.0, "s_next": [3, 3, 1, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [3, 3, 1, 3], "a": 4, "r": 0.0, "s_next": [3, 3, 1, 3, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [3, 3, 1, 3, 4], "a": 4, "r": 0.0, "s_next": [3, 3, 1, 3, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [3, 3, 1, 3, 4, 4], "a": 4, "r": 0.0, "s_next": [3, 3, 1, 3, 4, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [3, 3, 1, 3, 4, 4, 4], "a": 3, "r": 0.6115, "s_next": [3, 3, 1, 3, 4, 4, 4, 3], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라라나라마마마라", "r_true": 0.0}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 1, "r": 0.0, "s_next": [1], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [1], "a": 4, "r": 0.0, "s_next": [1, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [1, 4], "a": 4, "r": 0.0, "s_next": [1, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [1, 4, 4], "a": 4, "r": 0.0, "s_next": [1, 4, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [1, 4, 4, 4], "a": 5, "r": 0.0, "s_next": [1, 4, 4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [1, 4, 4, 4, 5], "a": 4, "r": 0.0, "s_next": [1, 4, 4, 4, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [1, 4, 4, 4, 5, 4], "a": 4, "r": 0.0, "s_next": [1, 4, 4, 4, 5, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [1, 4, 4, 4, 5, 4, 4], "a": 1, "r": 0.5413, "s_next": [1, 4, 4, 4, 5, 4, 4, 1], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "나마마마바마마나", "r_true": 0.0}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [3], "a": 5, "r": 0.0, "s_next": [3, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [3, 5], "a": 4, "r": 0.0, "s_next": [3, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [3, 5, 4], "a": 4, "r": 0.0, "s_next": [3, 5, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [3, 5, 4, 4], "a": 4, "r": 0.0, "s_next": [3, 5, 4, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [3, 5, 4, 4, 4], "a": 5, "r": 0.0, "s_next": [3, 5, 4, 4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [3, 5, 4, 4, 4, 5], "a": 4, "r": 0.0, "s_next": [3, 5, 4, 4, 4, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [3, 5, 4, 4, 4, 5, 4], "a": 1, "r": 0.8194, "s_next": [3, 5, 4, 4, 4, 5, 4, 1], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "라바마마마바마나", "r_true": 2.4}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [4], "a": 3, "r": 0.0, "s_next": [4, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [4, 3], "a": 4, "r": 0.0, "s_next": [4, 3, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [4, 3, 4], "a": 4, "r": 0.0, "s_next": [4, 3, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [4, 3, 4, 4], "a": 4, "r": 0.0, "s_next": [4, 3, 4, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [4, 3, 4, 4, 4], "a": 5, "r": 0.0, "s_next": [4, 3, 4, 4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [4, 3, 4, 4, 4, 5], "a": 3, "r": 0.0, "s_next": [4, 3, 4, 4, 4, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [4, 3, 4, 4, 4, 5, 3], "a": 2, "r": 0.8916, "s_next": [4, 3, 4, 4, 4, 5, 3, 2], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 150, "text": "마라마마마바라다", "r_true": 2.2}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [4], "a": 3, "r": 0.0, "s_next": [4, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [4, 3], "a": 5, "r": 0.0, "s_next": [4, 3, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [4, 3, 5], "a": 5, "r": 0.0, "s_next": [4, 3, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [4, 3, 5, 5], "a": 5, "r": 0.0, "s_next": [4, 3, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [4, 3, 5, 5, 5], "a": 4, "r": 0.0, "s_next": [4, 3, 5, 5, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [4, 3, 5, 5, 5, 4], "a": 4, "r": 0.0, "s_next": [4, 3, 5, 5, 5, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [4, 3, 5, 5, 5, 4, 4], "a": 2, "r": 0.9794, "s_next": [4, 3, 5, 5, 5, 4, 4, 2], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마라바바바마마다", "r_true": 2.6}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [4], "a": 4, "r": 0.0, "s_next": [4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [4, 4], "a": 5, "r": 0.0, "s_next": [4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [4, 4, 5], "a": 4, "r": 0.0, "s_next": [4, 4, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [4, 4, 5, 4], "a": 2, "r": 0.0, "s_next": [4, 4, 5, 4, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [4, 4, 5, 4, 2], "a": 3, "r": 0.0, "s_next": [4, 4, 5, 4, 2, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [4, 4, 5, 4, 2, 3], "a": 5, "r": 0.0, "s_next": [4, 4, 5, 4, 2, 3, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [4, 4, 5, 4, 2, 3, 5], "a": 5, "r": 0.9794, "s_next": [4, 4, 5, 4, 2, 3, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "마마바마다라바바", "r_true": 2.6}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [5], "a": 3, "r": 0.0, "s_next": [5, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [5, 3], "a": 4, "r": 0.0, "s_next": [5, 3, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [5, 3, 4], "a": 3, "r": 0.0, "s_next": [5, 3, 4, 3], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [5, 3, 4, 3], "a": 4, "r": 0.0, "s_next": [5, 3, 4, 3, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [5, 3, 4, 3, 4], "a": 4, "r": 0.0, "s_next": [5, 3, 4, 3, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [5, 3, 4, 3, 4, 4], "a": 5, "r": 0.0, "s_next": [5, 3, 4, 3, 4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [5, 3, 4, 3, 4, 4, 5], "a": 5, "r": 1.0975, "s_next": [5, 3, 4, 3, 4, 4, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바라마라마마바바", "r_true": 2.8}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [5], "a": 5, "r": 0.0, "s_next": [5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [5, 5, 5], "a": 4, "r": 0.0, "s_next": [5, 5, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [5, 5, 5, 4], "a": 2, "r": 0.0, "s_next": [5, 5, 5, 4, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [5, 5, 5, 4, 2], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 4, 2, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [5, 5, 5, 4, 2, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 4, 2, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [5, 5, 5, 4, 2, 5, 5], "a": 4, "r": 1.0672, "s_next": [5, 5, 5, 4, 2, 5, 5, 4], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 300, "text": "바바바마다바바마", "r_true": 1.0}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [5], "a": 5, "r": 0.0, "s_next": [5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [5, 5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [5, 5, 5, 5, 5], "a": 4, "r": 0.0, "s_next": [5, 5, 5, 5, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [5, 5, 5, 5, 5, 4], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [5, 5, 5, 5, 5, 4, 5], "a": 5, "r": 1.2731, "s_next": [5, 5, 5, 5, 5, 4, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": -2.2}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [5], "a": 5, "r": 0.0, "s_next": [5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [5, 5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [5, 5, 5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [5, 5, 5, 5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [5, 5, 5, 5, 5, 5, 5], "a": 5, "r": 1.2869, "s_next": [5, 5, 5, 5, 5, 5, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바바바바", "r_true": -4.0}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [4], "a": 5, "r": 0.0, "s_next": [4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [4, 5], "a": 5, "r": 0.0, "s_next": [4, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [4, 5, 5], "a": 5, "r": 0.0, "s_next": [4, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [4, 5, 5, 5], "a": 2, "r": 0.0, "s_next": [4, 5, 5, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [4, 5, 5, 5, 2], "a": 5, "r": 0.0, "s_next": [4, 5, 5, 5, 2, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [4, 5, 5, 5, 2, 5], "a": 5, "r": 0.0, "s_next": [4, 5, 5, 5, 2, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [4, 5, 5, 5, 2, 5, 5], "a": 5, "r": 1.081, "s_next": [4, 5, 5, 5, 2, 5, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "마바바바다바바바", "r_true": -0.8}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [5], "a": 5, "r": 0.0, "s_next": [5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [5, 5, 5, 5], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [5, 5, 5, 5, 5], "a": 4, "r": 0.0, "s_next": [5, 5, 5, 5, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [5, 5, 5, 5, 5, 4], "a": 5, "r": 0.0, "s_next": [5, 5, 5, 5, 5, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [5, 5, 5, 5, 5, 4, 5], "a": 5, "r": 1.2731, "s_next": [5, 5, 5, 5, 5, 4, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta0.0", "step": 600, "text": "바바바바바마바바", "r_true": -2.2}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 0, "r": 0.0, "s_next": [0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [0], "a": 5, "r": 0.0, "s_next": [0, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [0, 5], "a": 2, "r": 0.0, "s_next": [0, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [0, 5, 2], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [0, 5, 2, 1], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [0, 5, 2, 1, 1], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 1, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [0, 5, 2, 1, 1, 1], "a": 3, "r": 0.0, "s_next": [0, 5, 2, 1, 1, 1, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [0, 5, 2, 1, 1, 1, 3], "a": 5, "r": -0.3408, "s_next": [0, 5, 2, 1, 1, 1, 3, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "가바다나나나라바", "r_true": 2.4}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [4], "a": 5, "r": 0.0, "s_next": [4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [4, 5], "a": 5, "r": 0.0, "s_next": [4, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [4, 5, 5], "a": 4, "r": 0.0, "s_next": [4, 5, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [4, 5, 5, 4], "a": 4, "r": 0.0, "s_next": [4, 5, 5, 4, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [4, 5, 5, 4, 4], "a": 5, "r": 0.0, "s_next": [4, 5, 5, 4, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [4, 5, 5, 4, 4, 5], "a": 1, "r": 0.0, "s_next": [4, 5, 5, 4, 4, 5, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [4, 5, 5, 4, 4, 5, 1], "a": 5, "r": 0.9072, "s_next": [4, 5, 5, 4, 4, 5, 1, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마바바마마바나바", "r_true": 0.8}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [4], "a": 0, "r": 0.0, "s_next": [4, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [4, 0], "a": 4, "r": 0.0, "s_next": [4, 0, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [4, 0, 4], "a": 0, "r": 0.0, "s_next": [4, 0, 4, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [4, 0, 4, 0], "a": 5, "r": 0.0, "s_next": [4, 0, 4, 0, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [4, 0, 4, 0, 5], "a": 2, "r": 0.0, "s_next": [4, 0, 4, 0, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [4, 0, 4, 0, 5, 2], "a": 0, "r": 0.0, "s_next": [4, 0, 4, 0, 5, 2, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [4, 0, 4, 0, 5, 2, 0], "a": 1, "r": -0.3126, "s_next": [4, 0, 4, 0, 5, 2, 0, 1], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "마가마가바다가나", "r_true": 2.2}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [2], "a": 3, "r": 0.0, "s_next": [2, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [2, 3], "a": 0, "r": 0.0, "s_next": [2, 3, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [2, 3, 0], "a": 2, "r": 0.0, "s_next": [2, 3, 0, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [2, 3, 0, 2], "a": 4, "r": 0.0, "s_next": [2, 3, 0, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [2, 3, 0, 2, 4], "a": 5, "r": 0.0, "s_next": [2, 3, 0, 2, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [2, 3, 0, 2, 4, 5], "a": 3, "r": 0.0, "s_next": [2, 3, 0, 2, 4, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [2, 3, 0, 2, 4, 5, 3], "a": 5, "r": 0.3939, "s_next": [2, 3, 0, 2, 4, 5, 3, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 0, "text": "다라가다마바라바", "r_true": 4.8}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [4], "a": 1, "r": 0.0, "s_next": [4, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [4, 1], "a": 1, "r": 0.0, "s_next": [4, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [4, 1, 1], "a": 2, "r": 0.0, "s_next": [4, 1, 1, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [4, 1, 1, 2], "a": 3, "r": 0.0, "s_next": [4, 1, 1, 2, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [4, 1, 1, 2, 3], "a": 2, "r": 0.0, "s_next": [4, 1, 1, 2, 3, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [4, 1, 1, 2, 3, 2], "a": 3, "r": 0.0, "s_next": [4, 1, 1, 2, 3, 2, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [4, 1, 1, 2, 3, 2, 3], "a": 4, "r": 0.0509, "s_next": [4, 1, 1, 2, 3, 2, 3, 4], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "마나나다라다라마", "r_true": 4.0}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [3], "a": 4, "r": 0.0, "s_next": [3, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [3, 4], "a": 5, "r": 0.0, "s_next": [3, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [3, 4, 5], "a": 0, "r": 0.0, "s_next": [3, 4, 5, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [3, 4, 5, 0], "a": 1, "r": 0.0, "s_next": [3, 4, 5, 0, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [3, 4, 5, 0, 1], "a": 1, "r": 0.0, "s_next": [3, 4, 5, 0, 1, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [3, 4, 5, 0, 1, 1], "a": 4, "r": 0.0, "s_next": [3, 4, 5, 0, 1, 1, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [3, 4, 5, 0, 1, 1, 4], "a": 4, "r": 0.1479, "s_next": [3, 4, 5, 0, 1, 1, 4, 4], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "라마바가나나마마", "r_true": 2.6}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [5], "a": 0, "r": 0.0, "s_next": [5, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [5, 0], "a": 5, "r": 0.0, "s_next": [5, 0, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [5, 0, 5], "a": 5, "r": 0.0, "s_next": [5, 0, 5, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [5, 0, 5, 5], "a": 1, "r": 0.0, "s_next": [5, 0, 5, 5, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [5, 0, 5, 5, 1], "a": 0, "r": 0.0, "s_next": [5, 0, 5, 5, 1, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [5, 0, 5, 5, 1, 0], "a": 2, "r": 0.0, "s_next": [5, 0, 5, 5, 1, 0, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [5, 0, 5, 5, 1, 0, 2], "a": 5, "r": 0.0623, "s_next": [5, 0, 5, 5, 1, 0, 2, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "바가바바나가다바", "r_true": 0.6}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [2], "a": 1, "r": 0.0, "s_next": [2, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [2, 1], "a": 5, "r": 0.0, "s_next": [2, 1, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [2, 1, 5], "a": 4, "r": 0.0, "s_next": [2, 1, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [2, 1, 5, 4], "a": 5, "r": 0.0, "s_next": [2, 1, 5, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [2, 1, 5, 4, 5], "a": 4, "r": 0.0, "s_next": [2, 1, 5, 4, 5, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [2, 1, 5, 4, 5, 4], "a": 3, "r": 0.0, "s_next": [2, 1, 5, 4, 5, 4, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [2, 1, 5, 4, 5, 4, 3], "a": 3, "r": 0.5811, "s_next": [2, 1, 5, 4, 5, 4, 3, 3], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 60, "text": "다나바마바마라라", "r_true": 5.4}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 1, "r": 0.0, "s_next": [1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [1], "a": 2, "r": 0.0, "s_next": [1, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [1, 2], "a": 0, "r": 0.0, "s_next": [1, 2, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [1, 2, 0], "a": 2, "r": 0.0, "s_next": [1, 2, 0, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [1, 2, 0, 2], "a": 4, "r": 0.0, "s_next": [1, 2, 0, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [1, 2, 0, 2, 4], "a": 3, "r": 0.0, "s_next": [1, 2, 0, 2, 4, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [1, 2, 0, 2, 4, 3], "a": 3, "r": 0.0, "s_next": [1, 2, 0, 2, 4, 3, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [1, 2, 0, 2, 4, 3, 3], "a": 2, "r": -0.1363, "s_next": [1, 2, 0, 2, 4, 3, 3, 2], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나다가다마라라다", "r_true": 2.0}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 0, "r": 0.0, "s_next": [0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [0], "a": 4, "r": 0.0, "s_next": [0, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [0, 4], "a": 3, "r": 0.0, "s_next": [0, 4, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [0, 4, 3], "a": 2, "r": 0.0, "s_next": [0, 4, 3, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [0, 4, 3, 2], "a": 5, "r": 0.0, "s_next": [0, 4, 3, 2, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [0, 4, 3, 2, 5], "a": 3, "r": 0.0, "s_next": [0, 4, 3, 2, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [0, 4, 3, 2, 5, 3], "a": 3, "r": 0.0, "s_next": [0, 4, 3, 2, 5, 3, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [0, 4, 3, 2, 5, 3, 3], "a": 0, "r": 0.1649, "s_next": [0, 4, 3, 2, 5, 3, 3, 0], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "가마라다바라라가", "r_true": 2.4}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 1, "r": 0.0, "s_next": [1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [1], "a": 5, "r": 0.0, "s_next": [1, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [1, 5], "a": 3, "r": 0.0, "s_next": [1, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [1, 5, 3], "a": 2, "r": 0.0, "s_next": [1, 5, 3, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [1, 5, 3, 2], "a": 2, "r": 0.0, "s_next": [1, 5, 3, 2, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [1, 5, 3, 2, 2], "a": 5, "r": 0.0, "s_next": [1, 5, 3, 2, 2, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [1, 5, 3, 2, 2, 5], "a": 3, "r": 0.0, "s_next": [1, 5, 3, 2, 2, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [1, 5, 3, 2, 2, 5, 3], "a": 0, "r": 0.0696, "s_next": [1, 5, 3, 2, 2, 5, 3, 0], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "나바라다다바라가", "r_true": 4.2}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [3], "a": 2, "r": 0.0, "s_next": [3, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [3, 2], "a": 3, "r": 0.0, "s_next": [3, 2, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [3, 2, 3], "a": 2, "r": 0.0, "s_next": [3, 2, 3, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [3, 2, 3, 2], "a": 4, "r": 0.0, "s_next": [3, 2, 3, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [3, 2, 3, 2, 4], "a": 5, "r": 0.0, "s_next": [3, 2, 3, 2, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [3, 2, 3, 2, 4, 5], "a": 2, "r": 0.0, "s_next": [3, 2, 3, 2, 4, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [3, 2, 3, 2, 4, 5, 2], "a": 1, "r": 0.2109, "s_next": [3, 2, 3, 2, 4, 5, 2, 1], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 150, "text": "라다라다마바다나", "r_true": 3.0}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [2], "a": 0, "r": 0.0, "s_next": [2, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [2, 0], "a": 4, "r": 0.0, "s_next": [2, 0, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [2, 0, 4], "a": 5, "r": 0.0, "s_next": [2, 0, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [2, 0, 4, 5], "a": 3, "r": 0.0, "s_next": [2, 0, 4, 5, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [2, 0, 4, 5, 3], "a": 1, "r": 0.0, "s_next": [2, 0, 4, 5, 3, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [2, 0, 4, 5, 3, 1], "a": 2, "r": 0.0, "s_next": [2, 0, 4, 5, 3, 1, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [2, 0, 4, 5, 3, 1, 2], "a": 0, "r": -0.2175, "s_next": [2, 0, 4, 5, 3, 1, 2, 0], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "다가마바라나다가", "r_true": 3.4}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 1, "r": 0.0, "s_next": [1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [1], "a": 2, "r": 0.0, "s_next": [1, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [1, 2], "a": 4, "r": 0.0, "s_next": [1, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [1, 2, 4], "a": 2, "r": 0.0, "s_next": [1, 2, 4, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [1, 2, 4, 2], "a": 0, "r": 0.0, "s_next": [1, 2, 4, 2, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [1, 2, 4, 2, 0], "a": 2, "r": 0.0, "s_next": [1, 2, 4, 2, 0, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [1, 2, 4, 2, 0, 2], "a": 5, "r": 0.0, "s_next": [1, 2, 4, 2, 0, 2, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [1, 2, 4, 2, 0, 2, 5], "a": 5, "r": 0.0116, "s_next": [1, 2, 4, 2, 0, 2, 5, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "나다마다가다바바", "r_true": 2.8}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [5], "a": 1, "r": 0.0, "s_next": [5, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [5, 1], "a": 2, "r": 0.0, "s_next": [5, 1, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [5, 1, 2], "a": 0, "r": 0.0, "s_next": [5, 1, 2, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [5, 1, 2, 0], "a": 2, "r": 0.0, "s_next": [5, 1, 2, 0, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [5, 1, 2, 0, 2], "a": 2, "r": 0.0, "s_next": [5, 1, 2, 0, 2, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [5, 1, 2, 0, 2, 2], "a": 4, "r": 0.0, "s_next": [5, 1, 2, 0, 2, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [5, 1, 2, 0, 2, 2, 4], "a": 4, "r": -0.0023, "s_next": [5, 1, 2, 0, 2, 2, 4, 4], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바나다가다다마마", "r_true": 2.6}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [5], "a": 3, "r": 0.0, "s_next": [5, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [5, 3], "a": 4, "r": 0.0, "s_next": [5, 3, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [5, 3, 4], "a": 2, "r": 0.0, "s_next": [5, 3, 4, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [5, 3, 4, 2], "a": 0, "r": 0.0, "s_next": [5, 3, 4, 2, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [5, 3, 4, 2, 0], "a": 4, "r": 0.0, "s_next": [5, 3, 4, 2, 0, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [5, 3, 4, 2, 0, 4], "a": 5, "r": 0.0, "s_next": [5, 3, 4, 2, 0, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [5, 3, 4, 2, 0, 4, 5], "a": 1, "r": 0.3079, "s_next": [5, 3, 4, 2, 0, 4, 5, 1], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 300, "text": "바라마다가마바나", "r_true": 4.8}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [4], "a": 4, "r": 0.0, "s_next": [4, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [4, 4], "a": 2, "r": 0.0, "s_next": [4, 4, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [4, 4, 2], "a": 2, "r": 0.0, "s_next": [4, 4, 2, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [4, 4, 2, 2], "a": 5, "r": 0.0, "s_next": [4, 4, 2, 2, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [4, 4, 2, 2, 5], "a": 0, "r": 0.0, "s_next": [4, 4, 2, 2, 5, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [4, 4, 2, 2, 5, 0], "a": 3, "r": 0.0, "s_next": [4, 4, 2, 2, 5, 0, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [4, 4, 2, 2, 5, 0, 3], "a": 5, "r": 0.454, "s_next": [4, 4, 2, 2, 5, 0, 3, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "마마다다바가라바", "r_true": 5.0}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [5], "a": 5, "r": 0.0, "s_next": [5, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [5, 5], "a": 2, "r": 0.0, "s_next": [5, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [5, 5, 2], "a": 2, "r": 0.0, "s_next": [5, 5, 2, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [5, 5, 2, 2], "a": 2, "r": 0.0, "s_next": [5, 5, 2, 2, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [5, 5, 2, 2, 2], "a": 4, "r": 0.0, "s_next": [5, 5, 2, 2, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [5, 5, 2, 2, 2, 4], "a": 5, "r": 0.0, "s_next": [5, 5, 2, 2, 2, 4, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [5, 5, 2, 2, 2, 4, 5], "a": 2, "r": 0.5049, "s_next": [5, 5, 2, 2, 2, 4, 5, 2], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "바바다다다마바다", "r_true": 0.6}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 0, "r": 0.0, "s_next": [0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [0], "a": 5, "r": 0.0, "s_next": [0, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [0, 5], "a": 2, "r": 0.0, "s_next": [0, 5, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [0, 5, 2], "a": 4, "r": 0.0, "s_next": [0, 5, 2, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [0, 5, 2, 4], "a": 0, "r": 0.0, "s_next": [0, 5, 2, 4, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [0, 5, 2, 4, 0], "a": 4, "r": 0.0, "s_next": [0, 5, 2, 4, 0, 4], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [0, 5, 2, 4, 0, 4], "a": 1, "r": 0.0, "s_next": [0, 5, 2, 4, 0, 4, 1], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [0, 5, 2, 4, 0, 4, 1], "a": 5, "r": 0.0346, "s_next": [0, 5, 2, 4, 0, 4, 1, 5], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "가바다마가마나바", "r_true": 4.2}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 3, "r": 0.0, "s_next": [3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [3], "a": 2, "r": 0.0, "s_next": [3, 2], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [3, 2], "a": 3, "r": 0.0, "s_next": [3, 2, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [3, 2, 3], "a": 3, "r": 0.0, "s_next": [3, 2, 3, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [3, 2, 3, 3], "a": 3, "r": 0.0, "s_next": [3, 2, 3, 3, 3], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [3, 2, 3, 3, 3], "a": 0, "r": 0.0, "s_next": [3, 2, 3, 3, 3, 0], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [3, 2, 3, 3, 3, 0], "a": 5, "r": 0.0, "s_next": [3, 2, 3, 3, 3, 0, 5], "done": false, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [3, 2, 3, 3, 3, 0, 5], "a": 4, "r": 0.4381, "s_next": [3, 2, 3, 3, 3, 0, 5, 4], "done": true, "info": {"config": "rlhf_pg_beta1.0", "step": 600, "text": "라다라라라가바마", "r_true": 1.4}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [4], "a": 2, "r": 0.0, "s_next": [4, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [4, 2], "a": 4, "r": 0.0, "s_next": [4, 2, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [4, 2, 4], "a": 5, "r": 0.0, "s_next": [4, 2, 4, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [4, 2, 4, 5], "a": 2, "r": 0.0, "s_next": [4, 2, 4, 5, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [4, 2, 4, 5, 2], "a": 1, "r": 0.0, "s_next": [4, 2, 4, 5, 2, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [4, 2, 4, 5, 2, 1], "a": 1, "r": 0.0, "s_next": [4, 2, 4, 5, 2, 1, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [4, 2, 4, 5, 2, 1, 1], "a": 0, "r": 0.0, "s_next": [4, 2, 4, 5, 2, 1, 1, 0], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마다마바다나나가", "r_true": 3.8}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [4], "a": 3, "r": 0.0, "s_next": [4, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [4, 3], "a": 1, "r": 0.0, "s_next": [4, 3, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [4, 3, 1], "a": 4, "r": 0.0, "s_next": [4, 3, 1, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [4, 3, 1, 4], "a": 4, "r": 0.0, "s_next": [4, 3, 1, 4, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [4, 3, 1, 4, 4], "a": 0, "r": 0.0, "s_next": [4, 3, 1, 4, 4, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [4, 3, 1, 4, 4, 0], "a": 2, "r": 0.0, "s_next": [4, 3, 1, 4, 4, 0, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [4, 3, 1, 4, 4, 0, 2], "a": 4, "r": 0.0, "s_next": [4, 3, 1, 4, 4, 0, 2, 4], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "마라나마마가다마", "r_true": 0.8}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 0, "r": 0.0, "s_next": [0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [0], "a": 3, "r": 0.0, "s_next": [0, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [0, 3], "a": 5, "r": 0.0, "s_next": [0, 3, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [0, 3, 5], "a": 3, "r": 0.0, "s_next": [0, 3, 5, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [0, 3, 5, 3], "a": 2, "r": 0.0, "s_next": [0, 3, 5, 3, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [0, 3, 5, 3, 2], "a": 0, "r": 0.0, "s_next": [0, 3, 5, 3, 2, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [0, 3, 5, 3, 2, 0], "a": 3, "r": 0.0, "s_next": [0, 3, 5, 3, 2, 0, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [0, 3, 5, 3, 2, 0, 3], "a": 1, "r": 0.0, "s_next": [0, 3, 5, 3, 2, 0, 3, 1], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라바라다가라나", "r_true": 1.8}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 0, "r": 0.0, "s_next": [0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [0], "a": 3, "r": 0.0, "s_next": [0, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [0, 3], "a": 2, "r": 0.0, "s_next": [0, 3, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [0, 3, 2], "a": 2, "r": 0.0, "s_next": [0, 3, 2, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [0, 3, 2, 2], "a": 1, "r": 0.0, "s_next": [0, 3, 2, 2, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [0, 3, 2, 2, 1], "a": 5, "r": 0.0, "s_next": [0, 3, 2, 2, 1, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [0, 3, 2, 2, 1, 5], "a": 1, "r": 0.0, "s_next": [0, 3, 2, 2, 1, 5, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [0, 3, 2, 2, 1, 5, 1], "a": 2, "r": 0.0, "s_next": [0, 3, 2, 2, 1, 5, 1, 2], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 0, "text": "가라다다나바나다", "r_true": 1.8}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [2], "a": 3, "r": 0.0, "s_next": [2, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [2, 3], "a": 5, "r": 0.0, "s_next": [2, 3, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [2, 3, 5], "a": 5, "r": 0.0, "s_next": [2, 3, 5, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [2, 3, 5, 5], "a": 2, "r": 0.0, "s_next": [2, 3, 5, 5, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [2, 3, 5, 5, 2], "a": 3, "r": 0.0, "s_next": [2, 3, 5, 5, 2, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [2, 3, 5, 5, 2, 3], "a": 0, "r": 0.0, "s_next": [2, 3, 5, 5, 2, 3, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [2, 3, 5, 5, 2, 3, 0], "a": 3, "r": 0.6106, "s_next": [2, 3, 5, 5, 2, 3, 0, 3], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "다라바바다라가라", "r_true": 3.0}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 5, "r": 0.0, "s_next": [5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [5], "a": 4, "r": 0.0, "s_next": [5, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [5, 4], "a": 3, "r": 0.0, "s_next": [5, 4, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [5, 4, 3], "a": 5, "r": 0.0, "s_next": [5, 4, 3, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [5, 4, 3, 5], "a": 0, "r": 0.0, "s_next": [5, 4, 3, 5, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [5, 4, 3, 5, 0], "a": 4, "r": 0.0, "s_next": [5, 4, 3, 5, 0, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [5, 4, 3, 5, 0, 4], "a": 5, "r": 0.0, "s_next": [5, 4, 3, 5, 0, 4, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [5, 4, 3, 5, 0, 4, 5], "a": 1, "r": 0.4707, "s_next": [5, 4, 3, 5, 0, 4, 5, 1], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "바마라바가마바나", "r_true": 3.4}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [4], "a": 2, "r": 0.0, "s_next": [4, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [4, 2], "a": 2, "r": 0.0, "s_next": [4, 2, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [4, 2, 2], "a": 0, "r": 0.0, "s_next": [4, 2, 2, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [4, 2, 2, 0], "a": 2, "r": 0.0, "s_next": [4, 2, 2, 0, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [4, 2, 2, 0, 2], "a": 3, "r": 0.0, "s_next": [4, 2, 2, 0, 2, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [4, 2, 2, 0, 2, 3], "a": 5, "r": 0.0, "s_next": [4, 2, 2, 0, 2, 3, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [4, 2, 2, 0, 2, 3, 5], "a": 5, "r": 0.2517, "s_next": [4, 2, 2, 0, 2, 3, 5, 5], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마다다가다라바바", "r_true": 3.2}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [4], "a": 1, "r": 0.0, "s_next": [4, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [4, 1], "a": 3, "r": 0.0, "s_next": [4, 1, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [4, 1, 3], "a": 2, "r": 0.0, "s_next": [4, 1, 3, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [4, 1, 3, 2], "a": 5, "r": 0.0, "s_next": [4, 1, 3, 2, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [4, 1, 3, 2, 5], "a": 4, "r": 0.0, "s_next": [4, 1, 3, 2, 5, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [4, 1, 3, 2, 5, 4], "a": 3, "r": 0.0, "s_next": [4, 1, 3, 2, 5, 4, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [4, 1, 3, 2, 5, 4, 3], "a": 3, "r": 0.3829, "s_next": [4, 1, 3, 2, 5, 4, 3, 3], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 200, "text": "마나라다바마라라", "r_true": 3.4}}
+{"seed": 0, "episode": 0, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 1, "s": [2], "a": 5, "r": 0.0, "s_next": [2, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 2, "s": [2, 5], "a": 0, "r": 0.0, "s_next": [2, 5, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 3, "s": [2, 5, 0], "a": 5, "r": 0.0, "s_next": [2, 5, 0, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 4, "s": [2, 5, 0, 5], "a": 5, "r": 0.0, "s_next": [2, 5, 0, 5, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 5, "s": [2, 5, 0, 5, 5], "a": 2, "r": 0.0, "s_next": [2, 5, 0, 5, 5, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 6, "s": [2, 5, 0, 5, 5, 2], "a": 5, "r": 0.0, "s_next": [2, 5, 0, 5, 5, 2, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": null}}
+{"seed": 0, "episode": 0, "t": 7, "s": [2, 5, 0, 5, 5, 2, 5], "a": 1, "r": 1.0229, "s_next": [2, 5, 0, 5, 5, 2, 5, 1], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바바다바나", "r_true": 1.0}}
+{"seed": 0, "episode": 1, "t": 0, "s": [], "a": 4, "r": 0.0, "s_next": [4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 1, "s": [4], "a": 1, "r": 0.0, "s_next": [4, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 2, "s": [4, 1], "a": 3, "r": 0.0, "s_next": [4, 1, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 3, "s": [4, 1, 3], "a": 1, "r": 0.0, "s_next": [4, 1, 3, 1], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 4, "s": [4, 1, 3, 1], "a": 0, "r": 0.0, "s_next": [4, 1, 3, 1, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 5, "s": [4, 1, 3, 1, 0], "a": 4, "r": 0.0, "s_next": [4, 1, 3, 1, 0, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 6, "s": [4, 1, 3, 1, 0, 4], "a": 5, "r": 0.0, "s_next": [4, 1, 3, 1, 0, 4, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": null}}
+{"seed": 0, "episode": 1, "t": 7, "s": [4, 1, 3, 1, 0, 4, 5], "a": 1, "r": 0.9537, "s_next": [4, 1, 3, 1, 0, 4, 5, 1], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "마나라나가마바나", "r_true": 2.6}}
+{"seed": 0, "episode": 2, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 1, "s": [2], "a": 5, "r": 0.0, "s_next": [2, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 2, "s": [2, 5], "a": 4, "r": 0.0, "s_next": [2, 5, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 3, "s": [2, 5, 4], "a": 3, "r": 0.0, "s_next": [2, 5, 4, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 4, "s": [2, 5, 4, 3], "a": 0, "r": 0.0, "s_next": [2, 5, 4, 3, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 5, "s": [2, 5, 4, 3, 0], "a": 4, "r": 0.0, "s_next": [2, 5, 4, 3, 0, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 6, "s": [2, 5, 4, 3, 0, 4], "a": 5, "r": 0.0, "s_next": [2, 5, 4, 3, 0, 4, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": null}}
+{"seed": 0, "episode": 2, "t": 7, "s": [2, 5, 4, 3, 0, 4, 5], "a": 1, "r": 1.1545, "s_next": [2, 5, 4, 3, 0, 4, 5, 1], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바마라가마바나", "r_true": 4.8}}
+{"seed": 0, "episode": 3, "t": 0, "s": [], "a": 2, "r": 0.0, "s_next": [2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 1, "s": [2], "a": 5, "r": 0.0, "s_next": [2, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 2, "s": [2, 5], "a": 0, "r": 0.0, "s_next": [2, 5, 0], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 3, "s": [2, 5, 0], "a": 5, "r": 0.0, "s_next": [2, 5, 0, 5], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 4, "s": [2, 5, 0, 5], "a": 2, "r": 0.0, "s_next": [2, 5, 0, 5, 2], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 5, "s": [2, 5, 0, 5, 2], "a": 3, "r": 0.0, "s_next": [2, 5, 0, 5, 2, 3], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 6, "s": [2, 5, 0, 5, 2, 3], "a": 4, "r": 0.0, "s_next": [2, 5, 0, 5, 2, 3, 4], "done": false, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": null}}
+{"seed": 0, "episode": 3, "t": 7, "s": [2, 5, 0, 5, 2, 3, 4], "a": 0, "r": 1.1433, "s_next": [2, 5, 0, 5, 2, 3, 4, 0], "done": true, "info": {"config": "dpo_full_beta0.1", "step": 1000, "text": "다바가바다라마가", "r_true": 4.2}}

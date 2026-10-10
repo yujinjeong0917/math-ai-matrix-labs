@@ -1,0 +1,117 @@
+{
+ "places": {
+  "notion": "기획 문서(Notion 스펙)",
+  "figma": "디자인 시안(Figma)",
+  "sheets": "운영 시트(Sheets)"
+ },
+ "values": {
+  "price": "시간당 요금",
+  "hours": "운영 시간",
+  "cancel": "취소 규정"
+ },
+ "initial": {
+  "price": {
+   "won": 6000
+  },
+  "hours": {
+   "open": 9,
+   "close": 22
+  },
+  "cancel": {
+   "free_before_h": 24
+  }
+ },
+ "cards": [
+  {
+   "id": "C1",
+   "by": "하린",
+   "where": "sheets",
+   "value": "price",
+   "field": "won",
+   "new": 7000,
+   "what": "시간당 요금 6,000원 -> 7,000원"
+  },
+  {
+   "id": "C2",
+   "by": "서연",
+   "where": "notion",
+   "value": "cancel",
+   "field": "free_before_h",
+   "new": 12,
+   "what": "무료 취소 24시간 전까지 -> 12시간 전까지"
+  },
+  {
+   "id": "C3",
+   "by": "민지",
+   "where": "figma",
+   "value": "hours",
+   "field": "close",
+   "new": 23,
+   "what": "닫는 시각 22시 -> 23시(사장님 메시지를 받고 화면 문구에서 바로 고침)"
+  },
+  {
+   "id": "C4",
+   "by": "서연",
+   "where": "notion",
+   "value": "price",
+   "field": "won",
+   "new": 6500,
+   "what": "개업 할인: 요금을 6,500원으로"
+  },
+  {
+   "id": "C5",
+   "by": "하린",
+   "where": "sheets",
+   "value": "hours",
+   "field": "open",
+   "new": 8,
+   "what": "여는 시각 9시 -> 8시"
+  },
+  {
+   "id": "C6",
+   "by": "민지",
+   "where": "figma",
+   "value": "cancel",
+   "field": "free_before_h",
+   "new": 6,
+   "what": "무료 취소 12시간 전까지 -> 6시간 전까지(기획자 요청을 메신저로 받음)"
+  },
+  {
+   "id": "C7",
+   "by": "하린",
+   "where": "sheets",
+   "value": "price",
+   "field": "won",
+   "new": 7000,
+   "what": "개업 할인 끝: 요금 7,000원"
+  },
+  {
+   "id": "C8",
+   "by": "서연",
+   "where": "notion",
+   "value": "hours",
+   "field": "close",
+   "new": 24,
+   "what": "닫는 시각 -> 24시"
+  }
+ ],
+ "source": {
+  "price": "sheets",
+  "hours": "notion",
+  "cancel": "notion"
+ },
+ "links": {
+  "price": {
+   "notion": "ref",
+   "figma": "hand"
+  },
+  "hours": {
+   "figma": "hand",
+   "sheets": "hand"
+  },
+  "cancel": {
+   "figma": "hand",
+   "sheets": "ref"
+  }
+ }
+}

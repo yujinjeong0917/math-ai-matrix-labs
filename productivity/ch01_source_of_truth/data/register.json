@@ -1,0 +1,287 @@
+[
+ {
+  "id": "I01",
+  "name": "취소 규정 문구",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Specs/S02 취소 규정",
+  "owner": "서연",
+  "refs": [
+   [
+    "figma",
+    "Components/취소안내",
+    "hand"
+   ],
+   [
+    "sheets",
+    "metrics!안내",
+    "ref"
+   ]
+  ],
+  "notify": "변경 기록 + 민지 멘션"
+ },
+ {
+  "id": "I02",
+  "name": "취소율 지표 정의",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Specs/지표정의 취소율",
+  "owner": "서연",
+  "refs": [
+   [
+    "sheets",
+    "metrics!B2 수식",
+    "hand"
+   ]
+  ],
+  "notify": "변경 기록 + 하린 멘션"
+ },
+ {
+  "id": "I03",
+  "name": "규정 변경 기준값",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Decisions/D04 기준",
+  "owner": "서연",
+  "refs": [
+   [
+    "sheets",
+    "metrics!threshold",
+    "hand"
+   ]
+  ],
+  "notify": "변경 기록 + 하린 멘션"
+ },
+ {
+  "id": "I04",
+  "name": "지점 목록",
+  "kind": "number",
+  "tool": "sheets",
+  "where": "branches",
+  "owner": "하린",
+  "refs": [
+   [
+    "sheets",
+    "clean!lookup",
+    "ref"
+   ],
+   [
+    "notion",
+    "Projects 지점 수",
+    "hand"
+   ]
+  ],
+  "notify": "시트 변경 알림 + 서연"
+ },
+ {
+  "id": "I05",
+  "name": "운영 시간",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Specs/S02 운영 시간",
+  "owner": "서연",
+  "refs": [
+   [
+    "figma",
+    "S02_상세 운영 시간",
+    "hand"
+   ],
+   [
+    "sheets",
+    "capacity!hours",
+    "hand"
+   ]
+  ],
+  "notify": "변경 기록 + 민지·하린 멘션"
+ },
+ {
+  "id": "I06",
+  "name": "시간당 요금",
+  "kind": "number",
+  "tool": "sheets",
+  "where": "lookup!price",
+  "owner": "하린",
+  "refs": [
+   [
+    "figma",
+    "S03_예약 요금",
+    "hand"
+   ],
+   [
+    "notion",
+    "Specs/S03 요금(임베드)",
+    "ref"
+   ]
+  ],
+  "notify": "시트 변경 알림 + 민지"
+ },
+ {
+  "id": "I07",
+  "name": "예약 화면 프레임",
+  "kind": "screen",
+  "tool": "figma",
+  "where": "S03_예약",
+  "owner": "민지",
+  "refs": [
+   [
+    "notion",
+    "Tasks Figma 링크",
+    "ref"
+   ]
+  ],
+  "notify": "Figma 댓글 + 준호"
+ },
+ {
+  "id": "I08",
+  "name": "결정 D10(전화 인증 철회) 상태",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Decisions/D10 상태",
+  "owner": "서연",
+  "refs": [
+   [
+    "notion",
+    "Tasks T17-T18",
+    "ref"
+   ],
+   [
+    "figma",
+    "S03_예약 전화 칸",
+    "hand"
+   ]
+  ],
+  "notify": "변경 기록 + 민지·준호 멘션"
+ },
+ {
+  "id": "I09",
+  "name": "예약 상태 표준값",
+  "kind": "number",
+  "tool": "sheets",
+  "where": "lookup!status",
+  "owner": "하린",
+  "refs": [
+   [
+    "sheets",
+    "clean!status",
+    "ref"
+   ],
+   [
+    "notion",
+    "Specs/지표정의 상태 목록",
+    "hand"
+   ]
+  ],
+  "notify": "시트 변경 알림 + 서연"
+ },
+ {
+  "id": "I10",
+  "name": "예약 버튼 문구",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Specs/S03 버튼 문구",
+  "owner": "서연",
+  "refs": [
+   [
+    "figma",
+    "Components/버튼",
+    "hand"
+   ]
+  ],
+  "notify": "변경 기록 + 민지 멘션"
+ },
+ {
+  "id": "I11",
+  "name": "주간 취소율 값",
+  "kind": "number",
+  "tool": "sheets",
+  "where": "metrics!B2",
+  "owner": "하린",
+  "refs": [
+   [
+    "notion",
+    "Projects 주간 리포트",
+    "hand"
+   ]
+  ],
+  "notify": "시트 변경 알림 + 서연"
+ },
+ {
+  "id": "I12",
+  "name": "런칭일",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Decisions/D09 날짜",
+  "owner": "서연",
+  "refs": [
+   [
+    "notion",
+    "Tasks T19-T20",
+    "ref"
+   ],
+   [
+    "sheets",
+    "metrics!기간",
+    "hand"
+   ]
+  ],
+  "notify": "변경 기록 + 하린 멘션"
+ },
+ {
+  "id": "I13",
+  "name": "방별 최대 인원",
+  "kind": "number",
+  "tool": "sheets",
+  "where": "rooms!capacity",
+  "owner": "하린",
+  "refs": [
+   [
+    "figma",
+    "S02_상세 인원",
+    "hand"
+   ],
+   [
+    "notion",
+    "Specs/S02 인원(임베드)",
+    "ref"
+   ]
+  ],
+  "notify": "시트 변경 알림 + 민지"
+ },
+ {
+  "id": "I14",
+  "name": "목록 화면 구성",
+  "kind": "screen",
+  "tool": "figma",
+  "where": "S01_목록",
+  "owner": "민지",
+  "refs": [
+   [
+    "notion",
+    "Specs/S01 화면 링크",
+    "ref"
+   ]
+  ],
+  "notify": "Figma 댓글 + 서연·준호"
+ },
+ {
+  "id": "I15",
+  "name": "문의 연락처 문구",
+  "kind": "text",
+  "tool": "notion",
+  "where": "Specs/S04 문의",
+  "owner": "서연",
+  "refs": [
+   [
+    "figma",
+    "S04_완료 문의",
+    "hand"
+   ],
+   [
+    "sheets",
+    "metrics!안내 연락처",
+    "ref"
+   ]
+  ],
+  "notify": "변경 기록 + 민지 멘션"
+ }
+]

@@ -1,0 +1,1222 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "machine": "arm64",
+  "system": "Darwin",
+  "numpy": "2.3.3",
+  "torch": "2.8.0",
+  "git": "git version 2.50.1 (Apple Git-155)"
+ },
+ "checked": "2026-10-08",
+ "threads": 2,
+ "E1": {
+  "shas": {
+   "base": "07cacb1fe675",
+   "a": "5a679905f74b",
+   "b": "22dae3187585"
+  },
+  "main": {
+   "sha": "07cacb1fe675",
+   "result": "SUCCESS",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "SUCCESS"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "SUCCESS"
+    ],
+    [
+     "Push image",
+     "SUCCESS"
+    ]
+   ],
+   "n_tests": 4,
+   "failed": [],
+   "pushed": [
+    "churn-07cacb1fe675.json"
+   ],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json",
+    "results/metrics.json"
+   ]
+  },
+  "branch-a": {
+   "sha": "5a679905f74b",
+   "result": "SUCCESS",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "SUCCESS"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "SUCCESS"
+    ],
+    [
+     "Push image",
+     "SUCCESS"
+    ]
+   ],
+   "n_tests": 4,
+   "failed": [],
+   "pushed": [
+    "churn-5a679905f74b.json"
+   ],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json",
+    "results/metrics.json"
+   ]
+  },
+  "branch-b": {
+   "sha": "22dae3187585",
+   "result": "SUCCESS",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "SUCCESS"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "SUCCESS"
+    ],
+    [
+     "Push image",
+     "SUCCESS"
+    ]
+   ],
+   "n_tests": 5,
+   "failed": [],
+   "pushed": [
+    "churn-22dae3187585.json"
+   ],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json",
+    "results/metrics.json"
+   ]
+  },
+  "changed_files": {
+   "branch-a": [
+    "churn/data.py",
+    "tests/test_data.py"
+   ],
+   "branch-b": [
+    "churn/extra.py",
+    "churn/train.py",
+    "tests/test_extra.py"
+   ]
+  },
+  "overlap_files": [],
+  "merge_textual_conflicts": [],
+  "merged": {
+   "sha": "c90297990d77",
+   "result": "FAILURE",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "FAILURE"
+    ],
+    [
+     "Build image",
+     "SKIPPED(earlier failure)"
+    ],
+    [
+     "Model perf test",
+     "SKIPPED(earlier failure)"
+    ],
+    [
+     "Push image",
+     "SKIPPED(earlier failure)"
+    ]
+   ],
+   "n_tests": 4,
+   "failed": [
+    {
+     "name": "tests.test_extra::test_fee_per_call_positive",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    }
+   ],
+   "pushed": [],
+   "post_ran": [
+    "always"
+   ],
+   "archived": []
+  }
+ },
+ "E2": {
+  "setup": {
+   "devs": 4,
+   "days": 10,
+   "commits_per_day": 2,
+   "rename_days": [
+    3,
+    7
+   ],
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "commits_total": 80
+  },
+  "rows": [
+   {
+    "interval": 1,
+    "seed": 0,
+    "commits": 80,
+    "integrations": 10,
+    "merges_with_conflict": 17,
+    "conflict_hunks": 19,
+    "conflict_lines": 70,
+    "conflict_files": {
+     "registry.txt": 15,
+     "config.txt": 4
+    },
+    "broken_found": 0,
+    "fix_commits": 0,
+    "delays": [],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 0.0,
+    "max_delay_days": 0
+   },
+   {
+    "interval": 1,
+    "seed": 1,
+    "commits": 80,
+    "integrations": 10,
+    "merges_with_conflict": 19,
+    "conflict_hunks": 21,
+    "conflict_lines": 70,
+    "conflict_files": {
+     "registry.txt": 16,
+     "config.txt": 5
+    },
+    "broken_found": 0,
+    "fix_commits": 0,
+    "delays": [],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 0.0,
+    "max_delay_days": 0
+   },
+   {
+    "interval": 1,
+    "seed": 2,
+    "commits": 80,
+    "integrations": 10,
+    "merges_with_conflict": 19,
+    "conflict_hunks": 19,
+    "conflict_lines": 63,
+    "conflict_files": {
+     "registry.txt": 12,
+     "config.txt": 7
+    },
+    "broken_found": 3,
+    "fix_commits": 2,
+    "delays": [
+     0,
+     0,
+     0
+    ],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 0.0,
+    "max_delay_days": 0
+   },
+   {
+    "interval": 2,
+    "seed": 0,
+    "commits": 80,
+    "integrations": 5,
+    "merges_with_conflict": 13,
+    "conflict_hunks": 19,
+    "conflict_lines": 94,
+    "conflict_files": {
+     "config.txt": 7,
+     "registry.txt": 11
+    },
+    "broken_found": 0,
+    "fix_commits": 0,
+    "delays": [],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     16,
+     16,
+     16,
+     16,
+     16
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 0.0,
+    "max_delay_days": 0
+   },
+   {
+    "interval": 2,
+    "seed": 1,
+    "commits": 80,
+    "integrations": 5,
+    "merges_with_conflict": 14,
+    "conflict_hunks": 22,
+    "conflict_lines": 100,
+    "conflict_files": {
+     "registry.txt": 14,
+     "config.txt": 6
+    },
+    "broken_found": 1,
+    "fix_commits": 1,
+    "delays": [
+     0
+    ],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     16,
+     16,
+     16,
+     16,
+     16
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 0.0,
+    "max_delay_days": 0
+   },
+   {
+    "interval": 2,
+    "seed": 2,
+    "commits": 80,
+    "integrations": 5,
+    "merges_with_conflict": 14,
+    "conflict_hunks": 19,
+    "conflict_lines": 81,
+    "conflict_files": {
+     "config.txt": 6,
+     "registry.txt": 12
+    },
+    "broken_found": 3,
+    "fix_commits": 2,
+    "delays": [
+     1,
+     1,
+     1
+    ],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     16,
+     16,
+     16,
+     16,
+     16
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 1.0,
+    "max_delay_days": 1
+   },
+   {
+    "interval": 5,
+    "seed": 0,
+    "commits": 80,
+    "integrations": 2,
+    "merges_with_conflict": 6,
+    "conflict_hunks": 19,
+    "conflict_lines": 136,
+    "conflict_files": {
+     "config.txt": 6,
+     "registry.txt": 6
+    },
+    "broken_found": 6,
+    "fix_commits": 5,
+    "delays": [
+     2,
+     0,
+     0,
+     1,
+     3,
+     0
+    ],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     40,
+     40
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 1.0,
+    "max_delay_days": 3
+   },
+   {
+    "interval": 5,
+    "seed": 1,
+    "commits": 80,
+    "integrations": 2,
+    "merges_with_conflict": 6,
+    "conflict_hunks": 17,
+    "conflict_lines": 146,
+    "conflict_files": {
+     "config.txt": 6,
+     "registry.txt": 6
+    },
+    "broken_found": 5,
+    "fix_commits": 3,
+    "delays": [
+     2,
+     2,
+     1,
+     0,
+     0
+    ],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     40,
+     40
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 1.0,
+    "max_delay_days": 2
+   },
+   {
+    "interval": 5,
+    "seed": 2,
+    "commits": 80,
+    "integrations": 2,
+    "merges_with_conflict": 6,
+    "conflict_hunks": 17,
+    "conflict_lines": 132,
+    "conflict_files": {
+     "config.txt": 6,
+     "registry.txt": 6
+    },
+    "broken_found": 5,
+    "fix_commits": 3,
+    "delays": [
+     2,
+     2,
+     3,
+     0,
+     0
+    ],
+    "branch_ci_runs": 0,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     40,
+     40
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 1.4,
+    "max_delay_days": 3
+   },
+   {
+    "interval": 10,
+    "seed": 0,
+    "commits": 80,
+    "integrations": 1,
+    "merges_with_conflict": 3,
+    "conflict_hunks": 10,
+    "conflict_lines": 158,
+    "conflict_files": {
+     "config.txt": 3,
+     "registry.txt": 3
+    },
+    "broken_found": 9,
+    "fix_commits": 3,
+    "delays": [
+     7,
+     5,
+     1,
+     5,
+     3,
+     2,
+     0,
+     3,
+     0
+    ],
+    "branch_ci_runs": 80,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     80
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 2.888888888888889,
+    "max_delay_days": 7
+   },
+   {
+    "interval": 10,
+    "seed": 1,
+    "commits": 80,
+    "integrations": 1,
+    "merges_with_conflict": 3,
+    "conflict_hunks": 11,
+    "conflict_lines": 162,
+    "conflict_files": {
+     "config.txt": 3,
+     "registry.txt": 3
+    },
+    "broken_found": 7,
+    "fix_commits": 3,
+    "delays": [
+     3,
+     3,
+     0,
+     7,
+     7,
+     6,
+     5
+    ],
+    "branch_ci_runs": 80,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     80
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 4.428571428571429,
+    "max_delay_days": 7
+   },
+   {
+    "interval": 10,
+    "seed": 2,
+    "commits": 80,
+    "integrations": 1,
+    "merges_with_conflict": 3,
+    "conflict_hunks": 12,
+    "conflict_lines": 156,
+    "conflict_files": {
+     "config.txt": 3,
+     "registry.txt": 3
+    },
+    "broken_found": 9,
+    "fix_commits": 3,
+    "delays": [
+     0,
+     7,
+     7,
+     3,
+     0,
+     3,
+     3,
+     0,
+     0
+    ],
+    "branch_ci_runs": 80,
+    "branch_ci_red": 0,
+    "main_red_after_round": 0,
+    "unsynced_changes_at_merge": [
+     80
+    ],
+    "final_main_broken": 0,
+    "mean_delay_days": 2.5555555555555554,
+    "max_delay_days": 7
+   }
+  ],
+  "summary": {
+   "1": {
+    "integrations": 10,
+    "merges_with_conflict": [
+     17,
+     19,
+     19
+    ],
+    "conflict_hunks": [
+     19,
+     21,
+     19
+    ],
+    "conflict_lines": [
+     70,
+     70,
+     63
+    ],
+    "lines_per_hunk": [
+     3.68,
+     3.33,
+     3.32
+    ],
+    "broken_found": [
+     0,
+     0,
+     3
+    ],
+    "broken_total": 3,
+    "max_delay_days": [
+     0,
+     0,
+     0
+    ],
+    "delays_all": [
+     0,
+     0,
+     0
+    ],
+    "mean_unsynced_at_merge": [
+     8,
+     8,
+     8
+    ],
+    "branch_ci_runs": [
+     0,
+     0,
+     0
+    ],
+    "branch_ci_red": [
+     0,
+     0,
+     0
+    ],
+    "main_red_after_round": [
+     0,
+     0,
+     0
+    ],
+    "final_main_broken": [
+     0,
+     0,
+     0
+    ],
+    "mean_delay_days": 0
+   },
+   "2": {
+    "integrations": 5,
+    "merges_with_conflict": [
+     13,
+     14,
+     14
+    ],
+    "conflict_hunks": [
+     19,
+     22,
+     19
+    ],
+    "conflict_lines": [
+     94,
+     100,
+     81
+    ],
+    "lines_per_hunk": [
+     4.95,
+     4.55,
+     4.26
+    ],
+    "broken_found": [
+     0,
+     1,
+     3
+    ],
+    "broken_total": 4,
+    "max_delay_days": [
+     0,
+     0,
+     1
+    ],
+    "delays_all": [
+     0,
+     1,
+     1,
+     1
+    ],
+    "mean_unsynced_at_merge": [
+     16,
+     16,
+     16
+    ],
+    "branch_ci_runs": [
+     0,
+     0,
+     0
+    ],
+    "branch_ci_red": [
+     0,
+     0,
+     0
+    ],
+    "main_red_after_round": [
+     0,
+     0,
+     0
+    ],
+    "final_main_broken": [
+     0,
+     0,
+     0
+    ],
+    "mean_delay_days": 0.75
+   },
+   "5": {
+    "integrations": 2,
+    "merges_with_conflict": [
+     6,
+     6,
+     6
+    ],
+    "conflict_hunks": [
+     19,
+     17,
+     17
+    ],
+    "conflict_lines": [
+     136,
+     146,
+     132
+    ],
+    "lines_per_hunk": [
+     7.16,
+     8.59,
+     7.76
+    ],
+    "broken_found": [
+     6,
+     5,
+     5
+    ],
+    "broken_total": 16,
+    "max_delay_days": [
+     3,
+     2,
+     3
+    ],
+    "delays_all": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     2,
+     2,
+     2,
+     2,
+     2,
+     3,
+     3
+    ],
+    "mean_unsynced_at_merge": [
+     40,
+     40,
+     40
+    ],
+    "branch_ci_runs": [
+     0,
+     0,
+     0
+    ],
+    "branch_ci_red": [
+     0,
+     0,
+     0
+    ],
+    "main_red_after_round": [
+     0,
+     0,
+     0
+    ],
+    "final_main_broken": [
+     0,
+     0,
+     0
+    ],
+    "mean_delay_days": 1.12
+   },
+   "10": {
+    "integrations": 1,
+    "merges_with_conflict": [
+     3,
+     3,
+     3
+    ],
+    "conflict_hunks": [
+     10,
+     11,
+     12
+    ],
+    "conflict_lines": [
+     158,
+     162,
+     156
+    ],
+    "lines_per_hunk": [
+     15.8,
+     14.73,
+     13.0
+    ],
+    "broken_found": [
+     9,
+     7,
+     9
+    ],
+    "broken_total": 25,
+    "max_delay_days": [
+     7,
+     7,
+     7
+    ],
+    "delays_all": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     5,
+     5,
+     5,
+     6,
+     7,
+     7,
+     7,
+     7,
+     7
+    ],
+    "mean_unsynced_at_merge": [
+     80,
+     80,
+     80
+    ],
+    "branch_ci_runs": [
+     80,
+     80,
+     80
+    ],
+    "branch_ci_red": [
+     0,
+     0,
+     0
+    ],
+    "main_red_after_round": [
+     0,
+     0,
+     0
+    ],
+    "final_main_broken": [
+     0,
+     0,
+     0
+    ],
+    "mean_delay_days": 3.2
+   }
+  }
+ },
+ "E3": {
+  "A_ours": {
+   "sha": "c90297990d77",
+   "result": "FAILURE",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "FAILURE"
+    ],
+    [
+     "Build image",
+     "SKIPPED(earlier failure)"
+    ],
+    [
+     "Model perf test",
+     "SKIPPED(earlier failure)"
+    ],
+    [
+     "Push image",
+     "SKIPPED(earlier failure)"
+    ]
+   ],
+   "n_tests": 4,
+   "failed": [
+    {
+     "name": "tests.test_extra::test_fee_per_call_positive",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    }
+   ],
+   "pushed": [],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [],
+   "n_failed": 1
+  },
+  "B_true_junit_post_only_guard": {
+   "sha": "c90297990d77",
+   "result": "UNSTABLE",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "SUCCESS"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "SUCCESS"
+    ],
+    [
+     "Push image",
+     "SUCCESS"
+    ]
+   ],
+   "n_tests": 5,
+   "failed": [
+    {
+     "name": "tests.test_model::test_accuracy_floor",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    },
+    {
+     "name": "tests.test_extra::test_fee_per_call_positive",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    }
+   ],
+   "pushed": [
+    "churn-c90297990d77.json"
+   ],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json"
+   ],
+   "n_failed": 2
+  },
+  "C_true_junit_in_stage_guard": {
+   "sha": "c90297990d77",
+   "result": "UNSTABLE",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "UNSTABLE"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "UNSTABLE"
+    ],
+    [
+     "Push image",
+     "SKIPPED(when)"
+    ]
+   ],
+   "n_tests": 5,
+   "failed": [
+    {
+     "name": "tests.test_model::test_accuracy_floor",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    },
+    {
+     "name": "tests.test_extra::test_fee_per_call_positive",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    }
+   ],
+   "pushed": [],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json"
+   ],
+   "n_failed": 2
+  },
+  "D_true_junit_in_stage_no_guard": {
+   "sha": "c90297990d77",
+   "result": "UNSTABLE",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "UNSTABLE"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "UNSTABLE"
+    ],
+    [
+     "Push image",
+     "SUCCESS"
+    ]
+   ],
+   "n_tests": 5,
+   "failed": [
+    {
+     "name": "tests.test_model::test_accuracy_floor",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    },
+    {
+     "name": "tests.test_extra::test_fee_per_call_positive",
+     "ok": false,
+     "message": "KeyError: 'monthly_fee'"
+    }
+   ],
+   "pushed": [
+    "churn-c90297990d77.json"
+   ],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json"
+   ],
+   "n_failed": 2
+  },
+  "E_true_no_junit": {
+   "sha": "c90297990d77",
+   "result": "SUCCESS",
+   "stages": [
+    [
+     "Checkout",
+     "SUCCESS"
+    ],
+    [
+     "Lint",
+     "SUCCESS"
+    ],
+    [
+     "Unit/Data tests",
+     "SUCCESS"
+    ],
+    [
+     "Build image",
+     "SUCCESS"
+    ],
+    [
+     "Model perf test",
+     "SUCCESS"
+    ],
+    [
+     "Push image",
+     "SUCCESS"
+    ]
+   ],
+   "n_tests": 0,
+   "failed": [],
+   "pushed": [
+    "churn-c90297990d77.json"
+   ],
+   "post_ran": [
+    "always"
+   ],
+   "archived": [
+    "results/image.json"
+   ],
+   "n_failed": 0
+  }
+ },
+ "E4": {
+  "reps": 3,
+  "stage_mean_seconds": {
+   "Checkout": 0.0,
+   "Lint": 0.03,
+   "Unit/Data tests": 0.17,
+   "Build image": 0.03,
+   "Model perf test": 0.24,
+   "Push image": 0.03
+  },
+  "total_mean_seconds": 0.5,
+  "results": [
+   "SUCCESS",
+   "SUCCESS",
+   "SUCCESS"
+  ],
+  "image_digests_equal": true,
+  "image_digest": "sha256:43d2c2e6c9188213d137ed33fb9aa008ecfcf1db746ade7bbdbc8e0e1588e204",
+  "metrics_identical": true,
+  "metrics": {
+   "n_features": 13,
+   "val_acc": 0.8125,
+   "w_sum": -0.5239712204520317
+  },
+  "tests_identical": true
+ },
+ "E5": {
+  "floor": 0.8,
+  "seeded": {
+   "n": 50,
+   "pass": 50,
+   "fail": 0,
+   "flips": 0,
+   "min": 0.8125,
+   "max": 0.8125,
+   "mean": 0.8125,
+   "std": 0.0,
+   "distinct": 1
+  },
+  "seed_sweep_0_49": {
+   "n": 50,
+   "pass": 43,
+   "fail": 7,
+   "flips": 14,
+   "min": 0.7525,
+   "max": 0.8625,
+   "mean": 0.8258,
+   "std": 0.0229,
+   "distinct": 27
+  }
+ },
+ "E6": {
+  "max_abs_w_diff": 2.220446049250313e-16,
+  "b_diff": 5.551115123125783e-17,
+  "acc_np": 0.8125,
+  "acc_torch": 0.8125,
+  "floor": 0.75,
+  "both_pass": true,
+  "train_run_acc": 0.8125
+ }
+}

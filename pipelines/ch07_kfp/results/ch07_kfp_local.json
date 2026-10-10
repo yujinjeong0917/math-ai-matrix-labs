@@ -1,0 +1,108 @@
+{
+ "kfp": "2.17.0",
+ "python": "3.12.13",
+ "ir_file": "kfp_ir_2.17.0.yaml",
+ "wiring": {
+  "renamed_output": {
+   "raised": "KeyError",
+   "stage": "definition",
+   "message": "'train_data'"
+  },
+  "type_mismatch": {
+   "raised": "InconsistentTypeException",
+   "stage": "definition",
+   "message": "Incompatible argument passed to the input 'train_data' of component 'needs-int': Argument type 'system.Dataset@0.0.1' is incompatible with the input type 'NUMBER_INTEGER'"
+  }
+ },
+ "client_signatures": {
+  "create_run_from_pipeline_package": [
+   "pipeline_file",
+   "arguments",
+   "run_name",
+   "experiment_name",
+   "namespace",
+   "pipeline_root",
+   "enable_caching",
+   "cache_key",
+   "service_account",
+   "experiment_id"
+  ],
+  "wait_for_run_completion": [
+   "run_id",
+   "timeout",
+   "sleep_duration"
+  ]
+ },
+ "runs": [
+  {
+   "seconds": 2.393,
+   "run_dir": "churn-ch07-2026-10-08-20-29-09-178882",
+   "files": [
+    "evaluate/metrics.json",
+    "prepare/train_data",
+    "prepare/valid_data",
+    "train/model"
+   ],
+   "accuracy": 0.819,
+   "trained_on": {
+    "sha": "b080a0cdbea3",
+    "seed": 1,
+    "shift": 1.0
+   },
+   "evaluated_on": {
+    "sha": "aa8b30078a01",
+    "seed": 1,
+    "shift": 1.0
+   }
+  },
+  {
+   "seconds": 2.18,
+   "run_dir": "churn-ch07-2026-10-08-20-29-11-569602",
+   "files": [
+    "evaluate/metrics.json",
+    "prepare/train_data",
+    "prepare/valid_data",
+    "train/model"
+   ],
+   "accuracy": 0.819,
+   "trained_on": {
+    "sha": "b080a0cdbea3",
+    "seed": 1,
+    "shift": 1.0
+   },
+   "evaluated_on": {
+    "sha": "aa8b30078a01",
+    "seed": 1,
+    "shift": 1.0
+   }
+  },
+  {
+   "seconds": 2.224,
+   "run_dir": "churn-ch07-2026-10-08-20-29-13-750329",
+   "files": [
+    "evaluate/metrics.json",
+    "prepare/train_data",
+    "prepare/valid_data",
+    "train/model"
+   ],
+   "accuracy": 0.819,
+   "trained_on": {
+    "sha": "b080a0cdbea3",
+    "seed": 1,
+    "shift": 1.0
+   },
+   "evaluated_on": {
+    "sha": "aa8b30078a01",
+    "seed": 1,
+    "shift": 1.0
+   }
+  }
+ ],
+ "prepare_failure": {
+  "raised": "RuntimeError",
+  "message": "Pipeline 'churn-ch07' finished with status FAILURE. Inner task failed: 'prepare'.",
+  "task_dirs": [
+   "prepare"
+  ]
+ }
+}

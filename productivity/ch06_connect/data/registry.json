@@ -1,0 +1,184 @@
+{
+ "I01": {
+  "name": "취소 규정 문구",
+  "src": "notion:Specs/S02.취소규정",
+  "edges": [
+   [
+    "notion:Specs/S02.취소규정",
+    "figma:Components/취소안내",
+    "human"
+   ],
+   [
+    "figma:Components/취소안내",
+    "figma:S02_상세.취소안내",
+    "ref"
+   ],
+   [
+    "figma:Components/취소안내",
+    "figma:S04_완료.취소안내",
+    "ref"
+   ],
+   [
+    "notion:Specs/S02.취소규정",
+    "sheets:metrics!안내",
+    "ref"
+   ]
+  ]
+ },
+ "I02": {
+  "name": "취소율 지표 정의",
+  "src": "notion:Specs/지표정의.취소율",
+  "edges": [
+   [
+    "notion:Specs/지표정의.취소율",
+    "sheets:metrics!B2수식",
+    "human"
+   ]
+  ]
+ },
+ "I03": {
+  "name": "규정 변경 기준값",
+  "src": "notion:Decisions/D04.기준",
+  "edges": [
+   [
+    "notion:Decisions/D04.기준",
+    "sheets:metrics!threshold",
+    "auto"
+   ]
+  ]
+ },
+ "I04": {
+  "name": "지점 목록",
+  "src": "sheets:branches",
+  "edges": [
+   [
+    "sheets:branches",
+    "sheets:clean!lookup",
+    "ref"
+   ],
+   [
+    "sheets:branches",
+    "notion:Projects.지점수",
+    "human"
+   ]
+  ]
+ },
+ "I05": {
+  "name": "운영 시간",
+  "src": "notion:Specs/S02.운영시간",
+  "edges": [
+   [
+    "notion:Specs/S02.운영시간",
+    "figma:S02_상세.운영시간",
+    "human"
+   ],
+   [
+    "notion:Specs/S02.운영시간",
+    "sheets:capacity!hours",
+    "human"
+   ]
+  ]
+ },
+ "I06": {
+  "name": "시간당 요금",
+  "src": "sheets:lookup!price",
+  "edges": [
+   [
+    "sheets:lookup!price",
+    "figma:S03_예약.요금",
+    "human"
+   ],
+   [
+    "sheets:lookup!price",
+    "notion:Specs/S03.요금",
+    "ref"
+   ]
+  ]
+ },
+ "I07": {
+  "name": "예약 화면 프레임",
+  "src": "figma:S03_예약",
+  "edges": [
+   [
+    "figma:S03_예약",
+    "notion:Tasks.Figma링크",
+    "ref"
+   ]
+  ]
+ },
+ "I08": {
+  "name": "D10 확정(전화 인증 철회)",
+  "src": "notion:Decisions/D10.상태",
+  "edges": [
+   [
+    "notion:Decisions/D10.상태",
+    "notion:Tasks/T17-T18",
+    "auto"
+   ],
+   [
+    "notion:Decisions/D10.상태",
+    "figma:S03_예약.전화칸",
+    "human"
+   ]
+  ]
+ },
+ "I09": {
+  "name": "예약 상태 표준값",
+  "src": "sheets:lookup!status",
+  "edges": [
+   [
+    "sheets:lookup!status",
+    "sheets:clean!status",
+    "ref"
+   ],
+   [
+    "sheets:lookup!status",
+    "notion:Specs/지표정의.상태목록",
+    "human"
+   ]
+  ]
+ },
+ "I10": {
+  "name": "예약 버튼 문구",
+  "src": "notion:Specs/S03.버튼문구",
+  "edges": [
+   [
+    "notion:Specs/S03.버튼문구",
+    "figma:Components/버튼",
+    "human"
+   ],
+   [
+    "figma:Components/버튼",
+    "figma:S03_예약.버튼",
+    "ref"
+   ]
+  ]
+ },
+ "I11": {
+  "name": "주간 취소율 값",
+  "src": "sheets:metrics!B2값",
+  "edges": [
+   [
+    "sheets:metrics!B2값",
+    "notion:Projects.주간리포트",
+    "human"
+   ]
+  ]
+ },
+ "I12": {
+  "name": "런칭일",
+  "src": "notion:Decisions/D09.날짜",
+  "edges": [
+   [
+    "notion:Decisions/D09.날짜",
+    "notion:Tasks/T19-T20",
+    "ref"
+   ],
+   [
+    "notion:Decisions/D09.날짜",
+    "sheets:metrics!기간",
+    "human"
+   ]
+  ]
+ }
+}

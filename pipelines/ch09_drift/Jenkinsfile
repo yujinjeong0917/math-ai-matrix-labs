@@ -1,0 +1,32 @@
+// 9장 Jenkinsfile: 배포 뒤 감시 루프. 이 저장소에는 Jenkins 서버도 KFP 클러스터도 없다.
+// test_pipelines_ch09_drift.py가 pipelines_ch09_jenkinsfile.py로 이 파일의 규칙만 검사한다.
+// ci/*.py는 이 장의 drift·decide 함수와 7장 제출 스크립트를 감싼다고 가정한 이름이다(이 저장소에는 없다).
+// 경계: Jenkins는 일정·검사·제출·판정·되돌리기만 하고, 학습은 KFP의 train task에서만 한다.
+pipeline {
+  agent any
+  triggers { cron('H * * * *') }   // 한 시간에 한 번, 분은 작업 이름의 해시로 흩어 놓는다
+  environment {
+    OMP_NUM_THREADS = '2'
+    SERVING = 'registry.example.com/churn-serving'
+  }
+  stages {
+    stage('Drift check') {
+      // 기준 분포(지금 서빙 중인 모델의 학습 입력)와 지난 한 시간의 입력을 비교한다. 정답은 보지 않는다.
+      steps { sh 'python ci/drift_check.py --ref results/serving_ref.npz --window 1h --alpha 0.05 --out results/drift.json --flag results/ALARM' }
+    }
+    stage('Submit retrain run') {
+      when { expression { fileExists('results/ALARM') } }   // drift_check.py가 경보일 때만 만드는 빈 파일
+      // 정답이 도착한 배치만 학습 데이터로 넘긴다(--labeled-only).
+      steps { sh 'python ci/submit_retrain.py --labeled-only --out results/retrain_digest.txt' }
+    }
+    stage('Gate') {
+      // 새 모델이 받은 요청의 정답이 도착했을 때만 판정한다. 그 전에는 hold.
+      steps { sh 'python ci/decide.py --labels-arrived-only --out results/verdict.txt' }
+    }
+    stage('Rollback') {
+      when { expression { readFile('results/verdict.txt').trim() == 'rollback' } }
+      // 태그가 아니라 직전 다이제스트로 되돌린다.
+      steps { sh 'python ci/set_serving.py --image "$SERVING@$(cat results/previous_digest.txt)"' }
+    }
+  }
+}

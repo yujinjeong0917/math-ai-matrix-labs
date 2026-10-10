@@ -1,0 +1,295 @@
+{
+ "components": {
+  "comp-evaluate": {
+   "executorLabel": "exec-evaluate",
+   "inputDefinitions": {
+    "artifacts": {
+     "model": {
+      "artifactType": {
+       "schemaTitle": "system.Model",
+       "schemaVersion": "0.0.1"
+      }
+     },
+     "valid_data": {
+      "artifactType": {
+       "schemaTitle": "system.Dataset",
+       "schemaVersion": "0.0.1"
+      }
+     }
+    },
+    "parameters": {
+     "threshold": {
+      "defaultValue": 0.5,
+      "isOptional": true,
+      "parameterType": "NUMBER_DOUBLE"
+     }
+    }
+   },
+   "outputDefinitions": {
+    "artifacts": {
+     "metrics": {
+      "artifactType": {
+       "schemaTitle": "system.Metrics",
+       "schemaVersion": "0.0.1"
+      }
+     }
+    }
+   }
+  },
+  "comp-prepare": {
+   "executorLabel": "exec-prepare",
+   "inputDefinitions": {
+    "parameters": {
+     "n_rows": {
+      "parameterType": "NUMBER_INTEGER"
+     },
+     "seed": {
+      "parameterType": "NUMBER_INTEGER"
+     },
+     "shift": {
+      "parameterType": "NUMBER_DOUBLE"
+     }
+    }
+   },
+   "outputDefinitions": {
+    "artifacts": {
+     "train_data": {
+      "artifactType": {
+       "schemaTitle": "system.Dataset",
+       "schemaVersion": "0.0.1"
+      }
+     },
+     "valid_data": {
+      "artifactType": {
+       "schemaTitle": "system.Dataset",
+       "schemaVersion": "0.0.1"
+      }
+     }
+    }
+   }
+  },
+  "comp-train": {
+   "executorLabel": "exec-train",
+   "inputDefinitions": {
+    "artifacts": {
+     "train_data": {
+      "artifactType": {
+       "schemaTitle": "system.Dataset",
+       "schemaVersion": "0.0.1"
+      }
+     }
+    },
+    "parameters": {
+     "impl": {
+      "defaultValue": "numpy",
+      "isOptional": true,
+      "parameterType": "STRING"
+     }
+    }
+   },
+   "outputDefinitions": {
+    "artifacts": {
+     "model": {
+      "artifactType": {
+       "schemaTitle": "system.Model",
+       "schemaVersion": "0.0.1"
+      }
+     }
+    }
+   }
+  }
+ },
+ "deploymentSpec": {
+  "executors": {
+   "exec-evaluate": {
+    "container": {
+     "args": [
+      "--executor_input",
+      "{{$}}",
+      "--function_to_execute",
+      "evaluate"
+     ],
+     "command": [
+      "sh",
+      "-c",
+      "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.0' '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"$0\" \"$@\"\n",
+      "sh",
+      "-ec",
+      "program_path=$(mktemp -d)\n\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\n_KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+      "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import *\n\ndef evaluate(model: Input[Model], valid_data: Input[Dataset], metrics: Output[Metrics], threshold: float = 0.5):\n    import pipelines_ch07_steps as S\n    m = S.evaluate(model.path, valid_data.path, metrics.path + \".json\", threshold)\n    metrics.log_metric(\"accuracy\", m[\"accuracy\"])\n\n"
+     ],
+     "image": "registry.example.com/churn:GIT_SHA"
+    }
+   },
+   "exec-prepare": {
+    "container": {
+     "args": [
+      "--executor_input",
+      "{{$}}",
+      "--function_to_execute",
+      "prepare"
+     ],
+     "command": [
+      "sh",
+      "-c",
+      "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.0' '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"$0\" \"$@\"\n",
+      "sh",
+      "-ec",
+      "program_path=$(mktemp -d)\n\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\n_KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+      "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import *\n\ndef prepare(seed: int, n_rows: int, shift: float, train_data: Output[Dataset], valid_data: Output[Dataset]):\n    import pipelines_ch07_steps as S\n    S.prepare(seed, n_rows, shift, train_data.path, valid_data.path)\n\n"
+     ],
+     "image": "registry.example.com/churn:GIT_SHA"
+    }
+   },
+   "exec-train": {
+    "container": {
+     "args": [
+      "--executor_input",
+      "{{$}}",
+      "--function_to_execute",
+      "train"
+     ],
+     "command": [
+      "sh",
+      "-c",
+      "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.0' '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"$0\" \"$@\"\n",
+      "sh",
+      "-ec",
+      "program_path=$(mktemp -d)\n\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\n_KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+      "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import *\n\ndef train(train_data: Input[Dataset], model: Output[Model], impl: str = \"numpy\"):\n    import pipelines_ch07_steps as S\n    info = S.train(train_data.path, model.path, impl)\n    model.metadata.update(info)\n\n"
+     ],
+     "image": "registry.example.com/churn:GIT_SHA"
+    }
+   }
+  }
+ },
+ "pipelineInfo": {
+  "name": "churn-ch07"
+ },
+ "root": {
+  "dag": {
+   "tasks": {
+    "evaluate": {
+     "cachingOptions": {
+      "enableCache": true
+     },
+     "componentRef": {
+      "name": "comp-evaluate"
+     },
+     "dependentTasks": [
+      "prepare",
+      "train"
+     ],
+     "inputs": {
+      "artifacts": {
+       "model": {
+        "taskOutputArtifact": {
+         "outputArtifactKey": "model",
+         "producerTask": "train"
+        }
+       },
+       "valid_data": {
+        "taskOutputArtifact": {
+         "outputArtifactKey": "valid_data",
+         "producerTask": "prepare"
+        }
+       }
+      },
+      "parameters": {
+       "threshold": {
+        "componentInputParameter": "threshold"
+       }
+      }
+     },
+     "taskInfo": {
+      "name": "evaluate"
+     }
+    },
+    "prepare": {
+     "cachingOptions": {
+      "enableCache": true
+     },
+     "componentRef": {
+      "name": "comp-prepare"
+     },
+     "inputs": {
+      "parameters": {
+       "n_rows": {
+        "componentInputParameter": "n_rows"
+       },
+       "seed": {
+        "componentInputParameter": "seed"
+       },
+       "shift": {
+        "componentInputParameter": "shift"
+       }
+      }
+     },
+     "taskInfo": {
+      "name": "prepare"
+     }
+    },
+    "train": {
+     "cachingOptions": {
+      "enableCache": true
+     },
+     "componentRef": {
+      "name": "comp-train"
+     },
+     "dependentTasks": [
+      "prepare"
+     ],
+     "inputs": {
+      "artifacts": {
+       "train_data": {
+        "taskOutputArtifact": {
+         "outputArtifactKey": "train_data",
+         "producerTask": "prepare"
+        }
+       }
+      },
+      "parameters": {
+       "impl": {
+        "componentInputParameter": "impl"
+       }
+      }
+     },
+     "taskInfo": {
+      "name": "train"
+     }
+    }
+   }
+  },
+  "inputDefinitions": {
+   "parameters": {
+    "impl": {
+     "defaultValue": "numpy",
+     "isOptional": true,
+     "parameterType": "STRING"
+    },
+    "n_rows": {
+     "defaultValue": 4000.0,
+     "isOptional": true,
+     "parameterType": "NUMBER_INTEGER"
+    },
+    "seed": {
+     "defaultValue": 1.0,
+     "isOptional": true,
+     "parameterType": "NUMBER_INTEGER"
+    },
+    "shift": {
+     "defaultValue": 1.0,
+     "isOptional": true,
+     "parameterType": "NUMBER_DOUBLE"
+    },
+    "threshold": {
+     "defaultValue": 0.5,
+     "isOptional": true,
+     "parameterType": "NUMBER_DOUBLE"
+    }
+   }
+  }
+ },
+ "schemaVersion": "2.1.0",
+ "sdkVersion": "kfp-2.17.0"
+}

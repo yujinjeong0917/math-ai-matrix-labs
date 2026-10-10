@@ -1,0 +1,173 @@
+{
+ "events": [
+  {
+   "id": "E01",
+   "day": 1,
+   "item": "I10",
+   "what": "예약 버튼 문구 수정",
+   "by": "민지",
+   "where": "figma:Components/버튼"
+  },
+  {
+   "id": "E02",
+   "day": 1,
+   "item": "I01",
+   "what": "취소 규정 24시간 -> 12시간",
+   "by": "서연",
+   "where": "notion:Specs/S02.취소규정"
+  },
+  {
+   "id": "E03",
+   "day": 2,
+   "item": "I02",
+   "what": "취소율 정의를 지점 평균에서 전체로",
+   "by": "서연",
+   "where": "notion:Specs/지표정의.취소율"
+  },
+  {
+   "id": "E04",
+   "day": 2,
+   "item": "I04",
+   "what": "지점 B21 추가(가져오기 스크립트로 붙임)",
+   "by": "가져오기 스크립트",
+   "where": "sheets:branches",
+   "via_script": true
+  },
+  {
+   "id": "E05",
+   "day": 3,
+   "item": "I08",
+   "what": "D10 확정",
+   "by": "준호",
+   "where": "notion:Decisions/D10.상태"
+  },
+  {
+   "id": "E06",
+   "day": 3,
+   "item": "I05",
+   "what": "운영 시간 22시 -> 23시(운영 담당이 화면 문구에서 바로 고침)",
+   "by": "하린",
+   "where": "figma:S02_상세.운영시간"
+  },
+  {
+   "id": "E07",
+   "day": 4,
+   "item": "I06",
+   "what": "시간당 요금 인상",
+   "by": "하린",
+   "where": "sheets:lookup!price"
+  },
+  {
+   "id": "E08",
+   "day": 5,
+   "item": "I03",
+   "what": "기준 15% -> 12%",
+   "by": "서연",
+   "where": "notion:Decisions/D04.기준"
+  },
+  {
+   "id": "E09",
+   "day": 5,
+   "item": "I09",
+   "what": "상태값 '대기' 추가(운영 담당이 정리 시트에 바로 적음)",
+   "by": "하린",
+   "where": "sheets:clean!status"
+  },
+  {
+   "id": "E10",
+   "day": 6,
+   "item": "I12",
+   "what": "런칭일 일주일 연기",
+   "by": "서연",
+   "where": "notion:Decisions/D09.날짜"
+  },
+  {
+   "id": "E11",
+   "day": 6,
+   "item": "I07",
+   "what": "예약 화면 프레임 다시 그림",
+   "by": "민지",
+   "where": "figma:S03_예약"
+  },
+  {
+   "id": "E12",
+   "day": 7,
+   "item": "I11",
+   "what": "주간 취소율 값 갱신",
+   "by": "하린",
+   "where": "sheets:metrics!B2값"
+  }
+ ],
+ "incidents": [
+  {
+   "day": 2,
+   "kind": "script_edit",
+   "note": "E04 지점은 스크립트가 붙였다. Apps Script 문서: 스크립트 실행과 API 요청은 트리거를 실행하지 않는다."
+  },
+  {
+   "day": 3,
+   "kind": "chained_automation",
+   "note": "A2가 만든 할 일은 '할 일 생성 -> 담당자 알림' 자동화를 실행하지 않는다(Notion 도움말)."
+  },
+  {
+   "day": 4,
+   "kind": "property_rename",
+   "note": "누군가 Notion 속성 '기준'을 '규정 기준'으로 이름을 바꿈. 이름으로 찾는 스크립트는 깨지고 id로 찾으면 그대로(Notion API 문서)."
+  },
+  {
+   "day": 6,
+   "kind": "creator_leaves",
+   "note": "A1·A3을 만든 사람이 다른 프로젝트로 옮겨 이 파일 권한이 빠짐. 설치형 트리거는 만든 사람 계정으로 돈다(문서). 실패 요약 메일은 만든 사람에게 간다고 읽었다(해석). 권한이 빠지면 트리거가 실패한다는 것은 모형의 가정."
+  }
+ ],
+ "permissions": {
+  "민지": {
+   "figma": "can_edit",
+   "notion": "can_comment",
+   "sheets": "viewer"
+  },
+  "서연": {
+   "figma": "can_view",
+   "notion": "full_access",
+   "sheets": "commenter"
+  },
+  "준호": {
+   "figma": "can_view",
+   "notion": "can_edit",
+   "sheets": "viewer"
+  },
+  "하린": {
+   "figma": "can_view",
+   "notion": "can_comment",
+   "sheets": "editor"
+  },
+  "가져오기 스크립트": {
+   "figma": null,
+   "notion": null,
+   "sheets": "editor"
+  }
+ },
+ "automations": {
+  "A1": {
+   "what": "Sheets checks가 FALSE가 되면 알림",
+   "tool": "Apps Script 설치형 트리거",
+   "covers": "checks"
+  },
+  "A2": {
+   "what": "Notion 결정 상태가 확정이 되면 관련 할 일 만들기 + 담당자 알림",
+   "tool": "Notion 데이터베이스 자동화",
+   "covers": [
+    "I08",
+    "notion:Tasks/T17-T18"
+   ]
+  },
+  "A3": {
+   "what": "Notion 결정의 기준값을 Sheets 기준 칸으로 옮기기",
+   "tool": "API 스크립트(시간 트리거)",
+   "covers": [
+    "I03",
+    "sheets:metrics!threshold"
+   ]
+  }
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "seed": 0,
+ "q": 0.9,
+ "design_to_dev": {
+  "date": "7일째",
+  "from": "민지",
+  "to": "준호",
+  "figma_named_version_before_handoff": true,
+  "rows_checked": 11,
+  "rows_ok": 9,
+  "failed": [
+   {
+    "item": "I06",
+    "name": "시간당 요금",
+    "location": "figma:S03_예약.요금",
+    "method": "human",
+    "ok": false
+   },
+   {
+    "item": "I08",
+    "name": "D10 확정(전화 인증 철회)",
+    "location": "notion:Tasks/T17-T18",
+    "method": "auto",
+    "ok": false
+   }
+  ],
+  "rows": [
+   {
+    "item": "I01",
+    "name": "취소 규정 문구",
+    "location": "figma:Components/취소안내",
+    "method": "human",
+    "ok": true
+   },
+   {
+    "item": "I01",
+    "name": "취소 규정 문구",
+    "location": "figma:S02_상세.취소안내",
+    "method": "ref",
+    "ok": true
+   },
+   {
+    "item": "I01",
+    "name": "취소 규정 문구",
+    "location": "figma:S04_완료.취소안내",
+    "method": "ref",
+    "ok": true
+   },
+   {
+    "item": "I05",
+    "name": "운영 시간",
+    "location": "figma:S02_상세.운영시간",
+    "method": "human",
+    "ok": true
+   },
+   {
+    "item": "I06",
+    "name": "시간당 요금",
+    "location": "figma:S03_예약.요금",
+    "method": "human",
+    "ok": false
+   },
+   {
+    "item": "I07",
+    "name": "예약 화면 프레임",
+    "location": "notion:Tasks.Figma링크",
+    "method": "ref",
+    "ok": true
+   },
+   {
+    "item": "I08",
+    "name": "D10 확정(전화 인증 철회)",
+    "location": "notion:Tasks/T17-T18",
+    "method": "auto",
+    "ok": false
+   },
+   {
+    "item": "I08",
+    "name": "D10 확정(전화 인증 철회)",
+    "location": "figma:S03_예약.전화칸",
+    "method": "human",
+    "ok": true
+   },
+   {
+    "item": "I10",
+    "name": "예약 버튼 문구",
+    "location": "figma:Components/버튼",
+    "method": "human",
+    "ok": true
+   },
+   {
+    "item": "I10",
+    "name": "예약 버튼 문구",
+    "location": "figma:S03_예약.버튼",
+    "method": "ref",
+    "ok": true
+   },
+   {
+    "item": "I12",
+    "name": "런칭일",
+    "location": "notion:Tasks/T19-T20",
+    "method": "ref",
+    "ok": true
+   }
+  ]
+ },
+ "ops_to_planning": {
+  "date": "7일째",
+  "from": "하린",
+  "to": "서연",
+  "checks": {
+   "C7 목록 밖 지점 0": true,
+   "C12 상태 표준값 일치": true
+  },
+  "change_log_rows": 10,
+  "changes": 12,
+  "untraceable": 2,
+  "mismatch_not_seen_by_any_check": []
+ }
+}

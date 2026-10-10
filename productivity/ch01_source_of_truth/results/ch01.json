@@ -1,0 +1,1339 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-10",
+  "seeds": 5000,
+  "qs": [
+   0.7,
+   0.8,
+   0.9,
+   0.95
+  ],
+  "cards": 8
+ },
+ "e0_hand": {
+  "q": 0.9,
+  "k": 3,
+  "m": 8,
+  "one_change_all_right": 0.81,
+  "after_m_never_wrong": 0.1853,
+  "k2_after_m": 0.4305,
+  "k1_after_m": 1.0
+ },
+ "e1_copy": {
+  "initial": {
+   "시간당 요금": "6,000원",
+   "운영 시간": "09:00-22:00",
+   "취소 규정": "24시간 전까지 무료"
+  },
+  "truth": {
+   "시간당 요금": "7,000원",
+   "운영 시간": "08:00-24:00",
+   "취소 규정": "6시간 전까지 무료"
+  },
+  "truth_history": {
+   "시간당 요금": [
+    "6,000원",
+    "7,000원",
+    "6,500원",
+    "7,000원"
+   ],
+   "운영 시간": [
+    "09:00-22:00",
+    "09:00-23:00",
+    "08:00-23:00",
+    "08:00-24:00"
+   ],
+   "취소 규정": [
+    "24시간 전까지 무료",
+    "12시간 전까지 무료",
+    "6시간 전까지 무료"
+   ]
+  },
+  "final_table": {
+   "시간당 요금": {
+    "기획 문서(Notion 스펙)": "6,500원",
+    "디자인 시안(Figma)": "6,000원",
+    "운영 시트(Sheets)": "7,000원"
+   },
+   "운영 시간": {
+    "기획 문서(Notion 스펙)": "09:00-24:00",
+    "디자인 시안(Figma)": "09:00-23:00",
+    "운영 시트(Sheets)": "08:00-22:00"
+   },
+   "취소 규정": {
+    "기획 문서(Notion 스펙)": "12시간 전까지 무료",
+    "디자인 시안(Figma)": "6시간 전까지 무료",
+    "운영 시트(Sheets)": "24시간 전까지 무료"
+   }
+  },
+  "cells": [
+   {
+    "value": "시간당 요금",
+    "place": "기획 문서(Notion 스펙)",
+    "shown": "6,500원",
+    "right": false,
+    "ever_true": true
+   },
+   {
+    "value": "시간당 요금",
+    "place": "디자인 시안(Figma)",
+    "shown": "6,000원",
+    "right": false,
+    "ever_true": true
+   },
+   {
+    "value": "시간당 요금",
+    "place": "운영 시트(Sheets)",
+    "shown": "7,000원",
+    "right": true,
+    "ever_true": true
+   },
+   {
+    "value": "운영 시간",
+    "place": "기획 문서(Notion 스펙)",
+    "shown": "09:00-24:00",
+    "right": false,
+    "ever_true": false
+   },
+   {
+    "value": "운영 시간",
+    "place": "디자인 시안(Figma)",
+    "shown": "09:00-23:00",
+    "right": false,
+    "ever_true": true
+   },
+   {
+    "value": "운영 시간",
+    "place": "운영 시트(Sheets)",
+    "shown": "08:00-22:00",
+    "right": false,
+    "ever_true": false
+   },
+   {
+    "value": "취소 규정",
+    "place": "기획 문서(Notion 스펙)",
+    "shown": "12시간 전까지 무료",
+    "right": false,
+    "ever_true": true
+   },
+   {
+    "value": "취소 규정",
+    "place": "디자인 시안(Figma)",
+    "shown": "6시간 전까지 무료",
+    "right": true,
+    "ever_true": true
+   },
+   {
+    "value": "취소 규정",
+    "place": "운영 시트(Sheets)",
+    "shown": "24시간 전까지 무료",
+    "right": false,
+    "ever_true": true
+   }
+  ],
+  "mismatch_cells": 7,
+  "per_step": [
+   2,
+   4,
+   6,
+   6,
+   7,
+   7,
+   7,
+   7
+  ],
+  "distinct_values": {
+   "시간당 요금": 3,
+   "운영 시간": 3,
+   "취소 규정": 3
+  },
+  "truth_anywhere": {
+   "시간당 요금": true,
+   "운영 시간": false,
+   "취소 규정": true
+  },
+  "never_true_cells": 2,
+  "edits_made": 8,
+  "last_edit_card": {
+   "기획 문서(Notion 스펙)": "C8",
+   "디자인 시안(Figma)": "C6",
+   "운영 시트(Sheets)": "C5"
+  }
+ },
+ "e2_judge": {
+  "majority": {
+   "right": 0,
+   "wrong": 0,
+   "undecided": 3
+  },
+  "latest_file": {
+   "right": 0,
+   "wrong": 3,
+   "undecided": 0
+  },
+  "rule_place_after_the_fact": {
+   "right": 1,
+   "wrong": 2,
+   "undecided": 0
+  }
+ },
+ "e3_register": {
+  "one_place_rule": {
+   "final_table": {
+    "시간당 요금": {
+     "기획 문서(Notion 스펙)": "7,000원",
+     "디자인 시안(Figma)": "6,000원",
+     "운영 시트(Sheets)": "7,000원"
+    },
+    "운영 시간": {
+     "기획 문서(Notion 스펙)": "08:00-24:00",
+     "디자인 시안(Figma)": "09:00-22:00",
+     "운영 시트(Sheets)": "09:00-22:00"
+    },
+    "취소 규정": {
+     "기획 문서(Notion 스펙)": "6시간 전까지 무료",
+     "디자인 시안(Figma)": "24시간 전까지 무료",
+     "운영 시트(Sheets)": "6시간 전까지 무료"
+    }
+   },
+   "mismatch_cells": 4,
+   "per_step": [
+    1,
+    2,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "source_right": 3,
+   "never_true_cells": 0,
+   "stale_hand_cells": [
+    "시간당 요금@디자인 시안(Figma)",
+    "운영 시간@디자인 시안(Figma)",
+    "운영 시간@운영 시트(Sheets)",
+    "취소 규정@디자인 시안(Figma)"
+   ]
+  },
+  "with_hand_copies": {
+   "mismatch_cells": 0,
+   "per_step": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "copy_everyone_fixes_all": {
+   "mismatch_cells": 0
+  },
+  "hand_links": {
+   "시간당 요금": 1,
+   "운영 시간": 2,
+   "취소 규정": 1
+  },
+  "ref_links": {
+   "시간당 요금": 1,
+   "운영 시간": 0,
+   "취소 규정": 1
+  }
+ },
+ "e4_edits": {
+  "per_value": {
+   "시간당 요금": {
+    "copy": 3,
+    "register": 2
+   },
+   "운영 시간": {
+    "copy": 3,
+    "register": 3
+   },
+   "취소 규정": {
+    "copy": 3,
+    "register": 2
+   }
+  },
+  "cards_per_value": {
+   "시간당 요금": 3,
+   "운영 시간": 3,
+   "취소 규정": 2
+  },
+  "total_8_cards": {
+   "copy": 24,
+   "register": 19,
+   "register_ideal": 8
+  },
+  "places_to_remember_per_change": {
+   "copy": "세 자리 모두(머릿속)",
+   "register": "등록부에 적힌 자리"
+  }
+ },
+ "e5_montecarlo": {
+  "0.7": {
+   "copy": {
+    "final_mismatch": 1.935,
+    "p_any_final": 0.8964,
+    "p_ever_clean": 0.0034,
+    "exposure": 11.784,
+    "never_true": 0.266,
+    "values_lost": 0.017,
+    "majority_right": 2.655,
+    "source_right": 2.356
+   },
+   "copy_correlated": {
+    "final_mismatch": 1.934,
+    "p_any_final": 0.6978,
+    "p_ever_clean": 0.0582,
+    "exposure": 11.842,
+    "never_true": 0.272,
+    "values_lost": 0.032,
+    "majority_right": 2.068,
+    "source_right": 2.358
+   },
+   "register": {
+    "final_mismatch": 1.116,
+    "p_any_final": 0.733,
+    "p_ever_clean": 0.025,
+    "exposure": 7.172,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 2.919,
+    "source_right": 3
+   },
+   "register_ideal": {
+    "final_mismatch": 0,
+    "p_any_final": 0,
+    "p_ever_clean": 1,
+    "exposure": 0,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 3,
+    "source_right": 3
+   }
+  },
+  "0.8": {
+   "copy": {
+    "final_mismatch": 1.327,
+    "p_any_final": 0.7682,
+    "p_ever_clean": 0.0326,
+    "exposure": 7.941,
+    "never_true": 0.179,
+    "values_lost": 0.006,
+    "majority_right": 2.826,
+    "source_right": 2.544
+   },
+   "copy_correlated": {
+    "final_mismatch": 1.328,
+    "p_any_final": 0.5318,
+    "p_ever_clean": 0.1742,
+    "exposure": 7.906,
+    "never_true": 0.181,
+    "values_lost": 0.017,
+    "majority_right": 2.352,
+    "source_right": 2.557
+   },
+   "register": {
+    "final_mismatch": 0.748,
+    "p_any_final": 0.5614,
+    "p_ever_clean": 0.103,
+    "exposure": 4.739,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 2.96,
+    "source_right": 3
+   },
+   "register_ideal": {
+    "final_mismatch": 0,
+    "p_any_final": 0,
+    "p_ever_clean": 1,
+    "exposure": 0,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 3,
+    "source_right": 3
+   }
+  },
+  "0.9": {
+   "copy": {
+    "final_mismatch": 0.67,
+    "p_any_final": 0.5038,
+    "p_ever_clean": 0.1838,
+    "exposure": 4.056,
+    "never_true": 0.101,
+    "values_lost": 0.001,
+    "majority_right": 2.957,
+    "source_right": 2.78
+   },
+   "copy_correlated": {
+    "final_mismatch": 0.677,
+    "p_any_final": 0.3008,
+    "p_ever_clean": 0.4276,
+    "exposure": 4.081,
+    "never_true": 0.092,
+    "values_lost": 0.004,
+    "majority_right": 2.666,
+    "source_right": 2.772
+   },
+   "register": {
+    "final_mismatch": 0.387,
+    "p_any_final": 0.3332,
+    "p_ever_clean": 0.325,
+    "exposure": 2.448,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 2.993,
+    "source_right": 3
+   },
+   "register_ideal": {
+    "final_mismatch": 0,
+    "p_any_final": 0,
+    "p_ever_clean": 1,
+    "exposure": 0,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 3,
+    "source_right": 3
+   }
+  },
+  "0.95": {
+   "copy": {
+    "final_mismatch": 0.341,
+    "p_any_final": 0.2936,
+    "p_ever_clean": 0.4486,
+    "exposure": 1.958,
+    "never_true": 0.05,
+    "values_lost": 0,
+    "majority_right": 2.988,
+    "source_right": 2.887
+   },
+   "copy_correlated": {
+    "final_mismatch": 0.334,
+    "p_any_final": 0.156,
+    "p_ever_clean": 0.675,
+    "exposure": 1.893,
+    "never_true": 0.046,
+    "values_lost": 0.001,
+    "majority_right": 2.834,
+    "source_right": 2.893
+   },
+   "register": {
+    "final_mismatch": 0.186,
+    "p_any_final": 0.1754,
+    "p_ever_clean": 0.5912,
+    "exposure": 1.141,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 2.999,
+    "source_right": 3
+   },
+   "register_ideal": {
+    "final_mismatch": 0,
+    "p_any_final": 0,
+    "p_ever_clean": 1,
+    "exposure": 0,
+    "never_true": 0,
+    "values_lost": 0,
+    "majority_right": 3,
+    "source_right": 3
+   }
+  }
+ },
+ "e6_generic": {
+  "columns": [
+   "P(한 번도 안 어긋남)",
+   "P(끝에 다 맞음)",
+   "변경당 어긋난 자리"
+  ],
+  "rows": [
+   {
+    "correlated": false,
+    "k": 1,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 1,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 1,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 1,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 2,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0576,
+     0.7,
+     0.3
+    ],
+    "python": [
+     0.0578,
+     0.6988,
+     0.2996
+    ],
+    "numpy": [
+     0.0585,
+     0.7003,
+     0.3003
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 2,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.1678,
+     0.8,
+     0.2
+    ],
+    "python": [
+     0.1694,
+     0.7994,
+     0.2001
+    ],
+    "numpy": [
+     0.1684,
+     0.8008,
+     0.1999
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 2,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.4305,
+     0.9,
+     0.1
+    ],
+    "python": [
+     0.4309,
+     0.8983,
+     0.0996
+    ],
+    "numpy": [
+     0.4296,
+     0.9011,
+     0.1001
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 2,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.6634,
+     0.95,
+     0.05
+    ],
+    "python": [
+     0.6645,
+     0.9493,
+     0.0497
+    ],
+    "numpy": [
+     0.6628,
+     0.9499,
+     0.05
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 3,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0033,
+     0.49,
+     0.6
+    ],
+    "python": [
+     0.0032,
+     0.4875,
+     0.603
+    ],
+    "numpy": [
+     0.0034,
+     0.4912,
+     0.6003
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 3,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.0281,
+     0.64,
+     0.4
+    ],
+    "python": [
+     0.0268,
+     0.6477,
+     0.4006
+    ],
+    "numpy": [
+     0.0286,
+     0.6405,
+     0.3997
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 3,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.1853,
+     0.81,
+     0.2
+    ],
+    "python": [
+     0.184,
+     0.8116,
+     0.2002
+    ],
+    "numpy": [
+     0.1848,
+     0.8103,
+     0.2004
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 3,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.4401,
+     0.9025,
+     0.1
+    ],
+    "python": [
+     0.4423,
+     0.9014,
+     0.0997
+    ],
+    "numpy": [
+     0.4407,
+     0.9028,
+     0.0997
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 4,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0002,
+     0.343,
+     0.9
+    ],
+    "python": [
+     0.0001,
+     0.3452,
+     0.9031
+    ],
+    "numpy": [
+     0.0002,
+     0.3422,
+     0.9002
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 4,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.0047,
+     0.512,
+     0.6
+    ],
+    "python": [
+     0.0049,
+     0.516,
+     0.5996
+    ],
+    "numpy": [
+     0.0049,
+     0.5145,
+     0.5991
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 4,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.0798,
+     0.729,
+     0.3
+    ],
+    "python": [
+     0.0802,
+     0.7258,
+     0.2979
+    ],
+    "numpy": [
+     0.0792,
+     0.7286,
+     0.3
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 4,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.292,
+     0.8574,
+     0.15
+    ],
+    "python": [
+     0.2943,
+     0.8576,
+     0.1509
+    ],
+    "numpy": [
+     0.2909,
+     0.8568,
+     0.1501
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 5,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0,
+     0.2401,
+     1.2
+    ],
+    "python": [
+     0.0,
+     0.238,
+     1.2042
+    ],
+    "numpy": [
+     0.0,
+     0.2378,
+     1.2004
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 5,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.0008,
+     0.4096,
+     0.8
+    ],
+    "python": [
+     0.0007,
+     0.4143,
+     0.7971
+    ],
+    "numpy": [
+     0.0008,
+     0.4103,
+     0.8002
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 5,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.0343,
+     0.6561,
+     0.4
+    ],
+    "python": [
+     0.0352,
+     0.6537,
+     0.4002
+    ],
+    "numpy": [
+     0.034,
+     0.6556,
+     0.4006
+    ]
+   },
+   {
+    "correlated": false,
+    "k": 5,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.1937,
+     0.8145,
+     0.2
+    ],
+    "python": [
+     0.1978,
+     0.8171,
+     0.1978
+    ],
+    "numpy": [
+     0.192,
+     0.8142,
+     0.2002
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 1,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 1,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 1,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 1,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "python": [
+     1.0,
+     1.0,
+     0.0
+    ],
+    "numpy": [
+     1.0,
+     1.0,
+     0.0
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 2,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0576,
+     0.7,
+     0.3
+    ],
+    "python": [
+     0.0605,
+     0.699,
+     0.299
+    ],
+    "numpy": [
+     0.0569,
+     0.6988,
+     0.3002
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 2,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.1678,
+     0.8,
+     0.2
+    ],
+    "python": [
+     0.1701,
+     0.8025,
+     0.1995
+    ],
+    "numpy": [
+     0.1682,
+     0.7997,
+     0.1999
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 2,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.4305,
+     0.9,
+     0.1
+    ],
+    "python": [
+     0.4284,
+     0.9009,
+     0.1003
+    ],
+    "numpy": [
+     0.4298,
+     0.8994,
+     0.1002
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 2,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.6634,
+     0.95,
+     0.05
+    ],
+    "python": [
+     0.6675,
+     0.9482,
+     0.0495
+    ],
+    "numpy": [
+     0.6635,
+     0.95,
+     0.0499
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 3,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0576,
+     0.7,
+     0.6
+    ],
+    "python": [
+     0.0566,
+     0.7024,
+     0.6
+    ],
+    "numpy": [
+     0.0578,
+     0.7013,
+     0.6
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 3,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.1678,
+     0.8,
+     0.4
+    ],
+    "python": [
+     0.1673,
+     0.7988,
+     0.4047
+    ],
+    "numpy": [
+     0.1672,
+     0.8007,
+     0.4
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 3,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.4305,
+     0.9,
+     0.2
+    ],
+    "python": [
+     0.4274,
+     0.8972,
+     0.2031
+    ],
+    "numpy": [
+     0.431,
+     0.8997,
+     0.1995
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 3,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.6634,
+     0.95,
+     0.1
+    ],
+    "python": [
+     0.6609,
+     0.9503,
+     0.0996
+    ],
+    "numpy": [
+     0.6622,
+     0.9496,
+     0.1004
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 4,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0576,
+     0.7,
+     0.9
+    ],
+    "python": [
+     0.0569,
+     0.6895,
+     0.9051
+    ],
+    "numpy": [
+     0.0579,
+     0.7003,
+     0.9007
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 4,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.1678,
+     0.8,
+     0.6
+    ],
+    "python": [
+     0.1662,
+     0.7948,
+     0.6031
+    ],
+    "numpy": [
+     0.1679,
+     0.7998,
+     0.5995
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 4,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.4305,
+     0.9,
+     0.3
+    ],
+    "python": [
+     0.4314,
+     0.8957,
+     0.3013
+    ],
+    "numpy": [
+     0.4309,
+     0.8993,
+     0.3
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 4,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.6634,
+     0.95,
+     0.15
+    ],
+    "python": [
+     0.6623,
+     0.9485,
+     0.1512
+    ],
+    "numpy": [
+     0.6622,
+     0.9502,
+     0.1502
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 5,
+    "q": 0.7,
+    "m": 8,
+    "exact": [
+     0.0576,
+     0.7,
+     1.2
+    ],
+    "python": [
+     0.0556,
+     0.7007,
+     1.2042
+    ],
+    "numpy": [
+     0.0579,
+     0.7014,
+     1.1973
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 5,
+    "q": 0.8,
+    "m": 8,
+    "exact": [
+     0.1678,
+     0.8,
+     0.8
+    ],
+    "python": [
+     0.1683,
+     0.7971,
+     0.8023
+    ],
+    "numpy": [
+     0.1683,
+     0.7994,
+     0.799
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 5,
+    "q": 0.9,
+    "m": 8,
+    "exact": [
+     0.4305,
+     0.9,
+     0.4
+    ],
+    "python": [
+     0.4315,
+     0.9001,
+     0.4
+    ],
+    "numpy": [
+     0.4291,
+     0.9002,
+     0.4007
+    ]
+   },
+   {
+    "correlated": true,
+    "k": 5,
+    "q": 0.95,
+    "m": 8,
+    "exact": [
+     0.6634,
+     0.95,
+     0.2
+    ],
+    "python": [
+     0.6632,
+     0.9498,
+     0.2006
+    ],
+    "numpy": [
+     0.6631,
+     0.9495,
+     0.2005
+    ]
+   }
+  ],
+  "max_abs_gap_python": 0.0105,
+  "max_abs_gap_numpy": 0.0027,
+  "n_python": 20000,
+  "n_numpy": 200000
+ },
+ "e7_lint": {
+  "items": 15,
+  "refs": {
+   "ref": 10,
+   "hand": 14
+  },
+  "max_rows_per_name": 1,
+  "kinds": {
+   "screen": 2,
+   "text": 8,
+   "number": 5
+  },
+  "good_problems": [],
+  "broken_problems": [
+   [
+    "I02",
+    "손으로 옮기는 sheets:metrics!B2 수식에 알림 방법 없음"
+   ],
+   [
+    "I05",
+    "sheets:운영표!영업시간에 값을 다시 적음(등록부에 없는 사본)"
+   ],
+   [
+    "I11",
+    "담당 없음"
+   ],
+   [
+    "I14",
+    "결정 규칙 위반: screen인데 원본이 notion"
+   ],
+   [
+    "I06b",
+    "'시간당 요금' 항목이 2번 등록됨(원본 2개)"
+   ]
+  ],
+  "broken_count": 5
+ }
+}

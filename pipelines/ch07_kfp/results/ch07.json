@@ -1,0 +1,326 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "machine": "arm64",
+  "system": "Darwin",
+  "numpy": "2.3.3",
+  "torch": "2.8.0"
+ },
+ "checked": "2026-10-08",
+ "threads": 2,
+ "today": {
+  "seed": 1,
+  "shift": 1.0
+ },
+ "yesterday": {
+  "seed": 0,
+  "shift": 0.0
+ },
+ "setup": {
+  "n_rows": 4000,
+  "train_rows": 3000,
+  "valid_rows": 1000,
+  "timing_rows": 200000,
+  "glue_steps": 3
+ },
+ "E1": {
+  "today_correct": {
+   "accuracy": 0.819,
+   "churn_rate": 0.608,
+   "predicted_churn_rate": 0.629,
+   "trained_on_seed": 1,
+   "evaluated_on_seed": 1
+  },
+  "yesterday": {
+   "accuracy": 0.782,
+   "churn_rate": 0.485,
+   "predicted_churn_rate": 0.481,
+   "trained_on_seed": 0,
+   "evaluated_on_seed": 0
+  },
+  "A_glue": {
+   "exit_code": 0,
+   "reported": {
+    "accuracy": 0.782,
+    "churn_rate": 0.485,
+    "predicted_churn_rate": 0.481,
+    "trained_on_seed": 0,
+    "evaluated_on_seed": 0
+   }
+  },
+  "A_dag": {
+   "raised": "KeyError",
+   "message": "\"'train_data': task 'prepare_v2'에는 이 출력이 없다. 있는 출력: ['train_v2', 'valid_v2']\"",
+   "tasks_run": 0
+  },
+  "B_glue": {
+   "none": {
+    "exit_code": 0,
+    "metrics_after": {
+     "accuracy": 0.782,
+     "churn_rate": 0.485,
+     "predicted_churn_rate": 0.481,
+     "trained_on_seed": 0,
+     "evaluated_on_seed": 0
+    }
+   },
+   "e": {
+    "exit_code": 0,
+    "metrics_after": {
+     "accuracy": 0.782,
+     "churn_rate": 0.485,
+     "predicted_churn_rate": 0.481,
+     "trained_on_seed": 0,
+     "evaluated_on_seed": 0
+    }
+   },
+   "pipefail": {
+    "exit_code": 1,
+    "metrics_after": {
+     "accuracy": 0.782,
+     "churn_rate": 0.485,
+     "predicted_churn_rate": 0.481,
+     "trained_on_seed": 0,
+     "evaluated_on_seed": 0
+    }
+   }
+  },
+  "B_dag": {
+   "state": "FAILED",
+   "statuses": {
+    "prepare": "FAILED",
+    "train": "SKIPPED",
+    "evaluate": "SKIPPED"
+   },
+   "metrics": null
+  },
+  "C": {
+   "orders": 20,
+   "glue_contaminated_orders": 18,
+   "glue_runs_train_eval_mismatch": 2,
+   "dag_contaminated_orders": 0
+  }
+ },
+ "E2": {
+  "accuracy": [
+   0.819,
+   0.819,
+   0.819
+  ],
+  "distinct_train_data_uris": 3,
+  "distinct_train_data_sha": 1,
+  "train_data_sha": "b080a0cdbea3",
+  "uri_pattern": "<pipeline_root>/<run_id>/prepare/train_data"
+ },
+ "E3": {
+  "n_rows": 200000,
+  "repeats": 5,
+  "glue_bash_sec": 0.636,
+  "inprocess": {
+   "total_sec": 0.4838,
+   "task_sec": {
+    "prepare": 0.0299,
+    "train": 0.4454,
+    "evaluate": 0.0034
+   }
+  },
+  "subprocess": {
+   "total_sec": 0.6649,
+   "task_sec": {
+    "prepare": 0.0953,
+    "train": 0.5067,
+    "evaluate": 0.0572
+   }
+  },
+  "small_4000_rows_total_sec": {
+   "inprocess": 0.0148,
+   "subprocess": 0.1781
+  }
+ },
+ "E4": {
+  "inprocess": {
+   "full_rerun_sec": 0.4787,
+   "evaluate_only_sec": 0.0034,
+   "wasted_share": 0.9929
+  },
+  "subprocess": {
+   "full_rerun_sec": 0.6592,
+   "evaluate_only_sec": 0.0572,
+   "wasted_share": 0.9132
+  },
+  "threshold_0.5": {
+   "accuracy": 0.816,
+   "churn_rate": 0.6046,
+   "predicted_churn_rate": 0.6257,
+   "trained_on_seed": 1,
+   "evaluated_on_seed": 1
+  },
+  "threshold_0.4": {
+   "accuracy": 0.8102,
+   "churn_rate": 0.6046,
+   "predicted_churn_rate": 0.6864,
+   "trained_on_seed": 1,
+   "evaluated_on_seed": 1
+  },
+  "same_train_data_sha": true,
+  "same_model_sha": true
+ },
+ "E5": {
+  "accuracy_numpy": 0.819,
+  "accuracy_torch": 0.819,
+  "max_weight_diff": 2.220446049250313e-16,
+  "bias_diff": 1.6653345369377348e-16,
+  "ir_identical": true
+ },
+ "E6": {
+  "build_min": 8.0,
+  "queue_min_mean": 5.0,
+  "task_gap_min": 3.0,
+  "n_commits": 2000,
+  "gap_120": {
+   "latest": {
+    "wrong_image_run_rate": 0.09,
+    "mixed_image_run_rate": 0.0465
+   },
+   "sha": {
+    "wrong_image_run_rate": 0.0,
+    "mixed_image_run_rate": 0.0
+   }
+  },
+  "gap_30": {
+   "latest": {
+    "wrong_image_run_rate": 0.294,
+    "mixed_image_run_rate": 0.177
+   },
+   "sha": {
+    "wrong_image_run_rate": 0.0,
+    "mixed_image_run_rate": 0.0
+   }
+  },
+  "gap_10": {
+   "latest": {
+    "wrong_image_run_rate": 0.6335,
+    "mixed_image_run_rate": 0.4475
+   },
+   "sha": {
+    "wrong_image_run_rate": 0.0,
+    "mixed_image_run_rate": 0.0
+   }
+  }
+ },
+ "E7": {
+  "current": [],
+  "latest_tag": [
+   "이미지가 움직이는 태그다: registry.example.com/churn:latest"
+  ],
+  "train_in_jenkins": [
+   "'Compile pipeline' 단계가 Jenkins에서 학습을 직접 돌린다(churn\\.train)"
+  ],
+  "gate_reads_local": [
+   "판정이 KFP run의 지표를 읽지 않는다"
+  ]
+ },
+ "IR": {
+  "tasks_real": [
+   "evaluate",
+   "prepare",
+   "train"
+  ],
+  "tasks_mine": [
+   "evaluate",
+   "prepare",
+   "train"
+  ],
+  "edges_real": [
+   [
+    "prepare",
+    "train_data",
+    "train",
+    "train_data"
+   ],
+   [
+    "prepare",
+    "valid_data",
+    "evaluate",
+    "valid_data"
+   ],
+   [
+    "train",
+    "model",
+    "evaluate",
+    "model"
+   ]
+  ],
+  "edges_match": true,
+  "dependent_tasks_match": true,
+  "components": 3,
+  "edges": 3,
+  "topo_order_real": [
+   "prepare",
+   "train",
+   "evaluate"
+  ],
+  "sdk_version": "kfp-2.17.0",
+  "schema_version": "2.1.0"
+ },
+ "KFP_local": {
+  "kfp": "2.17.0",
+  "seconds": [
+   2.393,
+   2.18,
+   2.224
+  ],
+  "accuracy": [
+   0.819,
+   0.819,
+   0.819
+  ],
+  "distinct_run_dirs": 3,
+  "files": [
+   "evaluate/metrics.json",
+   "prepare/train_data",
+   "prepare/valid_data",
+   "train/model"
+  ],
+  "trained_on_sha": "b080a0cdbea3",
+  "wiring": {
+   "renamed_output": {
+    "raised": "KeyError",
+    "stage": "definition",
+    "message": "'train_data'"
+   },
+   "type_mismatch": {
+    "raised": "InconsistentTypeException",
+    "stage": "definition",
+    "message": "Incompatible argument passed to the input 'train_data' of component 'needs-int': Argument type 'system.Dataset@0.0.1' is incompatible with the input type 'NUMBER_INTEGER'"
+   }
+  },
+  "prepare_failure": {
+   "raised": "RuntimeError",
+   "message": "Pipeline 'churn-ch07' finished with status FAILURE. Inner task failed: 'prepare'.",
+   "task_dirs": [
+    "prepare"
+   ]
+  },
+  "client_signatures": {
+   "create_run_from_pipeline_package": [
+    "pipeline_file",
+    "arguments",
+    "run_name",
+    "experiment_name",
+    "namespace",
+    "pipeline_root",
+    "enable_caching",
+    "cache_key",
+    "service_account",
+    "experiment_id"
+   ],
+   "wait_for_run_completion": [
+    "run_id",
+    "timeout",
+    "sleep_duration"
+   ]
+  }
+ },
+ "seconds": 13.7
+}

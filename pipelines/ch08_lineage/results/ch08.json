@@ -1,0 +1,426 @@
+{
+ "env": {
+  "python": "3.12.13",
+  "numpy": "2.3.3",
+  "torch": "2.8.0",
+  "platform": "Darwin arm64",
+  "threads": 2
+ },
+ "E1": {
+  "configs": [
+   {
+    "seed": 0,
+    "shift": 0.0
+   },
+   {
+    "seed": 1,
+    "shift": 1.0
+   },
+   {
+    "seed": 2,
+    "shift": 0.5
+   },
+   {
+    "seed": 3,
+    "shift": 0.0
+   },
+   {
+    "seed": 4,
+    "shift": 1.0
+   }
+  ],
+  "deployed_run": "run-2",
+  "model_file_keys": [
+   "b",
+   "prep",
+   "w"
+  ],
+  "brute_force_same_code": {
+   "candidates": 5,
+   "matches": [
+    2
+   ],
+   "seconds": 0.0632
+  },
+  "brute_force_after_source_change": {
+   "candidates": 5,
+   "matches": [],
+   "seconds": 0.0621
+  },
+  "trace": {
+   "model": {
+    "id": 11,
+    "sha": "8dc005a3bc6c"
+   },
+   "made_by": {
+    "run_id": "run-2",
+    "execution_id": 8,
+    "params": {
+     "impl": "numpy"
+    },
+    "image_ref": "registry.example.com/churn@sha256:e4067db35ef3d4ba",
+    "image_digest": "e4067db35ef3d4ba"
+   },
+   "reused_by_runs": [],
+   "train_data": {
+    "id": 9,
+    "sha": "9d5748ea2618",
+    "dataset_hash": "e80443f4fe6f95d6c84ba075e89c65cefba8609751a7119f141ec3f49a459c13",
+    "source_version": "v1",
+    "source_version_from": "image_default",
+    "seed": 2,
+    "shift": 0.5,
+    "rows": 3000
+   },
+   "prepare": {
+    "run_id": "run-2",
+    "params": {
+     "data_version": "",
+     "n_rows": 4000,
+     "seed": 2,
+     "shift": 0.5
+    },
+    "image_ref": "registry.example.com/churn@sha256:e4067db35ef3d4ba",
+    "image_digest": "e4067db35ef3d4ba",
+    "env": {}
+   },
+   "ancestor_artifacts": 2,
+   "ancestor_executions": 2
+  },
+  "trace_ms": 0.1266,
+  "trace_hash_matches_independent": true
+ },
+ "E2": {
+  "A_latest_tag": {
+   "policy": "kfp-2.17.2",
+   "run2_status": {
+    "prepare": "CACHED",
+    "train": "CACHED",
+    "evaluate": "CACHED"
+   },
+   "run2_image_ref": "registry.example.com/churn:latest",
+   "served_source_version": "v1",
+   "intended_source_version": "v2",
+   "served_hash": "9d5becfe316f",
+   "hash_is_intended": false,
+   "run2_accuracy": 0.819,
+   "run2_rows": 3000,
+   "cached_across_image_or_env_change": [
+    "prepare",
+    "train",
+    "evaluate"
+   ],
+   "fingerprint_same_as_run1": true,
+   "run2_churn_rate": 0.608
+  },
+  "B_digest_ref": {
+   "policy": "kfp-2.17.2",
+   "run2_status": {
+    "prepare": "RAN",
+    "train": "RAN",
+    "evaluate": "RAN"
+   },
+   "run2_image_ref": "registry.example.com/churn@sha256:27696894454b9ca2",
+   "served_source_version": "v2",
+   "intended_source_version": "v2",
+   "served_hash": "4d6562b20ade",
+   "hash_is_intended": true,
+   "run2_accuracy": 0.7971,
+   "run2_rows": 2926,
+   "cached_across_image_or_env_change": [],
+   "fingerprint_same_as_run1": false
+  },
+  "C_param_v2": {
+   "policy": "kfp-2.17.2",
+   "run2_status": {
+    "prepare": "RAN",
+    "train": "RAN",
+    "evaluate": "RAN"
+   },
+   "run2_image_ref": "registry.example.com/churn:latest",
+   "served_source_version": "v2",
+   "intended_source_version": "v2",
+   "served_hash": "4d6562b20ade",
+   "hash_is_intended": true,
+   "run2_accuracy": 0.7971,
+   "run2_rows": 2926,
+   "cached_across_image_or_env_change": [],
+   "fingerprint_same_as_run1": false
+  },
+  "C_param_v1_kept": {
+   "policy": "kfp-2.17.2",
+   "run2_status": {
+    "prepare": "CACHED",
+    "train": "CACHED",
+    "evaluate": "CACHED"
+   },
+   "run2_image_ref": "registry.example.com/churn:latest",
+   "served_source_version": "v1",
+   "intended_source_version": "v1",
+   "served_hash": "9d5becfe316f",
+   "hash_is_intended": true,
+   "run2_accuracy": 0.819,
+   "run2_rows": 3000,
+   "cached_across_image_or_env_change": [
+    "prepare",
+    "train",
+    "evaluate"
+   ],
+   "fingerprint_same_as_run1": true
+  },
+  "D_env_kfp_2.17.2": {
+   "policy": "kfp-2.17.2",
+   "run2_status": {
+    "prepare": "CACHED",
+    "train": "CACHED",
+    "evaluate": "CACHED"
+   },
+   "run2_image_ref": "registry.example.com/churn:latest",
+   "served_source_version": "v1",
+   "intended_source_version": "v2",
+   "served_hash": "9d5becfe316f",
+   "hash_is_intended": false,
+   "run2_accuracy": 0.819,
+   "run2_rows": 3000,
+   "cached_across_image_or_env_change": [
+    "prepare"
+   ],
+   "fingerprint_same_as_run1": true
+  },
+  "D_env_kfp_master": {
+   "policy": "kfp-master",
+   "run2_status": {
+    "prepare": "RAN",
+    "train": "RAN",
+    "evaluate": "RAN"
+   },
+   "run2_image_ref": "registry.example.com/churn:latest",
+   "served_source_version": "v2",
+   "intended_source_version": "v2",
+   "served_hash": "4d6562b20ade",
+   "hash_is_intended": true,
+   "run2_accuracy": 0.7971,
+   "run2_rows": 2926,
+   "cached_across_image_or_env_change": [],
+   "fingerprint_same_as_run1": false
+  },
+  "E_content_key": {
+   "policy": "content",
+   "run2_status": {
+    "prepare": "RAN",
+    "train": "RAN",
+    "evaluate": "RAN"
+   },
+   "run2_image_ref": "registry.example.com/churn:latest",
+   "served_source_version": "v2",
+   "intended_source_version": "v2",
+   "served_hash": "4d6562b20ade",
+   "hash_is_intended": true,
+   "run2_accuracy": 0.7971,
+   "run2_rows": 2926,
+   "cached_across_image_or_env_change": [],
+   "fingerprint_same_as_run1": false
+  },
+  "truth_v2": {
+   "accuracy": 0.7971,
+   "churn_rate": 0.583,
+   "rows": 2926,
+   "hash": "4d6562b20ade"
+  },
+  "truth_v1": {
+   "hash": "9d5becfe316f"
+  }
+ },
+ "E3": {
+  "cache_off": {
+   "total_sec_each": [
+    0.4891,
+    0.4943,
+    0.4909
+   ],
+   "total_sec_mean": 0.4914,
+   "task_sec_mean": {
+    "prepare": 0.0344,
+    "train": 0.4544,
+    "evaluate": 0.0025
+   },
+   "status": {
+    "prepare": "RAN",
+    "train": "RAN",
+    "evaluate": "RAN"
+   }
+  },
+  "cache_on": {
+   "total_sec_each": [
+    0.0024,
+    0.0035,
+    0.0024
+   ],
+   "total_sec_mean": 0.0027,
+   "task_sec_mean": {
+    "prepare": 0.0001,
+    "train": 0.0,
+    "evaluate": 0.0026
+   },
+   "status": {
+    "prepare": "CACHED",
+    "train": "CACHED",
+    "evaluate": "RAN"
+   }
+  },
+  "n_rows": 200000,
+  "reps": 3,
+  "saved_share": 0.9945
+ },
+ "E4": {
+  "kfp-2.17.2": {
+   "status": {
+    "prepare": "RAN",
+    "train": "RAN",
+    "evaluate": "RAN"
+   },
+   "total_sec_mean": 0.494
+  },
+  "content": {
+   "status": {
+    "prepare": "RAN",
+    "train": "CACHED",
+    "evaluate": "CACHED"
+   },
+   "total_sec_mean": 0.0351
+  },
+  "n_rows": 200000,
+  "reps": 3,
+  "prepare_output": {
+   "ids": [
+    1,
+    5
+   ],
+   "same_content_sha": true,
+   "same_dataset_hash": true
+  }
+ },
+ "E5": {
+  "10": {
+   "store": {
+    "artifacts": 40,
+    "executions": 30,
+    "events": 70
+   },
+   "trace_ms_median": 0.0197,
+   "ancestors": {
+    "artifacts": 2,
+    "executions": 2
+   },
+   "sql_equals_bfs": true
+  },
+  "50": {
+   "store": {
+    "artifacts": 200,
+    "executions": 150,
+    "events": 350
+   },
+   "trace_ms_median": 0.02,
+   "ancestors": {
+    "artifacts": 2,
+    "executions": 2
+   },
+   "sql_equals_bfs": true
+  },
+  "500": {
+   "store": {
+    "artifacts": 2000,
+    "executions": 1500,
+    "events": 3500
+   },
+   "trace_ms_median": 0.02,
+   "ancestors": {
+    "artifacts": 2,
+    "executions": 2
+   },
+   "sql_equals_bfs": true
+  },
+  "repeats": 200
+ },
+ "E6": {
+  "status_torch_run": {
+   "prepare": "CACHED",
+   "train": "RAN",
+   "evaluate": "RAN"
+  },
+  "same_train_data_artifact": true,
+  "accuracy": [
+   0.819,
+   0.819
+  ],
+  "model_sha": [
+   "f9964a6902c6",
+   "4142ce0e2b85"
+  ],
+  "max_weight_diff": 2.220446049250313e-16,
+  "bias_diff": 1.6653345369377348e-16,
+  "trace_impl": [
+   "numpy",
+   "torch"
+  ]
+ },
+ "E7": {
+  "runs": [
+   {
+    "run_id": "day1",
+    "status": {
+     "prepare": "RAN",
+     "train": "RAN",
+     "evaluate": "RAN"
+    }
+   },
+   {
+    "run_id": "day2",
+    "status": {
+     "prepare": "CACHED",
+     "train": "CACHED",
+     "evaluate": "CACHED"
+    }
+   },
+   {
+    "run_id": "day3",
+    "status": {
+     "prepare": "CACHED",
+     "train": "CACHED",
+     "evaluate": "RAN"
+    }
+   },
+   {
+    "run_id": "day4",
+    "status": {
+     "prepare": "CACHED",
+     "train": "RAN",
+     "evaluate": "RAN"
+    }
+   },
+   {
+    "run_id": "day5",
+    "status": {
+     "prepare": "RAN",
+     "train": "RAN",
+     "evaluate": "RAN"
+    }
+   }
+  ],
+  "affected_runs": [
+   "day1",
+   "day2",
+   "day3",
+   "day4"
+  ],
+  "affected_artifacts_by_type": {
+   "system.Model": 2,
+   "system.Metrics": 3
+  },
+  "affected_executions": 8,
+  "unaffected_runs": [
+   "day5"
+  ]
+ },
+ "total_seconds": 12.7
+}

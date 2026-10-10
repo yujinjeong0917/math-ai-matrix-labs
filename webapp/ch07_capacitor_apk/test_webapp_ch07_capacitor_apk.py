@@ -163,4 +163,4 @@ def test_sources_file_has_url_and_date():
     assert SOURCES["checked"] == "2026-10-10"
     for f in SOURCES["facts"]:
         assert f["url"].startswith("https://") and f["checked"] == "2026-10-10"
-    assert len(SOURCES["facts"]) == 36
+    assert len(SOURCES["facts"]) == 37

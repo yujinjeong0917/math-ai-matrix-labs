@@ -227,7 +227,7 @@
   },
   {
    "id": "android_dev_verification",
-   "claim": "안드로이드 개발자 인증: 2026-09-30부터 브라질·인도네시아·싱가포르·태국의 인증 기기에서 인증되지 않은 개발자 앱 설치 제한, 2027년 전 세계로 확대. 스토어 밖 배포에도 적용, ADB 설치는 예외. 전체 배포 계정 25달러, 제한 배포 계정(기기 20대까지)은 무료",
+   "claim": "안드로이드 개발자 인증: 2026-09-30부터 브라질·인도네시아·싱가포르·태국의 인증 기기에서 참여 스토어로 받는 앱에 먼저 적용(사이드로드·다른 스토어는 아직 적용 안 됨), 2027년 전 세계 모든 앱으로 확대. ADB 설치는 예외. 전체 배포 계정 25달러, 제한 배포 계정(기기 20대까지)은 무료",
    "quote": "If you don't verify your identity and register your apps by September 30, 2026, your apps cannot be installed from participating stores in select regions on certified Android devices.",
    "url": "https://developer.android.com/developer-verification/guides/faq",
    "checked": "2026-10-10"

@@ -325,7 +325,7 @@
       "videos_per_request": null,
       "provenance": "C2PA 등은 확인 못함. 출처 표기 안내 문서는 'Powered by Runway'와 링크를 쓰라고 적음",
       "retention": null,
-      "note": "ratio는 1280:720, 720:1280만. 요청 칸에 소리 설정이 없어 소리 생성 여부는 확인 못함",
+      "note": "text_to_video의 ratio는 1280:720, 720:1280만(image_to_video는 6가지). 요청 칸에 소리 설정이 없어 소리 생성 여부는 확인 못함",
       "url": "https://docs.dev.runwayml.com/guides/pricing/",
       "url_spec": "https://docs.dev.runwayml.com/api/",
       "checked": "2026-10-10"

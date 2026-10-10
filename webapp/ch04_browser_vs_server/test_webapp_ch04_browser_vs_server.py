@@ -57,6 +57,8 @@ def test_requests_per_card(pa):
     _, a = pa
     got = {d: C.usage_per_card(a, d)["requests"] for d in C.DESIGNS}
     assert got == {"png_in_browser": 14, "decided": 15, "server_preview": 135, "server_preview_debounced": 21}
+    # 페이지 열기 7,659바이트는 요청 8개의 합이다. 8을 한 번 더 곱하면 안 된다.
+    assert C.usage_per_card(a, "decided")["bytes_to_visitor"] == 7659 + 3 * 255 + 2 * 1_500_000 + 200 + 1_800_000
 
 
 # ---------- 대기 시간 ----------

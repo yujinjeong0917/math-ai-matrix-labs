@@ -80,33 +80,33 @@
      "kind": "static",
      "count": 8,
      "request_bytes": 0,
-     "response_bytes": 7659
+     "response_bytes": 957.375
     },
     {
      "what": "템플릿 바꾸기",
      "kind": "static",
      "count": 3,
      "request_bytes": 0,
-     "response_bytes": 255
+     "response_bytes": 255.0
     },
     {
      "what": "AI 배경 생성",
      "kind": "function",
      "count": 2,
      "request_bytes": 300,
-     "response_bytes": 1500000
+     "response_bytes": 1500000.0
     },
     {
      "what": "보관 저장",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 200
+     "response_bytes": 200.0
     }
    ],
    "requests": 14,
    "function_requests": 3,
-   "bytes_to_visitor": 3062237
+   "bytes_to_visitor": 3008624
   },
   "decided": {
    "label": "판단표대로(AI 배경·최종 PNG·보관 저장은 서버)",
@@ -116,40 +116,40 @@
      "kind": "static",
      "count": 8,
      "request_bytes": 0,
-     "response_bytes": 7659
+     "response_bytes": 957.375
     },
     {
      "what": "템플릿 바꾸기",
      "kind": "static",
      "count": 3,
      "request_bytes": 0,
-     "response_bytes": 255
+     "response_bytes": 255.0
     },
     {
      "what": "AI 배경 생성",
      "kind": "function",
      "count": 2,
      "request_bytes": 300,
-     "response_bytes": 1500000
+     "response_bytes": 1500000.0
     },
     {
      "what": "보관 저장",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 200
+     "response_bytes": 200.0
     },
     {
      "what": "최종 PNG 출력",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 1800000
+     "response_bytes": 1800000.0
     }
    ],
    "requests": 15,
    "function_requests": 4,
-   "bytes_to_visitor": 4862237
+   "bytes_to_visitor": 4808624
   },
   "server_preview": {
    "label": "판단표 + 미리보기도 서버(키마다 요청)",
@@ -159,47 +159,47 @@
      "kind": "static",
      "count": 8,
      "request_bytes": 0,
-     "response_bytes": 7659
+     "response_bytes": 957.375
     },
     {
      "what": "템플릿 바꾸기",
      "kind": "static",
      "count": 3,
      "request_bytes": 0,
-     "response_bytes": 255
+     "response_bytes": 255.0
     },
     {
      "what": "AI 배경 생성",
      "kind": "function",
      "count": 2,
      "request_bytes": 300,
-     "response_bytes": 1500000
+     "response_bytes": 1500000.0
     },
     {
      "what": "보관 저장",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 200
+     "response_bytes": 200.0
     },
     {
      "what": "최종 PNG 출력",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 1800000
+     "response_bytes": 1800000.0
     },
     {
      "what": "미리보기",
      "kind": "function",
      "count": 120,
      "request_bytes": 600,
-     "response_bytes": 200000
+     "response_bytes": 200000.0
     }
    ],
    "requests": 135,
    "function_requests": 124,
-   "bytes_to_visitor": 28862237
+   "bytes_to_visitor": 28808624
   },
   "server_preview_debounced": {
    "label": "판단표 + 미리보기도 서버(300ms 디바운스)",
@@ -209,47 +209,47 @@
      "kind": "static",
      "count": 8,
      "request_bytes": 0,
-     "response_bytes": 7659
+     "response_bytes": 957.375
     },
     {
      "what": "템플릿 바꾸기",
      "kind": "static",
      "count": 3,
      "request_bytes": 0,
-     "response_bytes": 255
+     "response_bytes": 255.0
     },
     {
      "what": "AI 배경 생성",
      "kind": "function",
      "count": 2,
      "request_bytes": 300,
-     "response_bytes": 1500000
+     "response_bytes": 1500000.0
     },
     {
      "what": "보관 저장",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 200
+     "response_bytes": 200.0
     },
     {
      "what": "최종 PNG 출력",
      "kind": "function",
      "count": 1,
      "request_bytes": 600,
-     "response_bytes": 1800000
+     "response_bytes": 1800000.0
     },
     {
      "what": "미리보기",
      "kind": "function",
      "count": 6,
      "request_bytes": 600,
-     "response_bytes": 200000
+     "response_bytes": 200000.0
     }
    ],
    "requests": 21,
    "function_requests": 10,
-   "bytes_to_visitor": 6062237
+   "bytes_to_visitor": 6008624
   }
  },
  "e2_latency_ms": {
@@ -349,7 +349,7 @@
     "fast_origin_transfer": 14.4067
    },
    "usage_usd": 17.0496,
-   "transfer_tb": 0.061269,
+   "transfer_tb": 0.060196,
    "cdn_tier_usd": 0,
    "over_credit_usd": 0.0,
    "bill_usd": 20.0,
@@ -369,7 +369,7 @@
     "fast_origin_transfer": 23.0496
    },
    "usage_usd": 26.5801,
-   "transfer_tb": 0.097281,
+   "transfer_tb": 0.096208,
    "cdn_tier_usd": 0,
    "over_credit_usd": 6.5801,
    "bill_usd": 26.5801,
@@ -389,7 +389,7 @@
     "fast_origin_transfer": 138.5952
    },
    "usage_usd": 147.5057,
-   "transfer_tb": 0.578721,
+   "transfer_tb": 0.577648,
    "cdn_tier_usd": 20,
    "over_credit_usd": 127.5057,
    "bill_usd": 167.5057,
@@ -409,7 +409,7 @@
     "fast_origin_transfer": 28.8269
    },
    "usage_usd": 32.6264,
-   "transfer_tb": 0.121353,
+   "transfer_tb": 0.12028,
    "cdn_tier_usd": 0,
    "over_credit_usd": 12.6264,
    "bill_usd": 32.6264,
@@ -440,7 +440,7 @@
     "over": false
    },
    "fast_data_transfer_gb": {
-    "used": 61.2687,
+    "used": 60.1965,
     "included": 100,
     "over": false
    },
@@ -472,7 +472,7 @@
     "over": false
    },
    "fast_data_transfer_gb": {
-    "used": 97.2807,
+    "used": 96.2085,
     "included": 100,
     "over": false
    },
@@ -504,7 +504,7 @@
     "over": true
    },
    "fast_data_transfer_gb": {
-    "used": 578.7207,
+    "used": 577.6485,
     "included": 100,
     "over": true
    },
@@ -536,7 +536,7 @@
     "over": false
    },
    "fast_data_transfer_gb": {
-    "used": 121.3527,
+    "used": 120.2805,
     "included": 100,
     "over": true
    },
@@ -551,32 +551,32 @@
   "png_in_browser": {
    "compute": 895.8333,
    "requests": 56.0,
-   "bandwidth": 1224.8948,
-   "total": 2176.7281,
+   "bandwidth": 1203.4496,
+   "total": 2155.2829,
    "plan": "Pro",
    "usd": 20.0
   },
   "decided": {
    "compute": 940.2778,
    "requests": 60.0,
-   "bandwidth": 1944.8948,
-   "total": 2945.1726,
+   "bandwidth": 1923.4496,
+   "total": 2923.7274,
    "plan": "Pro",
    "usd": 20.0
   },
   "server_preview": {
    "compute": 1140.2778,
    "requests": 540.0,
-   "bandwidth": 11544.8948,
-   "total": 13225.1726,
+   "bandwidth": 11523.4496,
+   "total": 13203.7274,
    "plan": "Pro + 충전 7번",
    "usd": 90.0
   },
   "server_preview_debounced": {
    "compute": 950.2778,
    "requests": 84.0,
-   "bandwidth": 2424.8948,
-   "total": 3459.1726,
+   "bandwidth": 2403.4496,
+   "total": 3437.7274,
    "plan": "Pro + 충전 1번",
    "usd": 30.0
   }

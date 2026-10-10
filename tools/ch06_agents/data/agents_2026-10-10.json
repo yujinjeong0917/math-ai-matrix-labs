@@ -155,7 +155,7 @@
     },
     {
      "key": "benchmark_company",
-     "value": "GPT-5.3-Codex (2026-02-04 글): SWE-Bench Pro (Public) 56.8%, Terminal-Bench 2.0 77.3%, OSWorld-Verified 64.7%",
+     "value": "GPT-5.3-Codex (2026-02-05 글): SWE-Bench Pro (Public) 56.8%, Terminal-Bench 2.0 77.3%, OSWorld-Verified 64.7%",
      "url": "https://openai.com/index/introducing-gpt-5-3-codex/",
      "checked": "2026-10-10"
     }

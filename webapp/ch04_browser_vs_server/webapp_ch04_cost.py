@@ -88,7 +88,9 @@ DESIGNS = {
 def card_requests(a, design):
     """카드 한 장을 만들 때의 요청 목록. 항목: (무엇, 종류, 횟수, job 또는 None, 요청 바이트, 응답 바이트)."""
     s = a["server"]
-    reqs = [("페이지 열기", "static", a["page_open"]["requests"], None, 0, a["page_open"]["bytes"]),
+    # page_open.bytes는 요청 8개의 합이라, 요청 하나의 평균(분수)으로 넣어야 횟수를 곱했을 때 합이 맞는다.
+    po = a["page_open"]
+    reqs = [("페이지 열기", "static", po["requests"], None, 0, F(po["bytes"], po["requests"])),
             ("템플릿 바꾸기", "static", 3, None, 0, a["template_change"]["bytes"]),
             ("AI 배경 생성", "function", 2, s["ai_background"], s["ai_background"]["request_bytes"], s["ai_background"]["response_bytes"]),
             ("보관 저장", "function", 1, s["archive_save"], s["archive_save"]["request_bytes"], s["archive_save"]["response_bytes"])]

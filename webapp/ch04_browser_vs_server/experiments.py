@@ -39,11 +39,11 @@ def r(x, nd=6):
 def e1(a):
     out = {}
     for d, label in C.DESIGNS.items():
-        rows = [{"what": n, "kind": k, "count": c, "request_bytes": rq, "response_bytes": rs}
+        rows = [{"what": n, "kind": k, "count": c, "request_bytes": rq, "response_bytes": r(rs, 3)}
                 for n, k, c, _job, rq, rs in C.card_requests(a, d)]
         u = C.usage_per_card(a, d)
         out[d] = {"label": label, "rows": rows, "requests": u["requests"], "function_requests": u["function_requests"],
-                  "bytes_to_visitor": u["bytes_to_visitor"]}
+                  "bytes_to_visitor": int(u["bytes_to_visitor"])}
     return out
 
 

@@ -1,0 +1,42 @@
+{
+ "_about": "직접 만든 예시. Anthropic Messages API의 도구 호출 왕복을 따랐다(확인일 2026-10-10, https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview). 긴 글은 줄였다.",
+ "request_1": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 1024,
+  "tools": [
+   {
+    "name": "list_inquiries",
+    "description": "한 주의 고객 문의 가운데 한 유형만 골라 접수 시각 순으로 돌려줘요.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "week": {"type": "string"},
+      "category": {"type": "string", "enum": ["배송", "환불", "결제 오류", "회원 정보", "쿠폰", "앱 오류", "상품 문의", "교환", "칭찬"]}
+     },
+     "required": ["week", "category"]
+    }
+   }
+  ],
+  "messages": [
+   {"role": "user", "content": "보고서 '환불' 절을 써 줘. 필요하면 도구로 문의를 읽어."}
+  ]
+ },
+ "response_1": {
+  "role": "assistant",
+  "stop_reason": "tool_use",
+  "content": [
+   {"type": "tool_use", "id": "toolu_01", "name": "list_inquiries", "input": {"week": "2026-W41", "category": "환불"}}
+  ]
+ },
+ "request_2_new_message": {
+  "role": "user",
+  "content": [
+   {"type": "tool_result", "tool_use_id": "toolu_01", "content": "{\"week\":\"2026-W41\",\"category\":\"환불\",\"count\":18,\"items\":[...]}"}
+  ]
+ },
+ "response_2": {
+  "role": "assistant",
+  "stop_reason": "end_turn",
+  "content": [{"type": "text", "text": "이번 주 환불 문의는 18건이에요. ..."}]
+ }
+}

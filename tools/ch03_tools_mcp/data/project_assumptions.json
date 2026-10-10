@@ -1,0 +1,19 @@
+{
+ "_about": "관통 프로젝트 토큰 가정값. tool_system_prompt만 공식 문서 값(Claude Sonnet 5.5, tool_choice auto)이고 나머지는 2장 값을 이어받거나 이 장에서 정한 가정값이다. 실제 값은 응답의 usage로 센다.",
+ "rules": 3000,
+ "examples": 5000,
+ "inquiry_bundle": 24000,
+ "question": 150,
+ "output_final": 700,
+ "tokens_per_inquiry": 200,
+ "tool_definitions": 400,
+ "tool_system_prompt": 286,
+ "tool_system_prompt_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+ "tool_system_prompt_checked": "2026-10-10",
+ "tool_use_block": 50,
+ "count_result_tokens": 100,
+ "error_result_tokens": 40,
+ "sections": ["배송", "환불", "결제 오류", "회원 정보", "쿠폰", "앱 오류", "상품 문의", "교환", "칭찬", "불만 상위 5", "이번 주 새로 생긴 유형", "다음 주 할 일"],
+ "apps": ["주간 보고서 스크립트", "Claude Desktop", "Claude Code"],
+ "tools": ["문의 데이터베이스", "공유 폴더", "스프레드시트", "사내 위키"]
+}

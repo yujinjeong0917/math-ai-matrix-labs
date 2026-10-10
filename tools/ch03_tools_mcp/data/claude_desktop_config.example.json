@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "inquiries": {
+      "command": "/usr/bin/python3",
+      "args": [
+        "/Users/you/math-ai-matrix-labs/tools/ch03_tools_mcp/tools_ch03_server.py"
+      ],
+      "env": {
+        "INQUIRY_DATA": "/Users/you/math-ai-matrix-labs/tools/ch03_tools_mcp/data/inquiries_2026-W41.json"
+      }
+    }
+  }
+}

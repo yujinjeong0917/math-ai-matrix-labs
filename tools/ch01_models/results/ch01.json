@@ -1,0 +1,636 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": 1,
+  "price_file": "prices_2026-10-10.json",
+  "checked": "2026-10-10"
+ },
+ "e0_hand": {
+  "input_tokens": 32150,
+  "output_tokens": 700,
+  "call_input": 0.0643,
+  "call_output": 0.007,
+  "call": 0.0713,
+  "calls_per_week": 12,
+  "week": 0.8556,
+  "weeks_per_month": 4.3333,
+  "month": 3.7076,
+  "year": 44.4912
+ },
+ "e1_table": [
+  {
+   "provider": "Anthropic",
+   "model": "claude-sonnet-5-5",
+   "label": "Claude Sonnet 5.5",
+   "context": 1000000,
+   "max_output": 128000,
+   "input": 2.0,
+   "output": 10.0,
+   "offpeak": null,
+   "long_rule": null,
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-06"
+  },
+  {
+   "provider": "Anthropic",
+   "model": "claude-opus-5-5",
+   "label": "Claude Opus 5.5",
+   "context": 1000000,
+   "max_output": 128000,
+   "input": 4.0,
+   "output": 20.0,
+   "offpeak": null,
+   "long_rule": null,
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-06"
+  },
+  {
+   "provider": "Anthropic",
+   "model": "claude-haiku-5-5",
+   "label": "Claude Haiku 5.5",
+   "context": 1000000,
+   "max_output": 128000,
+   "input": 0.1,
+   "output": 0.5,
+   "offpeak": null,
+   "long_rule": "프롬프트가 100,000토큰을 넘으면 요청 전체에 높은 단가",
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-06"
+  },
+  {
+   "provider": "OpenAI",
+   "model": "gpt-6.1-sol",
+   "label": "GPT-6.1 Sol",
+   "context": 1050000,
+   "max_output": 128000,
+   "input": 2.0,
+   "output": 10.0,
+   "offpeak": null,
+   "long_rule": "입력이 272K토큰을 넘으면 요청 전체에 입력 2배, 출력 1.5배",
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-04-30"
+  },
+  {
+   "provider": "OpenAI",
+   "model": "gpt-6-astra",
+   "label": "GPT-6 Astra",
+   "context": 1050000,
+   "max_output": 128000,
+   "input": 10.0,
+   "output": 50.0,
+   "offpeak": null,
+   "long_rule": "위와 같다",
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-04-30"
+  },
+  {
+   "provider": "OpenAI",
+   "model": "gpt-6-luna",
+   "label": "GPT-6 Luna",
+   "context": 1050000,
+   "max_output": 128000,
+   "input": 0.1,
+   "output": 0.5,
+   "offpeak": null,
+   "long_rule": "위와 같다",
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-05-18"
+  },
+  {
+   "provider": "Google",
+   "model": "gemini-3.8-flash",
+   "label": "Gemini 3.8 Flash (유료 등급)",
+   "context": 1048576,
+   "max_output": 65536,
+   "input": 0.75,
+   "output": 3.75,
+   "offpeak": null,
+   "long_rule": null,
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "paid_no_free_yes",
+   "knowledge_cutoff": null
+  },
+  {
+   "provider": "DeepSeek",
+   "model": "deepseek-v4-pro",
+   "label": "DeepSeek V4 Pro (DeepSeek-V4-Pro-0813)",
+   "context": 1000000,
+   "max_output": 384000,
+   "input": 1.32,
+   "output": 3.96,
+   "offpeak": [
+    0.66,
+    1.98
+   ],
+   "long_rule": null,
+   "weights_public": true,
+   "license": "MIT",
+   "trains_on_api": "unknown",
+   "knowledge_cutoff": null
+  },
+  {
+   "provider": "DeepSeek",
+   "model": "deepseek-flash",
+   "label": "DeepSeek Flash (DeepSeek-V4.1-Flash)",
+   "context": 1000000,
+   "max_output": 384000,
+   "input": 0.3,
+   "output": 1.2,
+   "offpeak": [
+    0.15,
+    0.6
+   ],
+   "long_rule": null,
+   "weights_public": true,
+   "license": "MIT",
+   "trains_on_api": "unknown",
+   "knowledge_cutoff": null
+  },
+  {
+   "provider": "xAI",
+   "model": "grok-4.7",
+   "label": "Grok 4.7",
+   "context": 500000,
+   "max_output": null,
+   "input": 2.0,
+   "output": 6.0,
+   "offpeak": null,
+   "long_rule": "프롬프트 200K토큰 이상이면 긴 문맥 단가",
+   "weights_public": false,
+   "license": null,
+   "trains_on_api": "no",
+   "knowledge_cutoff": "2026-05"
+  }
+ ],
+ "e2_month": [
+  {
+   "model": "claude-sonnet-5-5",
+   "week": 0.8556,
+   "month": 3.7076,
+   "year": 44.4912,
+   "rule": "기본"
+  },
+  {
+   "model": "claude-opus-5-5",
+   "week": 1.7112,
+   "month": 7.4152,
+   "year": 88.9824,
+   "rule": "기본"
+  },
+  {
+   "model": "claude-haiku-5-5",
+   "week": 0.04278,
+   "month": 0.1854,
+   "year": 2.2246,
+   "rule": "기본"
+  },
+  {
+   "model": "gpt-6.1-sol",
+   "week": 0.8556,
+   "month": 3.7076,
+   "year": 44.4912,
+   "rule": "기본"
+  },
+  {
+   "model": "gpt-6-astra",
+   "week": 4.278,
+   "month": 18.538,
+   "year": 222.456,
+   "rule": "기본"
+  },
+  {
+   "model": "gpt-6-luna",
+   "week": 0.04278,
+   "month": 0.1854,
+   "year": 2.2246,
+   "rule": "기본"
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "week": 0.32085,
+   "month": 1.3903,
+   "year": 16.6842,
+   "rule": "기본"
+  },
+  {
+   "model": "deepseek-v4-pro",
+   "week": 0.54252,
+   "month": 2.3509,
+   "year": 28.211,
+   "rule": "피크",
+   "week_offpeak": 0.27126,
+   "month_offpeak": 1.1755
+  },
+  {
+   "model": "deepseek-flash",
+   "week": 0.12582,
+   "month": 0.5452,
+   "year": 6.5426,
+   "rule": "피크",
+   "week_offpeak": 0.06291,
+   "month_offpeak": 0.2726
+  },
+  {
+   "model": "grok-4.7",
+   "week": 0.822,
+   "month": 3.562,
+   "year": 42.744,
+   "rule": "기본"
+  }
+ ],
+ "e3_thinking": {
+  "thinking_tokens": 2000,
+  "rows": [
+   {
+    "model": "claude-sonnet-5-5",
+    "month": 3.7076,
+    "month_thinking": 4.7476,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "claude-opus-5-5",
+    "month": 7.4152,
+    "month_thinking": 9.4952,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "claude-haiku-5-5",
+    "month": 0.1854,
+    "month_thinking": 0.2374,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "gpt-6.1-sol",
+    "month": 3.7076,
+    "month_thinking": 4.7476,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "gpt-6-astra",
+    "month": 18.538,
+    "month_thinking": 23.738,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "gpt-6-luna",
+    "month": 0.1854,
+    "month_thinking": 0.2374,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "gemini-3.8-flash",
+    "month": 1.3903,
+    "month_thinking": 1.7804,
+    "ratio": 1.2805,
+    "documented": true
+   },
+   {
+    "model": "deepseek-v4-pro",
+    "month": 2.3509,
+    "month_thinking": 2.7628,
+    "ratio": 1.1752,
+    "documented": null
+   },
+   {
+    "model": "deepseek-flash",
+    "month": 0.5452,
+    "month_thinking": 0.67,
+    "ratio": 1.2289,
+    "documented": null
+   },
+   {
+    "model": "grok-4.7",
+    "month": 3.562,
+    "month_thinking": 4.186,
+    "ratio": 1.1752,
+    "documented": null
+   }
+  ]
+ },
+ "e4_quarter": {
+  "input_tokens": 320150,
+  "output_tokens": 700,
+  "calls": 12,
+  "rows": [
+   {
+    "model": "claude-sonnet-5-5",
+    "rule": "기본",
+    "unit_in": 2.0,
+    "unit_out": 10.0,
+    "run": 7.7676,
+    "if_base_rate": 7.7676,
+    "ratio": 1.0,
+    "fits": true
+   },
+   {
+    "model": "claude-opus-5-5",
+    "rule": "기본",
+    "unit_in": 4.0,
+    "unit_out": 20.0,
+    "run": 15.5352,
+    "if_base_rate": 15.5352,
+    "ratio": 1.0,
+    "fits": true
+   },
+   {
+    "model": "claude-haiku-5-5",
+    "rule": "긴 프롬프트",
+    "unit_in": 0.5,
+    "unit_out": 2.5,
+    "run": 1.9419,
+    "if_base_rate": 0.3884,
+    "ratio": 5.0,
+    "fits": true
+   },
+   {
+    "model": "gpt-6.1-sol",
+    "rule": "긴 프롬프트",
+    "unit_in": 4.0,
+    "unit_out": 15.0,
+    "run": 15.4932,
+    "if_base_rate": 7.7676,
+    "ratio": 1.9946,
+    "fits": true
+   },
+   {
+    "model": "gpt-6-astra",
+    "rule": "긴 프롬프트",
+    "unit_in": 20.0,
+    "unit_out": 75.0,
+    "run": 77.466,
+    "if_base_rate": 38.838,
+    "ratio": 1.9946,
+    "fits": true
+   },
+   {
+    "model": "gpt-6-luna",
+    "rule": "긴 프롬프트",
+    "unit_in": 0.2,
+    "unit_out": 0.75,
+    "run": 0.7747,
+    "if_base_rate": 0.3884,
+    "ratio": 1.9946,
+    "fits": true
+   },
+   {
+    "model": "gemini-3.8-flash",
+    "rule": "기본",
+    "unit_in": 0.75,
+    "unit_out": 3.75,
+    "run": 2.9129,
+    "if_base_rate": 2.9129,
+    "ratio": 1.0,
+    "fits": true
+   },
+   {
+    "model": "deepseek-v4-pro",
+    "rule": "피크",
+    "unit_in": 1.32,
+    "unit_out": 3.96,
+    "run": 5.1044,
+    "if_base_rate": 5.1044,
+    "ratio": 1.0,
+    "fits": true
+   },
+   {
+    "model": "deepseek-flash",
+    "rule": "피크",
+    "unit_in": 0.3,
+    "unit_out": 1.2,
+    "run": 1.1626,
+    "if_base_rate": 1.1626,
+    "ratio": 1.0,
+    "fits": true
+   },
+   {
+    "model": "grok-4.7",
+    "rule": "긴 프롬프트",
+    "unit_in": 4.0,
+    "unit_out": 12.0,
+    "run": 15.468,
+    "if_base_rate": 7.734,
+    "ratio": 2.0,
+    "fits": null
+   }
+  ]
+ },
+ "e5_peak": {
+  "peak_hours_kst": {
+   "월": [
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "화": [
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "수": [
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "목": [
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "금": [
+    10,
+    11,
+    12,
+    15,
+    16,
+    17,
+    18
+   ],
+   "토": [],
+   "일": []
+  },
+  "deepseek-v4-pro": {
+   "mon_10": 2.3509,
+   "mon_20": 1.1755
+  },
+  "deepseek-flash": {
+   "mon_10": 0.5452,
+   "mon_20": 0.2726
+  }
+ },
+ "e6_choose": [
+  {
+   "model": "claude-sonnet-5-5",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  },
+  {
+   "model": "claude-opus-5-5",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  },
+  {
+   "model": "claude-haiku-5-5",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  },
+  {
+   "model": "gpt-6.1-sol",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  },
+  {
+   "model": "gpt-6-astra",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": false,
+   "status": "탈락"
+  },
+  {
+   "model": "gpt-6-luna",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  },
+  {
+   "model": "deepseek-v4-pro",
+   "no_training_documented": null,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "보류"
+  },
+  {
+   "model": "deepseek-flash",
+   "no_training_documented": null,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "보류"
+  },
+  {
+   "model": "grok-4.7",
+   "no_training_documented": true,
+   "context_ok": true,
+   "budget_ok": true,
+   "status": "통과"
+  }
+ ],
+ "e7_answers": {
+  "question": "이번 주 고객 문의에서 가장 먼저 다룰 유형은",
+  "model_a": {
+   "배송": 2.0,
+   "환불": 1.0,
+   "결제 오류": 0.0
+  },
+  "model_b": {
+   "배송": 1.0,
+   "환불": 2.0,
+   "결제 오류": 0.5
+  },
+  "T1.0": {
+   "p": {
+    "배송": 0.665,
+    "환불": 0.245,
+    "결제 오류": 0.09
+   },
+   "counts": {
+    "배송": 645,
+    "환불": 263,
+    "결제 오류": 92
+   },
+   "hand": {
+    "배송": 7.389,
+    "환불": 2.718,
+    "결제 오류": 1.0
+   },
+   "hand_sum": 11.107
+  },
+  "T0.5": {
+   "p": {
+    "배송": 0.867,
+    "환불": 0.117,
+    "결제 오류": 0.016
+   },
+   "counts": {
+    "배송": 860,
+    "환불": 123,
+    "결제 오류": 17
+   },
+   "hand": {
+    "배송": 54.598,
+    "환불": 7.389,
+    "결제 오류": 1.0
+   },
+   "hand_sum": 62.987
+  },
+  "five_runs_T1": [
+   "배송",
+   "환불",
+   "환불",
+   "배송",
+   "배송"
+  ],
+  "greedy_a": "배송",
+  "greedy_b": "환불",
+  "b_T1": {
+   "배송": 0.231,
+   "환불": 0.629,
+   "결제 오류": 0.14
+  }
+ },
+ "e8_crosscheck": {
+  "cases": 500,
+  "mismatches": 0,
+  "seed": 1
+ }
+}

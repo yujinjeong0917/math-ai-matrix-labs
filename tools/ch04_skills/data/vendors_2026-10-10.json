@@ -1,0 +1,36 @@
+{
+  "_about": "도구별 스킬·프로젝트 지침 규칙. 모든 항목은 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다.",
+  "checked": "2026-10-10",
+  "spec": {
+    "name_max": 64, "description_max": 1024, "compatibility_max": 500,
+    "metadata_tokens_approx": 100, "body_tokens_recommended_max": 5000, "body_lines_recommended_max": 500,
+    "url": "https://agentskills.io/specification", "checked": "2026-10-10"
+  },
+  "anthropic": {
+    "reserved_words": ["anthropic", "claude"], "no_xml_tags": true,
+    "url": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview", "checked": "2026-10-10"
+  },
+  "claude_code": {
+    "listing_truncate_chars": 1536, "claude_md_target_lines": 200, "all_fields_optional": true,
+    "url_skills": "https://code.claude.com/docs/en/skills",
+    "url_memory": "https://code.claude.com/docs/en/memory",
+    "url_features": "https://code.claude.com/docs/en/features-overview",
+    "checked": "2026-10-10"
+  },
+  "codex": {
+    "project_doc_max_bytes": 32768,
+    "url_agents_md": "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+    "url_skills": "https://learn.chatgpt.com/docs/build-skills",
+    "note": "developers.openai.com/codex/... 주소가 learn.chatgpt.com으로 308 이동한다.",
+    "checked": "2026-10-10"
+  },
+  "openai_api": {
+    "zip_max_mb": 50, "files_max": 500, "uncompressed_file_max_mb": 25,
+    "url": "https://developers.openai.com/api/docs/guides/tools-skills", "checked": "2026-10-10"
+  },
+  "gemini_cli": {
+    "url_skills": "https://geminicli.com/docs/cli/skills/",
+    "url_gemini_md": "https://geminicli.com/docs/cli/gemini-md/",
+    "checked": "2026-10-10"
+  }
+}

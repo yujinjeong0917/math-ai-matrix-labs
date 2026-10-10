@@ -1,0 +1,199 @@
+{
+ "_about": "관통 프로젝트의 주간 반복을 단계 목록으로 적은 파일. 단계는 5장 왕복(Notion 2번, Figma 4번, 세기, 인용 모으기), 2·3장의 보고서 절 12개, 이 장에서 더한 '페이지 만들기'와 '알림 보내기'다. undo는 잘못 실행했을 때 되돌리기 쉬운지(easy/hard). 확률 p, q, d, h와 재시도 k, 이상한 주의 비율 f는 모두 이 장에서 정한 가정값이고 어떤 제품의 실측값도 아니다.",
+ "week": "2026-W41",
+ "rows_normal": 120,
+ "rows_odd": 230,
+ "rows_per_page": 100,
+ "assume": {
+  "p": "97/100",
+  "d": "9/10",
+  "k": 2,
+  "h": "9/10",
+  "odd_week_share": "1/10",
+  "p_note": "단계 하나를 옳게 해낼 확률(가정)",
+  "d_note": "확인 지점(검증 테스트)이 틀린 결과를 잡아낼 확률(가정)",
+  "k_note": "잡혔을 때 다시 해 보는 최대 횟수",
+  "h_note": "사람이 승인 전에 틀린 보고서를 알아챌 확률(가정)",
+  "q_note": "에이전트가 다음 행동을 옳게 고를 확률(가정)",
+  "odd_note": "문의가 200건을 넘어 Notion을 3쪽 읽어야 하는 주의 비율(가정)",
+  "q": "99/100"
+ },
+ "steps": [
+  {
+   "id": "notion_1",
+   "name": "이번 주 문의 읽기 1쪽(100행)",
+   "tool": "query_inquiries",
+   "kind": "read",
+   "undo": "easy",
+   "from": "5장 E2"
+  },
+  {
+   "id": "notion_2",
+   "name": "이번 주 문의 읽기 2쪽(20행)",
+   "tool": "query_inquiries",
+   "kind": "read",
+   "undo": "easy",
+   "from": "5장 E2"
+  },
+  {
+   "id": "count",
+   "name": "유형별로 세기",
+   "tool": null,
+   "kind": "compute",
+   "undo": "easy",
+   "from": "5장 E2"
+  },
+  {
+   "id": "quotes",
+   "name": "고객이 인용한 화면 문구 모으기",
+   "tool": null,
+   "kind": "compute",
+   "undo": "easy",
+   "from": "5장 E2"
+  },
+  {
+   "id": "figma_1",
+   "name": "Figma 읽기: 환불 신청",
+   "tool": "get_screen_texts",
+   "kind": "read",
+   "undo": "easy",
+   "from": "5장 E2(Figma 4번)"
+  },
+  {
+   "id": "figma_2",
+   "name": "Figma 읽기: 결제",
+   "tool": "get_screen_texts",
+   "kind": "read",
+   "undo": "easy",
+   "from": "5장 E2(Figma 4번)"
+  },
+  {
+   "id": "figma_3",
+   "name": "Figma 읽기: 쿠폰함",
+   "tool": "get_screen_texts",
+   "kind": "read",
+   "undo": "easy",
+   "from": "5장 E2(Figma 4번)"
+  },
+  {
+   "id": "figma_4",
+   "name": "Figma 읽기: 화면 6개 전체",
+   "tool": "get_screen_texts",
+   "kind": "read",
+   "undo": "easy",
+   "from": "5장 E2(Figma 4번)"
+  },
+  {
+   "id": "section_01",
+   "name": "보고서 절 쓰기: 배송",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_02",
+   "name": "보고서 절 쓰기: 환불",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_03",
+   "name": "보고서 절 쓰기: 결제 오류",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_04",
+   "name": "보고서 절 쓰기: 회원 정보",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_05",
+   "name": "보고서 절 쓰기: 쿠폰",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_06",
+   "name": "보고서 절 쓰기: 앱 오류",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_07",
+   "name": "보고서 절 쓰기: 상품 문의",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_08",
+   "name": "보고서 절 쓰기: 교환",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_09",
+   "name": "보고서 절 쓰기: 칭찬",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_10",
+   "name": "보고서 절 쓰기: 불만 상위 5",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_11",
+   "name": "보고서 절 쓰기: 이번 주 새로 생긴 유형",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "section_12",
+   "name": "보고서 절 쓰기: 다음 주 할 일",
+   "tool": "model",
+   "kind": "compute",
+   "undo": "easy",
+   "from": "2·3장 절 12개"
+  },
+  {
+   "id": "assemble",
+   "name": "보고서를 Notion 페이지로 만들기",
+   "tool": "create_page",
+   "kind": "write",
+   "undo": "easy",
+   "from": "이 장"
+  },
+  {
+   "id": "share",
+   "name": "팀 채널에 보고서 알림 보내기",
+   "tool": "send_message",
+   "kind": "write",
+   "undo": "hard",
+   "from": "이 장"
+  }
+ ]
+}

@@ -1,0 +1,151 @@
+{
+  "_about": "앞 장 results/*.json에서 8장이 쓰는 숫자만 옮긴 스냅숏. [min:키]·[max:키]는 목록에서 그 키의 가장 작은·큰 값이다.",
+  "checked": "2026-10-10",
+  "values": {
+    "ch01_week_paste": {
+      "value": 0.8556,
+      "source": "tools/ch01_models/results/ch01.json",
+      "key": "e0_hand.week"
+    },
+    "ch01_month_paste": {
+      "value": 3.7076,
+      "source": "tools/ch01_models/results/ch01.json",
+      "key": "e0_hand.month"
+    },
+    "ch01_calls_per_week": {
+      "value": 12,
+      "source": "tools/ch01_models/results/ch01.json",
+      "key": "e0_hand.calls_per_week"
+    },
+    "ch01_month_haiku": {
+      "value": 0.1854,
+      "source": "tools/ch01_models/results/ch01.json",
+      "key": "e2_month.[model=claude-haiku-5-5].month"
+    },
+    "ch01_month_astra": {
+      "value": 18.538,
+      "source": "tools/ch01_models/results/ch01.json",
+      "key": "e2_month.[model=gpt-6-astra].month"
+    },
+    "ch02_week_cache": {
+      "value": 0.2028,
+      "source": "tools/ch02_api_caching/results/ch02.json",
+      "key": "e4_weekly.rows.[model=claude-sonnet-5-5].cache_total"
+    },
+    "ch02_week_nocache": {
+      "value": 0.8556,
+      "source": "tools/ch02_api_caching/results/ch02.json",
+      "key": "e4_weekly.rows.[model=claude-sonnet-5-5].nocache_total"
+    },
+    "ch03_week_tool_nocache": {
+      "value": 0.58246,
+      "source": "tools/ch03_tools_mcp/results/ch03.json",
+      "key": "e7_project.tool_nocache.total_cost"
+    },
+    "ch03_week_tool_cache": {
+      "value": 0.190721,
+      "source": "tools/ch03_tools_mcp/results/ch03.json",
+      "key": "e7_project.tool_cache.total_cost"
+    },
+    "ch03_tool_requests": {
+      "value": 25,
+      "source": "tools/ch03_tools_mcp/results/ch03.json",
+      "key": "e7_project.tool_requests"
+    },
+    "ch04_week_instr_paste_tokens": {
+      "value": 56760,
+      "source": "tools/ch04_skills/results/ch04.json",
+      "key": "e4_week.paste_all_total"
+    },
+    "ch04_week_instr_staged_tokens": {
+      "value": 16244,
+      "source": "tools/ch04_skills/results/ch04.json",
+      "key": "e4_week.staged_total"
+    },
+    "ch04_conversations": {
+      "value": 15,
+      "source": "tools/ch04_skills/results/ch04.json",
+      "key": "e4_week.conversations"
+    },
+    "ch05_notion_calls_per_run": {
+      "value": 2,
+      "source": "tools/ch05_notion_figma/results/ch05.json",
+      "key": "e2_roundtrip.notion_calls"
+    },
+    "ch05_figma_calls_per_run": {
+      "value": 4,
+      "source": "tools/ch05_notion_figma/results/ch05.json",
+      "key": "e2_roundtrip.figma_calls"
+    },
+    "ch05_figma_calls_month": {
+      "value": 17.33,
+      "source": "tools/ch05_notion_figma/results/ch05.json",
+      "key": "e5_rate.per_screen_calls_per_month"
+    },
+    "ch05_figma_limit_view_collab": {
+      "value": 20,
+      "source": "tools/ch05_notion_figma/results/ch05.json",
+      "key": "e5_rate.view_collab_limit_per_month"
+    },
+    "ch05_naive_write_notion_rows": {
+      "value": 80,
+      "source": "tools/ch05_notion_figma/results/ch05.json",
+      "key": "e4_injection.scenarios.[allow_write=True,mode=naive].notion_writes"
+    },
+    "ch06_correct_none": {
+      "value": 0.5117,
+      "source": "tools/ch06_agents/results/ch06.json",
+      "key": "e0_hand.n22"
+    },
+    "ch06_correct_checked": {
+      "value": 0.933916,
+      "source": "tools/ch06_agents/results/ch06.json",
+      "key": "e3_checks.scenarios.check_retry_human.all_correct"
+    },
+    "ch06_wrong_checked": {
+      "value": 0.009165,
+      "source": "tools/ch06_agents/results/ch06.json",
+      "key": "e3_checks.scenarios.check_retry_human.delivered_wrong"
+    },
+    "ch06_attempts_checked": {
+      "value": 22.547311,
+      "source": "tools/ch06_agents/results/ch06.json",
+      "key": "e3_checks.scenarios.check_retry_human.expected_attempts"
+    },
+    "ch06_approvals_week": {
+      "value": 1,
+      "source": "tools/ch06_agents/results/ch06.json",
+      "key": "e4_approvals.hard_only_week"
+    },
+    "ch07_video_min": {
+      "value": 3.2,
+      "source": "tools/ch07_image_video/results/ch07.json",
+      "key": "e3_draws.[min:unlimited]"
+    },
+    "ch07_video_max": {
+      "value": 24.0,
+      "source": "tools/ch07_image_video/results/ch07.json",
+      "key": "e3_draws.[max:unlimited]"
+    },
+    "ch07_image_min": {
+      "value": 0.05268,
+      "source": "tools/ch07_image_video/results/ch07.json",
+      "key": "e7_images.[min:unlimited_p_quarter]"
+    },
+    "ch07_image_max": {
+      "value": 0.536,
+      "source": "tools/ch07_image_video/results/ch07.json",
+      "key": "e7_images.[max:unlimited_p_quarter]"
+    },
+    "ch07_p": {
+      "value": "1/4",
+      "source": "tools/ch07_image_video/results/ch07.json",
+      "key": "meta.p_default"
+    },
+    "ch05_naive_write_figma": {
+      "value": 1,
+      "source": "tools/ch05_notion_figma/results/ch05.json",
+      "key": "e4_injection.scenarios.[allow_write=True,mode=naive].figma_writes"
+    }
+  }
+}

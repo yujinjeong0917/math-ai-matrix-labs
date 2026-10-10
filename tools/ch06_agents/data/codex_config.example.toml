@@ -1,0 +1,6 @@
+# 직접 만든 예시. 실제 파일 위치는 ~/.codex/config.toml (프로젝트별로는 .codex/config.toml)
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[sandbox_workspace_write]
+network_access = false

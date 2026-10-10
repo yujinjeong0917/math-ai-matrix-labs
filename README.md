@@ -74,8 +74,16 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `productivity/ch04_notion_relations/` | AX 에세이 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/04-notion-relations.html) |
 | `productivity/ch05_sheets/` | AX 에세이 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html) |
 | `productivity/ch06_connect/` | AX 에세이 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html) |
+| `tools/ch01_models/` | AI 도구 실전 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/01-models.html) |
+| `tools/ch02_api_caching/` | AI 도구 실전 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/02-api-caching.html) |
+| `tools/ch03_tools_mcp/` | AI 도구 실전 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/03-tools-mcp.html) |
+| `tools/ch04_skills/` | AI 도구 실전 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/04-skills.html) |
+| `tools/ch05_notion_figma/` | AI 도구 실전 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/05-notion-figma.html) |
+| `tools/ch06_agents/` | AI 도구 실전 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/06-agents.html) |
+| `tools/ch07_image_video/` | AI 도구 실전 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/07-image-video.html) |
+| `tools/ch08_choosing/` | AI 도구 실전 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/08-choosing.html) |
 
-AI 도구 실전 트랙은 작성 중이에요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
+여기 있는 장은 모두 웹 챕터로 공개돼 있어요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 
 ## 폴더마다 같은 구성
 

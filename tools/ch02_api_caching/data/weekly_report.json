@@ -1,0 +1,17 @@
+{
+  "_about": "관통 프로젝트(가상의 작은 팀이 만드는 주간 고객 문의 요약 보고서)의 한 주 분량. 토큰 수는 실제로 세지 않고 정한 가정값이다(오프라인이라 토크나이저를 쓰지 않는다). 독자는 자기 프롬프트를 API의 토큰 세기 기능이나 응답의 usage로 세어 이 값을 바꿔 넣으면 된다.",
+  "week": "2026-W41",
+  "blocks": [
+    {"id": "rules", "role": "system", "tokens": 3000, "stable": true, "desc": "보고서 지시문: 문의 분류 규칙 7가지, 보고서 양식, 말투"},
+    {"id": "examples", "role": "system", "tokens": 5000, "stable": true, "desc": "지난 보고서 예시 2편"},
+    {"id": "inquiries", "role": "user", "tokens": 24000, "stable": true, "desc": "이번 주 고객 문의 120건 묶음(접수 시각 순)"},
+    {"id": "question", "role": "user", "tokens": 150, "stable": false, "desc": "이번 호출에서 쓸 보고서 절 하나에 대한 요청"}
+  ],
+  "sections": ["배송", "환불", "결제 오류", "회원 정보", "쿠폰", "앱 오류", "상품 문의", "교환", "칭찬", "불만 상위 5", "이번 주 새로 생긴 유형", "다음 주 할 일"],
+  "output_tokens_per_call": 700,
+  "gap_minutes_script": 1,
+  "gap_minutes_manual": 10,
+  "requesters": ["민지", "준호", "서연"],
+  "prefix_injection_tokens": 20,
+  "short_prompt_tokens": 400
+}

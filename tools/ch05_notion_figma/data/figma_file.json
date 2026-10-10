@@ -1,0 +1,807 @@
+{
+ "_about": "Figma 파일 노드 트리를 흉내 낸 가상 데이터. 칸 이름(id, name, type, characters, absoluteBoundingBox, fills, style)은 Figma REST API 노드 모양을 따랐지만 값은 지어냈다.",
+ "name": "쇼핑 앱 화면",
+ "document": {
+  "id": "0:0",
+  "type": "DOCUMENT",
+  "children": [
+   {
+    "id": "0:1",
+    "name": "앱 화면",
+    "type": "CANVAS",
+    "children": [
+     {
+      "id": "1:10",
+      "name": "배송 조회",
+      "type": "FRAME",
+      "absoluteBoundingBox": {
+       "x": 0,
+       "y": 0,
+       "width": 375,
+       "height": 812
+      },
+      "children": [
+       {
+        "id": "1:100",
+        "name": "배경",
+        "type": "RECTANGLE",
+        "absoluteBoundingBox": {
+         "x": 0,
+         "y": 0,
+         "width": 375,
+         "height": 812
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 1,
+           "g": 1,
+           "b": 1,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:101",
+        "name": "제목",
+        "type": "TEXT",
+        "characters": "배송 조회",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 136,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 22,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:102",
+        "name": "상태 문구",
+        "type": "TEXT",
+        "characters": "주문하신 상품이 출발했어요",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 192,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:103",
+        "name": "안내",
+        "type": "TEXT",
+        "characters": "도착 예정일은 택배사 사정에 따라 바뀔 수 있어요",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 248,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:104",
+        "name": "버튼",
+        "type": "TEXT",
+        "characters": "배송지 바꾸기",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 304,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "1:20",
+      "name": "환불 신청",
+      "type": "FRAME",
+      "absoluteBoundingBox": {
+       "x": 400,
+       "y": 0,
+       "width": 375,
+       "height": 812
+      },
+      "children": [
+       {
+        "id": "1:200",
+        "name": "배경",
+        "type": "RECTANGLE",
+        "absoluteBoundingBox": {
+         "x": 0,
+         "y": 0,
+         "width": 375,
+         "height": 812
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 1,
+           "g": 1,
+           "b": 1,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:201",
+        "name": "제목",
+        "type": "TEXT",
+        "characters": "환불 신청",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 136,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 22,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:202",
+        "name": "안내",
+        "type": "TEXT",
+        "characters": "환불은 신청 후 3영업일 안에 처리돼요",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 192,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:203",
+        "name": "보조 안내",
+        "type": "TEXT",
+        "characters": "카드 결제는 카드사 사정에 따라 더 걸릴 수 있어요",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 248,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:204",
+        "name": "버튼",
+        "type": "TEXT",
+        "characters": "환불 신청하기",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 304,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "1:30",
+      "name": "결제",
+      "type": "FRAME",
+      "absoluteBoundingBox": {
+       "x": 800,
+       "y": 0,
+       "width": 375,
+       "height": 812
+      },
+      "children": [
+       {
+        "id": "1:300",
+        "name": "배경",
+        "type": "RECTANGLE",
+        "absoluteBoundingBox": {
+         "x": 0,
+         "y": 0,
+         "width": 375,
+         "height": 812
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 1,
+           "g": 1,
+           "b": 1,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:301",
+        "name": "제목",
+        "type": "TEXT",
+        "characters": "결제하기",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 136,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 22,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:302",
+        "name": "배송비 안내",
+        "type": "TEXT",
+        "characters": "50,000원 이상 구매하면 무료 배송",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 192,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:303",
+        "name": "쿠폰 안내",
+        "type": "TEXT",
+        "characters": "쿠폰은 결제 단계에서 한 번만 쓸 수 있어요",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 248,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:304",
+        "name": "버튼",
+        "type": "TEXT",
+        "characters": "결제하기",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 304,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "1:40",
+      "name": "쿠폰함",
+      "type": "FRAME",
+      "absoluteBoundingBox": {
+       "x": 1200,
+       "y": 0,
+       "width": 375,
+       "height": 812
+      },
+      "children": [
+       {
+        "id": "1:400",
+        "name": "배경",
+        "type": "RECTANGLE",
+        "absoluteBoundingBox": {
+         "x": 0,
+         "y": 0,
+         "width": 375,
+         "height": 812
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 1,
+           "g": 1,
+           "b": 1,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:401",
+        "name": "제목",
+        "type": "TEXT",
+        "characters": "쿠폰함",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 136,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 22,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:402",
+        "name": "버튼",
+        "type": "TEXT",
+        "characters": "쿠폰 적용",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 192,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:403",
+        "name": "안내",
+        "type": "TEXT",
+        "characters": "사용 기한이 지난 쿠폰은 자동으로 사라져요",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 248,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "1:50",
+      "name": "회원 정보",
+      "type": "FRAME",
+      "absoluteBoundingBox": {
+       "x": 1600,
+       "y": 0,
+       "width": 375,
+       "height": 812
+      },
+      "children": [
+       {
+        "id": "1:500",
+        "name": "배경",
+        "type": "RECTANGLE",
+        "absoluteBoundingBox": {
+         "x": 0,
+         "y": 0,
+         "width": 375,
+         "height": 812
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 1,
+           "g": 1,
+           "b": 1,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:501",
+        "name": "제목",
+        "type": "TEXT",
+        "characters": "회원 정보",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 136,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 22,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:502",
+        "name": "버튼",
+        "type": "TEXT",
+        "characters": "비밀번호 바꾸기",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 192,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:503",
+        "name": "버튼",
+        "type": "TEXT",
+        "characters": "휴대폰 번호 바꾸기",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 248,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 700,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "1:60",
+      "name": "홈 배너",
+      "type": "FRAME",
+      "absoluteBoundingBox": {
+       "x": 2000,
+       "y": 0,
+       "width": 375,
+       "height": 812
+      },
+      "children": [
+       {
+        "id": "1:600",
+        "name": "배경",
+        "type": "RECTANGLE",
+        "absoluteBoundingBox": {
+         "x": 0,
+         "y": 0,
+         "width": 375,
+         "height": 812
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 1,
+           "g": 1,
+           "b": 1,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:601",
+        "name": "배너 제목",
+        "type": "TEXT",
+        "characters": "가을 맞이 할인",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 136,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       },
+       {
+        "id": "1:602",
+        "name": "배너 문구",
+        "type": "TEXT",
+        "characters": "30,000원 이상 무료 배송",
+        "absoluteBoundingBox": {
+         "x": 24,
+         "y": 192,
+         "width": 327,
+         "height": 24
+        },
+        "style": {
+         "fontFamily": "Pretendard",
+         "fontSize": 16,
+         "fontWeight": 400,
+         "lineHeightPx": 24
+        },
+        "fills": [
+         {
+          "type": "SOLID",
+          "color": {
+           "r": 0.1,
+           "g": 0.1,
+           "b": 0.12,
+           "a": 1
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

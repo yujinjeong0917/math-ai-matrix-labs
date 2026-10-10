@@ -1,0 +1,3 @@
+날짜,모델,TTL,호출 번호,cache_creation_input_tokens,cache_read_input_tokens,input_tokens,output_tokens,가격표 파일,계산한 금액(달러),메모
+2026-10-10(예시·모형값),claude-sonnet-5-5,5m,1,32000,0,150,700,prices_2026-10-10.json,0.0873,첫 호출은 쓰기
+2026-10-10(예시·모형값),claude-sonnet-5-5,5m,2,0,32000,150,700,prices_2026-10-10.json,0.0105,두 번째부터 읽기

@@ -1,0 +1,459 @@
+{
+  "_about": "AI 도구 실전 7장 가격·스펙표. 단위는 미국 달러. 영상은 생성한 영상 1초당, 이미지는 1장당(토큰 과금은 문서가 밝힌 장당 토큰 수로 환산). 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다. 모든 값은 각 항목의 url을 checked 날짜에 직접 읽고 옮겼다. 순서는 회사 이름 순이고 순위가 아니다.",
+  "checked": "2026-10-10",
+  "currency": "USD",
+  "video": [
+    {
+      "provider": "Google",
+      "model": "veo-3.1-generate-preview",
+      "label": "Veo 3.1",
+      "api": "available",
+      "status": "Preview",
+      "durations_by_res": {
+        "720p": [
+          4,
+          6,
+          8
+        ],
+        "1080p": [
+          8
+        ],
+        "4k": [
+          8
+        ]
+      },
+      "extension": {
+        "seconds": 7,
+        "base_seconds": 8,
+        "max_times": 20,
+        "max_input_seconds": 141,
+        "max_total_seconds": 148,
+        "resolutions": [
+          "720p"
+        ]
+      },
+      "usd_per_second": {
+        "720p": "0.40",
+        "1080p": "0.40",
+        "4k": "0.60"
+      },
+      "audio": "always",
+      "videos_per_request": 1,
+      "provenance": "SynthID 워터마크(눈에 안 보임)",
+      "retention": "서버에 2일 보관",
+      "seed_note": "seed는 결정성을 보장하지 않고 조금 높인다",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/veo",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Google",
+      "model": "veo-3.1-fast-generate-preview",
+      "label": "Veo 3.1 Fast",
+      "api": "available",
+      "status": "Preview",
+      "durations_by_res": {
+        "720p": [
+          4,
+          6,
+          8
+        ],
+        "1080p": [
+          8
+        ],
+        "4k": [
+          8
+        ]
+      },
+      "extension": {
+        "seconds": 7,
+        "base_seconds": 8,
+        "max_times": 20,
+        "max_input_seconds": 141,
+        "max_total_seconds": 148,
+        "resolutions": [
+          "720p"
+        ]
+      },
+      "usd_per_second": {
+        "720p": "0.10",
+        "1080p": "0.12",
+        "4k": "0.30"
+      },
+      "audio": "always",
+      "videos_per_request": 1,
+      "provenance": "SynthID 워터마크(눈에 안 보임)",
+      "retention": "서버에 2일 보관",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/veo",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Google",
+      "model": "veo-3.1-lite-generate-preview",
+      "label": "Veo 3.1 Lite",
+      "api": "available",
+      "status": "Preview",
+      "durations_by_res": {
+        "720p": [
+          4,
+          6,
+          8
+        ],
+        "1080p": [
+          8
+        ]
+      },
+      "extension": null,
+      "usd_per_second": {
+        "720p": "0.05",
+        "1080p": "0.08"
+      },
+      "audio": "always",
+      "videos_per_request": 1,
+      "provenance": "SynthID 워터마크(눈에 안 보임)",
+      "retention": "서버에 2일 보관",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/veo",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Google",
+      "model": "gemini-omni-1.1-flash",
+      "label": "Gemini Omni Flash",
+      "api": "available",
+      "status": "GA(유료 등급)",
+      "durations_by_res": null,
+      "extension": {
+        "seconds": 10,
+        "max_total_seconds": 40
+      },
+      "usd_per_second": {
+        "720p": "0.10136"
+      },
+      "token_billing": {
+        "tokens_per_second_720p": 5792,
+        "usd_per_mtok_video_output": "17.50"
+      },
+      "audio": "always",
+      "videos_per_request": null,
+      "provenance": "SynthID 워터마크(눈에 안 보임)",
+      "retention": null,
+      "note": "토큰으로 과금. 720p 1초 = 5,792토큰으로 세어 1초 약 0.10달러라고 문서가 적음. 한 번에 만드는 길이의 선택지는 이번에 읽은 문서에서 찾지 못해 계산기에서 뺐다.",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/omni",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Kuaishou",
+      "model": "kling-3.0",
+      "label": "Kling 3.0 (소리 켬)",
+      "api": "available",
+      "status": null,
+      "durations_by_res": {
+        "720p": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "1080p": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "4k": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "extension": null,
+      "usd_per_second": {
+        "720p": "0.126",
+        "1080p": "0.168",
+        "4k": "0.42"
+      },
+      "audio": "option(native)",
+      "videos_per_request": null,
+      "provenance": "요청의 watermark_info.enabled로 워터마크 붙은 결과를 따로 받을 수 있음(기본 false). 눈에 안 보이는 표시·C2PA는 확인 못함",
+      "retention": "생성 결과는 30일 뒤 지워짐",
+      "note": "가격표의 'With Native Audio x No Voice Control' 줄. 1 Unit = 0.14달러",
+      "url": "https://kling.ai/document-api/pricing/base/video",
+      "url_spec": "https://kling.ai/document-api/api/video/3-0-omni/text-to-video",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Kuaishou",
+      "model": "kling-3.0-silent",
+      "label": "Kling 3.0 (소리 끔)",
+      "api": "available",
+      "status": null,
+      "durations_by_res": {
+        "720p": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "1080p": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "4k": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "extension": null,
+      "usd_per_second": {
+        "720p": "0.084",
+        "1080p": "0.112",
+        "4k": "0.42"
+      },
+      "audio": "off",
+      "videos_per_request": null,
+      "provenance": "위와 같음",
+      "retention": "생성 결과는 30일 뒤 지워짐",
+      "note": "가격표의 'No Native Audio' 줄",
+      "url": "https://kling.ai/document-api/pricing/base/video",
+      "url_spec": "https://kling.ai/document-api/api/video/3-0-omni/text-to-video",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "OpenAI",
+      "model": "sora-2",
+      "label": "Sora 2 / Sora 2 Pro",
+      "api": "shut_down",
+      "shutdown_date": "2026-09-24",
+      "durations_by_res": null,
+      "extension": null,
+      "usd_per_second": null,
+      "audio": "always",
+      "provenance": null,
+      "note": "Videos API와 sora-2, sora-2-pro 및 스냅숏이 2026-09-24에 종료됐고 일대일 대체 API는 없다고 문서가 적음. 남아 있는 안내서는 기록용(최대 20초 생성(예시에 8초도 있음), 확장 합계 최대 120초)",
+      "url": "https://developers.openai.com/api/docs/deprecations",
+      "url_spec": "https://developers.openai.com/api/docs/guides/video-generation",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Runway",
+      "model": "gen4.5",
+      "label": "Runway Gen-4.5",
+      "api": "available",
+      "status": null,
+      "durations_by_res": {
+        "720p": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "extension": null,
+      "usd_per_second": {
+        "720p": "0.12"
+      },
+      "credits_per_second": 12,
+      "usd_per_credit": "0.01",
+      "audio": "unknown",
+      "videos_per_request": null,
+      "provenance": "C2PA 등은 확인 못함. 출처 표기 안내 문서는 'Powered by Runway'와 링크를 쓰라고 적음",
+      "retention": null,
+      "note": "ratio는 1280:720, 720:1280만. 요청 칸에 소리 설정이 없어 소리 생성 여부는 확인 못함",
+      "url": "https://docs.dev.runwayml.com/guides/pricing/",
+      "url_spec": "https://docs.dev.runwayml.com/api/",
+      "checked": "2026-10-10"
+    }
+  ],
+  "image": [
+    {
+      "provider": "Google",
+      "model": "gemini-nano-banana-2.1",
+      "label": "Nano Banana 2.1",
+      "size": "1K (1024x1024)",
+      "tokens_per_image": 1120,
+      "usd_per_mtok": "30.00",
+      "usd_per_image_doc": "0.0336",
+      "provenance": "모든 생성 이미지에 SynthID",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/image-generation",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Google",
+      "model": "gemini-3.1-flash-image",
+      "label": "Gemini 3.1 Flash Image",
+      "size": "1K (1024x1024)",
+      "tokens_per_image": 1120,
+      "usd_per_mtok": "60.00",
+      "usd_per_image_doc": "0.067",
+      "provenance": "모든 생성 이미지에 SynthID",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/image-generation",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Google",
+      "model": "gemini-3-pro-image",
+      "label": "Gemini 3 Pro Image",
+      "size": "1K (1024x1024)",
+      "usd_per_mtok": "120.00",
+      "usd_per_image_doc": "0.134",
+      "provenance": "모든 생성 이미지에 SynthID",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "url_spec": "https://ai.google.dev/gemini-api/docs/image-generation",
+      "checked": "2026-10-10",
+      "note": "문서는 장당 0.134달러(1K·2K)와 이미지 출력 100만 토큰당 120달러를 적는다. 장당 토큰 수는 이 모델 줄에 없어 장당 값을 그대로 쓴다.",
+      "usd_per_image": "0.134"
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-image-2.5 (medium)",
+      "label": "GPT Image 2.5, medium",
+      "size": "1024x1024",
+      "tokens_per_image": 439,
+      "usd_per_mtok": "30.00",
+      "usd_per_image_doc": "0.01317",
+      "provenance": "C2PA·SynthID 신호를 확인하는 API가 있음. 모든 결과물에 신호가 있지는 않다고 문서가 적음",
+      "note": "이미지 안내서 계산기(1024x1024): low 196, medium 439, high 1,756, xhigh 3,122, max 7,024 출력 토큰. 입력 토큰은 따로",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "url_spec": "https://developers.openai.com/api/docs/guides/image-generation",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-image-2.5 (high)",
+      "label": "GPT Image 2.5, high",
+      "size": "1024x1024",
+      "tokens_per_image": 1756,
+      "usd_per_mtok": "30.00",
+      "usd_per_image_doc": "0.05268",
+      "provenance": "위와 같음",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "url_spec": "https://developers.openai.com/api/docs/guides/image-generation",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Runway",
+      "model": "gen4_image",
+      "label": "Runway Gen-4 Image",
+      "size": "720p",
+      "credits_per_image": 5,
+      "usd_per_credit": "0.01",
+      "usd_per_image_doc": "0.05",
+      "provenance": "확인 못함",
+      "note": "1080p는 8크레딧",
+      "url": "https://docs.dev.runwayml.com/guides/pricing/",
+      "url_spec": "https://docs.dev.runwayml.com/api/",
+      "checked": "2026-10-10"
+    }
+  ],
+  "terms": [
+    {
+      "provider": "Google",
+      "text": "Google won't claim ownership over that content. ... Google may generate the same or similar content for others",
+      "where": "Gemini API Additional Terms, Use of Generated Content (페이지 갱신 2026-04-28)",
+      "url": "https://ai.google.dev/gemini-api/terms",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "OpenAI",
+      "text": "4.1 고객과 OpenAI 간에는 적용 법률이 허용하는 범위 내에서 (a) 고객이 입력물에 대한 모든 소유권을 보유하며, (b) 고객이 모든 출력물을 소유합니다.",
+      "where": "OpenAI 서비스 계약(API 등 기업·개발자용, 효력 발생일 2026-01-01)",
+      "url": "https://openai.com/policies/services-agreement/",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Runway",
+      "text": "The Company does not claim ownership of any of your Inputs or Outputs. Subject to your compliance with the Agreement, the Company does not restrict your commercial use of your Outputs. You acknowledge that Inputs and Outputs may be used by the Company to train and improve its AI models",
+      "where": "Runway Terms of Use 4.4 (Last updated 2026-09-15). API 전용 약관이 따로 있는지는 확인 못함",
+      "url": "https://runway.com/terms-of-use",
+      "checked": "2026-10-10"
+    },
+    {
+      "provider": "Kuaishou",
+      "text": null,
+      "where": "Kling API 이용 약관을 공식 페이지에서 확인하지 못함",
+      "url": null,
+      "checked": "2026-10-10"
+    }
+  ],
+  "rules": {
+    "veo_charge_on_success": {
+      "text": "You will only be charged if your video is successfully generated.",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "checked": "2026-10-10"
+    },
+    "veo_extension_billing": {
+      "text": "확장 7초가 새로 만든 7초만큼 과금되는지 문서에서 찾지 못함. 이 실습은 새로 만든 초만큼 낸다고 가정한다.",
+      "url": "https://ai.google.dev/gemini-api/docs/veo",
+      "checked": "2026-10-10"
+    }
+  }
+}

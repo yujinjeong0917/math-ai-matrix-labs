@@ -1,0 +1,17 @@
+{
+  "_about": "관통 프로젝트(가상의 작은 팀이 만드는 주간 고객 문의 요약 보고서)의 일 크기. 토큰 수는 2장(tools/ch02_api_caching/data/weekly_report.json)과 같은 가정값이다. 1장은 캐싱을 쓰지 않는다(캐싱은 2장).",
+  "blocks": {"rules": 3000, "examples": 5000, "inquiries": 24000, "question": 150},
+  "output_tokens_per_call": 700,
+  "calls_per_week": 12,
+  "weeks_per_year": 52,
+  "months_per_year": 12,
+  "thinking_tokens_assumed": 2000,
+  "quarter_weeks": 13,
+  "run_time_kst": {"weekday": "월", "hour": 10},
+  "team_conditions": {
+    "documented_no_training_on_paid_api": true,
+    "min_context_tokens": 32850,
+    "monthly_budget_usd": 10,
+    "korean_quality_test": "문의 20건을 직접 넣어 보고 사람이 판정(1장에서는 계산하지 않는다)"
+  }
+}

@@ -1,0 +1,523 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": 2,
+  "price_file": "prices_2026-10-10.json",
+  "checked": "2026-10-10"
+ },
+ "e0_hand": {
+  "prefix": 10000,
+  "question": 100,
+  "first_call_cache": 12600,
+  "later_call_cache": 1100,
+  "per_call_nocache": 10100,
+  "rows": [
+   {
+    "n": 1,
+    "nocache": 10100,
+    "cache": 12600,
+    "cheaper": "nocache"
+   },
+   {
+    "n": 2,
+    "nocache": 20200,
+    "cache": 13700,
+    "cheaper": "cache"
+   },
+   {
+    "n": 3,
+    "nocache": 30300,
+    "cache": 14800,
+    "cheaper": "cache"
+   },
+   {
+    "n": 4,
+    "nocache": 40400,
+    "cache": 15900,
+    "cheaper": "cache"
+   },
+   {
+    "n": 5,
+    "nocache": 50500,
+    "cache": 17000,
+    "cheaper": "cache"
+   }
+  ],
+  "n_star": 2,
+  "bound": 1.2778
+ },
+ "e1_request": {
+  "top_level_keys": [
+   "model",
+   "max_tokens",
+   "system",
+   "messages"
+  ],
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 1024,
+  "blocks": [
+   {
+    "where": "system",
+    "role": "system",
+    "cache_control": false,
+    "head": "너는 고객 문의를 읽고 주간 보고서의"
+   },
+   {
+    "where": "system",
+    "role": "system",
+    "cache_control": true,
+    "head": "지난 보고서 예시 2편 ... (약 "
+   },
+   {
+    "where": "messages[0]",
+    "role": "user",
+    "cache_control": true,
+    "head": "이번 주 문의 120건: [#0001"
+   },
+   {
+    "where": "messages[0]",
+    "role": "user",
+    "cache_control": false,
+    "head": "위 문의 가운데 '환불' 유형만 골라"
+   }
+  ],
+  "breakpoints": [
+   1,
+   2
+  ],
+  "assumed_tokens": {
+   "rules": 3000,
+   "examples": 5000,
+   "inquiries": 24000,
+   "question": 150
+  },
+  "prefix_tokens": 32000,
+  "input_tokens_per_call": 32150,
+  "headers": {
+   "x-api-key": "(키)",
+   "anthropic-version": "2023-06-01",
+   "content-type": "application/json"
+  }
+ },
+ "e2_breakeven": [
+  {
+   "model": "claude-sonnet-5-5",
+   "provider": "Anthropic",
+   "ttl": "5m",
+   "w": 1.25,
+   "r": 0.05,
+   "bound": 1.2632,
+   "n_star": 2,
+   "ratio_n12": 0.15,
+   "limit_saving": 0.95
+  },
+  {
+   "model": "claude-sonnet-5-5",
+   "provider": "Anthropic",
+   "ttl": "1h",
+   "w": 2.0,
+   "r": 0.05,
+   "bound": 2.0526,
+   "n_star": 3,
+   "ratio_n12": 0.2125,
+   "limit_saving": 0.95
+  },
+  {
+   "model": "claude-opus-5-5",
+   "provider": "Anthropic",
+   "ttl": "5m",
+   "w": 1.25,
+   "r": 0.05,
+   "bound": 1.2632,
+   "n_star": 2,
+   "ratio_n12": 0.15,
+   "limit_saving": 0.95
+  },
+  {
+   "model": "claude-opus-5-5",
+   "provider": "Anthropic",
+   "ttl": "1h",
+   "w": 2.0,
+   "r": 0.05,
+   "bound": 2.0526,
+   "n_star": 3,
+   "ratio_n12": 0.2125,
+   "limit_saving": 0.95
+  },
+  {
+   "model": "claude-haiku-5-5",
+   "provider": "Anthropic",
+   "ttl": "5m",
+   "w": 1.25,
+   "r": 0.1,
+   "bound": 1.2778,
+   "n_star": 2,
+   "ratio_n12": 0.1958,
+   "limit_saving": 0.9
+  },
+  {
+   "model": "claude-haiku-5-5",
+   "provider": "Anthropic",
+   "ttl": "1h",
+   "w": 2.0,
+   "r": 0.1,
+   "bound": 2.1111,
+   "n_star": 3,
+   "ratio_n12": 0.2583,
+   "limit_saving": 0.9
+  },
+  {
+   "model": "claude-sonnet-4-6",
+   "provider": "Anthropic",
+   "ttl": "5m",
+   "w": 1.25,
+   "r": 0.1,
+   "bound": 1.2778,
+   "n_star": 2,
+   "ratio_n12": 0.1958,
+   "limit_saving": 0.9
+  },
+  {
+   "model": "claude-sonnet-4-6",
+   "provider": "Anthropic",
+   "ttl": "1h",
+   "w": 2.0,
+   "r": 0.1,
+   "bound": 2.1111,
+   "n_star": 3,
+   "ratio_n12": 0.2583,
+   "limit_saving": 0.9
+  },
+  {
+   "model": "gpt-6.1-sol",
+   "provider": "OpenAI",
+   "ttl": "30m",
+   "w": 1.25,
+   "r": 0.05,
+   "bound": 1.2632,
+   "n_star": 2,
+   "ratio_n12": 0.15,
+   "limit_saving": 0.95
+  },
+  {
+   "model": "gpt-6-astra",
+   "provider": "OpenAI",
+   "ttl": "30m",
+   "w": 1.25,
+   "r": 0.1,
+   "bound": 1.2778,
+   "n_star": 2,
+   "ratio_n12": 0.1958,
+   "limit_saving": 0.9
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "provider": "Google",
+   "ttl": "implicit",
+   "w": 1.0,
+   "r": 0.1,
+   "bound": 1.0,
+   "n_star": 2,
+   "ratio_n12": 0.175,
+   "limit_saving": 0.9
+  }
+ ],
+ "e3_doc_claims": {
+  "anthropic_reads_to_payoff_5m": 1,
+  "anthropic_reads_to_payoff_1h": 2,
+  "openai_one_write_one_read": 1.35,
+  "openai_no_cache_two": 2,
+  "openai_pad_crossover_const": 102.4,
+  "openai_pad_crossover_coef": 1177.6,
+  "openai_pad_crossover_N10": 220.16,
+  "openai_pad_min_original_N10": 221
+ },
+ "e4_weekly": {
+  "calls": 12,
+  "prefix_tokens": 32000,
+  "question_tokens": 150,
+  "output_tokens_per_call": 700,
+  "rows": [
+   {
+    "model": "claude-sonnet-5-5",
+    "provider": "Anthropic",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 0.7716,
+    "cache_input": 0.1188,
+    "output": 0.084,
+    "nocache_total": 0.8556,
+    "cache_total": 0.2028,
+    "saving_input_pct": 84.6,
+    "saving_total_pct": 76.3,
+    "year_nocache_total": 44.49,
+    "year_cache_total": 10.55,
+    "assumption": ""
+   },
+   {
+    "model": "claude-opus-5-5",
+    "provider": "Anthropic",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 1.5432,
+    "cache_input": 0.2376,
+    "output": 0.168,
+    "nocache_total": 1.7112,
+    "cache_total": 0.4056,
+    "saving_input_pct": 84.6,
+    "saving_total_pct": 76.3,
+    "year_nocache_total": 88.98,
+    "year_cache_total": 21.09,
+    "assumption": ""
+   },
+   {
+    "model": "claude-haiku-5-5",
+    "provider": "Anthropic",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 0.03858,
+    "cache_input": 0.0077,
+    "output": 0.0042,
+    "nocache_total": 0.04278,
+    "cache_total": 0.0119,
+    "saving_input_pct": 80.0,
+    "saving_total_pct": 72.2,
+    "year_nocache_total": 2.22,
+    "year_cache_total": 0.62,
+    "assumption": ""
+   },
+   {
+    "model": "claude-sonnet-4-6",
+    "provider": "Anthropic",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 1.1574,
+    "cache_input": 0.231,
+    "output": 0.126,
+    "nocache_total": 1.2834,
+    "cache_total": 0.357,
+    "saving_input_pct": 80.0,
+    "saving_total_pct": 72.2,
+    "year_nocache_total": 66.74,
+    "year_cache_total": 18.56,
+    "assumption": ""
+   },
+   {
+    "model": "gpt-6.1-sol",
+    "provider": "OpenAI",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 0.7716,
+    "cache_input": 0.1188,
+    "output": 0.084,
+    "nocache_total": 0.8556,
+    "cache_total": 0.2028,
+    "saving_input_pct": 84.6,
+    "saving_total_pct": 76.3,
+    "year_nocache_total": 44.49,
+    "year_cache_total": 10.55,
+    "assumption": ""
+   },
+   {
+    "model": "gpt-6-astra",
+    "provider": "OpenAI",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 3.858,
+    "cache_input": 0.77,
+    "output": 0.42,
+    "nocache_total": 4.278,
+    "cache_total": 1.19,
+    "saving_input_pct": 80.0,
+    "saving_total_pct": 72.2,
+    "year_nocache_total": 222.46,
+    "year_cache_total": 61.88,
+    "assumption": ""
+   },
+   {
+    "model": "gemini-3.8-flash",
+    "provider": "Google",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "nocache_input": 0.28935,
+    "cache_input": 0.05175,
+    "output": 0.0315,
+    "nocache_total": 0.32085,
+    "cache_total": 0.08325,
+    "saving_input_pct": 82.1,
+    "saving_total_pct": 74.1,
+    "year_nocache_total": 16.68,
+    "year_cache_total": 4.33,
+    "assumption": "쓰기 할증·저장 요금 없음, 매번 적중 가정"
+   }
+  ]
+ },
+ "e5_failures": {
+  "model": "claude-sonnet-5-5",
+  "rows": [
+   {
+    "scenario": "good",
+    "ttl": "5m",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "input_cost_cache": 0.1188,
+    "input_cost_nocache": 0.7716,
+    "ratio_vs_nocache": 0.154
+   },
+   {
+    "scenario": "timestamp_front",
+    "ttl": "5m",
+    "writes": 12,
+    "reads": 0,
+    "write_tokens": 384240,
+    "read_tokens": 0,
+    "plain_tokens": 1800,
+    "input_cost_cache": 0.9642,
+    "input_cost_nocache": 0.77208,
+    "ratio_vs_nocache": 1.2488
+   },
+   {
+    "scenario": "name_front",
+    "ttl": "5m",
+    "writes": 3,
+    "reads": 9,
+    "write_tokens": 96060,
+    "read_tokens": 288180,
+    "plain_tokens": 1800,
+    "input_cost_cache": 0.272568,
+    "input_cost_nocache": 0.77208,
+    "ratio_vs_nocache": 0.353
+   },
+   {
+    "scenario": "question_first",
+    "ttl": "5m",
+    "writes": 12,
+    "reads": 0,
+    "write_tokens": 385800,
+    "read_tokens": 0,
+    "plain_tokens": 0,
+    "input_cost_cache": 0.9645,
+    "input_cost_nocache": 0.7716,
+    "ratio_vs_nocache": 1.25
+   },
+   {
+    "scenario": "breakpoint_on_question",
+    "ttl": "5m",
+    "writes": 12,
+    "reads": 0,
+    "write_tokens": 385800,
+    "read_tokens": 0,
+    "plain_tokens": 0,
+    "input_cost_cache": 0.9645,
+    "input_cost_nocache": 0.7716,
+    "ratio_vs_nocache": 1.25
+   },
+   {
+    "scenario": "gap10_5m",
+    "ttl": "5m",
+    "writes": 12,
+    "reads": 0,
+    "write_tokens": 384000,
+    "read_tokens": 0,
+    "plain_tokens": 1800,
+    "input_cost_cache": 0.9636,
+    "input_cost_nocache": 0.7716,
+    "ratio_vs_nocache": 1.2488
+   },
+   {
+    "scenario": "gap10_1h",
+    "ttl": "1h",
+    "writes": 1,
+    "reads": 11,
+    "write_tokens": 32000,
+    "read_tokens": 352000,
+    "plain_tokens": 1800,
+    "input_cost_cache": 0.1668,
+    "input_cost_nocache": 0.7716,
+    "ratio_vs_nocache": 0.2162
+   },
+   {
+    "scenario": "short_prompt",
+    "ttl": "5m",
+    "writes": 0,
+    "reads": 0,
+    "write_tokens": 0,
+    "read_tokens": 0,
+    "plain_tokens": 6600,
+    "input_cost_cache": 0.0132,
+    "input_cost_nocache": 0.0132,
+    "ratio_vs_nocache": 1.0
+   }
+  ]
+ },
+ "e6_usage": {
+  "anthropic_shape": {
+   "input_tokens": 150,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 32000
+  },
+  "openai_shape": {
+   "input_tokens": 32150,
+   "input_tokens_details": {
+    "cached_tokens": 32000,
+    "cache_write_tokens": 0
+   }
+  },
+  "cost_anthropic_rule": 0.0035,
+  "cost_openai_rule": 0.0035,
+  "cost_double_count": 0.0675,
+  "double_count_ratio": 19.286
+ },
+ "e7_sdk": {
+  "retry_then_ok": {
+   "attempts": 3,
+   "waits": [
+    0.5,
+    1.0
+   ]
+  },
+  "retry_exhausted": {
+   "status": 500,
+   "attempts": 3
+  },
+  "not_retried_400": {
+   "status": 400,
+   "attempts": 1
+  },
+  "missing_field": "필수 칸이 빠졌어요: max_tokens",
+  "sent_headers": [
+   "anthropic-version",
+   "content-type",
+   "x-api-key"
+  ]
+ },
+ "e8_crosscheck": {
+  "cases": 500,
+  "mismatches": 0
+ }
+}

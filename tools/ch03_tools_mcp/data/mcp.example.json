@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "inquiries": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/tools/ch03_tools_mcp/tools_ch03_server.py"],
+      "env": {
+        "INQUIRY_DATA": "${INQUIRY_DATA:-./tools/ch03_tools_mcp/data/inquiries_2026-W41.json}"
+      }
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    }
+  }
+}

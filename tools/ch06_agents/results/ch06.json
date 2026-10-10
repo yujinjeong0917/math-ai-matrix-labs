@@ -1,0 +1,424 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": 6,
+  "weeks": 20000,
+  "facts_file": "agents_2026-10-10.json",
+  "checked": "2026-10-10"
+ },
+ "e0_hand": {
+  "p": 0.97,
+  "n2": 0.9409,
+  "n3": 0.912673,
+  "n4": 0.885293,
+  "n22": 0.5117,
+  "max_steps_90": 3,
+  "retry_once_step": 0.9991,
+  "retry_once_n22": 0.9804,
+  "fail_twice": 0.0009
+ },
+ "e1_project": {
+  "n": 22,
+  "kinds": {
+   "read": 6,
+   "compute": 14,
+   "write": 2
+  },
+  "hard_undo": [
+   "share"
+  ],
+  "tools": [
+   "create_page",
+   "get_screen_texts",
+   "model",
+   "query_inquiries",
+   "send_message"
+  ],
+  "notion_reads": 2,
+  "figma_reads": 4,
+  "sections": 12,
+  "pages_normal": 2,
+  "pages_odd": 3
+ },
+ "e2_table": {
+  "ps": [
+   0.9,
+   0.95,
+   0.97,
+   0.99,
+   0.999
+  ],
+  "ns": [
+   1,
+   5,
+   10,
+   22,
+   50
+  ],
+  "rows": [
+   [
+    0.9,
+    0.5905,
+    0.3487,
+    0.0985,
+    0.0052
+   ],
+   [
+    0.95,
+    0.7738,
+    0.5987,
+    0.3235,
+    0.0769
+   ],
+   [
+    0.97,
+    0.8587,
+    0.7374,
+    0.5117,
+    0.2181
+   ],
+   [
+    0.99,
+    0.951,
+    0.9044,
+    0.8016,
+    0.605
+   ],
+   [
+    0.999,
+    0.995,
+    0.99,
+    0.9782,
+    0.9512
+   ]
+  ],
+  "max_steps_90": [
+   1,
+   2,
+   3,
+   10,
+   105
+  ]
+ },
+ "e3_checks": {
+  "assume": {
+   "p": 0.97,
+   "q": 0.99,
+   "d": 0.9,
+   "k": 2,
+   "h": 0.9,
+   "f": 0.1
+  },
+  "step": {
+   "correct": 0.99689713,
+   "missed": 0.00308319,
+   "stopped": 1.968e-05,
+   "attempts": 1.027729
+  },
+  "caught_per_try": 0.027,
+  "missed_per_try": 0.003,
+  "scenarios": {
+   "none": {
+    "all_correct": 0.511656,
+    "delivered_wrong": 0.488344,
+    "stopped_by_check": 0.0,
+    "stopped_by_human": 0.0,
+    "expected_attempts": 22.0,
+    "approvals": 0.0
+   },
+   "check_no_retry": {
+    "all_correct": 0.511656,
+    "delivered_wrong": 0.035968,
+    "stopped_by_check": 0.452376,
+    "stopped_by_human": 0.0,
+    "expected_attempts": 16.754666,
+    "approvals": 0.0
+   },
+   "check_retry": {
+    "all_correct": 0.933916,
+    "delivered_wrong": 0.065652,
+    "stopped_by_check": 0.000433,
+    "stopped_by_human": 0.0,
+    "expected_attempts": 22.605366,
+    "approvals": 0.0
+   },
+   "check_retry_human": {
+    "all_correct": 0.933916,
+    "delivered_wrong": 0.009165,
+    "stopped_by_check": 0.000432,
+    "stopped_by_human": 0.056488,
+    "expected_attempts": 22.547311,
+    "approvals": 0.999587
+   },
+   "perfect_check_retry1": {
+    "all_correct": 0.980386,
+    "delivered_wrong": 0.0,
+    "stopped_by_check": 0.019614,
+    "stopped_by_human": 0.0,
+    "expected_attempts": 22.447142,
+    "approvals": 0.0
+   }
+  }
+ },
+ "e4_approvals": {
+  "every_step_week": 22,
+  "every_step_year": 1144,
+  "writes_week": 2,
+  "writes_year": 104,
+  "hard_only_week": 1,
+  "hard_only_year": 52
+ },
+ "e5_agent": {
+  "workflow_normal": 0.5117,
+  "workflow_odd": 0.0,
+  "agent_normal": 0.4102,
+  "agent_odd": 0.3939,
+  "workflow_mix": 0.4605,
+  "agent_mix": 0.4085,
+  "break_even_odd_share": 0.2049,
+  "pq": 0.9603,
+  "agent_check_human_normal": {
+   "all_correct": 0.912318,
+   "delivered_wrong": 0.012062,
+   "stopped_by_check": 0.001,
+   "stopped_by_human": 0.07462,
+   "expected_attempts": 22.725841,
+   "approvals": 0.999043
+  },
+  "agent_check_human_odd": {
+   "all_correct": 0.90852,
+   "delivered_wrong": 0.012423,
+   "stopped_by_check": 0.001045,
+   "stopped_by_human": 0.078011,
+   "expected_attempts": 23.758291,
+   "approvals": 0.998997
+  },
+  "workflow_check_odd_stop_at_notion2": 1.0
+ },
+ "e6_sim": [
+  {
+   "name": "workflow_none",
+   "weeks": 20000,
+   "correct": 10101,
+   "wrong": 9899,
+   "stopped": 0,
+   "attempts": 440000,
+   "approvals": 0,
+   "correct_rate": 0.505,
+   "wrong_rate": 0.495,
+   "stopped_rate": 0.0,
+   "stop_steps": {},
+   "closed_correct": 0.5117,
+   "se": 0.00353,
+   "z": -1.87
+  },
+  {
+   "name": "workflow_check_retry",
+   "weeks": 20000,
+   "correct": 18687,
+   "wrong": 1300,
+   "stopped": 13,
+   "attempts": 452176,
+   "approvals": 0,
+   "correct_rate": 0.9344,
+   "wrong_rate": 0.065,
+   "stopped_rate": 0.0006,
+   "stop_steps": {
+    "count": 2,
+    "figma_4": 1,
+    "quotes": 1,
+    "section_01": 1,
+    "section_02": 1,
+    "section_03": 1,
+    "section_06": 1,
+    "section_07": 1,
+    "section_08": 1,
+    "section_10": 1,
+    "section_11": 1,
+    "share": 1
+   },
+   "closed_correct": 0.9339,
+   "se": 0.00176,
+   "z": 0.25
+  },
+  {
+   "name": "workflow_check_retry_human",
+   "weeks": 20000,
+   "correct": 18690,
+   "wrong": 188,
+   "stopped": 1122,
+   "attempts": 451018,
+   "approvals": 19987,
+   "correct_rate": 0.9345,
+   "wrong_rate": 0.0094,
+   "stopped_rate": 0.0561,
+   "stop_steps": {
+    "count": 1,
+    "figma_2": 1,
+    "figma_3": 1,
+    "figma_4": 2,
+    "notion_1": 1,
+    "notion_2": 1,
+    "section_03": 1,
+    "section_06": 1,
+    "section_07": 1,
+    "section_10": 1,
+    "section_12": 2,
+    "share": 1109
+   },
+   "closed_correct": 0.9339,
+   "se": 0.00176,
+   "z": 0.33
+  },
+  {
+   "name": "agent_none",
+   "weeks": 20000,
+   "correct": 8168,
+   "wrong": 11832,
+   "stopped": 0,
+   "attempts": 440000,
+   "approvals": 0,
+   "correct_rate": 0.4084,
+   "wrong_rate": 0.5916,
+   "stopped_rate": 0.0,
+   "stop_steps": {},
+   "closed_correct": 0.4102,
+   "se": 0.00348,
+   "z": -0.51
+  },
+  {
+   "name": "agent_none_odd",
+   "weeks": 20000,
+   "correct": 7927,
+   "wrong": 12073,
+   "stopped": 0,
+   "attempts": 460000,
+   "approvals": 0,
+   "correct_rate": 0.3963,
+   "wrong_rate": 0.6037,
+   "stopped_rate": 0.0,
+   "stop_steps": {},
+   "closed_correct": 0.3939,
+   "se": 0.00345,
+   "z": 0.72
+  },
+  {
+   "name": "agent_check_retry_human",
+   "weeks": 20000,
+   "correct": 18272,
+   "wrong": 220,
+   "stopped": 1508,
+   "attempts": 454619,
+   "approvals": 19988,
+   "correct_rate": 0.9136,
+   "wrong_rate": 0.011,
+   "stopped_rate": 0.0754,
+   "stop_steps": {
+    "figma_3": 2,
+    "figma_4": 1,
+    "notion_1": 1,
+    "quotes": 2,
+    "section_02": 1,
+    "section_04": 1,
+    "section_05": 2,
+    "section_08": 1,
+    "section_10": 1,
+    "share": 1496
+   },
+   "closed_correct": 0.9123,
+   "se": 0.002,
+   "z": 0.64
+  },
+  {
+   "name": "workflow_none_odd",
+   "weeks": 20000,
+   "correct": 0,
+   "wrong": 20000,
+   "stopped": 0,
+   "attempts": 440000,
+   "approvals": 0,
+   "correct_rate": 0.0,
+   "wrong_rate": 1.0,
+   "stopped_rate": 0.0,
+   "stop_steps": {}
+  },
+  {
+   "name": "workflow_check_odd",
+   "weeks": 20000,
+   "correct": 0,
+   "wrong": 0,
+   "stopped": 20000,
+   "attempts": 41136,
+   "approvals": 0,
+   "correct_rate": 0.0,
+   "wrong_rate": 0.0,
+   "stopped_rate": 1.0,
+   "stop_steps": {
+    "notion_2": 20000
+   }
+  }
+ ],
+ "e7_where": {
+  "first_failure_at": {
+   "notion_1": 0.03,
+   "notion_2": 0.0291,
+   "count": 0.0282,
+   "quotes": 0.0274,
+   "figma_1": 0.0266,
+   "figma_2": 0.0258,
+   "figma_3": 0.025,
+   "figma_4": 0.0242,
+   "section_01": 0.0235,
+   "section_02": 0.0228,
+   "section_03": 0.0221,
+   "section_04": 0.0215,
+   "section_05": 0.0208,
+   "section_06": 0.0202,
+   "section_07": 0.0196,
+   "section_08": 0.019,
+   "section_09": 0.0184,
+   "section_10": 0.0179,
+   "section_11": 0.0173,
+   "section_12": 0.0168,
+   "assemble": 0.0163,
+   "share": 0.0158
+  },
+  "first_failure_at_1": 0.03,
+  "first_failure_at_22": 0.0158,
+  "first_failure_in_sections": 0.2399,
+  "no_failure": 0.5117,
+  "attempts_per_step": 1.027729,
+  "figma_calls_month_no_retry": 17.33,
+  "figma_calls_month_retry": 17.81,
+  "figma_limit_month": 20
+ },
+ "e8_crosscheck": {
+  "cases": 300,
+  "mismatches": 0
+ },
+ "e9_configs": {
+  "claude_settings": {
+   "permissions": {
+    "defaultMode": "default",
+    "allow": [
+     "Bash(python3 report.py *)"
+    ],
+    "ask": [
+     "Bash(git commit *)"
+    ],
+    "deny": [
+     "Bash(git push *)",
+     "WebFetch"
+    ]
+   }
+  },
+  "codex_config": {
+   "sandbox_mode": "workspace-write",
+   "approval_policy": "on-request",
+   "sandbox_workspace_write": {
+    "network_access": false
+   }
+  }
+ }
+}

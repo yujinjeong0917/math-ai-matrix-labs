@@ -1,0 +1,684 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": 4,
+  "vendor_file": "vendors_2026-10-10.json",
+  "checked": "2026-10-10",
+  "token_rule": {
+   "label": "기본 규칙",
+   "ascii_chars_per_token": 4,
+   "non_ascii_tokens_per_char": 1
+  }
+ },
+ "e0_hand": {
+  "meta": 100,
+  "body": 2000,
+  "rows": [
+   {
+    "n": 1,
+    "paste_all": 2100,
+    "staged": 2100,
+    "ratio": 1.0,
+    "saving_pct": 0.0
+   },
+   {
+    "n": 2,
+    "paste_all": 4200,
+    "staged": 2200,
+    "ratio": 0.5238,
+    "saving_pct": 47.6
+   },
+   {
+    "n": 5,
+    "paste_all": 10500,
+    "staged": 2500,
+    "ratio": 0.2381,
+    "saving_pct": 76.2
+   }
+  ],
+  "limit_ratio": 0.0476,
+  "limit_saving_pct": 95.2
+ },
+ "e1_parse": {
+  "main": {
+   "fields": [
+    "name",
+    "description",
+    "metadata"
+   ],
+   "name": "weekly-inquiry-report",
+   "name_len": 21,
+   "description_len": 122,
+   "metadata": {
+    "owner": "cs-team",
+    "version": "1.3"
+   },
+   "body_lines": 19,
+   "listing_line_truncated": false,
+   "listing_line_len": 145
+  },
+  "all": [
+   {
+    "dir": "meeting-notes",
+    "name": "meeting-notes",
+    "description_len": 79,
+    "spec_errors": [],
+    "anthropic_errors": []
+   },
+   {
+    "dir": "refund-reply",
+    "name": "refund-reply",
+    "description_len": 86,
+    "spec_errors": [],
+    "anthropic_errors": []
+   },
+   {
+    "dir": "release-notes",
+    "name": "release-notes",
+    "description_len": 82,
+    "spec_errors": [],
+    "anthropic_errors": []
+   },
+   {
+    "dir": "survey-summary",
+    "name": "survey-summary",
+    "description_len": 71,
+    "spec_errors": [],
+    "anthropic_errors": []
+   },
+   {
+    "dir": "ux-copy-check",
+    "name": "ux-copy-check",
+    "description_len": 102,
+    "spec_errors": [],
+    "anthropic_errors": []
+   },
+   {
+    "dir": "weekly-inquiry-report",
+    "name": "weekly-inquiry-report",
+    "description_len": 122,
+    "spec_errors": [],
+    "anthropic_errors": []
+   }
+  ]
+ },
+ "e2_bad": {
+  "rows": [
+   {
+    "case": "대문자",
+    "spec_errors": [
+     "name 글자 규칙 위반(소문자·숫자·하이픈, 하이픈은 처음·끝·연속 불가)"
+    ],
+    "anthropic_errors": []
+   },
+   {
+    "case": "하이픈으로 시작",
+    "spec_errors": [
+     "name 글자 규칙 위반(소문자·숫자·하이픈, 하이픈은 처음·끝·연속 불가)"
+    ],
+    "anthropic_errors": []
+   },
+   {
+    "case": "하이픈 연속",
+    "spec_errors": [
+     "name 글자 규칙 위반(소문자·숫자·하이픈, 하이픈은 처음·끝·연속 불가)"
+    ],
+    "anthropic_errors": []
+   },
+   {
+    "case": "폴더 이름과 다름",
+    "spec_errors": [
+     "name이 폴더 이름과 다름"
+    ],
+    "anthropic_errors": []
+   },
+   {
+    "case": "설명 1,025자",
+    "spec_errors": [
+     "description 1024자 초과"
+    ],
+    "anthropic_errors": []
+   },
+   {
+    "case": "설명 없음",
+    "spec_errors": [
+     "description 없음"
+    ],
+    "anthropic_errors": []
+   },
+   {
+    "case": "예약어",
+    "spec_errors": [],
+    "anthropic_errors": [
+     "name에 예약어 'claude'"
+    ]
+   },
+   {
+    "case": "XML 태그",
+    "spec_errors": [],
+    "anthropic_errors": [
+     "description에 XML 태그"
+    ]
+   },
+   {
+    "case": "이름 65자",
+    "spec_errors": [
+     "name 64자 초과"
+    ],
+    "anthropic_errors": []
+   }
+  ],
+  "no_opening": "첫 줄이 --- 가 아니에요",
+  "no_closing": "앞머리를 닫는 --- 가 없어요"
+ },
+ "e3_sizes": {
+  "project_agents_md": 245,
+  "skills": [
+   {
+    "name": "meeting-notes",
+    "meta": 63,
+    "body": 195,
+    "skill_md": 264,
+    "refs": {},
+    "refs_total": 0,
+    "scripts": []
+   },
+   {
+    "name": "refund-reply",
+    "meta": 70,
+    "body": 278,
+    "skill_md": 354,
+    "refs": {
+     "references/refund-policy.md": 352
+    },
+    "refs_total": 352,
+    "scripts": []
+   },
+   {
+    "name": "release-notes",
+    "meta": 67,
+    "body": 214,
+    "skill_md": 287,
+    "refs": {},
+    "refs_total": 0,
+    "scripts": []
+   },
+   {
+    "name": "survey-summary",
+    "meta": 57,
+    "body": 166,
+    "skill_md": 229,
+    "refs": {},
+    "refs_total": 0,
+    "scripts": []
+   },
+   {
+    "name": "ux-copy-check",
+    "meta": 82,
+    "body": 201,
+    "skill_md": 289,
+    "refs": {
+     "references/word-list.md": 310
+    },
+    "refs_total": 310,
+    "scripts": []
+   },
+   {
+    "name": "weekly-inquiry-report",
+    "meta": 90,
+    "body": 412,
+    "skill_md": 519,
+    "refs": {
+     "references/categories.md": 640,
+     "references/template.md": 295
+    },
+    "refs_total": 935,
+    "scripts": [
+     "scripts/count_by_type.py"
+    ]
+   }
+  ],
+  "sum_meta": 429,
+  "sum_skill_md": 1942,
+  "sum_refs": 1597,
+  "main_meta_text": "weekly-inquiry-report: 이번 주 고객 문의 묶음을 유형별로 나누고 주간 보고서 12절을 정해진 양식으로 써요. 사용자가 주간 보고서, 문의 요약, 이번 주 문의 정리를 말하거나 문의 내보내기 파일(inquiries_*.csv)을 줄 때 써요.",
+  "main_meta_chars": 145,
+  "main_meta_ascii": 74
+ },
+ "e4_week": {
+  "conversations": 15,
+  "rows": [
+   {
+    "id": 1,
+    "task": "주간 보고서 쓰기",
+    "skill": "weekly-inquiry-report",
+    "paste_all": 3784,
+    "staged": 2061,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 412,
+    "part_files": 935,
+    "part_script_output": 40
+   },
+   {
+    "id": 2,
+    "task": "환불 답장 #0412",
+    "skill": "refund-reply",
+    "paste_all": 3784,
+    "staged": 1304,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 278,
+    "part_files": 352,
+    "part_script_output": 0
+   },
+   {
+    "id": 3,
+    "task": "환불 답장 #0418",
+    "skill": "refund-reply",
+    "paste_all": 3784,
+    "staged": 1304,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 278,
+    "part_files": 352,
+    "part_script_output": 0
+   },
+   {
+    "id": 4,
+    "task": "환불 답장 #0433",
+    "skill": "refund-reply",
+    "paste_all": 3784,
+    "staged": 1304,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 278,
+    "part_files": 352,
+    "part_script_output": 0
+   },
+   {
+    "id": 5,
+    "task": "환불 답장 #0451",
+    "skill": "refund-reply",
+    "paste_all": 3784,
+    "staged": 1304,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 278,
+    "part_files": 352,
+    "part_script_output": 0
+   },
+   {
+    "id": 6,
+    "task": "환불 답장 #0460",
+    "skill": "refund-reply",
+    "paste_all": 3784,
+    "staged": 1304,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 278,
+    "part_files": 352,
+    "part_script_output": 0
+   },
+   {
+    "id": 7,
+    "task": "주간 회의록",
+    "skill": "meeting-notes",
+    "paste_all": 3784,
+    "staged": 869,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 195,
+    "part_files": 0,
+    "part_script_output": 0
+   },
+   {
+    "id": 8,
+    "task": "앱 3.2 업데이트 안내",
+    "skill": "release-notes",
+    "paste_all": 3784,
+    "staged": 888,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 214,
+    "part_files": 0,
+    "part_script_output": 0
+   },
+   {
+    "id": 9,
+    "task": "결제 화면 문구 점검",
+    "skill": "ux-copy-check",
+    "paste_all": 3784,
+    "staged": 1185,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 201,
+    "part_files": 310,
+    "part_script_output": 0
+   },
+   {
+    "id": 10,
+    "task": "회원가입 화면 문구 점검",
+    "skill": "ux-copy-check",
+    "paste_all": 3784,
+    "staged": 1185,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 201,
+    "part_files": 310,
+    "part_script_output": 0
+   },
+   {
+    "id": 11,
+    "task": "9월 만족도 설문 요약",
+    "skill": "survey-summary",
+    "paste_all": 3784,
+    "staged": 840,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 166,
+    "part_files": 0,
+    "part_script_output": 0
+   },
+   {
+    "id": 12,
+    "task": "엑셀 함수 질문",
+    "skill": null,
+    "paste_all": 3784,
+    "staged": 674,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 0,
+    "part_files": 0,
+    "part_script_output": 0
+   },
+   {
+    "id": 13,
+    "task": "메일 제목 다듬기",
+    "skill": null,
+    "paste_all": 3784,
+    "staged": 674,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 0,
+    "part_files": 0,
+    "part_script_output": 0
+   },
+   {
+    "id": 14,
+    "task": "택배사 연락처 찾기",
+    "skill": null,
+    "paste_all": 3784,
+    "staged": 674,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 0,
+    "part_files": 0,
+    "part_script_output": 0
+   },
+   {
+    "id": 15,
+    "task": "휴가 일정 정리",
+    "skill": null,
+    "paste_all": 3784,
+    "staged": 674,
+    "part_project": 245,
+    "part_meta": 429,
+    "part_body": 0,
+    "part_files": 0,
+    "part_script_output": 0
+   }
+  ],
+  "paste_all_total": 56760,
+  "staged_total": 16244,
+  "staged_ratio": 0.2862,
+  "saving_pct": 71.4,
+  "by_rule": [
+   {
+    "rule": "기본 규칙",
+    "paste_all": 56760,
+    "staged": 16244,
+    "saving_pct": 71.4
+   },
+   {
+    "rule": "한글을 적게 셈",
+    "paste_all": 38460,
+    "staged": 10999,
+    "saving_pct": 71.4
+   },
+   {
+    "rule": "영문·한글 모두 많게 셈",
+    "paste_all": 83355,
+    "staged": 23844,
+    "saving_pct": 71.4
+   }
+  ]
+ },
+ "e5_scale": {
+  "ours_m": 71.5,
+  "ours_b": 510.5,
+  "ours": [
+   {
+    "n": 1,
+    "paste_all": 582.0,
+    "staged": 582.0,
+    "meta_only": 71.5,
+    "ratio": 1.0,
+    "saving_pct": 0.0
+   },
+   {
+    "n": 5,
+    "paste_all": 2910.0,
+    "staged": 868.0,
+    "meta_only": 357.5,
+    "ratio": 0.2983,
+    "saving_pct": 70.2
+   },
+   {
+    "n": 10,
+    "paste_all": 5820.0,
+    "staged": 1225.5,
+    "meta_only": 715.0,
+    "ratio": 0.2106,
+    "saving_pct": 78.9
+   },
+   {
+    "n": 20,
+    "paste_all": 11640.0,
+    "staged": 1940.5,
+    "meta_only": 1430.0,
+    "ratio": 0.1667,
+    "saving_pct": 83.3
+   },
+   {
+    "n": 50,
+    "paste_all": 29100.0,
+    "staged": 4085.5,
+    "meta_only": 3575.0,
+    "ratio": 0.1404,
+    "saving_pct": 86.0
+   },
+   {
+    "n": 100,
+    "paste_all": 58200.0,
+    "staged": 7660.5,
+    "meta_only": 7150.0,
+    "ratio": 0.1316,
+    "saving_pct": 86.8
+   }
+  ],
+  "ours_limit_ratio": 0.1229,
+  "doc_m": 100,
+  "doc_b": 5000,
+  "doc": [
+   {
+    "n": 1,
+    "paste_all": 5100,
+    "staged": 5100,
+    "meta_only": 100,
+    "ratio": 1.0,
+    "saving_pct": 0.0
+   },
+   {
+    "n": 5,
+    "paste_all": 25500,
+    "staged": 5500,
+    "meta_only": 500,
+    "ratio": 0.2157,
+    "saving_pct": 78.4
+   },
+   {
+    "n": 10,
+    "paste_all": 51000,
+    "staged": 6000,
+    "meta_only": 1000,
+    "ratio": 0.1176,
+    "saving_pct": 88.2
+   },
+   {
+    "n": 20,
+    "paste_all": 102000,
+    "staged": 7000,
+    "meta_only": 2000,
+    "ratio": 0.0686,
+    "saving_pct": 93.1
+   },
+   {
+    "n": 50,
+    "paste_all": 255000,
+    "staged": 10000,
+    "meta_only": 5000,
+    "ratio": 0.0392,
+    "saving_pct": 96.1
+   },
+   {
+    "n": 100,
+    "paste_all": 510000,
+    "staged": 15000,
+    "meta_only": 10000,
+    "ratio": 0.0294,
+    "saving_pct": 97.1
+   }
+  ],
+  "doc_limit_ratio": 0.0196
+ },
+ "e6_round_trip": {
+  "w": 1.25,
+  "r": 0.1,
+  "tool_call_tokens": 50,
+  "rows": [
+   {
+    "scenario": "report",
+    "label": "주간 보고서 대화(문의 묶음을 붙임)",
+    "user_tokens": 24150,
+    "batch": false,
+    "paste_all_calls": 2,
+    "staged_calls": 5,
+    "paste_all_inputs": [
+     27934,
+     28024
+    ],
+    "staged_inputs": [
+     24824,
+     25286,
+     25976,
+     26321,
+     26411
+    ],
+    "paste_all_nocache": 55958,
+    "paste_all_cached": 37823.4,
+    "staged_nocache": 128818,
+    "staged_cached": 43254.45,
+    "staged_vs_paste_nocache": 2.302,
+    "staged_vs_paste_cached": 1.144,
+    "staged_cached_vs_paste_nocache": 0.773
+   },
+   {
+    "scenario": "report",
+    "label": "주간 보고서 대화(문의 묶음을 붙임)",
+    "user_tokens": 24150,
+    "batch": true,
+    "paste_all_calls": 2,
+    "staged_calls": 3,
+    "paste_all_inputs": [
+     27934,
+     28024
+    ],
+    "staged_inputs": [
+     24824,
+     25286,
+     26411
+    ],
+    "paste_all_nocache": 55958,
+    "paste_all_cached": 37823.4,
+    "staged_nocache": 76521,
+    "staged_cached": 38024.75,
+    "staged_vs_paste_nocache": 1.367,
+    "staged_vs_paste_cached": 1.005,
+    "staged_cached_vs_paste_nocache": 0.68
+   },
+   {
+    "scenario": "refund",
+    "label": "환불 답장 대화(문의 한 건만 붙임)",
+    "user_tokens": 300,
+    "batch": false,
+    "paste_all_calls": 1,
+    "staged_calls": 3,
+    "paste_all_inputs": [
+     4084
+    ],
+    "staged_inputs": [
+     974,
+     1302,
+     1704
+    ],
+    "paste_all_nocache": 4084,
+    "paste_all_cached": 5105.0,
+    "staged_nocache": 3980,
+    "staged_cached": 2357.6,
+    "staged_vs_paste_nocache": 0.975,
+    "staged_vs_paste_cached": 0.462,
+    "staged_cached_vs_paste_nocache": 0.577
+   },
+   {
+    "scenario": "refund",
+    "label": "환불 답장 대화(문의 한 건만 붙임)",
+    "user_tokens": 300,
+    "batch": true,
+    "paste_all_calls": 1,
+    "staged_calls": 3,
+    "paste_all_inputs": [
+     4084
+    ],
+    "staged_inputs": [
+     974,
+     1302,
+     1704
+    ],
+    "paste_all_nocache": 4084,
+    "paste_all_cached": 5105.0,
+    "staged_nocache": 3980,
+    "staged_cached": 2357.6,
+    "staged_vs_paste_nocache": 0.975,
+    "staged_vs_paste_cached": 0.462,
+    "staged_cached_vs_paste_nocache": 0.577
+   }
+  ]
+ },
+ "e7_one_file": {
+  "all_in_one_bytes": 12083,
+  "all_in_one_lines": 248,
+  "all_in_one_chars": 5963,
+  "codex_limit_bytes": 32768,
+  "claude_md_target_lines": 200,
+  "agents_md_bytes": 781,
+  "agents_md_lines": 16,
+  "bytes_per_hangul": 3,
+  "skills_to_fill_codex_limit": 16.3
+ },
+ "e8_crosscheck": {
+  "cases": 300,
+  "mismatches": 0
+ }
+}

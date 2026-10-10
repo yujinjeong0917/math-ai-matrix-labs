@@ -1,0 +1,11 @@
+{
+ "_about": "3장 가격표(2장 가격표에서 이 장이 쓰는 모델만 옮김). 단위는 미국 달러, 100만 토큰당. 값이 바뀌면 날짜가 다른 새 파일을 만든다.",
+ "checked": "2026-10-10",
+ "model": "claude-sonnet-5-5",
+ "label": "Claude Sonnet 5.5",
+ "input": 2.0,
+ "write_5m": 2.5,
+ "read": 0.1,
+ "output": 10.0,
+ "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+}

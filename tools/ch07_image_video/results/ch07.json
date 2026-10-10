@@ -1,0 +1,684 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "mc_seed": 7,
+  "price_file": "prices_2026-10-10.json",
+  "checked": "2026-10-10",
+  "target_seconds": 15,
+  "p_default": "1/4",
+  "k_default": 4
+ },
+ "e0_hand": {
+  "cost_per_draw_krw": 2000,
+  "p": "1/4",
+  "k": 4,
+  "rows": [
+   {
+    "draw": 1,
+    "reach_prob": "1",
+    "reach_prob_f": 1.0,
+    "success_within": "1/4",
+    "success_within_f": 0.25
+   },
+   {
+    "draw": 2,
+    "reach_prob": "3/4",
+    "reach_prob_f": 0.75,
+    "success_within": "7/16",
+    "success_within_f": 0.4375
+   },
+   {
+    "draw": 3,
+    "reach_prob": "9/16",
+    "reach_prob_f": 0.5625,
+    "success_within": "37/64",
+    "success_within_f": 0.5781
+   },
+   {
+    "draw": 4,
+    "reach_prob": "27/64",
+    "reach_prob_f": 0.4219,
+    "success_within": "175/256",
+    "success_within_f": 0.6836
+   }
+  ],
+  "expected_draws": "175/64",
+  "expected_draws_f": 2.7344,
+  "expected_cost_krw": 5468.8,
+  "batch_cost_krw": 8000,
+  "unlimited_expected_draws": 4,
+  "unlimited_expected_cost_krw": 8000.0,
+  "k90": 9,
+  "success_k8": 0.8999,
+  "success_k9": 0.9249
+ },
+ "e1_units": {
+  "omni_tokens_per_second": 5792,
+  "omni_usd_per_second": 0.10136,
+  "omni_usd_15s": 1.5204,
+  "images": [
+   {
+    "label": "Nano Banana 2.1",
+    "size": "1K (1024x1024)",
+    "unit": "tokens",
+    "amount": 1120,
+    "usd_per_image": 0.0336,
+    "doc": "0.0336"
+   },
+   {
+    "label": "Gemini 3.1 Flash Image",
+    "size": "1K (1024x1024)",
+    "unit": "tokens",
+    "amount": 1120,
+    "usd_per_image": 0.0672,
+    "doc": "0.067"
+   },
+   {
+    "label": "Gemini 3 Pro Image",
+    "size": "1K (1024x1024)",
+    "unit": "usd",
+    "amount": "0.134",
+    "usd_per_image": 0.134,
+    "doc": "0.134"
+   },
+   {
+    "label": "GPT Image 2.5, medium",
+    "size": "1024x1024",
+    "unit": "tokens",
+    "amount": 439,
+    "usd_per_image": 0.01317,
+    "doc": "0.01317"
+   },
+   {
+    "label": "GPT Image 2.5, high",
+    "size": "1024x1024",
+    "unit": "tokens",
+    "amount": 1756,
+    "usd_per_image": 0.05268,
+    "doc": "0.05268"
+   },
+   {
+    "label": "Runway Gen-4 Image",
+    "size": "720p",
+    "unit": "credits",
+    "amount": 5,
+    "usd_per_image": 0.05,
+    "doc": "0.05"
+   }
+  ]
+ },
+ "e2_plans": [
+  {
+   "model": "veo-3.1-generate-preview",
+   "label": "Veo 3.1",
+   "calculable": true,
+   "res": "720p",
+   "how": "extend",
+   "pieces": [
+    8,
+    7
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.40",
+   "usd_per_draw": 6.0
+  },
+  {
+   "model": "veo-3.1-generate-preview",
+   "label": "Veo 3.1",
+   "calculable": true,
+   "res": "1080p",
+   "how": "stitch",
+   "pieces": [
+    8,
+    8
+   ],
+   "billed_seconds": 16,
+   "usd_per_second": "0.40",
+   "usd_per_draw": 6.4
+  },
+  {
+   "model": "veo-3.1-fast-generate-preview",
+   "label": "Veo 3.1 Fast",
+   "calculable": true,
+   "res": "720p",
+   "how": "extend",
+   "pieces": [
+    8,
+    7
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.10",
+   "usd_per_draw": 1.5
+  },
+  {
+   "model": "veo-3.1-fast-generate-preview",
+   "label": "Veo 3.1 Fast",
+   "calculable": true,
+   "res": "1080p",
+   "how": "stitch",
+   "pieces": [
+    8,
+    8
+   ],
+   "billed_seconds": 16,
+   "usd_per_second": "0.12",
+   "usd_per_draw": 1.92
+  },
+  {
+   "model": "veo-3.1-lite-generate-preview",
+   "label": "Veo 3.1 Lite",
+   "calculable": true,
+   "res": "720p",
+   "how": "stitch",
+   "pieces": [
+    8,
+    8
+   ],
+   "billed_seconds": 16,
+   "usd_per_second": "0.05",
+   "usd_per_draw": 0.8
+  },
+  {
+   "model": "veo-3.1-lite-generate-preview",
+   "label": "Veo 3.1 Lite",
+   "calculable": true,
+   "res": "1080p",
+   "how": "stitch",
+   "pieces": [
+    8,
+    8
+   ],
+   "billed_seconds": 16,
+   "usd_per_second": "0.08",
+   "usd_per_draw": 1.28
+  },
+  {
+   "model": "gemini-omni-1.1-flash",
+   "label": "Gemini Omni Flash",
+   "calculable": false,
+   "why": "한 번에 만드는 길이 선택지를 문서에서 못 찾음"
+  },
+  {
+   "model": "kling-3.0",
+   "label": "Kling 3.0 (소리 켬)",
+   "calculable": true,
+   "res": "720p",
+   "how": "single",
+   "pieces": [
+    15
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.126",
+   "usd_per_draw": 1.89
+  },
+  {
+   "model": "kling-3.0",
+   "label": "Kling 3.0 (소리 켬)",
+   "calculable": true,
+   "res": "1080p",
+   "how": "single",
+   "pieces": [
+    15
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.168",
+   "usd_per_draw": 2.52
+  },
+  {
+   "model": "kling-3.0-silent",
+   "label": "Kling 3.0 (소리 끔)",
+   "calculable": true,
+   "res": "720p",
+   "how": "single",
+   "pieces": [
+    15
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.084",
+   "usd_per_draw": 1.26
+  },
+  {
+   "model": "kling-3.0-silent",
+   "label": "Kling 3.0 (소리 끔)",
+   "calculable": true,
+   "res": "1080p",
+   "how": "single",
+   "pieces": [
+    15
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.112",
+   "usd_per_draw": 1.68
+  },
+  {
+   "model": "sora-2",
+   "label": "Sora 2 / Sora 2 Pro",
+   "calculable": false,
+   "why": "API 종료"
+  },
+  {
+   "model": "gen4.5",
+   "label": "Runway Gen-4.5",
+   "calculable": true,
+   "res": "720p",
+   "how": "stitch",
+   "pieces": [
+    10,
+    5
+   ],
+   "billed_seconds": 15,
+   "usd_per_second": "0.12",
+   "usd_per_draw": 1.8
+  }
+ ],
+ "e3_draws": [
+  {
+   "label": "Veo 3.1",
+   "usd_per_draw": 6.0,
+   "k4_expected": 16.4062,
+   "k4_success": 0.6836,
+   "k4_batch": 24.0,
+   "k90": 9,
+   "k90_worst": 54.0,
+   "k90_expected": 22.198,
+   "unlimited": 24.0
+  },
+  {
+   "label": "Veo 3.1 Fast",
+   "usd_per_draw": 1.5,
+   "k4_expected": 4.1016,
+   "k4_success": 0.6836,
+   "k4_batch": 6.0,
+   "k90": 9,
+   "k90_worst": 13.5,
+   "k90_expected": 5.5495,
+   "unlimited": 6.0
+  },
+  {
+   "label": "Veo 3.1 Lite",
+   "usd_per_draw": 0.8,
+   "k4_expected": 2.1875,
+   "k4_success": 0.6836,
+   "k4_batch": 3.2,
+   "k90": 9,
+   "k90_worst": 7.2,
+   "k90_expected": 2.9597,
+   "unlimited": 3.2
+  },
+  {
+   "label": "Kling 3.0 (소리 켬)",
+   "usd_per_draw": 1.89,
+   "k4_expected": 5.168,
+   "k4_success": 0.6836,
+   "k4_batch": 7.56,
+   "k90": 9,
+   "k90_worst": 17.01,
+   "k90_expected": 6.9924,
+   "unlimited": 7.56
+  },
+  {
+   "label": "Kling 3.0 (소리 끔)",
+   "usd_per_draw": 1.26,
+   "k4_expected": 3.4453,
+   "k4_success": 0.6836,
+   "k4_batch": 5.04,
+   "k90": 9,
+   "k90_worst": 11.34,
+   "k90_expected": 4.6616,
+   "unlimited": 5.04
+  },
+  {
+   "label": "Runway Gen-4.5",
+   "usd_per_draw": 1.8,
+   "k4_expected": 4.9219,
+   "k4_success": 0.6836,
+   "k4_batch": 7.2,
+   "k90": 9,
+   "k90_worst": 16.2,
+   "k90_expected": 6.6594,
+   "unlimited": 7.2
+  }
+ ],
+ "e4_sensitivity": [
+  {
+   "label": "Veo 3.1",
+   "p=1/10": 60.0,
+   "k90@p=1/10": 22,
+   "p=1/4": 24.0,
+   "k90@p=1/4": 9,
+   "p=1/2": 12.0,
+   "k90@p=1/2": 4
+  },
+  {
+   "label": "Veo 3.1 Fast",
+   "p=1/10": 15.0,
+   "k90@p=1/10": 22,
+   "p=1/4": 6.0,
+   "k90@p=1/4": 9,
+   "p=1/2": 3.0,
+   "k90@p=1/2": 4
+  },
+  {
+   "label": "Veo 3.1 Lite",
+   "p=1/10": 8.0,
+   "k90@p=1/10": 22,
+   "p=1/4": 3.2,
+   "k90@p=1/4": 9,
+   "p=1/2": 1.6,
+   "k90@p=1/2": 4
+  },
+  {
+   "label": "Kling 3.0 (소리 켬)",
+   "p=1/10": 18.9,
+   "k90@p=1/10": 22,
+   "p=1/4": 7.56,
+   "k90@p=1/4": 9,
+   "p=1/2": 3.78,
+   "k90@p=1/2": 4
+  },
+  {
+   "label": "Kling 3.0 (소리 끔)",
+   "p=1/10": 12.6,
+   "k90@p=1/10": 22,
+   "p=1/4": 5.04,
+   "k90@p=1/4": 9,
+   "p=1/2": 2.52,
+   "k90@p=1/2": 4
+  },
+  {
+   "label": "Runway Gen-4.5",
+   "p=1/10": 18.0,
+   "k90@p=1/10": 22,
+   "p=1/4": 7.2,
+   "k90@p=1/4": 9,
+   "p=1/2": 3.6,
+   "k90@p=1/2": 4
+  }
+ ],
+ "e5_pieces": [
+  {
+   "label": "Veo 3.1",
+   "res": "720p",
+   "how": "extend",
+   "pieces": [
+    8,
+    7
+   ],
+   "piece_costs": [
+    3.2,
+    2.8
+   ],
+   "together": 96.0,
+   "together_success_per_draw": "1/16",
+   "separately": 24.0,
+   "separately_k4_both_success": 0.4673,
+   "separately_k90_per_piece": 11
+  },
+  {
+   "label": "Veo 3.1 Lite",
+   "res": "720p",
+   "how": "stitch",
+   "pieces": [
+    8,
+    8
+   ],
+   "piece_costs": [
+    0.4,
+    0.4
+   ],
+   "together": 12.8,
+   "together_success_per_draw": "1/16",
+   "separately": 3.2,
+   "separately_k4_both_success": 0.4673,
+   "separately_k90_per_piece": 11
+  },
+  {
+   "label": "Runway Gen-4.5",
+   "res": "720p",
+   "how": "stitch",
+   "pieces": [
+    10,
+    5
+   ],
+   "piece_costs": [
+    1.2,
+    0.6
+   ],
+   "together": 28.8,
+   "together_success_per_draw": "1/16",
+   "separately": 7.2,
+   "separately_k4_both_success": 0.4673,
+   "separately_k90_per_piece": 11
+  },
+  {
+   "label": "Veo 3.1",
+   "res": "1080p",
+   "how": "stitch",
+   "pieces": [
+    8,
+    8
+   ],
+   "piece_costs": [
+    3.2,
+    3.2
+   ],
+   "together": 102.4,
+   "together_success_per_draw": "1/16",
+   "separately": 25.6,
+   "separately_k4_both_success": 0.4673,
+   "separately_k90_per_piece": 11
+  }
+ ],
+ "e6_crosscheck": {
+  "exact_cases": 100,
+  "exact_mismatches": 0,
+  "mc_seed": 7,
+  "mc_trials": 200000,
+  "mc_usd_per_draw": 1.89,
+  "mc_expected_cost": 5.1684,
+  "closed_expected_cost": 5.168,
+  "mc_success": 0.6853,
+  "closed_success": 0.6836
+ },
+ "e7_images": [
+  {
+   "label": "Nano Banana 2.1",
+   "size": "1K (1024x1024)",
+   "usd_per_image": 0.0336,
+   "unlimited_p_quarter": 0.1344,
+   "k4_expected": 0.09187
+  },
+  {
+   "label": "Gemini 3.1 Flash Image",
+   "size": "1K (1024x1024)",
+   "usd_per_image": 0.0672,
+   "unlimited_p_quarter": 0.2688,
+   "k4_expected": 0.18375
+  },
+  {
+   "label": "Gemini 3 Pro Image",
+   "size": "1K (1024x1024)",
+   "usd_per_image": 0.134,
+   "unlimited_p_quarter": 0.536,
+   "k4_expected": 0.36641
+  },
+  {
+   "label": "GPT Image 2.5, medium",
+   "size": "1024x1024",
+   "usd_per_image": 0.01317,
+   "unlimited_p_quarter": 0.05268,
+   "k4_expected": 0.03601
+  },
+  {
+   "label": "GPT Image 2.5, high",
+   "size": "1024x1024",
+   "usd_per_image": 0.05268,
+   "unlimited_p_quarter": 0.21072,
+   "k4_expected": 0.14405
+  },
+  {
+   "label": "Runway Gen-4 Image",
+   "size": "720p",
+   "usd_per_image": 0.05,
+   "unlimited_p_quarter": 0.2,
+   "k4_expected": 0.13672
+  }
+ ],
+ "e8_diffusion": {
+  "hand": {
+   "keep": 0.72,
+   "noise": 0.28,
+   "x0": 1.0,
+   "eps": -1.0,
+   "sqrt_abar": 0.8485,
+   "sqrt_1m_abar": 0.5292,
+   "xt": 0.3194,
+   "back": 1.0
+  },
+  "runs_T50": [
+   {
+    "seed": 0,
+    "start": 0.9417,
+    "end": 1.0,
+    "mid": [
+     0.7775,
+     0.5507,
+     0.7735
+    ]
+   },
+   {
+    "seed": 1,
+    "start": 1.2882,
+    "end": 1.0,
+    "mid": [
+     1.1213,
+     0.932,
+     1.0197
+    ]
+   },
+   {
+    "seed": 2,
+    "start": 2.3382,
+    "end": 1.0,
+    "mid": [
+     2.1659,
+     1.9399,
+     1.4885
+    ]
+   },
+   {
+    "seed": 3,
+    "start": 0.0947,
+    "end": -1.0,
+    "mid": [
+     -0.0597,
+     -0.3379,
+     -0.7653
+    ]
+   },
+   {
+    "seed": 4,
+    "start": 0.0409,
+    "end": -1.0,
+    "mid": [
+     -0.1128,
+     -0.3883,
+     -0.7913
+    ]
+   },
+   {
+    "seed": 5,
+    "start": -1.1788,
+    "end": -1.0,
+    "mid": [
+     -1.3089,
+     -1.4041,
+     -1.2549
+    ]
+   },
+   {
+    "seed": 6,
+    "start": 0.4997,
+    "end": -1.0,
+    "mid": [
+     0.34,
+     0.0661,
+     -0.4954
+    ]
+   },
+   {
+    "seed": 7,
+    "start": -0.2559,
+    "end": -1.0,
+    "mid": [
+     -0.4048,
+     -0.6547,
+     -0.9198
+    ]
+   }
+  ],
+  "same_seed_same_result": true,
+  "seed1_T5_path": [
+   1.2882,
+   1.0784,
+   0.8592,
+   0.7077,
+   0.7944,
+   1.0
+  ],
+  "one_step_results": [
+   -0.4929,
+   -0.4903,
+   -0.4823,
+   -0.4993
+  ],
+  "prior_mean": -0.5,
+  "steps": [
+   {
+    "T": 1,
+    "settled": 0.0,
+    "liked": 0.0
+   },
+   {
+    "T": 2,
+    "settled": 0.211,
+    "liked": 0.0025
+   },
+   {
+    "T": 3,
+    "settled": 0.6295,
+    "liked": 0.068
+   },
+   {
+    "T": 5,
+    "settled": 0.924,
+    "liked": 0.196
+   },
+   {
+    "T": 10,
+    "settled": 0.997,
+    "liked": 0.2475
+   },
+   {
+    "T": 20,
+    "settled": 1.0,
+    "liked": 0.257
+   },
+   {
+    "T": 50,
+    "settled": 1.0,
+    "liked": 0.26
+   }
+  ],
+  "boundary_T50": 0.6769,
+  "liked_prob_from_boundary": 0.2492,
+  "normal_q75": 0.6745,
+  "boundaries": {
+   "5": 0.7592,
+   "10": 0.7096,
+   "50": 0.6769,
+   "200": 0.6713
+  }
+ }
+}

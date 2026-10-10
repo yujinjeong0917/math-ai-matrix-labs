@@ -1,0 +1,45 @@
+{
+  "_about": "AI 도구 실전 5장: Notion MCP·Figma MCP가 무엇을 읽고 쓸 수 있는지, 권한·요금제 조건. 모든 항목은 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다.",
+  "checked": "2026-10-10",
+  "mcp_spec": {
+    "version": "2026-07-28",
+    "facts": [
+      {"key": "tools_methods", "value": "tools/list, tools/call; 도구 정의 name·description·inputSchema; 결과 content·structuredContent·isError", "url": "https://modelcontextprotocol.io/specification/latest/server/tools", "checked": "2026-10-10"},
+      {"key": "human_in_loop", "value": "For trust & safety and security, there SHOULD always be a human in the loop with the ability to deny tool invocations.", "url": "https://modelcontextprotocol.io/specification/latest/server/tools", "checked": "2026-10-10"},
+      {"key": "client_security", "value": "Clients SHOULD: Prompt for user confirmation on sensitive operations ... Validate tool results before passing to LLM", "url": "https://modelcontextprotocol.io/specification/latest/server/tools", "checked": "2026-10-10"},
+      {"key": "annotations_untrusted", "value": "clients MUST consider tool annotations to be untrusted unless they come from trusted servers", "url": "https://modelcontextprotocol.io/specification/latest/server/tools", "checked": "2026-10-10"}
+    ]
+  },
+  "notion": {
+    "facts": [
+      {"key": "endpoint", "value": "https://mcp.notion.com/mcp (Streamable HTTP, 권장), https://mcp.notion.com/sse (SSE)", "url": "https://developers.notion.com/guides/mcp/get-started-with-mcp", "checked": "2026-10-10"},
+      {"key": "auth", "value": "Notion MCP currently requires you to complete the OAuth authorization flow.", "url": "https://developers.notion.com/guides/mcp/get-started-with-mcp", "checked": "2026-10-10"},
+      {"key": "no_noninteractive_auth", "value": "We're working on support for non-interactive authorization for automated workflows", "url": "https://developers.notion.com/guides/mcp/get-started-with-mcp", "checked": "2026-10-10"},
+      {"key": "permissions", "value": "MCP tools act with your full Notion permissions / they can access everything you can access", "url": "https://www.notion.com/help/notion-mcp", "checked": "2026-10-10"},
+      {"key": "admin_controls", "value": "Admins on the Enterprise plan can manage which MCP clients and AI apps are allowed to connect.", "url": "https://www.notion.com/help/notion-mcp", "checked": "2026-10-10"},
+      {"key": "rows_limit", "value": "notion-query-data-sources rows 모드: 한 번에 최대 100행", "url": "https://developers.notion.com/guides/mcp/mcp-supported-tools", "checked": "2026-10-10"},
+      {"key": "sql_plan", "value": "여러 데이터 소스에 걸친 SQL은 Business·Enterprise + Notion AI, 다른 요금제는 단일 소스 SQL을 워크스페이스당 제한된 양만", "url": "https://developers.notion.com/guides/mcp/mcp-supported-tools", "checked": "2026-10-10"},
+      {"key": "search_plan", "value": "notion-search 최대 50개, 편집자·날짜 등 필터는 Business·Enterprise + Notion AI", "url": "https://developers.notion.com/guides/mcp/mcp-supported-tools", "checked": "2026-10-10"},
+      {"key": "write_tools", "value": "notion-create-pages, notion-update-page, notion-update-data-source, notion-create-comment 등 쓰기 도구가 있다", "url": "https://developers.notion.com/guides/mcp/mcp-supported-tools", "checked": "2026-10-10"},
+      {"key": "update_page_replace", "value": "notion-update-page는 찾아 바꾸기 묶음으로 고치고, 찾는 글이 하나라도 없으면 페이지를 고치지 않고 검증 오류를 돌려준다", "url": "https://developers.notion.com/guides/mcp/mcp-supported-tools", "checked": "2026-10-10"},
+      {"key": "injection_advice", "value": "Treat content returned by tools as untrusted. / Enable confirmation before actions that change content.", "url": "https://developers.notion.com/guides/mcp/mcp-security-best-practices", "checked": "2026-10-10"},
+      {"key": "injection_limit", "value": "no system offers perfect protection against all attacks", "url": "https://www.notion.com/help/how-notion-protects-against-prompt-injection-risks", "checked": "2026-10-10"}
+    ]
+  },
+  "figma": {
+    "facts": [
+      {"key": "endpoint", "value": "https://mcp.figma.com/mcp (원격 서버, 권장). 데스크톱 앱으로 도는 데스크톱 서버도 있다", "url": "https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server", "checked": "2026-10-10"},
+      {"key": "remote_seats", "value": "The remote server is available on all seats and plans.", "url": "https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server", "checked": "2026-10-10"},
+      {"key": "desktop_seats", "value": "The desktop server is available on a Dev or Full seat for all paid plans.", "url": "https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server", "checked": "2026-10-10"},
+      {"key": "write_beta", "value": "This will eventually be a usage-based paid feature, but is currently available for free during the beta period.", "url": "https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server", "checked": "2026-10-10"},
+      {"key": "write_seat", "value": "You need a Full seat to write to Figma files with agents. Dev seat holders can use the Figma MCP server for read-only workflows. / To modify an existing file, you also need edit permission for that file.", "url": "https://developers.figma.com/docs/figma-mcp-server/write-to-canvas/", "checked": "2026-10-10"},
+      {"key": "permissions", "value": "You can only access Figma content that you already have permission to view or edit.", "url": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/", "checked": "2026-10-10"},
+      {"key": "clients", "value": "Only clients listed in the Figma MCP Catalog can connect to the Figma MCP Server.", "url": "https://developers.figma.com/docs/figma-mcp-server/", "checked": "2026-10-10"},
+      {"key": "rate_view_collab", "value": "View·Collab 좌석: 모든 요금제에서 한 달 최대 20번", "per_month": 20, "url": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/", "checked": "2026-10-10"},
+      {"key": "rate_dev_full", "value": "Dev·Full 좌석: Starter 하루 200번·분당 10번, Professional 하루 200번·분당 15번, Organization 하루 600번·분당 20번, Enterprise는 이번에 읽은 표에서 값을 확인하지 못함", "url": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/", "checked": "2026-10-10"},
+      {"key": "rate_exempt", "value": "add_code_connect_map, create_new_file, whoami는 횟수 제한에서 빠진다", "url": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/", "checked": "2026-10-10"},
+      {"key": "read_tools", "value": "get_design_context, get_metadata, get_screenshot, get_variable_defs 등 읽기 도구", "url": "https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/", "checked": "2026-10-10"},
+      {"key": "write_tools", "value": "use_figma(General-purpose create, edit, and inspect, 원격 전용), upload_assets, create_new_file, generate_diagram 등 쓰기 도구", "url": "https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/", "checked": "2026-10-10"}
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 1024,
+  "system": [
+    {
+      "type": "text",
+      "text": "너는 고객 문의를 읽고 주간 보고서의 한 절을 쓰는 도우미야. 분류 규칙 7가지와 보고서 양식은 아래와 같아. ... (지시문 약 3,000토큰)"
+    },
+    {
+      "type": "text",
+      "text": "지난 보고서 예시 2편 ... (약 5,000토큰)",
+      "cache_control": {"type": "ephemeral"}
+    }
+  ],
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "이번 주 문의 120건: [#0001 10/06 09:12 배송] 주문한 지 5일이 지났는데 ... (약 24,000토큰)",
+          "cache_control": {"type": "ephemeral"}
+        },
+        {
+          "type": "text",
+          "text": "위 문의 가운데 '환불' 유형만 골라 보고서 2절을 써 줘. 건수, 대표 사례 3개, 다음 주 할 일 1개."
+        }
+      ]
+    }
+  ]
+}

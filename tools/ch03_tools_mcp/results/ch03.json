@@ -1,0 +1,915 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "spec_current": "2026-07-28",
+  "spec_legacy": "2025-11-25",
+  "checked": "2026-10-10",
+  "price_file": "prices_2026-10-10.json",
+  "data_file": "inquiries_2026-W41.json",
+  "seed": 3
+ },
+ "e0_hand": {
+  "apps": [
+   "주간 보고서 스크립트",
+   "Claude Desktop",
+   "Claude Code"
+  ],
+  "tools": [
+   "문의 데이터베이스",
+   "공유 폴더",
+   "스프레드시트",
+   "사내 위키"
+  ],
+  "n": 3,
+  "m": 4,
+  "pairwise": 12,
+  "standard": 7,
+  "gap": 5,
+  "add_two_tools": {
+   "m": 6,
+   "pairwise": 18,
+   "standard": 9
+  }
+ },
+ "e1_tool_call": {
+  "request_keys": [
+   "model",
+   "max_tokens",
+   "tools",
+   "messages"
+  ],
+  "tool_keys": [
+   "name",
+   "description",
+   "input_schema"
+  ],
+  "response_stop_reason": "tool_use",
+  "tool_use": {
+   "type": "tool_use",
+   "id": "toolu_01",
+   "name": "list_inquiries",
+   "input": {
+    "week": "2026-W41",
+    "category": "환불"
+   }
+  },
+  "tool_result_matches_id": true,
+  "final_stop_reason": "end_turn"
+ },
+ "e2_modern": {
+  "era": "modern",
+  "version": "2026-07-28",
+  "server_info": {
+   "name": "inquiries-mcp",
+   "version": "0.3.0"
+  },
+  "methods": [
+   "server/discover",
+   "tools/list",
+   "tools/list",
+   "tools/call"
+  ],
+  "tool_names": [
+   "count_by_category",
+   "list_inquiries",
+   "get_inquiry"
+  ],
+  "list_result_type": "complete",
+  "ttlMs": 300000,
+  "cacheScope": "private",
+  "counts": {
+   "배송": 28,
+   "환불": 18,
+   "결제 오류": 14,
+   "회원 정보": 10,
+   "쿠폰": 12,
+   "앱 오류": 13,
+   "상품 문의": 12,
+   "교환": 8,
+   "칭찬": 5
+  },
+  "total": 120,
+  "is_error": false,
+  "returncode": 0,
+  "first_line_sent": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"server/discover\",\"params\":{\"_meta\":{\"io.modelcontextprotocol/protocolVersion\":\"2026-07-28\",\"io.modelcontextprotocol/clientInfo\":{\"name\":\"weekly-report-script\",\"version\":\"0.3.0\"},\"io.modelcontextprotocol/clientCapabilities\":{}}}}",
+  "lines_sent": 4,
+  "lines_received": 4
+ },
+ "e3_legacy": {
+  "legacy_client": {
+   "version": "2025-11-25",
+   "methods": [
+    "initialize",
+    "notifications/initialized",
+    "tools/list",
+    "tools/call"
+   ],
+   "tool_names": [
+    "count_by_category",
+    "list_inquiries",
+    "get_inquiry"
+   ],
+   "refund_count": 18,
+   "raw_result_has_resultType": false
+  },
+  "fallback": {
+   "probe_error": {
+    "code": -32601,
+    "message": "Method not found: server/discover"
+   },
+   "era": "legacy",
+   "version": "2025-11-25",
+   "methods": [
+    "server/discover",
+    "initialize",
+    "notifications/initialized",
+    "tools/call"
+   ],
+   "refund_count": 18
+  }
+ },
+ "e4_errors": {
+  "missing_meta": {
+   "code": -32602,
+   "message": "Missing required _meta field: io.modelcontextprotocol/protocolVersion"
+  },
+  "missing_caps": {
+   "code": -32602,
+   "message": "Missing required _meta field: io.modelcontextprotocol/clientCapabilities"
+  },
+  "unsupported_version": {
+   "code": -32022,
+   "message": "Unsupported protocol version",
+   "data": {
+    "supported": [
+     "2026-07-28",
+     "2025-11-25"
+    ],
+    "requested": "2099-01-01"
+   }
+  },
+  "unknown_tool": {
+   "code": -32602,
+   "message": "Unknown tool: delete_all"
+  },
+  "bad_argument": {
+   "isError": true,
+   "text": "'환불요청'는 없는 유형이에요. 쓸 수 있는 값: 배송, 환불, 결제 오류, 회원 정보, 쿠폰, 앱 오류, 상품 문의, 교환, 칭찬",
+   "resultType": "complete"
+  },
+  "not_found": {
+   "isError": true,
+   "text": "#9999 문의를 찾지 못했어요."
+  },
+  "unknown_method": {
+   "code": -32601,
+   "message": "Method not found: sampling/createMessage"
+  },
+  "parse_error": {
+   "jsonrpc": "2.0",
+   "id": null,
+   "error": {
+    "code": -32700,
+    "message": "Parse error"
+   }
+  },
+  "initialize_modern_version": {
+   "code": -32601,
+   "message": "initialize is not part of 2026-07-28; supported: ['2026-07-28', '2025-11-25']"
+  },
+  "stdout_all_json_one_line": true,
+  "stdout_lines": 9,
+  "stderr_lines": [
+   "[inquiries-mcp] start dual-era <ch03>/data/inquiries_2026-W41.json",
+   "[inquiries-mcp] stdin closed, bye"
+  ],
+  "returncode_after_stdin_closed": 0
+ },
+ "e5_config": {
+  "desktop": {
+   "inquiries": {
+    "type": "stdio",
+    "argv": [
+     "/usr/bin/python3",
+     "/Users/you/math-ai-matrix-labs/tools/ch03_tools_mcp/tools_ch03_server.py"
+    ],
+    "env": {
+     "INQUIRY_DATA": "/Users/you/math-ai-matrix-labs/tools/ch03_tools_mcp/data/inquiries_2026-W41.json"
+    },
+    "warnings": []
+   }
+  },
+  "code_no_env": {
+   "inquiries": {
+    "type": "stdio",
+    "argv": [
+     "python3",
+     "./tools/ch03_tools_mcp/tools_ch03_server.py"
+    ],
+    "env": {
+     "INQUIRY_DATA": "./tools/ch03_tools_mcp/data/inquiries_2026-W41.json"
+    },
+    "warnings": []
+   },
+   "notion": {
+    "type": "http",
+    "url": "https://mcp.notion.com/mcp",
+    "warnings": []
+   }
+  },
+  "code_with_env": {
+   "inquiries": {
+    "type": "stdio",
+    "argv": [
+     "python3",
+     "/Users/you/math-ai-matrix-labs/tools/ch03_tools_mcp/tools_ch03_server.py"
+    ],
+    "env": {
+     "INQUIRY_DATA": "./tools/ch03_tools_mcp/data/inquiries_2026-W41.json"
+    },
+    "warnings": []
+   },
+   "notion": {
+    "type": "http",
+    "url": "https://mcp.notion.com/mcp",
+    "warnings": []
+   }
+  },
+  "url_without_type": {
+   "x": {
+    "skipped": "MCP server \"x\" has a \"url\" but no \"type\""
+   }
+  },
+  "desktop_lines": 13,
+  "code_lines": 16,
+  "launched_from_desktop_config": {
+   "era": "modern",
+   "tools": 3
+  },
+  "launched_from_code_config": {
+   "era": "modern",
+   "total": 120,
+   "cwd": "실습 저장소 맨 위"
+  }
+ },
+ "e6_connections": {
+  "table": [
+   {
+    "n": 1,
+    "m": 1,
+    "pairwise": 1,
+    "standard": 2,
+    "gap": -1
+   },
+   {
+    "n": 1,
+    "m": 2,
+    "pairwise": 2,
+    "standard": 3,
+    "gap": -1
+   },
+   {
+    "n": 1,
+    "m": 3,
+    "pairwise": 3,
+    "standard": 4,
+    "gap": -1
+   },
+   {
+    "n": 1,
+    "m": 4,
+    "pairwise": 4,
+    "standard": 5,
+    "gap": -1
+   },
+   {
+    "n": 1,
+    "m": 5,
+    "pairwise": 5,
+    "standard": 6,
+    "gap": -1
+   },
+   {
+    "n": 1,
+    "m": 6,
+    "pairwise": 6,
+    "standard": 7,
+    "gap": -1
+   },
+   {
+    "n": 2,
+    "m": 1,
+    "pairwise": 2,
+    "standard": 3,
+    "gap": -1
+   },
+   {
+    "n": 2,
+    "m": 2,
+    "pairwise": 4,
+    "standard": 4,
+    "gap": 0
+   },
+   {
+    "n": 2,
+    "m": 3,
+    "pairwise": 6,
+    "standard": 5,
+    "gap": 1
+   },
+   {
+    "n": 2,
+    "m": 4,
+    "pairwise": 8,
+    "standard": 6,
+    "gap": 2
+   },
+   {
+    "n": 2,
+    "m": 5,
+    "pairwise": 10,
+    "standard": 7,
+    "gap": 3
+   },
+   {
+    "n": 2,
+    "m": 6,
+    "pairwise": 12,
+    "standard": 8,
+    "gap": 4
+   },
+   {
+    "n": 3,
+    "m": 1,
+    "pairwise": 3,
+    "standard": 4,
+    "gap": -1
+   },
+   {
+    "n": 3,
+    "m": 2,
+    "pairwise": 6,
+    "standard": 5,
+    "gap": 1
+   },
+   {
+    "n": 3,
+    "m": 3,
+    "pairwise": 9,
+    "standard": 6,
+    "gap": 3
+   },
+   {
+    "n": 3,
+    "m": 4,
+    "pairwise": 12,
+    "standard": 7,
+    "gap": 5
+   },
+   {
+    "n": 3,
+    "m": 5,
+    "pairwise": 15,
+    "standard": 8,
+    "gap": 7
+   },
+   {
+    "n": 3,
+    "m": 6,
+    "pairwise": 18,
+    "standard": 9,
+    "gap": 9
+   },
+   {
+    "n": 4,
+    "m": 1,
+    "pairwise": 4,
+    "standard": 5,
+    "gap": -1
+   },
+   {
+    "n": 4,
+    "m": 2,
+    "pairwise": 8,
+    "standard": 6,
+    "gap": 2
+   },
+   {
+    "n": 4,
+    "m": 3,
+    "pairwise": 12,
+    "standard": 7,
+    "gap": 5
+   },
+   {
+    "n": 4,
+    "m": 4,
+    "pairwise": 16,
+    "standard": 8,
+    "gap": 8
+   },
+   {
+    "n": 4,
+    "m": 5,
+    "pairwise": 20,
+    "standard": 9,
+    "gap": 11
+   },
+   {
+    "n": 4,
+    "m": 6,
+    "pairwise": 24,
+    "standard": 10,
+    "gap": 14
+   },
+   {
+    "n": 5,
+    "m": 1,
+    "pairwise": 5,
+    "standard": 6,
+    "gap": -1
+   },
+   {
+    "n": 5,
+    "m": 2,
+    "pairwise": 10,
+    "standard": 7,
+    "gap": 3
+   },
+   {
+    "n": 5,
+    "m": 3,
+    "pairwise": 15,
+    "standard": 8,
+    "gap": 7
+   },
+   {
+    "n": 5,
+    "m": 4,
+    "pairwise": 20,
+    "standard": 9,
+    "gap": 11
+   },
+   {
+    "n": 5,
+    "m": 5,
+    "pairwise": 25,
+    "standard": 10,
+    "gap": 15
+   },
+   {
+    "n": 5,
+    "m": 6,
+    "pairwise": 30,
+    "standard": 11,
+    "gap": 19
+   },
+   {
+    "n": 6,
+    "m": 1,
+    "pairwise": 6,
+    "standard": 7,
+    "gap": -1
+   },
+   {
+    "n": 6,
+    "m": 2,
+    "pairwise": 12,
+    "standard": 8,
+    "gap": 4
+   },
+   {
+    "n": 6,
+    "m": 3,
+    "pairwise": 18,
+    "standard": 9,
+    "gap": 9
+   },
+   {
+    "n": 6,
+    "m": 4,
+    "pairwise": 24,
+    "standard": 10,
+    "gap": 14
+   },
+   {
+    "n": 6,
+    "m": 5,
+    "pairwise": 30,
+    "standard": 11,
+    "gap": 19
+   },
+   {
+    "n": 6,
+    "m": 6,
+    "pairwise": 36,
+    "standard": 12,
+    "gap": 24
+   }
+  ],
+  "ripple_3x4": {
+   "tool_changes": {
+    "pairwise": 3,
+    "standard": 1
+   },
+   "app_changes": {
+    "pairwise": 4,
+    "standard": 1
+   },
+   "add_tool": {
+    "pairwise": 3,
+    "standard": 1
+   },
+   "add_app": {
+    "pairwise": 4,
+    "standard": 1
+   }
+  },
+  "ties": [
+   [
+    2,
+    2
+   ]
+  ],
+  "standard_more": [
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    6,
+    1
+   ]
+  ],
+  "n3_m6": {
+   "pairwise": 18,
+   "standard": 9
+  },
+  "examples": [
+   {
+    "n": 1,
+    "m": 4,
+    "pairwise": 4,
+    "standard": 5,
+    "gap": -1
+   },
+   {
+    "n": 2,
+    "m": 2,
+    "pairwise": 4,
+    "standard": 4,
+    "gap": 0
+   },
+   {
+    "n": 3,
+    "m": 4,
+    "pairwise": 12,
+    "standard": 7,
+    "gap": 5
+   },
+   {
+    "n": 3,
+    "m": 6,
+    "pairwise": 18,
+    "standard": 9,
+    "gap": 9
+   },
+   {
+    "n": 5,
+    "m": 10,
+    "pairwise": 50,
+    "standard": 15,
+    "gap": 35
+   },
+   {
+    "n": 10,
+    "m": 20,
+    "pairwise": 200,
+    "standard": 30,
+    "gap": 170
+   }
+  ]
+ },
+ "e7_project": {
+  "rows": [
+   {
+    "section": "배송",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(배송)"
+    ],
+    "errors": 0,
+    "items_read": 28,
+    "tokens_in": [
+     8836,
+     14486
+    ]
+   },
+   {
+    "section": "환불",
+    "requests": 3,
+    "tool_calls": [
+     "list_inquiries(환불요청)",
+     "list_inquiries(환불)"
+    ],
+    "errors": 1,
+    "items_read": 18,
+    "tokens_in": [
+     8836,
+     8926,
+     12576
+    ]
+   },
+   {
+    "section": "결제 오류",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(결제 오류)"
+    ],
+    "errors": 0,
+    "items_read": 14,
+    "tokens_in": [
+     8836,
+     11686
+    ]
+   },
+   {
+    "section": "회원 정보",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(회원 정보)"
+    ],
+    "errors": 0,
+    "items_read": 10,
+    "tokens_in": [
+     8836,
+     10886
+    ]
+   },
+   {
+    "section": "쿠폰",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(쿠폰)"
+    ],
+    "errors": 0,
+    "items_read": 12,
+    "tokens_in": [
+     8836,
+     11286
+    ]
+   },
+   {
+    "section": "앱 오류",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(앱 오류)"
+    ],
+    "errors": 0,
+    "items_read": 13,
+    "tokens_in": [
+     8836,
+     11486
+    ]
+   },
+   {
+    "section": "상품 문의",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(상품 문의)"
+    ],
+    "errors": 0,
+    "items_read": 12,
+    "tokens_in": [
+     8836,
+     11286
+    ]
+   },
+   {
+    "section": "교환",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(교환)"
+    ],
+    "errors": 0,
+    "items_read": 8,
+    "tokens_in": [
+     8836,
+     10486
+    ]
+   },
+   {
+    "section": "칭찬",
+    "requests": 2,
+    "tool_calls": [
+     "list_inquiries(칭찬)"
+    ],
+    "errors": 0,
+    "items_read": 5,
+    "tokens_in": [
+     8836,
+     9886
+    ]
+   },
+   {
+    "section": "불만 상위 5",
+    "requests": 2,
+    "tool_calls": [
+     "count_by_category()"
+    ],
+    "errors": 0,
+    "items_read": 0,
+    "tokens_in": [
+     8836,
+     8986
+    ]
+   },
+   {
+    "section": "이번 주 새로 생긴 유형",
+    "requests": 2,
+    "tool_calls": [
+     "count_by_category()"
+    ],
+    "errors": 0,
+    "items_read": 0,
+    "tokens_in": [
+     8836,
+     8986
+    ]
+   },
+   {
+    "section": "다음 주 할 일",
+    "requests": 2,
+    "tool_calls": [
+     "count_by_category()"
+    ],
+    "errors": 0,
+    "items_read": 0,
+    "tokens_in": [
+     8836,
+     8986
+    ]
+   }
+  ],
+  "items_read_total": 120,
+  "tool_requests": 25,
+  "copy_paste_requests": 12,
+  "tool_nocache": {
+   "requests": 25,
+   "input_tokens": 245980,
+   "output_tokens": 9050,
+   "input_cost": 0.49196,
+   "output_cost": 0.0905,
+   "total_cost": 0.58246
+  },
+  "tool_cache": {
+   "requests": 25,
+   "input_tokens": 245980,
+   "output_tokens": 9050,
+   "input_cost": 0.100221,
+   "output_cost": 0.0905,
+   "total_cost": 0.190721
+  },
+  "copy_paste_nocache": {
+   "requests": 12,
+   "input_tokens": 385800,
+   "output_tokens": 8400,
+   "input_cost": 0.7716,
+   "output_cost": 0.084,
+   "total_cost": 0.8556
+  },
+  "copy_paste_cache": {
+   "requests": 12,
+   "input_tokens": 385800,
+   "output_tokens": 8400,
+   "input_cost": 0.1188,
+   "output_cost": 0.084,
+   "total_cost": 0.2028
+  },
+  "fixed_prefix_tool": 8686,
+  "refund_messages": [
+   "보고서 '환불' 절을 써 줘. 필요하면 도구로 문의를 읽어.",
+   [
+    {
+     "type": "tool_use",
+     "id": "toolu_7400_1",
+     "name": "list_inquiries",
+     "input": {
+      "week": "2026-W41",
+      "category": "환불요청"
+     }
+    }
+   ],
+   [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_7400_1",
+     "content": "'환불요청'는 없는 유형이에요. 쓸 수 있는 값: 배송, 환불, 결제 오류, 회원 정보, 쿠폰, 앱 오류, 상품 문의, 교환, 칭찬",
+     "is_error": true
+    }
+   ],
+   [
+    {
+     "type": "tool_use",
+     "id": "toolu_7400_2",
+     "name": "list_inquiries",
+     "input": {
+      "week": "2026-W41",
+      "category": "환불"
+     }
+    }
+   ],
+   [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_7400_2",
+     "content": "{\"week\": \"2026-W41\", \"category\": \"환불\", \"count\": 18, \"items\": [{\"id\": \"#0001\", \"received\": \"2026-10-05T10:16\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A15908 환불이 아직 안 들어왔어요.\"}, {\"id\": \"#0010\", \"received\": \"2026-10-06T01:24\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A44724 부분 환불이 되나요?\"}, {\"id\": \"#0012\", \"received\": \"2026-10-06T03:35\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A95232 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0017\", \"received\": \"2026-10-06T13:00\", \"channel\": \"웹\", \"category\": \"환불\", \"text\": \"A51732 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0028\", \"received\": \"2026-10-07T11:07\", \"channel\": \"메일\", \"category\": \"환불\", \"text\": \"A86621 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0038\", \"received\": \"2026-10-07T23:06\", \"channel\": \"전화\", \"category\": \"환불\", \"text\": \"A67464 환불이 아직 안 들어왔어요.\"}, {\"id\": \"#0041\", \"received\": \"2026-10-08T05:34\", \"channel\": \"메일\", \"category\": \"환불\", \"text\": \"A94628 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0046\", \"received\": \"2026-10-08T11:02\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A77465 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0047\", \"received\": \"2026-10-08T11:04\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A75274 부분 환불이 되나요?\"}, {\"id\": \"#0051\", \"received\": \"2026-10-08T15:55\", \"channel\": \"전화\", \"category\": \"환불\", \"text\": \"A60219 부분 환불이 되나요?\"}, {\"id\": \"#0056\", \"received\": \"2026-10-08T19:13\", \"channel\": \"전화\", \"category\": \"환불\", \"text\": \"A20202 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0059\", \"received\": \"2026-10-08T22:22\", \"channel\": \"메일\", \"category\": \"환불\", \"text\": \"A63539 환불이 아직 안 들어왔어요.\"}, {\"id\": \"#0062\", \"received\": \"2026-10-08T23:03\", \"channel\": \"메일\", \"category\": \"환불\", \"text\": \"A43636 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0081\", \"received\": \"2026-10-09T15:52\", \"channel\": \"웹\", \"category\": \"환불\", \"text\": \"A94483 환불이 아직 안 들어왔어요.\"}, {\"id\": \"#0083\", \"received\": \"2026-10-09T16:09\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A33279 부분 환불이 되나요?\"}, {\"id\": \"#0104\", \"received\": \"2026-10-11T01:32\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A64057 취소했는데 카드 승인이 남아 있어요.\"}, {\"id\": \"#0106\", \"received\": \"2026-10-11T04:18\", \"channel\": \"웹\", \"category\": \"환불\", \"text\": \"A77948 부분 환불이 되나요?\"}, {\"id\": \"#0120\", \"received\": \"2026-10-11T23:22\", \"channel\": \"앱\", \"category\": \"환불\", \"text\": \"A38084 취소했는데 카드 승인이 남아 있어요.\"}]}",
+     "is_error": false
+    }
+   ],
+   [
+    {
+     "type": "text",
+     "text": "[환불] 이번 주 18건을 읽고 절을 썼어요."
+    }
+   ]
+  ],
+  "model_calls": 25
+ },
+ "e8_crosscheck": {
+  "pairs_checked": 100,
+  "mismatches": 0,
+  "direct": {
+   "환불": 18,
+   "앱 오류": 13,
+   "쿠폰": 12,
+   "결제 오류": 14,
+   "칭찬": 5,
+   "배송": 28,
+   "상품 문의": 12,
+   "교환": 8,
+   "회원 정보": 10
+  },
+  "via_count_tool": {
+   "배송": 28,
+   "환불": 18,
+   "결제 오류": 14,
+   "회원 정보": 10,
+   "쿠폰": 12,
+   "앱 오류": 13,
+   "상품 문의": 12,
+   "교환": 8,
+   "칭찬": 5
+  },
+  "via_list_tool": {
+   "배송": 28,
+   "환불": 18,
+   "결제 오류": 14,
+   "회원 정보": 10,
+   "쿠폰": 12,
+   "앱 오류": 13,
+   "상품 문의": 12,
+   "교환": 8,
+   "칭찬": 5
+  },
+  "agree": true,
+  "data_file_regenerates": true
+ }
+}

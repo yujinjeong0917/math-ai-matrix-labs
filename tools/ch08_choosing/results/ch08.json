@@ -1,0 +1,737 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "seed": null,
+  "policy_file": "policies_2026-10-10.json",
+  "upstream_file": "upstream_2026-10-10.json",
+  "checked": "2026-10-10",
+  "pending_upstream": []
+ },
+ "e0_hand": {
+  "week": 0.8556,
+  "times52": 44.4912,
+  "month": 3.7076,
+  "model_range": {
+   "haiku": 0.1854,
+   "astra": 18.538,
+   "ratio": 100.0
+  }
+ },
+ "e1_cost": [
+  {
+   "chapter": 1,
+   "setup": "문의 묶음을 매번 붙여 넣어 12번 호출, 캐싱 없음 (Claude Sonnet 5.5)",
+   "counted": "API 입력+출력",
+   "unit": "USD",
+   "week": 0.8556,
+   "month": 3.7076
+  },
+  {
+   "chapter": 2,
+   "setup": "같은 12번 호출에 프롬프트 캐싱 (5분 보관)",
+   "counted": "API 입력+출력",
+   "unit": "USD",
+   "week": 0.2028,
+   "month": 0.8788
+  },
+  {
+   "chapter": 3,
+   "setup": "도구 호출로 문의를 읽음, 25번 호출, 캐싱 없음",
+   "counted": "API 입력+출력",
+   "unit": "USD",
+   "week": 0.58246,
+   "month": 2.524
+  },
+  {
+   "chapter": 3,
+   "setup": "도구 호출 + 캐싱",
+   "counted": "API 입력+출력",
+   "unit": "USD",
+   "week": 0.190721,
+   "month": 0.8265
+  },
+  {
+   "chapter": 4,
+   "setup": "대화 15번에 지시문 전부 붙이기 (지시문 몫만)",
+   "counted": "지시문 입력 토큰을 8장에서 2달러/100만 토큰으로 바꾼 값(캐싱 없음)",
+   "unit": "USD",
+   "tokens_week": 56760,
+   "week": 0.1135,
+   "month": 0.4919
+  },
+  {
+   "chapter": 4,
+   "setup": "스킬로 필요할 때만 읽기 (지시문 몫만)",
+   "counted": "위와 같음",
+   "unit": "USD",
+   "tokens_week": 16244,
+   "week": 0.0325,
+   "month": 0.1408
+  },
+  {
+   "chapter": 5,
+   "setup": "Notion·Figma MCP 왕복 매주 1번",
+   "counted": "Figma 도구 호출 수(View·Collab 좌석 한 달 한도와 비교)",
+   "unit": "calls",
+   "week": 4,
+   "month": 17.33,
+   "limit": 20
+  },
+  {
+   "chapter": 6,
+   "setup": "에이전트에게 22단계 반복 맡기기 (단계 확인 + 다시 하기 + 알림 앞 사람 승인)",
+   "counted": "끝까지 옳은 주의 비율(확인 없음 → 확인 있음)과 사람 승인 횟수, 달러 아님",
+   "unit": "prob/approvals",
+   "correct_none": 0.5117,
+   "correct_checked": 0.9339,
+   "wrong_checked": 0.0092,
+   "attempts_week": 22.5473,
+   "week": 1,
+   "month": 4.3333
+  },
+  {
+   "chapter": 7,
+   "setup": "15초 영상 한 편을 매주 (마음에 들 확률 1/4 가정, 될 때까지 뽑기)",
+   "counted": "영상 생성 사용료 기댓값, 모델에 따라 범위",
+   "unit": "USD",
+   "week": [
+    3.2,
+    24.0
+   ],
+   "month": [
+    13.8667,
+    104.0
+   ],
+   "weekly_is_assumption": true
+  },
+  {
+   "chapter": 7,
+   "setup": "표지 그림 한 장을 매주 (같은 가정)",
+   "counted": "이미지 생성 사용료 기댓값, 모델에 따라 범위",
+   "unit": "USD",
+   "week": [
+    0.05268,
+    0.536
+   ],
+   "month": [
+    0.2283,
+    2.3227
+   ],
+   "weekly_is_assumption": true
+  }
+ ],
+ "e2_privacy": {
+  "rows": [
+   {
+    "provider": "Anthropic",
+    "product": "Claude API (기업용)",
+    "tier": "business",
+    "trains_default": "no",
+    "retention": "입력·출력을 받거나 만든 뒤 30일 안에 삭제. 사용 정책 위반으로 표시되면 최대 2년",
+    "region": "기본 global. inference_geo \"us\" 지정은 1.1배(1장 가격표)",
+    "url": "https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "Anthropic",
+    "product": "Claude Free·Pro·Max (개인용)",
+    "tier": "consumer",
+    "trains_default": "setting",
+    "retention": "학습 사용을 허락하면 비식별 형태로 최대 5년, 허락하지 않으면 지운 대화는 30일 안에 삭제",
+    "region": null,
+    "url": "https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "OpenAI",
+    "product": "API Platform (기업용)",
+    "tier": "business",
+    "trains_default": "no",
+    "retention": "남용 감시 로그 최대 30일(법이 요구하면 더 길게). 승인받으면 ZDR",
+    "region": "데이터 상주 지역 표에 South Korea(kr.api.openai.com)가 있으나 Storage Yes, Processing No, MAM 또는 ZDR 필요. 2026-03-05 이후 출시 모델은 10% 추가",
+    "url": "https://developers.openai.com/api/docs/guides/your-data",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "OpenAI",
+    "product": "ChatGPT Free·Plus·Pro (개인용)",
+    "tier": "consumer",
+    "trains_default": "setting",
+    "retention": null,
+    "region": null,
+    "url": "https://help.openai.com/en/articles/5722486-how-your-data-is-used-to-improve-model-performance",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "Google",
+    "product": "Gemini API 유료 등급",
+    "tier": "business",
+    "trains_default": "no",
+    "retention": "금지된 사용을 감지하려고 제한된 기간 로그(기간 숫자는 문서에 없음)",
+    "region": "Google이나 대리인이 시설을 둔 어느 나라에서든 잠시 저장·캐시될 수 있음",
+    "url": "https://ai.google.dev/gemini-api/terms",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "Google",
+    "product": "Gemini API 무료 등급·Google AI Studio",
+    "tier": "free",
+    "trains_default": "yes",
+    "retention": null,
+    "region": null,
+    "url": "https://ai.google.dev/gemini-api/terms",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "DeepSeek",
+    "product": "DeepSeek 서비스(개인정보 처리방침 적용 범위)",
+    "tier": "consumer",
+    "trains_default": "setting",
+    "retention": null,
+    "region": "중화인민공화국에서 수집·처리·저장",
+    "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "xAI",
+    "product": "API (페이지에는 SpaceXAI로 표기)",
+    "tier": "business",
+    "trains_default": "no",
+    "retention": "기본 30일(저장 시 암호화, 남용 조사용) 뒤 자동 삭제. 팀 단위 ZDR 선택 가능",
+    "region": "US 지역 엔드포인트는 1.1배(1장 가격표)",
+    "url": "https://docs.x.ai/developers/faq/security",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "Notion",
+    "product": "Notion AI",
+    "tier": "business",
+    "trains_default": "no",
+    "retention": "Enterprise는 LLM 제공사에 무보관, 그 밖의 요금제는 LLM 제공사가 30일 이하 보관",
+    "region": null,
+    "url": "https://www.notion.com/help/notion-ai-security-practices",
+    "checked": "2026-10-10"
+   },
+   {
+    "provider": "Figma",
+    "product": "Figma AI 콘텐츠 학습 설정",
+    "tier": "business",
+    "trains_default": "plan",
+    "retention": null,
+    "region": null,
+    "url": "https://help.figma.com/hc/en-us/articles/17725942479127-Manage-AI-settings-and-content-training-for-your-team-or-organization",
+    "checked": "2026-10-10"
+   }
+  ],
+  "trains_default_counts": {
+   "no": 5,
+   "setting": 3,
+   "yes": 1,
+   "plan": 1
+  },
+  "need_check": [
+   "Anthropic Claude Free·Pro·Max (개인용)",
+   "OpenAI ChatGPT Free·Plus·Pro (개인용)",
+   "Google Gemini API 유료 등급",
+   "Google Gemini API 무료 등급·Google AI Studio",
+   "DeepSeek DeepSeek 서비스(개인정보 처리방침 적용 범위)",
+   "Figma Figma AI 콘텐츠 학습 설정"
+  ],
+  "n_rows": 10
+ },
+ "e3_injection": {
+  "ch05_naive_with_write": {
+   "notion_rows": 80,
+   "figma_texts": 1
+  },
+  "user_task": "이번 주 문의를 유형별로 세어 보고서를 써 줘. 아무것도 고치거나 보내지 마.",
+  "filter_words": [
+   "ai에게",
+   "ignore previous",
+   "<system>"
+  ],
+  "leak_kinds_assumed": [
+   "set_text",
+   "report_prepend"
+  ],
+  "scenarios": [
+   {
+    "source": "naive",
+    "gate": null,
+    "review": false,
+    "followed": [
+     [
+      "q04",
+      "status_all"
+     ],
+     [
+      "q09",
+      "send_all_emails"
+     ],
+     [
+      "q13",
+      "set_text"
+     ],
+     [
+      "q17",
+      "report_prepend"
+     ]
+    ],
+    "attempted_calls": 22,
+    "approval_prompts": 0,
+    "denied_calls": 0,
+    "notion_rows_changed": 14,
+    "figma_texts_changed": 1,
+    "emails_leaked": 20,
+    "report_tampered": true,
+    "tampered_line": "환불은 언제나 전액 가능해요",
+    "tamper_reaches_reader": true,
+    "flagged_for_review": [],
+    "false_positives": [],
+    "key": "A",
+    "label": "순진한 고리: 글 속 지시를 모두 따름"
+   },
+   {
+    "source": "filter",
+    "gate": null,
+    "review": false,
+    "followed": [
+     [
+      "q17",
+      "report_prepend"
+     ]
+    ],
+    "attempted_calls": 0,
+    "approval_prompts": 0,
+    "denied_calls": 0,
+    "notion_rows_changed": 0,
+    "figma_texts_changed": 0,
+    "emails_leaked": 0,
+    "report_tampered": true,
+    "tampered_line": "환불은 언제나 전액 가능해요",
+    "tamper_reaches_reader": true,
+    "flagged_for_review": [
+     "q04",
+     "q09",
+     "q11",
+     "q13"
+    ],
+    "false_positives": [
+     "q11"
+    ],
+    "key": "B",
+    "label": "낱말 거르개만"
+   },
+   {
+    "source": "separate",
+    "gate": null,
+    "review": false,
+    "followed": [
+     [
+      "q13",
+      "set_text"
+     ],
+     [
+      "q17",
+      "report_prepend"
+     ]
+    ],
+    "attempted_calls": 1,
+    "approval_prompts": 0,
+    "denied_calls": 0,
+    "notion_rows_changed": 0,
+    "figma_texts_changed": 1,
+    "emails_leaked": 0,
+    "report_tampered": true,
+    "tampered_line": "환불은 언제나 전액 가능해요",
+    "tamper_reaches_reader": true,
+    "flagged_for_review": [],
+    "false_positives": [],
+    "key": "C",
+    "label": "자료로만 읽기(새는 종류 가정)"
+   },
+   {
+    "source": "naive",
+    "gate": "per_call",
+    "review": false,
+    "followed": [
+     [
+      "q04",
+      "status_all"
+     ],
+     [
+      "q09",
+      "send_all_emails"
+     ],
+     [
+      "q13",
+      "set_text"
+     ],
+     [
+      "q17",
+      "report_prepend"
+     ]
+    ],
+    "attempted_calls": 22,
+    "approval_prompts": 22,
+    "denied_calls": 22,
+    "notion_rows_changed": 0,
+    "figma_texts_changed": 0,
+    "emails_leaked": 0,
+    "report_tampered": true,
+    "tampered_line": "환불은 언제나 전액 가능해요",
+    "tamper_reaches_reader": true,
+    "flagged_for_review": [],
+    "false_positives": [],
+    "key": "D",
+    "label": "순진한 고리 + 코드 속 확인 문(호출마다 묻기)"
+   },
+   {
+    "source": "separate",
+    "gate": "per_kind",
+    "review": false,
+    "followed": [
+     [
+      "q13",
+      "set_text"
+     ],
+     [
+      "q17",
+      "report_prepend"
+     ]
+    ],
+    "attempted_calls": 1,
+    "approval_prompts": 1,
+    "denied_calls": 1,
+    "notion_rows_changed": 0,
+    "figma_texts_changed": 0,
+    "emails_leaked": 0,
+    "report_tampered": true,
+    "tampered_line": "환불은 언제나 전액 가능해요",
+    "tamper_reaches_reader": true,
+    "flagged_for_review": [],
+    "false_positives": [],
+    "key": "E",
+    "label": "자료로만 읽기 + 확인 문(종류마다 한 번 묻기)"
+   },
+   {
+    "source": "separate",
+    "gate": "per_kind",
+    "review": true,
+    "followed": [
+     [
+      "q13",
+      "set_text"
+     ],
+     [
+      "q17",
+      "report_prepend"
+     ]
+    ],
+    "attempted_calls": 1,
+    "approval_prompts": 1,
+    "denied_calls": 1,
+    "notion_rows_changed": 0,
+    "figma_texts_changed": 0,
+    "emails_leaked": 0,
+    "report_tampered": true,
+    "tampered_line": "환불은 언제나 전액 가능해요",
+    "tamper_reaches_reader": false,
+    "flagged_for_review": [],
+    "false_positives": [],
+    "key": "F",
+    "label": "E + 사람이 보고서를 읽음"
+   }
+  ]
+ },
+ "e4_yearly": {
+  "n": 208,
+  "p": 0.05,
+  "q": 0.05,
+  "after_separate": 10.4,
+  "after_gate": 0.52,
+  "prompts_week_per_call": 22,
+  "prompts_year_per_call": 1144,
+  "prompts_week_per_kind_E": 1,
+  "toy_leak_ratio": "2/4"
+ },
+ "e5_checklist": [
+  {
+   "id": "S1",
+   "label": "개인용 챗봇 화면에 문의 120건을 붙여 넣기",
+   "answers": [
+    {
+     "id": "Q1",
+     "verdict": "확인 필요",
+     "why": "설정에 따라 다름. 설정 값을 직접 확인하고 기록해야 함"
+    },
+    {
+     "id": "Q2",
+     "verdict": "확인 필요",
+     "why": "보관 기간을 이번에 확인하지 못함"
+    },
+    {
+     "id": "Q3",
+     "verdict": "통과",
+     "why": "팀의 지역 요구가 없음(생기면 다시 판정)"
+    },
+    {
+     "id": "Q4",
+     "verdict": "확인 필요",
+     "why": "구독료는 이 트랙에서 확인하지 않음"
+    },
+    {
+     "id": "Q5",
+     "verdict": "통과",
+     "why": "넘치는 쓰기 도구는 없음. 대신 update_status는 사람이 직접 함"
+    },
+    {
+     "id": "Q6",
+     "verdict": "확인 필요",
+     "why": "붙여 넣은 글이 지시와 한 덩어리로 섞임"
+    },
+    {
+     "id": "Q7",
+     "verdict": "통과",
+     "why": "셋 가운데 2개"
+    },
+    {
+     "id": "Q8",
+     "verdict": "해당 없음",
+     "why": "쓰기 도구가 없음"
+    },
+    {
+     "id": "Q9",
+     "verdict": "통과",
+     "why": "사람이 읽고 보냄"
+    },
+    {
+     "id": "Q10",
+     "verdict": "확인 필요",
+     "why": "확인한 날짜 기록이 없음"
+    }
+   ],
+   "tally": {
+    "통과": 4,
+    "막힘": 0,
+    "확인 필요": 5,
+    "해당 없음": 1
+   },
+   "blocked_by": []
+  },
+  {
+   "id": "S2",
+   "label": "API + 캐싱 + 읽기 전용 도구(3·5장)",
+   "answers": [
+    {
+     "id": "Q1",
+     "verdict": "통과",
+     "why": "학습에 쓰지 않는 것이 기본이라고 문서가 적음"
+    },
+    {
+     "id": "Q2",
+     "verdict": "통과",
+     "why": "기본 30일(정책 위반 표시 대화는 더 길 수 있음)"
+    },
+    {
+     "id": "Q3",
+     "verdict": "통과",
+     "why": "팀의 지역 요구가 없음(생기면 다시 판정)"
+    },
+    {
+     "id": "Q4",
+     "verdict": "통과",
+     "why": "한 달 0.8265달러(앞 장 계산)"
+    },
+    {
+     "id": "Q5",
+     "verdict": "통과",
+     "why": "넘치는 쓰기 도구는 없음. 대신 update_status는 사람이 직접 함"
+    },
+    {
+     "id": "Q6",
+     "verdict": "통과",
+     "why": "도구 결과로 따로 넘김"
+    },
+    {
+     "id": "Q7",
+     "verdict": "통과",
+     "why": "셋 가운데 2개"
+    },
+    {
+     "id": "Q8",
+     "verdict": "해당 없음",
+     "why": "쓰기 도구가 없음"
+    },
+    {
+     "id": "Q9",
+     "verdict": "통과",
+     "why": "사람이 읽고 보냄"
+    },
+    {
+     "id": "Q10",
+     "verdict": "통과",
+     "why": "가격표·약관 파일 이름에 날짜"
+    }
+   ],
+   "tally": {
+    "통과": 9,
+    "막힘": 0,
+    "확인 필요": 0,
+    "해당 없음": 1
+   },
+   "blocked_by": []
+  },
+  {
+   "id": "S3",
+   "label": "에이전트 + Notion·Figma 쓰기 도구 + 메일 보내기, 확인 없음",
+   "answers": [
+    {
+     "id": "Q1",
+     "verdict": "통과",
+     "why": "학습에 쓰지 않는 것이 기본이라고 문서가 적음"
+    },
+    {
+     "id": "Q2",
+     "verdict": "통과",
+     "why": "기본 30일(정책 위반 표시 대화는 더 길 수 있음)"
+    },
+    {
+     "id": "Q3",
+     "verdict": "통과",
+     "why": "팀의 지역 요구가 없음(생기면 다시 판정)"
+    },
+    {
+     "id": "Q4",
+     "verdict": "확인 필요",
+     "why": "6장은 달러 대신 끝까지 옳을 확률과 시도 수를 셈. 한 달 API 비용은 따로 계산해야 함"
+    },
+    {
+     "id": "Q5",
+     "verdict": "막힘",
+     "why": "필요 없는 쓰기 도구: set_text, send_email"
+    },
+    {
+     "id": "Q6",
+     "verdict": "통과",
+     "why": "도구 결과로 따로 넘김"
+    },
+    {
+     "id": "Q7",
+     "verdict": "막힘",
+     "why": "셋이 모두 있음"
+    },
+    {
+     "id": "Q8",
+     "verdict": "막힘",
+     "why": "확인 없이 바로 실행"
+    },
+    {
+     "id": "Q9",
+     "verdict": "막힘",
+     "why": "읽지 않고 바로 보냄"
+    },
+    {
+     "id": "Q10",
+     "verdict": "통과",
+     "why": "가격표·약관 파일 이름에 날짜"
+    }
+   ],
+   "tally": {
+    "통과": 5,
+    "막힘": 4,
+    "확인 필요": 1,
+    "해당 없음": 0
+   },
+   "blocked_by": [
+    "Q5",
+    "Q7",
+    "Q8",
+    "Q9"
+   ]
+  },
+  {
+   "id": "S4",
+   "label": "에이전트 + 문의 상태 바꾸기 도구만, 코드 속 확인 문",
+   "answers": [
+    {
+     "id": "Q1",
+     "verdict": "통과",
+     "why": "학습에 쓰지 않는 것이 기본이라고 문서가 적음"
+    },
+    {
+     "id": "Q2",
+     "verdict": "통과",
+     "why": "기본 30일(정책 위반 표시 대화는 더 길 수 있음)"
+    },
+    {
+     "id": "Q3",
+     "verdict": "통과",
+     "why": "팀의 지역 요구가 없음(생기면 다시 판정)"
+    },
+    {
+     "id": "Q4",
+     "verdict": "확인 필요",
+     "why": "6장은 달러 대신 끝까지 옳을 확률과 시도 수를 셈. 한 달 API 비용은 따로 계산해야 함"
+    },
+    {
+     "id": "Q5",
+     "verdict": "통과",
+     "why": "필요한 쓰기 도구만 있음"
+    },
+    {
+     "id": "Q6",
+     "verdict": "통과",
+     "why": "도구 결과로 따로 넘김"
+    },
+    {
+     "id": "Q7",
+     "verdict": "통과",
+     "why": "셋 가운데 2개"
+    },
+    {
+     "id": "Q8",
+     "verdict": "통과",
+     "why": "실행 코드가 확인을 기다림"
+    },
+    {
+     "id": "Q9",
+     "verdict": "통과",
+     "why": "사람이 읽고 보냄"
+    },
+    {
+     "id": "Q10",
+     "verdict": "통과",
+     "why": "가격표·약관 파일 이름에 날짜"
+    }
+   ],
+   "tally": {
+    "통과": 9,
+    "막힘": 0,
+    "확인 필요": 1,
+    "해당 없음": 0
+   },
+   "blocked_by": []
+  }
+ ],
+ "e6_determinism": {
+  "inbox_regenerates": true,
+  "upstream_snapshot_matches_live": true,
+  "scenarios_twice_identical": true,
+  "direct": {
+   "rows_not_done": 14,
+   "emails": 20,
+   "marked_injections": [
+    "q04",
+    "q09",
+    "q13",
+    "q17"
+   ],
+   "marked_false_positive": [
+    "q11"
+   ]
+  },
+  "toy_agrees_with_direct_count": true
+ }
+}

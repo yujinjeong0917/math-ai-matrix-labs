@@ -75,7 +75,7 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `productivity/ch05_sheets/` | 생산성 도구 워크플로 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html) |
 | `productivity/ch06_connect/` | 생산성 도구 워크플로 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html) |
 
-모델 평가, 알고리즘, ML 파이프라인, 생산성 도구 트랙은 작성 중이에요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
+AI 도구 실전 트랙은 작성 중이에요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 
 ## 폴더마다 같은 구성
 

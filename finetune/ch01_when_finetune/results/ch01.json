@@ -1,0 +1,950 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "rule_file": "fix_rules_2026-10-11.json",
+  "checked": "2026-10-11"
+ },
+ "e0_hand": {
+  "counts": {
+   "K": 3,
+   "F": 2,
+   "T": 2,
+   "I": 2,
+   "R": 1,
+   "OK": 0
+  },
+  "total": 10,
+  "fixes": {
+   "P": {
+    "F": 2,
+    "I": 2
+   },
+   "R": {
+    "K": 3
+   },
+   "F": {
+    "F": 2,
+    "T": 2,
+    "I": 2,
+    "K": 1
+   }
+  },
+  "rows": [
+   {
+    "combo": "P",
+    "fixed": 4,
+    "remaining": 6
+   },
+   {
+    "combo": "R",
+    "fixed": 3,
+    "remaining": 7
+   },
+   {
+    "combo": "F",
+    "fixed": 7,
+    "remaining": 3
+   },
+   {
+    "combo": "PR",
+    "fixed": 7,
+    "remaining": 3
+   },
+   {
+    "combo": "RF",
+    "fixed": 9,
+    "remaining": 1
+   }
+  ]
+ },
+ "e1_budget": {
+  "s": 400,
+  "e": 250,
+  "q": 150,
+  "a": 500,
+  "hand_k": 4,
+  "hand_tokens": 1550,
+  "windows": [
+   {
+    "window": 8192,
+    "room": 7142,
+    "k_max": 28,
+    "fits_needed_T": false
+   },
+   {
+    "window": 131072,
+    "room": 130022,
+    "k_max": 520,
+    "fits_needed_T": true
+   }
+  ],
+  "needed_examples_T": 100,
+  "per_call_with_needed_T": 25550,
+  "per_call_finetuned": 250,
+  "monthly_calls": 3000,
+  "monthly_tokens_prompt_T": 76650000,
+  "monthly_tokens_finetuned": 750000,
+  "ratio_prompt_over_ft": 102.2
+ },
+ "e2_retrieval": {
+  "rows": [
+   {
+    "id": "Q01",
+    "text": "환불 신청은 상품 받은 지 며칠 안에 해야 하나요?",
+    "gold": "D1",
+    "top": "D1",
+    "top3": [
+     [
+      5,
+      "D1"
+     ],
+     [
+      1,
+      "D3"
+     ],
+     [
+      1,
+      "D5"
+     ]
+    ],
+    "gold_score": 5,
+    "shared_with_gold": [
+     "받은",
+     "상품",
+     "신청",
+     "안에",
+     "환불"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q02",
+    "text": "돈 돌려받으려면 언제까지 말해야 해요?",
+    "gold": "D1",
+    "top": null,
+    "top3": [
+     [
+      1,
+      "D1"
+     ],
+     [
+      1,
+      "D3"
+     ],
+     [
+      1,
+      "D7"
+     ]
+    ],
+    "gold_score": 1,
+    "shared_with_gold": [
+     "돌려"
+    ],
+    "hit": false,
+    "hit_v2": false,
+    "reason": "tie"
+   },
+   {
+    "id": "Q03",
+    "text": "2만 원어치 주문했는데 배송비 얼마 나와요?",
+    "gold": "D2",
+    "top": "D2",
+    "top3": [
+     [
+      3,
+      "D2"
+     ],
+     [
+      2,
+      "D3"
+     ],
+     [
+      2,
+      "D4"
+     ]
+    ],
+    "gold_score": 3,
+    "shared_with_gold": [
+     "배송",
+     "송비",
+     "주문"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q04",
+    "text": "얼마 넘게 사면 공짜로 보내 주세요?",
+    "gold": "D2",
+    "top": null,
+    "top3": [
+     [
+      0,
+      "D1"
+     ],
+     [
+      0,
+      "D2"
+     ],
+     [
+      0,
+      "D3"
+     ]
+    ],
+    "gold_score": 0,
+    "shared_with_gold": [],
+    "hit": false,
+    "hit_v2": false,
+    "reason": "gold_no_overlap"
+   },
+   {
+    "id": "Q05",
+    "text": "오늘 오후 1시에 주문하면 언제 도착해요?",
+    "gold": "D3",
+    "top": "D3",
+    "top3": [
+     [
+      7,
+      "D3"
+     ],
+     [
+      2,
+      "D8"
+     ],
+     [
+      1,
+      "D2"
+     ]
+    ],
+    "gold_score": 7,
+    "shared_with_gold": [
+     "도착",
+     "문하",
+     "오후",
+     "주문",
+     "착해",
+     "하면",
+     "해요"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q06",
+    "text": "제주에 사는데 며칠 더 걸리나요?",
+    "gold": "D3",
+    "top": "D3",
+    "top3": [
+     [
+      2,
+      "D3"
+     ],
+     [
+      0,
+      "D1"
+     ],
+     [
+      0,
+      "D2"
+     ]
+    ],
+    "gold_score": 2,
+    "shared_with_gold": [
+     "더",
+     "제주"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q07",
+    "text": "사이즈 교환하면 돈 들어요?",
+    "gold": "D4",
+    "top": "D4",
+    "top3": [
+     [
+      5,
+      "D4"
+     ],
+     [
+      1,
+      "D1"
+     ],
+     [
+      1,
+      "D3"
+     ]
+    ],
+    "gold_score": 5,
+    "shared_with_gold": [
+     "교환",
+     "사이",
+     "이즈",
+     "하면",
+     "환하"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q08",
+    "text": "마음이 바뀌어서 다른 색으로 바꾸고 싶은데 비용이 있나요?",
+    "gold": "D4",
+    "top": null,
+    "top3": [
+     [
+      1,
+      "D4"
+     ],
+     [
+      1,
+      "D5"
+     ],
+     [
+      1,
+      "D6"
+     ]
+    ],
+    "gold_score": 1,
+    "shared_with_gold": [
+     "으로"
+    ],
+    "hit": false,
+    "hit_v2": false,
+    "reason": "tie"
+   },
+   {
+    "id": "Q09",
+    "text": "적립금은 언제 없어져요?",
+    "gold": "D5",
+    "top": "D5",
+    "top3": [
+     [
+      4,
+      "D5"
+     ],
+     [
+      1,
+      "D6"
+     ],
+     [
+      0,
+      "D1"
+     ]
+    ],
+    "gold_score": 4,
+    "shared_with_gold": [
+     "금은",
+     "립금",
+     "적립",
+     "져요"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q10",
+    "text": "신규 가입 쿠폰을 다른 쿠폰이랑 같이 써도 되나요?",
+    "gold": "D6",
+    "top": "D6",
+    "top3": [
+     [
+      4,
+      "D6"
+     ],
+     [
+      0,
+      "D1"
+     ],
+     [
+      0,
+      "D2"
+     ]
+    ],
+    "gold_score": 4,
+    "shared_with_gold": [
+     "가입",
+     "다른",
+     "신규",
+     "쿠폰"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   },
+   {
+    "id": "Q11",
+    "text": "산 지 8개월 됐는데 고장 났어요. 공짜로 고쳐 주나요?",
+    "gold": "D7",
+    "top": null,
+    "top3": [
+     [
+      1,
+      "D1"
+     ],
+     [
+      1,
+      "D6"
+     ],
+     [
+      0,
+      "D2"
+     ]
+    ],
+    "gold_score": 0,
+    "shared_with_gold": [],
+    "hit": false,
+    "hit_v2": false,
+    "reason": "gold_no_overlap"
+   },
+   {
+    "id": "Q12",
+    "text": "전화는 몇 시까지 받으세요?",
+    "gold": "D8",
+    "top": "D8",
+    "top3": [
+     [
+      3,
+      "D8"
+     ],
+     [
+      0,
+      "D1"
+     ],
+     [
+      0,
+      "D2"
+     ]
+    ],
+    "gold_score": 3,
+    "shared_with_gold": [
+     "까지",
+     "시까",
+     "전화"
+    ],
+    "hit": true,
+    "hit_v2": true,
+    "reason": "hit"
+   }
+  ],
+  "k_items": 12,
+  "hits": 8,
+  "hits_v2": 8,
+  "hit_rate": 0.6667
+ },
+ "e3_compare": {
+  "window": 8192,
+  "k_max": 28,
+  "counts": {
+   "K": 12,
+   "F": 8,
+   "T": 8,
+   "I": 6,
+   "R": 4,
+   "OK": 2
+  },
+  "total": 40,
+  "ft_known_docs": [
+   "D1",
+   "D2",
+   "D3",
+   "D4",
+   "D8"
+  ],
+  "rows": [
+   {
+    "combo": "",
+    "name": "아무것도 안 함",
+    "ok": 2,
+    "fail": 38,
+    "stale": 0,
+    "remaining": 38,
+    "remaining_by_type": {
+     "K": 12,
+     "F": 8,
+     "T": 8,
+     "I": 6,
+     "R": 4
+    }
+   },
+   {
+    "combo": "P",
+    "name": "프롬프트",
+    "ok": 16,
+    "fail": 24,
+    "stale": 0,
+    "remaining": 24,
+    "remaining_by_type": {
+     "K": 12,
+     "T": 8,
+     "R": 4
+    }
+   },
+   {
+    "combo": "R",
+    "name": "검색(RAG)",
+    "ok": 10,
+    "fail": 30,
+    "stale": 0,
+    "remaining": 30,
+    "remaining_by_type": {
+     "K": 4,
+     "F": 8,
+     "T": 8,
+     "I": 6,
+     "R": 4
+    }
+   },
+   {
+    "combo": "F",
+    "name": "파인튜닝",
+    "ok": 33,
+    "fail": 7,
+    "stale": 0,
+    "remaining": 7,
+    "remaining_by_type": {
+     "K": 3,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PR",
+    "name": "프롬프트 + 검색",
+    "ok": 24,
+    "fail": 16,
+    "stale": 0,
+    "remaining": 16,
+    "remaining_by_type": {
+     "K": 4,
+     "T": 8,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PF",
+    "name": "프롬프트 + 파인튜닝",
+    "ok": 33,
+    "fail": 7,
+    "stale": 0,
+    "remaining": 7,
+    "remaining_by_type": {
+     "K": 3,
+     "R": 4
+    }
+   },
+   {
+    "combo": "RF",
+    "name": "검색 + 파인튜닝",
+    "ok": 35,
+    "fail": 5,
+    "stale": 0,
+    "remaining": 5,
+    "remaining_by_type": {
+     "K": 1,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PRF",
+    "name": "셋 다",
+    "ok": 35,
+    "fail": 5,
+    "stale": 0,
+    "remaining": 5,
+    "remaining_by_type": {
+     "K": 1,
+     "R": 4
+    }
+   }
+  ]
+ },
+ "e4_policy_change": {
+  "changed_docs": [
+   "D1",
+   "D2"
+  ],
+  "stale_items_F": [
+   "Q01",
+   "Q02",
+   "Q03",
+   "Q04"
+  ],
+  "stale_items_RF": [
+   "Q02",
+   "Q04"
+  ],
+  "rows": [
+   {
+    "combo": "",
+    "name": "아무것도 안 함",
+    "ok": 2,
+    "fail": 38,
+    "stale": 0,
+    "remaining": 38,
+    "remaining_by_type": {
+     "K": 12,
+     "F": 8,
+     "T": 8,
+     "I": 6,
+     "R": 4
+    }
+   },
+   {
+    "combo": "P",
+    "name": "프롬프트",
+    "ok": 16,
+    "fail": 24,
+    "stale": 0,
+    "remaining": 24,
+    "remaining_by_type": {
+     "K": 12,
+     "T": 8,
+     "R": 4
+    }
+   },
+   {
+    "combo": "R",
+    "name": "검색(RAG)",
+    "ok": 10,
+    "fail": 30,
+    "stale": 0,
+    "remaining": 30,
+    "remaining_by_type": {
+     "K": 4,
+     "F": 8,
+     "T": 8,
+     "I": 6,
+     "R": 4
+    }
+   },
+   {
+    "combo": "F",
+    "name": "파인튜닝",
+    "ok": 29,
+    "fail": 7,
+    "stale": 4,
+    "remaining": 11,
+    "remaining_by_type": {
+     "K": 7,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PR",
+    "name": "프롬프트 + 검색",
+    "ok": 24,
+    "fail": 16,
+    "stale": 0,
+    "remaining": 16,
+    "remaining_by_type": {
+     "K": 4,
+     "T": 8,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PF",
+    "name": "프롬프트 + 파인튜닝",
+    "ok": 29,
+    "fail": 7,
+    "stale": 4,
+    "remaining": 11,
+    "remaining_by_type": {
+     "K": 7,
+     "R": 4
+    }
+   },
+   {
+    "combo": "RF",
+    "name": "검색 + 파인튜닝",
+    "ok": 33,
+    "fail": 5,
+    "stale": 2,
+    "remaining": 7,
+    "remaining_by_type": {
+     "K": 3,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PRF",
+    "name": "셋 다",
+    "ok": 33,
+    "fail": 5,
+    "stale": 2,
+    "remaining": 7,
+    "remaining_by_type": {
+     "K": 3,
+     "R": 4
+    }
+   }
+  ]
+ },
+ "e5_big_window": {
+  "window": 131072,
+  "k_max": 520,
+  "rows": [
+   {
+    "combo": "",
+    "name": "아무것도 안 함",
+    "ok": 2,
+    "fail": 38,
+    "stale": 0,
+    "remaining": 38,
+    "remaining_by_type": {
+     "K": 12,
+     "F": 8,
+     "T": 8,
+     "I": 6,
+     "R": 4
+    }
+   },
+   {
+    "combo": "P",
+    "name": "프롬프트",
+    "ok": 24,
+    "fail": 16,
+    "stale": 0,
+    "remaining": 16,
+    "remaining_by_type": {
+     "K": 12,
+     "R": 4
+    }
+   },
+   {
+    "combo": "R",
+    "name": "검색(RAG)",
+    "ok": 10,
+    "fail": 30,
+    "stale": 0,
+    "remaining": 30,
+    "remaining_by_type": {
+     "K": 4,
+     "F": 8,
+     "T": 8,
+     "I": 6,
+     "R": 4
+    }
+   },
+   {
+    "combo": "F",
+    "name": "파인튜닝",
+    "ok": 33,
+    "fail": 7,
+    "stale": 0,
+    "remaining": 7,
+    "remaining_by_type": {
+     "K": 3,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PR",
+    "name": "프롬프트 + 검색",
+    "ok": 32,
+    "fail": 8,
+    "stale": 0,
+    "remaining": 8,
+    "remaining_by_type": {
+     "K": 4,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PF",
+    "name": "프롬프트 + 파인튜닝",
+    "ok": 33,
+    "fail": 7,
+    "stale": 0,
+    "remaining": 7,
+    "remaining_by_type": {
+     "K": 3,
+     "R": 4
+    }
+   },
+   {
+    "combo": "RF",
+    "name": "검색 + 파인튜닝",
+    "ok": 35,
+    "fail": 5,
+    "stale": 0,
+    "remaining": 5,
+    "remaining_by_type": {
+     "K": 1,
+     "R": 4
+    }
+   },
+   {
+    "combo": "PRF",
+    "name": "셋 다",
+    "ok": 35,
+    "fail": 5,
+    "stale": 0,
+    "remaining": 5,
+    "remaining_by_type": {
+     "K": 1,
+     "R": 4
+    }
+   }
+  ]
+ },
+ "e6_sensitivity": [
+  {
+   "min_fact_count": 1,
+   "F_remaining_v1": 4,
+   "F_stale_v2": 4,
+   "RF_remaining_v2": 6
+  },
+  {
+   "min_fact_count": 2,
+   "F_remaining_v1": 5,
+   "F_stale_v2": 4,
+   "RF_remaining_v2": 6
+  },
+  {
+   "min_fact_count": 3,
+   "F_remaining_v1": 7,
+   "F_stale_v2": 4,
+   "RF_remaining_v2": 7
+  },
+  {
+   "min_fact_count": 4,
+   "F_remaining_v1": 7,
+   "F_stale_v2": 4,
+   "RF_remaining_v2": 7
+  },
+  {
+   "min_fact_count": 5,
+   "F_remaining_v1": 7,
+   "F_stale_v2": 4,
+   "RF_remaining_v2": 7
+  },
+  {
+   "min_fact_count": 6,
+   "F_remaining_v1": 8,
+   "F_stale_v2": 4,
+   "RF_remaining_v2": 7
+  }
+ ],
+ "e7_basis": {
+  "cells": 15,
+  "with_url": 6,
+  "assumed_only": 9,
+  "computed": 3,
+  "detail": [
+   {
+    "method": "P",
+    "type": "K",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "P",
+    "type": "F",
+    "fix": true,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "P",
+    "type": "T",
+    "fix": "budget",
+    "has_url": true,
+    "assumed": false
+   },
+   {
+    "method": "P",
+    "type": "I",
+    "fix": true,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "P",
+    "type": "R",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "R",
+    "type": "K",
+    "fix": "retrieval",
+    "has_url": true,
+    "assumed": false
+   },
+   {
+    "method": "R",
+    "type": "F",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "R",
+    "type": "T",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "R",
+    "type": "I",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "R",
+    "type": "R",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   },
+   {
+    "method": "F",
+    "type": "K",
+    "fix": "count",
+    "has_url": true,
+    "assumed": true
+   },
+   {
+    "method": "F",
+    "type": "F",
+    "fix": true,
+    "has_url": true,
+    "assumed": false
+   },
+   {
+    "method": "F",
+    "type": "T",
+    "fix": true,
+    "has_url": true,
+    "assumed": false
+   },
+   {
+    "method": "F",
+    "type": "I",
+    "fix": true,
+    "has_url": true,
+    "assumed": false
+   },
+   {
+    "method": "F",
+    "type": "R",
+    "fix": false,
+    "has_url": false,
+    "assumed": true
+   }
+  ]
+ }
+}

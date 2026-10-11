@@ -1,0 +1,466 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "spec_file": "specs_2026-10-11.json",
+  "checked": "2026-10-11",
+  "gb": "10^9 bytes"
+ },
+ "e0_hand": {
+  "numbers": 1000,
+  "bytes": {
+   "fp32": 4000,
+   "fp16": 2000,
+   "bf16": 2000
+  },
+  "per_number": {
+   "fp32": 4,
+   "fp16": 2,
+   "bf16": 2
+  },
+  "params_1b": 1000000000,
+  "infer_bf16_gb": 2.0,
+  "train_zero_gb": 16.0,
+  "train_hf_gb": 18.0
+ },
+ "e1_params": {
+  "model": "Qwen/Qwen2.5-7B",
+  "config": {
+   "hidden_size": 3584,
+   "intermediate_size": 18944,
+   "num_hidden_layers": 28,
+   "num_attention_heads": 28,
+   "num_key_value_heads": 4,
+   "vocab_size": 152064,
+   "tie_word_embeddings": false,
+   "torch_dtype": "bfloat16"
+  },
+  "head_dim": 128,
+  "per_layer": 233057792,
+  "attn_per_layer": 29364736,
+  "mlp_per_layer": 203685888,
+  "embedding": 544997376,
+  "total_closed": 7615616512,
+  "total_by_tensors": 7615616512,
+  "n_tensors": 339,
+  "safetensors_total": 7615616512,
+  "matches_safetensors": true,
+  "non_embedding": 6525621760,
+  "card": "7.61B",
+  "card_non_embedding": "6.53B",
+  "embed_and_head_share_pct": 14.3,
+  "norm_per_layer": 7168,
+  "kv_dim": 512,
+  "q_per_kv_head": 7,
+  "embed_and_head": 1089994752,
+  "layers_total": 6525618176,
+  "billions": 7.62,
+  "bf16_bytes": 15231233024,
+  "bf16_gb": 15.23,
+  "bf16_gib": 14.19,
+  "gib_bytes": 1073741824
+ },
+ "e2_states": [
+  {
+   "recipe": "zero_mixed_adam",
+   "label": "혼합정밀도 + Adam (ZeRO 논문의 셈)",
+   "bytes_per_param": 16.0,
+   "parts_gb": {
+    "16비트 가중치": 15.23,
+    "16비트 기울기": 15.23,
+    "32비트 가중치 사본": 30.46,
+    "Adam 모멘텀": 30.46,
+    "Adam 분산": 30.46
+   },
+   "total_gb": 121.85
+  },
+  {
+   "recipe": "hf_mixed_adam",
+   "label": "혼합정밀도 + Adam (Hugging Face 문서의 셈)",
+   "bytes_per_param": 18.0,
+   "parts_gb": {
+    "가중치 16비트 + 32비트": 45.69,
+    "32비트 기울기": 30.46,
+    "Adam 모멘텀 + 분산": 60.92
+   },
+   "total_gb": 137.08
+  },
+  {
+   "recipe": "hf_mixed_adam8bit",
+   "label": "혼합정밀도 + 8비트 Adam (Hugging Face 문서의 셈)",
+   "bytes_per_param": 12.0,
+   "parts_gb": {
+    "가중치 16비트 + 32비트": 45.69,
+    "32비트 기울기": 30.46,
+    "8비트 Adam 상태": 15.23
+   },
+   "total_gb": 91.39
+  },
+  {
+   "recipe": "infer_bf16",
+   "label": "추론만, bf16 가중치",
+   "bytes_per_param": 2.0,
+   "parts_gb": {
+    "16비트 가중치": 15.23
+   },
+   "total_gb": 15.23
+  },
+  {
+   "recipe": "frozen_bf16",
+   "label": "LoRA 미리 보기: 얼린 기본 모델 bf16 (LoRA 몫은 7장)",
+   "bytes_per_param": 2.0,
+   "parts_gb": {
+    "얼린 16비트 가중치": 15.23
+   },
+   "total_gb": 15.23
+  },
+  {
+   "recipe": "frozen_4bit",
+   "label": "QLoRA 미리 보기: 얼린 기본 모델 4비트 (보정 상수는 6장, LoRA 몫은 7장)",
+   "bytes_per_param": 0.5,
+   "parts_gb": {
+    "얼린 4비트 가중치": 3.81
+   },
+   "total_gb": 3.81
+  }
+ ],
+ "e3_activations": {
+  "s": 1024,
+  "b": 1,
+  "h": 3584,
+  "a": 28,
+  "L": 28,
+  "sbh": 3670016,
+  "as2b": 29360128,
+  "parts_bytes": {
+   "attn.qkv_input": 7340032,
+   "attn.QK^T(Q,K)": 14680064,
+   "attn.softmax_out": 58720256,
+   "attn.softmax_dropout_mask": 29360128,
+   "attn.over_V(dropout_out)": 58720256,
+   "attn.over_V(V)": 7340032,
+   "attn.proj_input": 7340032,
+   "attn.dropout_mask": 3670016,
+   "mlp.linear1_input": 7340032,
+   "mlp.linear2_input": 29360128,
+   "mlp.gelu_input": 29360128,
+   "mlp.dropout_mask": 3670016,
+   "layernorm.inputs(2개)": 14680064
+  },
+  "attn_bytes": 187170816,
+  "attn_check": true,
+  "mlp_bytes": 69730304,
+  "mlp_check": true,
+  "ln_bytes": 14680064,
+  "ln_check": true,
+  "per_layer_formula": 271581184,
+  "per_layer_sum": 271581184,
+  "formula_equals_sum": true,
+  "five_as_over_h": 40.0,
+  "per_layer_mb": 271.58,
+  "per_layer_gb": 0.2716,
+  "paren_34_plus": 74.0,
+  "total_gb": 7.604,
+  "checkpoint_inputs_gb": 0.2055,
+  "checkpoint_peak_gb": 0.4771,
+  "logits_fp32_gb_b1": 0.623,
+  "grid": [
+   {
+    "seq_len": 512,
+    "micro_batch": 1,
+    "all_gb": 2.775,
+    "no_scores_gb": 1.747,
+    "checkpoint_gb": 0.202
+   },
+   {
+    "seq_len": 512,
+    "micro_batch": 2,
+    "all_gb": 5.549,
+    "no_scores_gb": 3.494,
+    "checkpoint_gb": 0.404
+   },
+   {
+    "seq_len": 512,
+    "micro_batch": 4,
+    "all_gb": 11.098,
+    "no_scores_gb": 6.988,
+    "checkpoint_gb": 0.807
+   },
+   {
+    "seq_len": 512,
+    "micro_batch": 8,
+    "all_gb": 22.196,
+    "no_scores_gb": 13.975,
+    "checkpoint_gb": 1.615
+   },
+   {
+    "seq_len": 1024,
+    "micro_batch": 1,
+    "all_gb": 7.604,
+    "no_scores_gb": 3.494,
+    "checkpoint_gb": 0.477
+   },
+   {
+    "seq_len": 1024,
+    "micro_batch": 2,
+    "all_gb": 15.209,
+    "no_scores_gb": 6.988,
+    "checkpoint_gb": 0.954
+   },
+   {
+    "seq_len": 1024,
+    "micro_batch": 4,
+    "all_gb": 30.417,
+    "no_scores_gb": 13.975,
+    "checkpoint_gb": 1.908
+   },
+   {
+    "seq_len": 1024,
+    "micro_batch": 8,
+    "all_gb": 60.834,
+    "no_scores_gb": 27.951,
+    "checkpoint_gb": 3.817
+   },
+   {
+    "seq_len": 2048,
+    "micro_batch": 1,
+    "all_gb": 23.429,
+    "no_scores_gb": 6.988,
+    "checkpoint_gb": 1.248
+   },
+   {
+    "seq_len": 2048,
+    "micro_batch": 2,
+    "all_gb": 46.859,
+    "no_scores_gb": 13.975,
+    "checkpoint_gb": 2.496
+   },
+   {
+    "seq_len": 2048,
+    "micro_batch": 4,
+    "all_gb": 93.718,
+    "no_scores_gb": 27.951,
+    "checkpoint_gb": 4.991
+   },
+   {
+    "seq_len": 2048,
+    "micro_batch": 8,
+    "all_gb": 187.435,
+    "no_scores_gb": 55.902,
+    "checkpoint_gb": 9.982
+   }
+  ],
+  "ratio_512_to_1024_all": 2.74,
+  "ratio_1024_to_2048_all": 3.08,
+  "exercise_512x4": {
+   "sbh": 7340032,
+   "paren": 54.0,
+   "gb": 11.098
+  },
+  "exercise_3b": {
+   "infer_gb": 6.0,
+   "train16_gb": 48.0
+  }
+ },
+ "e4_checkpoint_sim": {
+  "rows": [
+   {
+    "k": null,
+    "peak_gb": 7.6043,
+    "recomputed_layers": 0
+   },
+   {
+    "k": 1,
+    "peak_gb": 0.4771,
+    "recomputed_layers": 28
+   },
+   {
+    "k": 2,
+    "peak_gb": 0.6459,
+    "recomputed_layers": 28
+   },
+   {
+    "k": 4,
+    "peak_gb": 1.1377,
+    "recomputed_layers": 28
+   },
+   {
+    "k": 7,
+    "peak_gb": 1.9304,
+    "recomputed_layers": 28
+   },
+   {
+    "k": 14,
+    "peak_gb": 3.8168,
+    "recomputed_layers": 28
+   },
+   {
+    "k": 28,
+    "peak_gb": 7.6116,
+    "recomputed_layers": 28
+   }
+  ],
+  "k1_equals_formula": true,
+  "none_equals_formula": true,
+  "best_k": 1,
+  "best_peak_gb": 0.4771,
+  "time_ratio_assumed": "앞 1 : 뒤 2 가정에서 (1 + 2 + 1) / (1 + 2)",
+  "time_ratio": 1.3333
+ },
+ "e5_grad_accum": {
+  "batch": [
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    7
+   ],
+   [
+    4,
+    8
+   ]
+  ],
+  "w": 1,
+  "per_example": [
+   -2,
+   -4,
+   -24,
+   -32
+  ],
+  "full_batch_grad": "-31/2",
+  "accumulated_grad": "-31/2",
+  "equal": true,
+  "forgot_divide_grad": "-62",
+  "forgot_ratio": "4"
+ },
+ "e6_project": {
+  "seq_len": 1024,
+  "effective_batch": 16,
+  "gpus": [
+   {
+    "name": "NVIDIA T4",
+    "memory_gb": 16
+   },
+   {
+    "name": "NVIDIA L4",
+    "memory_gb": 24
+   },
+   {
+    "name": "NVIDIA A100 80GB",
+    "memory_gb": 80
+   }
+  ],
+  "rows": [
+   {
+    "plan": "full_zero_b4",
+    "label": "전체 학습(16바이트), 묶음 4, 체크포인팅 없음",
+    "states_gb": 121.85,
+    "activations_gb": 30.42,
+    "total_gb": 152.27,
+    "fits": {
+     "NVIDIA T4": false,
+     "NVIDIA L4": false,
+     "NVIDIA A100 80GB": false
+    },
+    "margin_gb": {
+     "NVIDIA T4": -136.27,
+     "NVIDIA L4": -128.27,
+     "NVIDIA A100 80GB": -72.27
+    }
+   },
+   {
+    "plan": "full_zero_b1_ckpt",
+    "label": "전체 학습(16바이트), 묶음 1 × 누적 16, 체크포인팅",
+    "states_gb": 121.85,
+    "activations_gb": 0.48,
+    "total_gb": 122.33,
+    "fits": {
+     "NVIDIA T4": false,
+     "NVIDIA L4": false,
+     "NVIDIA A100 80GB": false
+    },
+    "margin_gb": {
+     "NVIDIA T4": -106.33,
+     "NVIDIA L4": -98.33,
+     "NVIDIA A100 80GB": -42.33
+    }
+   },
+   {
+    "plan": "full_hf_b1_ckpt",
+    "label": "전체 학습(18바이트), 묶음 1 × 누적 16, 체크포인팅",
+    "states_gb": 137.08,
+    "activations_gb": 0.48,
+    "total_gb": 137.56,
+    "fits": {
+     "NVIDIA T4": false,
+     "NVIDIA L4": false,
+     "NVIDIA A100 80GB": false
+    },
+    "margin_gb": {
+     "NVIDIA T4": -121.56,
+     "NVIDIA L4": -113.56,
+     "NVIDIA A100 80GB": -57.56
+    }
+   },
+   {
+    "plan": "adam8_b1_ckpt",
+    "label": "8비트 Adam(12바이트), 묶음 1 × 누적 16, 체크포인팅",
+    "states_gb": 91.39,
+    "activations_gb": 0.48,
+    "total_gb": 91.86,
+    "fits": {
+     "NVIDIA T4": false,
+     "NVIDIA L4": false,
+     "NVIDIA A100 80GB": false
+    },
+    "margin_gb": {
+     "NVIDIA T4": -75.86,
+     "NVIDIA L4": -67.86,
+     "NVIDIA A100 80GB": -11.86
+    }
+   },
+   {
+    "plan": "lora_base_b1_ckpt",
+    "label": "LoRA 미리 보기: 얼린 bf16 + 활성값(LoRA 몫 제외)",
+    "states_gb": 15.23,
+    "activations_gb": 0.48,
+    "total_gb": 15.71,
+    "fits": {
+     "NVIDIA T4": true,
+     "NVIDIA L4": true,
+     "NVIDIA A100 80GB": true
+    },
+    "margin_gb": {
+     "NVIDIA T4": 0.29,
+     "NVIDIA L4": 8.29,
+     "NVIDIA A100 80GB": 64.29
+    }
+   },
+   {
+    "plan": "qlora_base_b1_ckpt",
+    "label": "QLoRA 미리 보기: 얼린 4비트 + 활성값(보정 상수·LoRA 몫 제외)",
+    "states_gb": 3.81,
+    "activations_gb": 0.48,
+    "total_gb": 4.28,
+    "fits": {
+     "NVIDIA T4": true,
+     "NVIDIA L4": true,
+     "NVIDIA A100 80GB": true
+    },
+    "margin_gb": {
+     "NVIDIA T4": 11.72,
+     "NVIDIA L4": 19.72,
+     "NVIDIA A100 80GB": 75.72
+    }
+   }
+  ],
+  "infer_bf16_gb": 15.23,
+  "infer_margin_t4_gb": 0.77
+ }
+}

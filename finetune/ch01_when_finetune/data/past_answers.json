@@ -1,0 +1,5 @@
+{
+  "note": "지난 1년 동안 사람이 쓴 답변 600쌍(가정)에서 각 정책 사실이 나온 횟수(가정값). 파인튜닝 데이터로 쓸 후보다.",
+  "pairs": 600,
+  "fact_counts": {"refund_days": 41, "ship_fee": 33, "ship_time": 27, "exchange": 12, "points": 2, "coupon": 1, "warranty": 2, "hours": 5}
+}

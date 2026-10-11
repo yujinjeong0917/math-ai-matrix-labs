@@ -1,0 +1,611 @@
+{
+ "_about": "9장 가상 채점 재료(직접 만든 예시, 실제 모델 출력이 아니다). 모델마다 문의 40건(1장 평가 세트)의 [본문 종류, 인사 있음, 맺음말 있음]. base = 8장에서 학습하기 전의 Qwen2.5-7B-Instruct(어댑터를 끈 상태)라고 둔 가상 답, ft_best = 검증 손실이 가장 낮았던 체크포인트, ft_last = 6에폭 끝까지 학습한 체크포인트라고 둔 가상 답. base의 실패는 1장의 실패 이름표(K/F/T/I/R/OK)와 같게 만들었다. 모든 값은 [가정]이다.",
+ "models": {
+  "base": {
+   "Q01": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q02": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q03": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q04": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q05": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q06": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q07": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q08": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q09": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q10": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q11": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q12": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q13": [
+    "ref",
+    false,
+    true
+   ],
+   "Q14": [
+    "ref",
+    false,
+    true
+   ],
+   "Q15": [
+    "ref",
+    false,
+    true
+   ],
+   "Q16": [
+    "ref",
+    false,
+    true
+   ],
+   "Q17": [
+    "ref",
+    true,
+    false
+   ],
+   "Q18": [
+    "ref",
+    true,
+    false
+   ],
+   "Q19": [
+    "ref",
+    true,
+    false
+   ],
+   "Q20": [
+    "long",
+    true,
+    true
+   ],
+   "Q21": [
+    "curt",
+    true,
+    true
+   ],
+   "Q22": [
+    "curt",
+    true,
+    true
+   ],
+   "Q23": [
+    "curt",
+    true,
+    true
+   ],
+   "Q24": [
+    "curt",
+    true,
+    true
+   ],
+   "Q25": [
+    "curt",
+    true,
+    true
+   ],
+   "Q26": [
+    "curt",
+    true,
+    true
+   ],
+   "Q27": [
+    "curt",
+    true,
+    true
+   ],
+   "Q28": [
+    "curt",
+    true,
+    true
+   ],
+   "Q29": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q30": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q31": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q32": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q33": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q34": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q35": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q36": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q37": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q38": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q39": [
+    "ref",
+    true,
+    true
+   ],
+   "Q40": [
+    "ref",
+    true,
+    true
+   ]
+  },
+  "ft_best": {
+   "Q01": [
+    "alt",
+    true,
+    true
+   ],
+   "Q02": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q03": [
+    "alt",
+    true,
+    true
+   ],
+   "Q04": [
+    "alt",
+    true,
+    true
+   ],
+   "Q05": [
+    "ref",
+    true,
+    true
+   ],
+   "Q06": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q07": [
+    "ref",
+    true,
+    true
+   ],
+   "Q08": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q09": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q10": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q11": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q12": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q13": [
+    "alt",
+    true,
+    true
+   ],
+   "Q14": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q15": [
+    "ref",
+    true,
+    true
+   ],
+   "Q16": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q17": [
+    "ref",
+    true,
+    true
+   ],
+   "Q18": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q19": [
+    "ref",
+    true,
+    true
+   ],
+   "Q20": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q21": [
+    "alt",
+    true,
+    true
+   ],
+   "Q22": [
+    "ref",
+    true,
+    true
+   ],
+   "Q23": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q24": [
+    "curt",
+    true,
+    true
+   ],
+   "Q25": [
+    "ref",
+    true,
+    true
+   ],
+   "Q26": [
+    "curt",
+    true,
+    true
+   ],
+   "Q27": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q28": [
+    "ref",
+    true,
+    true
+   ],
+   "Q29": [
+    "alt",
+    true,
+    true
+   ],
+   "Q30": [
+    "ref",
+    true,
+    true
+   ],
+   "Q31": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q32": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q33": [
+    "ref",
+    true,
+    true
+   ],
+   "Q34": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q35": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q36": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q37": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q38": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q39": [
+    "ref",
+    true,
+    true
+   ],
+   "Q40": [
+    "offtopic",
+    true,
+    true
+   ]
+  },
+  "ft_last": {
+   "Q01": [
+    "alt",
+    true,
+    true
+   ],
+   "Q02": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q03": [
+    "alt",
+    true,
+    true
+   ],
+   "Q04": [
+    "alt",
+    true,
+    true
+   ],
+   "Q05": [
+    "ref",
+    true,
+    true
+   ],
+   "Q06": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q07": [
+    "ref",
+    true,
+    true
+   ],
+   "Q08": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q09": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q10": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q11": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q12": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q13": [
+    "alt",
+    true,
+    true
+   ],
+   "Q14": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q15": [
+    "offtopic",
+    true,
+    true
+   ],
+   "Q16": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q17": [
+    "ref",
+    true,
+    true
+   ],
+   "Q18": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q19": [
+    "ref",
+    true,
+    true
+   ],
+   "Q20": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q21": [
+    "alt",
+    true,
+    true
+   ],
+   "Q22": [
+    "ref",
+    true,
+    true
+   ],
+   "Q23": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q24": [
+    "ref",
+    true,
+    true
+   ],
+   "Q25": [
+    "ref",
+    true,
+    true
+   ],
+   "Q26": [
+    "curt",
+    true,
+    true
+   ],
+   "Q27": [
+    "offtopic",
+    true,
+    true
+   ],
+   "Q28": [
+    "ref",
+    true,
+    true
+   ],
+   "Q29": [
+    "alt",
+    true,
+    true
+   ],
+   "Q30": [
+    "ref",
+    true,
+    true
+   ],
+   "Q31": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q32": [
+    "forbidden",
+    true,
+    true
+   ],
+   "Q33": [
+    "ref",
+    true,
+    true
+   ],
+   "Q34": [
+    "ref_punct",
+    true,
+    true
+   ],
+   "Q35": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q36": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q37": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q38": [
+    "wrong",
+    true,
+    true
+   ],
+   "Q39": [
+    "ref",
+    true,
+    true
+   ],
+   "Q40": [
+    "offtopic",
+    true,
+    true
+   ]
+  }
+ }
+}

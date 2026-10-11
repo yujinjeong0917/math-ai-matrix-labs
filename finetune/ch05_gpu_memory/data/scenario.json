@@ -1,0 +1,9 @@
+{
+  "_about": "관통 프로젝트(문의 답변 초안 모델) 학습 설정의 가정값. 숫자는 이 장에서 정한 값이다.",
+  "seq_len": 1024,
+  "seq_len_note": "문의 한 건 + 우리 말투 답변 한 건을 대화 템플릿에 넣어 1,024토큰으로 자른다고 가정",
+  "micro_batch": 4,
+  "effective_batch": 16,
+  "seq_lens_to_compare": [512, 1024, 2048],
+  "micro_batches_to_compare": [1, 2, 4, 8]
+}

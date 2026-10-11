@@ -1,0 +1,2 @@
+날짜,GPU,모델,학습 방식,max_seq_length,micro_batch,gradient_accumulation_steps,lora_r,gradient_checkpointing,계산한 합계(GB),max_memory_allocated(GB),max_memory_reserved(GB),학습 파라미터 수,전체 스텝,train_runtime(초),어림 활용률,메모
+2026-10-11(예시·모형값),NVIDIA T4,unsloth/Qwen2.5-7B-Instruct-bnb-4bit,QLoRA,1024,2,8,16,unsloth,8.15,,,40370176,102,,,계산 모형 값만 적은 예시 행. 잰 값 칸은 노트북 14번 칸의 출력으로 채운다

@@ -1,0 +1,86 @@
+{
+ "checked": "2026-10-11",
+ "note": "대화 템플릿 문자열, 라이브러리 기본값, 논문 숫자. 값이 바뀌면 날짜가 다른 새 파일을 만든다.",
+ "qwen2_5_instruct_template": {
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "sha": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/blob/main/tokenizer_config.json",
+  "license": "apache-2.0",
+  "im_start": "<|im_start|>",
+  "im_end": "<|im_end|>",
+  "default_system": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
+  "message_line": "'<|im_start|>' + message.role + '\\n' + message.content + '<|im_end|>' + '\\n'",
+  "generation_prompt": "<|im_start|>assistant\n",
+  "eos_token": "<|im_end|>",
+  "pad_token": "<|endoftext|>",
+  "note": "도구(tools)가 없을 때의 분기만 옮겼다. 첫 메시지가 system이 아니면 default_system을 넣는다."
+ },
+ "qwen2_5_base_tokenizer": {
+  "model": "Qwen/Qwen2.5-0.5B",
+  "sha": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+  "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B/blob/main/tokenizer_config.json",
+  "eos_token": "<|endoftext|>",
+  "pad_token": "<|endoftext|>"
+ },
+ "trl": {
+  "latest_release": "v1.15.0",
+  "latest_release_published": "2026-10-08",
+  "url_sft": "https://huggingface.co/docs/trl/main/en/sft_trainer",
+  "url_chat_templates": "https://huggingface.co/docs/trl/main/en/chat_templates",
+  "url_qwen2_5_training_template": "https://github.com/huggingface/trl/blob/main/trl/chat_templates/qwen2_5_training.jinja",
+  "qwen2_5_training_template_commit": "d6d5efcefcbfa8d6d0841cc921d23d094d97bc52",
+  "completion_only_loss_default": null,
+  "completion_only_loss_doc": "If None (default), the behavior depends on the dataset: loss is computed on the completion for prompt-completion datasets, and on the full sequence for language modeling datasets.",
+  "assistant_only_loss_default": false,
+  "assistant_only_loss_requires": "{% generation %} / {% endgeneration %} in the chat template",
+  "qwen2_5_recognized_for_patch": true,
+  "qwen2_5_generation_block": "'\\n' + message.content + '<|im_end|>\\n' (after '<|im_start|>assistant')",
+  "ignore_index_doc": "Padding tokens (if present) are ignored in the loss computation by applying an ignore index (default: -100)",
+  "shift_doc": "the input sequence is shifted right by one position to form the target labels",
+  "pad_fallback_doc": "If the processing class has not set a padding token, tokenizer.eos_token will be used as the default.",
+  "eos_warning_doc": "for Qwen/Qwen2.5-1.5B, one should set eos_token=\"<|im_end|>\"",
+  "max_length_default": 1024,
+  "packing_default": false
+ },
+ "transformers_chat_templating": {
+  "url": "https://huggingface.co/docs/transformers/main/en/chat_templating",
+  "training_doc": "Apply the chat template as a preprocessing step to your dataset. Set add_generation_prompt=False because the additional tokens to prompt an assistant response aren't helpful during training.",
+  "special_tokens_warning": "When you format text with apply_chat_template(tokenize=False), make sure you set add_special_tokens=False if you tokenize later to avoid duplicating these tokens."
+ },
+ "pytorch_cross_entropy": {
+  "url": "https://github.com/pytorch/pytorch/blob/main/torch/nn/modules/loss.py",
+  "ignore_index_default": -100,
+  "doc": "Specifies a target value that is ignored and does not contribute to the input gradient."
+ },
+ "datasets_train_test_split": {
+  "url": "https://huggingface.co/docs/datasets/main/en/package_reference/main_classes",
+  "shuffle_default": true,
+  "seed_default": null
+ },
+ "papers": {
+  "lee2021_dedup": {
+   "url": "https://arxiv.org/abs/2107.06499",
+   "versions": "v1 2021-07-14, v2 2022-03-24",
+   "minhash_main_text": "5-grams, signature 9,000, b=20, r=450 (4.1.2절)",
+   "near_dup_rule": "MinHash 후보 + edit similarity > 0.8",
+   "c4_val_overlap": "4.6% of the C4 validation set"
+  },
+  "brown2020_gpt3": {
+   "url": "https://arxiv.org/abs/2005.14165",
+   "contamination": "13-gram overlap (4절), N은 예시 길이 5백분위수, 최소 8 최대 13 (부록 C)"
+  }
+ },
+ "qwen2_5_7b_check": {
+  "instruct_model": "Qwen/Qwen2.5-7B-Instruct",
+  "instruct_sha": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "instruct_template_same_as_0_5b": true,
+  "instruct_eos": "<|im_end|>",
+  "instruct_pad": "<|endoftext|>",
+  "base_model": "Qwen/Qwen2.5-7B",
+  "base_sha": "d149729398750b98c0af14eb82c78cfe92750796",
+  "base_eos": "<|endoftext|>",
+  "base_pad": "<|endoftext|>",
+  "url_instruct": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/blob/main/tokenizer_config.json",
+  "url_base": "https://huggingface.co/Qwen/Qwen2.5-7B/blob/main/tokenizer_config.json"
+ }
+}

@@ -1,0 +1,146 @@
+{
+  "_about": "내 데이터로 LLM 파인튜닝하기 10장 사양표. 모든 값은 각 항목의 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다. 1GB = 10^9바이트로 센다.",
+  "checked": "2026-10-11",
+  "model": {
+    "name": "Qwen/Qwen2.5-7B-Instruct",
+    "role": "8장에서 4비트판(unsloth/Qwen2.5-7B-Instruct-bnb-4bit)으로 학습한 어댑터를 합치고 띄울 16비트 원본. 추천이나 순위가 아니다.",
+    "config_file": "qwen2.5-7b-instruct_config.json",
+    "config_note": "8장 실습 data/qwen2.5-7b-instruct_config.json을 그대로 복사했다(Hub 원본, 2026-10-11).",
+    "license": "apache-2.0",
+    "base_model_in_card": "Qwen/Qwen2.5-7B",
+    "safetensors_total": 7615616512,
+    "bf16_file_bytes": 15231271888,
+    "url_api": "https://huggingface.co/api/models/Qwen/Qwen2.5-7B-Instruct",
+    "url_card": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+    "checked": "2026-10-11"
+  },
+  "small_model": {
+    "name": "Qwen/Qwen2.5-1.5B-Instruct",
+    "config_file": "qwen2.5-1.5b-instruct_config.json",
+    "license": "apache-2.0",
+    "safetensors_total": 1543714304,
+    "note": "8장 노트북의 1.5B 전환 칸과 같은 모델. 노트북을 무료 T4에서 끝까지 돌려 볼 때 쓴다.",
+    "checked": "2026-10-11"
+  },
+  "from_earlier_chapters": {
+    "ch07_adapter_files": {"qv_r8_bf16_mb": 5.0, "all_linear_r16_bf16_mb": 80.7, "all_linear_r16_params": 40370176, "base_bf16_gb": 15.23},
+    "ch07_merge_example": {"W0": [[1, 0], [0, 1]], "B": [[1], [2]], "A": [[3, -1]], "alpha": 16, "r": 8, "x": [2, 1], "out": [12, 21]},
+    "ch08_recipe": {"train_model": "unsloth/Qwen2.5-7B-Instruct-bnb-4bit", "lora_r": 16, "lora_alpha": 16, "targets": "q,k,v,o,gate,up,down", "save_dir": "ch08_lora"},
+    "ch01_budget": {"monthly_calls": 3000, "finetuned_system_tokens": 100, "question_tokens": 150, "answer_reserve_tokens": 500}
+  },
+  "peft": {
+    "version": "0.21.2",
+    "released": "2026-10-01",
+    "url_merge_and_unload": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/tuners/tuners_utils.py",
+    "merge_and_unload_doc": "This method merges the adapter layers into the base model. This is needed if someone wants to use the base model as a standalone model. The returned model has the same architecture as the original base model. It is important to assign the returned model to a variable and use it, this is not an in-place operation!",
+    "url_delta": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/tuners/lora/layer.py",
+    "delta_code": "output_tensor = transpose(weight_B @ weight_A, self.fan_in_fan_out) * self.scaling[adapter]",
+    "url_bnb": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/tuners/lora/bnb.py",
+    "bnb_4bit_merge_warning": "Merge lora module to 4-bit linear may get different generations due to rounding errors.",
+    "bnb_4bit_merge_steps": "dequantize_bnb_weight(weight) -> w_data = output + lora_data -> bnb.nn.Params4bit(w_data) (다시 4비트로 담는다)",
+    "checked": "2026-10-11"
+  },
+  "transformers": {
+    "version": "5.19.0",
+    "url_dequantize_doc": "https://github.com/huggingface/transformers/blob/v5.19.0/docs/source/en/quantization/bitsandbytes.md",
+    "dequantize_doc": "Once quantized, you can dequantize a model to the original precision but this may result in some quality loss. Make sure you have enough GPU memory to fit the dequantized model.",
+    "checked": "2026-10-11"
+  },
+  "unsloth": {
+    "pypi_version": "2026.10.3",
+    "url_vllm_guide": "https://unsloth.ai/docs/basics/inference-and-deployment/vllm-guide",
+    "merged_16bit_code": "model.save_pretrained_merged(\"finetuned_model\", tokenizer, save_method = \"merged_16bit\")",
+    "merged_4bit_note": "To merge to 4bit to load on HuggingFace, first call `merged_4bit`. Then use `merged_4bit_forced` if you are certain you want to merge to 4bit. I highly discourage you, unless you know what you are going to do with the 4bit model",
+    "url_gguf": "https://unsloth.ai/docs/basics/inference-and-deployment/saving-to-gguf",
+    "gguf_q4_k_m_desc": "Uses Q6_K for half of the attention.wv and feed_forward.w2 tensors, else Q4_K",
+    "url_save_py": "https://github.com/unslothai/unsloth/blob/main/unsloth/save.py",
+    "save_py_paths": "main 브랜치 save.py에 4비트를 되돌려(fast_dequantize) 더하는 _merge_lora와, 16비트 원본 가중치를 내려받아 합치는 merge_and_overwrite_lora(unsloth_zoo) 경로가 함께 있다. 우리 설정에서 어느 쪽이 불리는지는 확인하지 못했다.",
+    "checked": "2026-10-11"
+  },
+  "hub": {
+    "huggingface_hub_version": "2.2.0",
+    "url_model_cards": "https://huggingface.co/docs/hub/model-cards",
+    "card_fields": ["license", "datasets", "base_model", "base_model_relation"],
+    "base_model_doc": "If your model is a fine-tune, an adapter, or a quantized version of a base model, you can specify the base model in the model card metadata section.",
+    "relation_doc": "The Hub will infer the type of relationship from the current model to the base model (\"adapter\", \"merge\", \"quantized\", \"finetune\") but you can also set it explicitly if needed",
+    "url_create_repo": "https://github.com/huggingface/huggingface_hub/blob/v2.2.0/src/huggingface_hub/hf_api.py",
+    "private_doc": "Whether to make the repo private. If `None` (default), the repo will be public unless the organization's default is private. This value is ignored if the repo already exists.",
+    "checked": "2026-10-11"
+  },
+  "llama_cpp": {
+    "build": "b11552",
+    "build_date": "2026-10-10",
+    "url_quantize_readme": "https://github.com/ggml-org/llama.cpp/blob/b11552/tools/quantize/README.md",
+    "url_quant_rules": "https://github.com/ggml-org/llama.cpp/blob/b11552/src/llama-quant.cpp",
+    "url_blocks": "https://github.com/ggml-org/llama.cpp/blob/b11552/ggml/src/ggml-common.h",
+    "url_server_readme": "https://github.com/ggml-org/llama.cpp/blob/b11552/tools/server/README.md",
+    "blocks": {
+      "F32": [1, 4], "F16": [1, 2], "BF16": [1, 2],
+      "Q8_0": [32, 34], "Q4_0": [32, 18], "Q5_0": [32, 22],
+      "Q2_K": [256, 84], "Q3_K": [256, 110], "Q4_K": [256, 144], "Q5_K": [256, 176], "Q6_K": [256, 210]
+    },
+    "blocks_note": "[블록 하나의 숫자 수, 블록 하나의 바이트]. ggml-common.h의 static_assert 식: q4_0 = half + QK4_0/2, q8_0 = half + QK8_0, q4_K = 2*half + K_SCALE_SIZE(12) + QK_K/2, q6_K = half + QK_K/16 + 3*QK_K/4, QK_K = 256.",
+    "use_more_bits": "i_layer < n_layers/8 || i_layer >= 7*n_layers/8 || (i_layer - n_layers/8)%3 == 2",
+    "rules_note": "출력층은 Q8_0이 아니면 Q6_K. Q4_K_M·Q5_K_M은 attn_v와 ffn_down 가운데 use_more_bits인 층을 Q6_K로. Q3_K_M은 attn_v 앞 2층 Q5_K·나머지 Q4_K, ffn_down 앞 n/16층 Q5_K·나머지 Q4_K, attn_output Q4_K. Q2_K는 attn_v Q4_K(n_gqa >= 4), ffn_down·attn_output Q3_K. 1차원 텐서(편향, 정규화)는 양자화하지 않는다(F32).",
+    "readme_llama31_8b_bpw": {"Q2_K": 3.1593, "Q3_K_M": 3.9960, "Q4_K_M": 4.8944, "Q5_K_M": 5.7036, "Q6_K": 6.5633, "Q8_0": 8.5008, "F16": 16.0005},
+    "readme_note": "Llama-3.1-8B 표(bits/weight, size GiB, t/s). 속도를 잰 하드웨어는 README에 적혀 있지 않다.",
+    "readme_llama31_8b_tg": {"F16": 29.17, "Q4_K_M": 71.93},
+    "readme_llama31_8b_gib": {"F16": 14.96, "Q4_K_M": 4.58},
+    "convert_outtypes": ["f32", "f16", "bf16", "q8_0", "tq1_0", "tq2_0", "auto"],
+    "convert_lora_outtypes": ["f32", "f16", "bf16", "q8_0", "auto"],
+    "convert_lora_base_arg": "--base: directory containing Hugging Face model config files ... only config is needed, actual model weights are not required. If base model is unspecified, it will be loaded from Hugging Face hub based on the adapter config",
+    "server_flags": {"--lora FNAME": "path to LoRA adapter (use comma-separated values to load multiple adapters)", "--lora-init-without-apply": "load LoRA adapters without applying them (apply later via POST /lora-adapters)", "-c, --ctx-size": "default: 0, 0 = loaded from model", "--port": "default: 9931"},
+    "checked": "2026-10-11"
+  },
+  "ollama": {
+    "version": "0.40.2",
+    "released": "2026-10-08",
+    "url_modelfile": "https://github.com/ollama/ollama/blob/v0.40.2/docs/modelfile.mdx",
+    "url_import": "https://github.com/ollama/ollama/blob/v0.40.2/docs/import.mdx",
+    "url_create_go": "https://github.com/ollama/ollama/blob/v0.40.2/server/create.go",
+    "adapter_error": "LoRA adapters are no longer supported",
+    "adapter_removed_in": "0.34.1",
+    "adapter_removed_date": "2026-09-14",
+    "adapter_removed_evidence": "server/create.go: v0.34.0에는 adapter 변환 코드가 있고 v0.34.1부터 errAdaptersUnsupported를 돌려준다. 문서의 ADAPTER 절도 함께 빠졌다. parser.go는 여전히 adapter 낱말을 받는다.",
+    "release_note_0_34_1": "MLX safetensors `ollama create` no longer experimental. GGUF model creation now requires using llama.cpp tooling for safetensor conversion and quantization.",
+    "import_no_quantize": "Ollama does not quantize GGUF models during import.",
+    "num_ctx_modelfile_doc": 2048,
+    "num_ctx_faq_doc": 4096,
+    "url_faq": "https://github.com/ollama/ollama/blob/v0.40.2/docs/faq.mdx",
+    "default_port": 11434,
+    "checked": "2026-10-11"
+  },
+  "vllm": {
+    "version": "0.31.0",
+    "released": "2026-10-05",
+    "url_lora_doc": "https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/lora.md",
+    "url_lora_config": "https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/lora.py",
+    "url_cache_config": "https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py",
+    "url_bnb": "https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/quantization/bnb.md",
+    "max_lora_rank_default": 16,
+    "max_lora_rank_choices": [1, 8, 16, 32, 64, 128, 256, 320, 512],
+    "max_loras_default": 1,
+    "max_cpu_loras_default": "max_loras와 같음",
+    "lora_dtype_default": "auto (기본 모델 dtype)",
+    "gpu_memory_utilization_default": 0.92,
+    "qwen2_lora_supported": true,
+    "bnb_plugin": "BitsAndBytes support is provided by the out-of-tree vllm-bnb-plugin.",
+    "default_port": 8000,
+    "checked": "2026-10-11"
+  },
+  "gpus": {
+    "L4": {"memory_gb": 24, "bandwidth_gb_s": 300, "url": "https://www.nvidia.com/en-us/data-center/l4/", "checked": "2026-10-11"},
+    "T4": {"memory_gb": 16, "bandwidth_gb_s": 320, "bandwidth_note": "NVIDIA 표기 \"320+ GB/s\"", "url": "https://www.nvidia.com/en-us/data-center/tesla-t4/", "checked": "2026-10-11"}
+  },
+  "aws_prices": {
+    "_about": "AWS EC2 온디맨드 Linux, 미국 동부(버지니아 북부), 인스턴스 전체(vCPU·메모리 포함) 1시간 가격(USD). EC2 가격 페이지가 쓰는 공개 가격 파일에서 읽었다(파일 발행 2026-10-09T20:31:34Z).",
+    "url_page": "https://aws.amazon.com/ec2/pricing/on-demand/",
+    "url_feed": "https://b0.p.awsstatic.com/pricing/2.0/meteredUnitMaps/ec2/USD/current/ec2-ondemand-without-sec-sel/US%20East%20(N.%20Virginia)/Linux/index.json",
+    "published": "2026-10-09",
+    "g4dn.xlarge": {"usd_per_hour": 0.526, "gpu": "T4", "vcpu": 4, "memory_gib": 16, "url_gpu": "https://aws.amazon.com/ec2/instance-types/g4/"},
+    "g6.xlarge": {"usd_per_hour": 0.8048, "gpu": "L4", "vcpu": 4, "memory_gib": 16, "url_gpu": "https://aws.amazon.com/ec2/instance-types/g6/"},
+    "hours_per_month": 730,
+    "hours_note": "한 달을 24 × 365 ÷ 12 = 730시간으로 두는 가정값.",
+    "checked": "2026-10-11"
+  }
+}

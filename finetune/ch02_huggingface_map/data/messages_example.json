@@ -1,0 +1,38 @@
+{
+ "cases": {
+  "with_system": [
+   {
+    "role": "system",
+    "content": "너는 우리 쇼핑몰의 고객 문의에 답변 초안을 쓰는 상담원이야. 인사로 시작하고 세 문장 안으로 답해."
+   },
+   {
+    "role": "user",
+    "content": "2만 원어치 주문했는데 배송비 얼마 나와요?"
+   },
+   {
+    "role": "assistant",
+    "content": "안녕하세요, 고객님. 3만 원 미만 주문은 배송비 3,000원이 붙어요. 1만 원어치를 더 담으시면 무료로 보내 드려요."
+   }
+  ],
+  "no_system": [
+   {
+    "role": "user",
+    "content": "2만 원어치 주문했는데 배송비 얼마 나와요?"
+   },
+   {
+    "role": "assistant",
+    "content": "안녕하세요, 고객님. 3만 원 미만 주문은 배송비 3,000원이 붙어요. 1만 원어치를 더 담으시면 무료로 보내 드려요."
+   }
+  ]
+ },
+ "pieces": {
+  "default_system_inst": "<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n",
+  "default_system_base": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n",
+  "assistant_content": "안녕하세요, 고객님. 3만 원 미만 주문은 배송비 3,000원이 붙어요. 1만 원어치를 더 담으시면 무료로 보내 드려요.",
+  "assistant_turn": "<|im_start|>assistant\n안녕하세요, 고객님. 3만 원 미만 주문은 배송비 3,000원이 붙어요. 1만 원어치를 더 담으시면 무료로 보내 드려요.<|im_end|>\n",
+  "im_start": "<|im_start|>",
+  "im_end": "<|im_end|>",
+  "endoftext": "<|endoftext|>"
+ },
+ "_about": "관통 프로젝트의 가상 문의 한 건과 사람이 쓴 답변(직접 만든 예시). 배송비 정책은 1장의 옛 정책(3만 원 미만 3,000원)을 따른다고 둔 가정값."
+}

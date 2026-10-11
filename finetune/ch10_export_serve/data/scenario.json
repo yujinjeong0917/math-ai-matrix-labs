@@ -1,0 +1,20 @@
+{
+  "_about": "관통 프로젝트(문의 답변 초안 모델) 10장 서빙 가정값. 1장 data/budget.json에서 이어받은 값과 이 장에서 정한 값을 나눠 적는다.",
+  "from_ch01": {"monthly_calls": 3000, "input_tokens": 250, "input_note": "학습한 모델의 짧은 지시문 100 + 질문 150 (1장)", "answer_reserve_tokens": 500},
+  "assumed": {
+    "answer_tokens_avg": 200,
+    "answer_note": "답변 초안 한 건의 평균 토큰 수(가정). 1장의 답 자리 500토큰은 상한으로만 쓴다.",
+    "adapters": ["문의 답변", "상품 설명", "리뷰 답글"],
+    "adapters_note": "같은 기본 모델에 일마다 어댑터 3개를 붙인다고 가정. 크기는 7장의 all-linear r=16 bf16 어댑터(80.7MB)와 같다고 둔다.",
+    "ctx_local": 4096,
+    "batch_for_cost": 16,
+    "batch_note": "서버에서 동시에 처리하는 요청 수(가정). 상한 어림에서 가중치를 한 번 읽어 16개 토큰을 만든다고 본다.",
+    "paged_block": 16
+  },
+  "toy": {
+    "rows": 8, "cols": 64, "rank": 2, "alpha": 4, "seed": 10, "n_inputs": 16, "w_std": 0.02,
+    "rho_sweep": [0.001, 0.01, 0.03, 0.1],
+    "rho_main": 0.01,
+    "rho_note": "어댑터가 더하는 변화 sBA의 크기를 원래 가중치 크기(제곱평균제곱근)의 몇 배로 둘지. 실제 값을 모르는 가정값이라 여러 값으로 훑는다. 노트북 4절에서 내 어댑터의 실제 비율을 잴 수 있다."
+  }
+}

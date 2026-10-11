@@ -1,0 +1,2 @@
+날짜,GPU,모델(PRESET),기본 모델,합친 safetensors(GB),bf16 GGUF(GB),Q4_K_M GGUF(GB),계산한 값(GB),내 어댑터 rho(q_proj 0층),llama-server 생성 토큰/초,계산상 상한 토큰/초,vLLM 동시 8개 합계 토큰/초,버전,메모
+2026-10-11(예시·모형값),-,7B,Qwen/Qwen2.5-7B-Instruct,,,,15.23 / 15.238 / 4.683,,,T4 Q4_K_M 68.33 · L4 bf16 19.70,,peft 0.21.2 / transformers 5.19.0 / llama.cpp b11552,계산값만 적은 줄. 직접 돌린 값은 아래 줄에 새로 적어요

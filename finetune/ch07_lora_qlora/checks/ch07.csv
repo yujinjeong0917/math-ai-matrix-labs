@@ -1,0 +1,4 @@
+날짜,GPU,모델,방식(LoRA/QLoRA),target_modules,r,lora_alpha,4bit 설정(quant_type·두 번 양자화),prepare_model_for_kbit_training,optim,seq_len,micro_batch,gradient_checkpointing,print_trainable_parameters 값,계산한 학습 파라미터 수,계산한 값(GB),max_memory_allocated(GB),메모
+2026-10-11(예시·모형값),NVIDIA T4,Qwen/Qwen2.5-7B,QLoRA,all-linear,16,16,nf4·켬,안 씀,paged_adamw_32bit,1024,1,켬,,40370176,6.67,,기본 모델 NF4+bf16 5.547 + LoRA 0.646 + 활성값 0.477 = 6.670. 출력 칸(logits)·CUDA 몫 빠짐
+2026-10-11(예시·모형값),NVIDIA T4,Qwen/Qwen2.5-7B,QLoRA,all-linear,16,16,nf4·켬,씀(남는 층 fp32),paged_adamw_32bit,1024,1,켬,,40370176,8.85,,남는 층 1,090,328,064개가 fp32로 올라가 +2.18GB
+2026-10-11(예시·모형값),NVIDIA T4,Qwen/Qwen2.5-7B,LoRA(얼린 bf16),q_proj·v_proj,8,8,-,-,adamw_torch_fused,1024,1,켬,,2523136,15.75,,16GB에 0.25GB 남는 계산. 실제로는 빠듯해서 믿기 어려움

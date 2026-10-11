@@ -1,0 +1,526 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "checked": "2026-10-11",
+  "sources": "sources_2026-10-11.json",
+  "fixture": "render_fixture_2026-10-11.json"
+ },
+ "e0_hand": {
+  "header_len": 9368,
+  "metadata": {
+   "format": "pt"
+  },
+  "name": "model.embed_tokens.weight",
+  "dtype": "BF16",
+  "shape": [
+   152064,
+   3584
+  ],
+  "numbers": 544997376,
+  "bytes": 1089994752,
+  "data_offsets": [
+   0,
+   1089994752
+  ],
+  "bytes_match_offsets": true,
+  "first_three": [
+   {
+    "name": "model.embed_tokens.weight",
+    "shape": [
+     152064,
+     3584
+    ],
+    "data_offsets": [
+     0,
+     1089994752
+    ]
+   },
+   {
+    "name": "model.layers.0.input_layernorm.weight",
+    "shape": [
+     3584
+    ],
+    "data_offsets": [
+     1089994752,
+     1090001920
+    ]
+   },
+   {
+    "name": "model.layers.0.mlp.down_proj.weight",
+    "shape": [
+     3584,
+     18944
+    ],
+    "data_offsets": [
+     1090001920,
+     1225792512
+    ]
+   }
+  ]
+ },
+ "e1_shards": {
+  "rows": [
+   {
+    "file": "model-00001-of-00004.safetensors",
+    "header_len": 9368,
+    "tensors": 82,
+    "params": 1972716032,
+    "bytes": 3945432064,
+    "end": 3945432064,
+    "dtypes": {
+     "BF16": 82
+    },
+    "contiguous": true,
+    "size_matches_shape": true,
+    "file_size": 3945441440,
+    "file_size_matches": true
+   },
+   {
+    "file": "model-00002-of-00004.safetensors",
+    "header_len": 11080,
+    "tensors": 97,
+    "params": 1932357632,
+    "bytes": 3864715264,
+    "end": 3864715264,
+    "dtypes": {
+     "BF16": 97
+    },
+    "contiguous": true,
+    "size_matches_shape": true,
+    "file_size": 3864726352,
+    "file_size_matches": true
+   },
+   {
+    "file": "model-00003-of-00004.safetensors",
+    "header_len": 11152,
+    "tensors": 97,
+    "params": 1932357632,
+    "bytes": 3864715264,
+    "end": 3864715264,
+    "dtypes": {
+     "BF16": 97
+    },
+    "contiguous": true,
+    "size_matches_shape": true,
+    "file_size": 3864726424,
+    "file_size_matches": true
+   },
+   {
+    "file": "model-00004-of-00004.safetensors",
+    "header_len": 7232,
+    "tensors": 63,
+    "params": 1778185216,
+    "bytes": 3556370432,
+    "end": 3556370432,
+    "dtypes": {
+     "BF16": 63
+    },
+    "contiguous": true,
+    "size_matches_shape": true,
+    "file_size": 3556377672,
+    "file_size_matches": true
+   }
+  ],
+  "tensors": 339,
+  "params": 7615616512,
+  "bytes": 15231233024,
+  "file_bytes": 15231271888,
+  "header_bytes": 38864,
+  "index_total_size": 15231233024,
+  "index_tensors": 339,
+  "index_matches_headers": true,
+  "api_total": 7615616512,
+  "api_matches": true,
+  "gb_weights": 15.2312,
+  "gb_if_fp32": 30.4625
+ },
+ "e2_cards": {
+  "base": {
+   "license": "apache-2.0",
+   "license_link": "https://huggingface.co/Qwen/Qwen2.5-7B/blob/main/LICENSE",
+   "language": [
+    "en"
+   ],
+   "pipeline_tag": "text-generation",
+   "library_name": "transformers"
+  },
+  "instruct": {
+   "license": "apache-2.0",
+   "license_link": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/blob/main/LICENSE",
+   "language": [
+    "en"
+   ],
+   "pipeline_tag": "text-generation",
+   "base_model": "Qwen/Qwen2.5-7B",
+   "tags": [
+    "chat"
+   ],
+   "library_name": "transformers"
+  },
+  "our_adapter": {
+   "license": "apache-2.0",
+   "base_model": "Qwen/Qwen2.5-7B",
+   "library_name": "peft",
+   "pipeline_tag": "text-generation",
+   "language": [
+    "ko"
+   ],
+   "datasets": [
+    "our-shop/inquiry-reply-pairs"
+   ],
+   "tags": [
+    "lora",
+    "sft",
+    "trl"
+   ]
+  },
+  "base_spec_lines": [
+   "- Type: Causal Language Models",
+   "- Training Stage: Pretraining",
+   "- Architecture: transformers with RoPE, SwiGLU, RMSNorm, and Attention QKV bias",
+   "- Number of Parameters: 7.61B",
+   "- Number of Paramaters (Non-Embedding): 6.53B",
+   "- Number of Layers: 28",
+   "- Number of Attention Heads (GQA): 28 for Q and 4 for KV",
+   "- Context Length: 131,072 tokens"
+  ],
+  "instruct_spec_lines": [
+   "- **Multilingual support** for over 29 languages, including Chinese, English, French, Spanish, Portuguese, German, Italian, Russian, Japanese, Korean, Vietnamese, Thai, Arabic, and more.",
+   "- Type: Causal Language Models",
+   "- Training Stage: Pretraining & Post-training",
+   "- Architecture: transformers with RoPE, SwiGLU, RMSNorm, and Attention QKV bias",
+   "- Number of Parameters: 7.61B",
+   "- Number of Paramaters (Non-Embedding): 6.53B",
+   "- Number of Layers: 28",
+   "- Number of Attention Heads (GQA): 28 for Q and 4 for KV",
+   "- Context Length: Full 131,072 tokens and generation 8192 tokens",
+   "- Please refer to [this section](#processing-long-texts) for detailed instructions on how to deploy Qwen2.5 for handling long texts."
+  ]
+ },
+ "e3_config": {
+  "base_readings": {
+   "head_dim": 128,
+   "q_heads_per_kv_head": 7,
+   "embed_shape": [
+    152064,
+    3584
+   ],
+   "embed_numbers": 544997376,
+   "tied": false
+  },
+  "diff_base_vs_instruct": {
+   "eos_token_id": [
+    151643,
+    151645
+   ],
+   "max_position_embeddings": [
+    131072,
+    32768
+   ],
+   "transformers_version": [
+    "4.40.1",
+    "4.43.1"
+   ],
+   "use_mrope": [
+    false,
+    "(없음)"
+   ]
+  },
+  "keys": 24,
+  "tokenizer_total": 151665,
+  "vocab_size": 152064,
+  "unused_rows": 399,
+  "max_special_id": 151664,
+  "vocab_size_div_128": 1188.0
+ },
+ "e4_tokenizer_gen": {
+  "base": {
+   "eos": "<|endoftext|>",
+   "eos_id": 151643,
+   "pad": "<|endoftext|>",
+   "pad_id": 151643,
+   "bos": null,
+   "add_bos_token": false,
+   "model_max_length": 131072
+  },
+  "instruct": {
+   "eos": "<|im_end|>",
+   "eos_id": 151645,
+   "pad": "<|endoftext|>",
+   "pad_id": 151643,
+   "bos": null,
+   "add_bos_token": false,
+   "model_max_length": 131072
+  },
+  "n_special": 22,
+  "tokenizer_config_diff": {
+   "eos_token": [
+    "<|endoftext|>",
+    "<|im_end|>"
+   ]
+  },
+  "chat_template_same": false,
+  "chat_template_lines": 54,
+  "default_system": {
+   "base": "You are a helpful assistant.",
+   "instruct": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."
+  },
+  "generation_config": {
+   "base": {
+    "bos_token_id": 151643,
+    "do_sample": false,
+    "eos_token_id": 151643,
+    "max_new_tokens": 2048,
+    "transformers_version": "4.37.0"
+   },
+   "instruct": {
+    "bos_token_id": 151643,
+    "pad_token_id": 151643,
+    "do_sample": true,
+    "eos_token_id": [
+     151645,
+     151643
+    ],
+    "repetition_penalty": 1.05,
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "transformers_version": "4.37.0"
+   }
+  },
+  "generation_config_diff": {
+   "do_sample": [
+    false,
+    true
+   ],
+   "eos_token_id": [
+    151643,
+    [
+     151645,
+     151643
+    ]
+   ],
+   "max_new_tokens": [
+    2048,
+    "(없음)"
+   ],
+   "pad_token_id": [
+    "(없음)",
+    151643
+   ],
+   "repetition_penalty": [
+    "(없음)",
+    1.05
+   ],
+   "temperature": [
+    "(없음)",
+    0.7
+   ],
+   "top_k": [
+    "(없음)",
+    20
+   ],
+   "top_p": [
+    "(없음)",
+    0.8
+   ]
+  }
+ },
+ "e5_template": {
+  "jinja2": "3.1.6",
+  "tokenizers": "0.23.3",
+  "checks": {
+   "base|with_system|False": {
+    "matches_jinja2": true,
+    "n_tokens": 123,
+    "chars": 238,
+    "im_start": 3,
+    "im_end": 3
+   },
+   "base|with_system|True": {
+    "matches_jinja2": true,
+    "n_tokens": 126,
+    "chars": 260,
+    "im_start": 4,
+    "im_end": 3
+   },
+   "base|no_system|False": {
+    "matches_jinja2": true,
+    "n_tokens": 89,
+    "chars": 210,
+    "im_start": 3,
+    "im_end": 3
+   },
+   "base|no_system|True": {
+    "matches_jinja2": true,
+    "n_tokens": 92,
+    "chars": 232,
+    "im_start": 4,
+    "im_end": 3
+   },
+   "inst|with_system|False": {
+    "matches_jinja2": true,
+    "n_tokens": 123,
+    "chars": 238,
+    "im_start": 3,
+    "im_end": 3
+   },
+   "inst|with_system|True": {
+    "matches_jinja2": true,
+    "n_tokens": 126,
+    "chars": 260,
+    "im_start": 4,
+    "im_end": 3
+   },
+   "inst|no_system|False": {
+    "matches_jinja2": true,
+    "n_tokens": 99,
+    "chars": 250,
+    "im_start": 3,
+    "im_end": 3
+   },
+   "inst|no_system|True": {
+    "matches_jinja2": true,
+    "n_tokens": 102,
+    "chars": 272,
+    "im_start": 4,
+    "im_end": 3
+   }
+  },
+  "all_match": true,
+  "text_inst_with_system": "<|im_start|>system\n너는 우리 쇼핑몰의 고객 문의에 답변 초안을 쓰는 상담원이야. 인사로 시작하고 세 문장 안으로 답해.<|im_end|>\n<|im_start|>user\n2만 원어치 주문했는데 배송비 얼마 나와요?<|im_end|>\n<|im_start|>assistant\n안녕하세요, 고객님. 3만 원 미만 주문은 배송비 3,000원이 붙어요. 1만 원어치를 더 담으시면 무료로 보내 드려요.<|im_end|>\n",
+  "default_system_tokens": {
+   "base": 11,
+   "instruct": 21
+  },
+  "assistant_content_tokens": 52,
+  "learned_span_tokens": 55,
+  "full_tokens": 123,
+  "learned_share": 0.4472,
+  "not_learned_tokens": 68,
+  "gen_prompt_extra_tokens": 3
+ },
+ "e6_map": {
+  "stages": {
+   "find": {
+    "label": "모델·데이터 찾기와 내려받기",
+    "chapter": 2,
+    "libs": [
+     "Hub"
+    ]
+   },
+   "data": {
+    "label": "데이터 불러와 다듬고 나누기",
+    "chapter": 3,
+    "libs": [
+     "datasets"
+    ]
+   },
+   "text_to_ids": {
+    "label": "대화를 글로, 글을 토큰 번호로",
+    "chapter": 3,
+    "libs": [
+     "tokenizers"
+    ]
+   },
+   "model": {
+    "label": "모델 불러오기(필요하면 4비트로)",
+    "chapter": 6,
+    "libs": [
+     "transformers",
+     "bitsandbytes"
+    ]
+   },
+   "adapter": {
+    "label": "작은 행렬만 학습하게 감싸기",
+    "chapter": 7,
+    "libs": [
+     "PEFT"
+    ]
+   },
+   "train_loop": {
+    "label": "학습 반복(손실, 기울기, GPU에 나눠 올리기)",
+    "chapter": 8,
+    "libs": [
+     "TRL",
+     "accelerate"
+    ]
+   },
+   "save": {
+    "label": "저장하고 Hub에 올리기",
+    "chapter": 10,
+    "libs": [
+     "safetensors"
+    ]
+   }
+  },
+  "dep_layers": [
+   [
+    "accelerate",
+    "bitsandbytes",
+    "datasets",
+    "huggingface_hub",
+    "safetensors",
+    "tokenizers"
+   ],
+   [
+    "transformers"
+   ],
+   [
+    "peft",
+    "trl"
+   ]
+  ],
+  "versions": {
+   "Hub": "2.2.0",
+   "datasets": "5.1.0",
+   "tokenizers": "0.23.3",
+   "transformers": "5.19.0",
+   "bitsandbytes": "0.50.2",
+   "PEFT": "0.21.2",
+   "TRL": "1.15.0",
+   "accelerate": "1.15.0",
+   "safetensors": "0.8.0"
+  }
+ },
+ "e7_toy": {
+  "header_len": 168,
+  "header": {
+   "embed.weight": {
+    "dtype": "F16",
+    "shape": [
+     3,
+     2
+    ],
+    "data_offsets": [
+     0,
+     12
+    ]
+   },
+   "norm.weight": {
+    "dtype": "F32",
+    "shape": [
+     2
+    ],
+    "data_offsets": [
+     12,
+     20
+    ]
+   }
+  },
+  "metadata": {
+   "format": "pt"
+  },
+  "file_size": 196,
+  "file_size_check": true,
+  "embed_back": [
+   0.5,
+   -1.0,
+   0.25,
+   2.0,
+   0.0999755859375,
+   0.0
+  ]
+ }
+}

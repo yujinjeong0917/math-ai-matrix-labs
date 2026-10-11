@@ -1,0 +1,30 @@
+{
+ "checked": "2026-10-11",
+ "note": "이 장 본문과 실습이 기대는 사실. 값이 바뀌면 날짜가 다른 새 파일을 만든다.",
+ "facts": {
+  "python_struct_e": {"url": "https://docs.python.org/3.12/library/struct.html", "checked": "2026-10-11",
+   "claim": "'e'는 IEEE 754 binary16(부호 1, 지수 5, 정밀도 11비트 중 10비트 저장), 약 6.1e-05 ~ 6.5e+04를 온전한 정밀도로 표현. 3.6에서 추가. 'f'는 binary32."},
+  "pytorch_amp_doc": {"url": "https://docs.pytorch.org/docs/2.14/amp.html", "checked": "2026-10-11", "version": "2.14",
+   "claim": "autocast 기본 dtype은 CUDA torch.float16, CPU torch.bfloat16. 작은 기울기는 float16에서 0으로 flush(underflow). torch.cuda.amp.GradScaler(init_scale=65536.0, growth_factor=2.0, backoff_factor=0.5, growth_interval=2000)는 deprecated, torch.amp.GradScaler를 쓴다."},
+  "pytorch_gradscaler_source": {"url": "https://github.com/pytorch/pytorch/blob/main/torch/amp/grad_scaler.py", "checked": "2026-10-11", "version": "main 브랜치",
+   "claim": "init_scale=2.0**16, growth_factor=2.0, backoff_factor=0.5, growth_interval=2000. inf/NaN이면 optimizer.step()을 건너뛰고 scale × backoff_factor, growth_interval번 연속 건너뛰지 않으면 scale × growth_factor. 처음 몇 스텝은 scale을 맞추느라 inf/NaN이 자주 나온다."},
+  "pytorch_bf16_rounding": {"url": "https://github.com/pytorch/pytorch/blob/main/torch/headeronly/util/BFloat16.h", "checked": "2026-10-11", "version": "main 브랜치",
+   "claim": "round_to_nearest_even: NaN이면 0x7FC0, 아니면 rounding_bias = ((U32 >> 16) & 1) + 0x7FFF, (U32 + rounding_bias) >> 16. BFloat16(float) 생성자의 기본 경로."},
+  "pytorch_is_bf16_supported": {"url": "https://github.com/pytorch/pytorch/blob/main/torch/cuda/__init__.py", "checked": "2026-10-11", "version": "main 브랜치",
+   "claim": "is_bf16_supported(including_emulation=True): 계산 능력 major >= 8이면 True, 아니면 including_emulation일 때 bf16 텐서를 만들어 보고 되면 True."},
+  "nvidia_cuda_gpus": {"url": "https://developer.nvidia.com/cuda-gpus", "checked": "2026-10-11",
+   "claim": "계산 능력(compute capability): T4 7.5, A100 8.0, L4 8.9, H100 9.0."},
+  "nvidia_mixed_precision_guide": {"url": "https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html", "checked": "2026-10-11", "page_updated": "2023-02-01",
+   "claim": "FP16 최댓값 65,504, 가장 작은 비정규수 2^-24. SSD 기울기를 FP16으로 바꾸면 31%가 0, 0이 아닌 값은 5.3%만 남아 발산. 스케일 8 ~ 32K. 동적 스케일링: 크게 시작, 넘치면 업데이트를 건너뛰고 줄이고, N번 넘치지 않으면 키운다."},
+  "hf_training_arguments": {"url": "https://huggingface.co/docs/transformers/main_classes/trainer", "checked": "2026-10-11", "version": "v5.19.0",
+   "claim": "bf16: Generally preferred over FP16 due to better numerical stability and no loss scaling required. fp16: Consider using BF16 instead if your hardware supports it. tf32: Ampere and newer GPUs."},
+  "colab_faq": {"url": "https://research.google.com/colaboratory/faq.html", "checked": "2026-10-11",
+   "claim": "무료 Colab에서 쓸 수 있는 GPU 종류는 때에 따라 달라지며 구체적 모델을 밝히지 않는다. 사용 한도도 공개하지 않는다."},
+  "google_tpu_bf16": {"url": "https://docs.cloud.google.com/tpu/docs/bfloat16", "checked": "2026-10-11", "page_updated": "2026-10-09",
+   "claim": "The dynamic range of bfloat16 and float32 are equivalent. bfloat16 저장은 온칩 메모리를 아낀다."},
+  "arxiv_mixed_precision": {"url": "https://arxiv.org/abs/1710.03740", "checked": "2026-10-11", "version": "v1 2017-10-10, v3 2018-02-15",
+   "claim": "Micikevicius 외. 가중치·활성값·기울기를 half로 저장, fp32 가중치 사본과 loss scaling 두 기법, 메모리 거의 2배 절감."},
+  "arxiv_bf16_study": {"url": "https://arxiv.org/abs/1905.12322", "checked": "2026-10-11", "version": "v1 2019-05-29, v3 2019-06-13",
+   "claim": "Kalamkar 외. BFLOAT16은 FP32와 표현 범위가 같고 변환이 단순해서 하이퍼파라미터 조정 없이 FP32와 같은 결과. FP16은 조정이 필요."}
+ }
+}

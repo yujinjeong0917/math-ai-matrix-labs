@@ -1,0 +1,13 @@
+# 10장 예시 Modelfile. Ollama 0.40.2 문서(docs/modelfile.mdx) 기준으로 직접 만든 예시예요.
+FROM ./qwen2.5-7b-instruct-ours-Q4_K_M.gguf
+TEMPLATE """{{ if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+"""
+SYSTEM """당신은 우리 쇼핑몰 고객 문의에 답변 초안을 쓰는 도우미예요."""
+PARAMETER num_ctx 4096
+PARAMETER temperature 0.3
+PARAMETER stop "<|im_end|>"
+LICENSE """Apache-2.0 (기본 모델 Qwen/Qwen2.5-7B-Instruct의 라이선스)"""

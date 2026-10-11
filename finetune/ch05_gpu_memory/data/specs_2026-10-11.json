@@ -1,0 +1,104 @@
+{
+  "_about": "내 데이터로 LLM 파인튜닝하기 5장 사양표. 모든 값은 각 항목의 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다. 1GB = 10^9바이트로 센다.",
+  "checked": "2026-10-11",
+  "model": {
+    "name": "Qwen/Qwen2.5-7B",
+    "role": "예로 든 공개 가중치 모델. 추천이나 순위가 아니다.",
+    "config_file": "qwen2.5-7b_config.json",
+    "url_config": "https://huggingface.co/Qwen/Qwen2.5-7B/resolve/main/config.json",
+    "url_card": "https://huggingface.co/Qwen/Qwen2.5-7B",
+    "license": "apache-2.0",
+    "card_params": "7.61B",
+    "card_params_non_embedding": "6.53B",
+    "card_architecture": "transformers with RoPE, SwiGLU, RMSNorm, and Attention QKV bias",
+    "safetensors_total": 7615616512,
+    "url_safetensors_total": "https://huggingface.co/api/models/Qwen/Qwen2.5-7B",
+    "checked": "2026-10-11"
+  },
+  "recipes": {
+    "zero_mixed_adam": {
+      "label": "혼합정밀도 + Adam (ZeRO 논문의 셈)",
+      "parts": {"16비트 가중치": 2, "16비트 기울기": 2, "32비트 가중치 사본": 4, "Adam 모멘텀": 4, "Adam 분산": 4},
+      "quote": "In total, this results in 2Ψ + 2Ψ + KΨ = 16Ψ bytes of memory requirement.",
+      "url": "https://arxiv.org/abs/1910.02054",
+      "where": "3.1절 Model States",
+      "checked": "2026-10-11"
+    },
+    "hf_mixed_adam": {
+      "label": "혼합정밀도 + Adam (Hugging Face 문서의 셈)",
+      "parts": {"가중치 16비트 + 32비트": 6, "32비트 기울기": 4, "Adam 모멘텀 + 분산": 8},
+      "quote": "This equates to 6 bytes per parameter. ... That's an additional 8 bytes per parameter. ... This is kept in fp32 so that's 4 bytes per parameter.",
+      "url": "https://huggingface.co/docs/transformers/model_memory_anatomy",
+      "checked": "2026-10-11"
+    },
+    "hf_mixed_adam8bit": {
+      "label": "혼합정밀도 + 8비트 Adam (Hugging Face 문서의 셈)",
+      "parts": {"가중치 16비트 + 32비트": 6, "32비트 기울기": 4, "8비트 Adam 상태": 2},
+      "quote": "You could use a different optimizer like a quantized version of Adam from bitsandbytes to compress it to 2 bytes per parameter.",
+      "url": "https://huggingface.co/docs/transformers/model_memory_anatomy",
+      "checked": "2026-10-11"
+    },
+    "infer_bf16": {
+      "label": "추론만, bf16 가중치",
+      "parts": {"16비트 가중치": 2},
+      "url": "https://huggingface.co/Qwen/Qwen2.5-7B/resolve/main/config.json",
+      "note": "config의 torch_dtype이 bfloat16이다.",
+      "checked": "2026-10-11"
+    },
+    "frozen_bf16": {
+      "label": "LoRA 미리 보기: 얼린 기본 모델 bf16 (LoRA 몫은 7장)",
+      "parts": {"얼린 16비트 가중치": 2},
+      "url": "https://huggingface.co/Qwen/Qwen2.5-7B",
+      "checked": "2026-10-11"
+    },
+    "frozen_4bit": {
+      "label": "QLoRA 미리 보기: 얼린 기본 모델 4비트 (보정 상수는 6장, LoRA 몫은 7장)",
+      "parts": {"얼린 4비트 가중치": 0.5},
+      "url": "https://arxiv.org/abs/2305.14314",
+      "checked": "2026-10-11"
+    }
+  },
+  "activation": {
+    "formula": "Activations memory per layer = sbh(34 + 5as/h)",
+    "full_recompute": "this method reduces the total required memory for activations to 2sbhL",
+    "assumptions": "GPT 모양 블록(MLP 폭 4h, GeLU, 드롭아웃), 활성값 16비트(2바이트), 드롭아웃 마스크 1바이트, 병렬화 없음, 작은 버퍼 무시",
+    "url": "https://arxiv.org/abs/2205.05198",
+    "where": "4절 Activation Memory, 식 (1)",
+    "checked": "2026-10-11"
+  },
+  "gpus": [
+    {"name": "NVIDIA T4", "memory_gb": 16, "memory_type": "GDDR6", "bandwidth": "320+ GB/s",
+     "precisions_listed": "FP32, FP16/FP32 mixed, INT8, INT4 (BF16은 목록에 없음)",
+     "url": "https://www.nvidia.com/en-us/data-center/tesla-t4/", "checked": "2026-10-11"},
+    {"name": "NVIDIA L4", "memory_gb": 24, "bandwidth": "300GB/s",
+     "url": "https://www.nvidia.com/en-us/data-center/l4/", "checked": "2026-10-11"},
+    {"name": "NVIDIA A100 80GB", "memory_gb": 80, "bandwidth": "1,935 GB/s (PCIe) · 2,039 GB/s (SXM)",
+     "url": "https://www.nvidia.com/en-us/data-center/a100/", "checked": "2026-10-11"}
+  ],
+  "colab": {
+    "quote": "The types of GPUs and TPUs that are available in Colab vary over time.",
+    "url": "https://research.google.com/colaboratory/faq.html",
+    "free_gpu_type": "[확인 필요] FAQ는 GPU 종류를 적지 않는다. 이 장은 T4(16GB)를 예로만 쓴다.",
+    "checked": "2026-10-11"
+  },
+  "pytorch_memory": {
+    "quote": "the unused memory managed by the allocator will still show as if used in nvidia-smi",
+    "functions": ["memory_allocated()", "max_memory_allocated()", "memory_reserved()", "max_memory_reserved()"],
+    "url": "https://docs.pytorch.org/docs/2.14/notes/cuda.html",
+    "checked": "2026-10-11"
+  },
+  "hf_training": {
+    "grad_accumulation_example": "with a per-device batch size of 8 and 4 accumulation steps, the effective batch size is 32",
+    "grad_accumulation_note": "It doesn't improve throughput over training with a true large batch.",
+    "url_grad_accumulation": "https://huggingface.co/docs/transformers/grad_accumulation",
+    "grad_checkpointing_note": "Training is typically slower because the backward pass recomputes discarded activations, but checkpointing reduces activation memory.",
+    "url_grad_checkpointing": "https://huggingface.co/docs/transformers/grad_checkpointing",
+    "checked": "2026-10-11"
+  },
+  "checkpointing_paper": {
+    "quote": "O(sqrt(n)) memory to train a n layer network, with only the computational cost of an extra forward pass per mini-batch",
+    "url": "https://arxiv.org/abs/1604.06174",
+    "v1": "2016-04-21",
+    "checked": "2026-10-11"
+  }
+}

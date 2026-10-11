@@ -1,0 +1,3 @@
+날짜,GPU 이름,계산 능력,is_bf16_supported(including_emulation=False),학습 설정(fp16/bf16/fp32),스텝,loss,loss scale(get_scale),건너뛴 스텝 누계,nan·inf 발생,메모
+2026-10-11(예시·모형값),(모형),-,-,fp16,1,-,65536,1,inf,첫 스텝은 scale이 커서 넘침(E5)
+2026-10-11(예시·모형값),(모형),-,-,fp16,3,-,16384,2,없음,scale이 16384로 내려온 뒤 업데이트 시작(E5)

@@ -1,0 +1,11 @@
+{
+  "note": "토큰 예산 가정값. 토큰 수는 세지 않고 정한 값이다.",
+  "system_tokens": 400,
+  "example_tokens": 250,
+  "question_tokens": 150,
+  "answer_reserve_tokens": 500,
+  "finetuned_system_tokens": 100,
+  "windows": [8192, 131072],
+  "monthly_calls": 3000,
+  "hand": {"k": 4}
+}

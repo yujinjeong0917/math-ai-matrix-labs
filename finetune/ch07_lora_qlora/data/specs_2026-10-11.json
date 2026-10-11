@@ -1,0 +1,141 @@
+{
+  "_about": "내 데이터로 LLM 파인튜닝하기 7장 사양표. 모든 값은 각 항목의 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다. 1GB = 10^9바이트로 센다.",
+  "checked": "2026-10-11",
+  "model": {
+    "name": "Qwen/Qwen2.5-7B",
+    "role": "5장과 같은 예시 모델. 추천이나 순위가 아니다.",
+    "config_file": "qwen2.5-7b_config.json",
+    "config_note": "5장 실습 data/qwen2.5-7b_config.json을 그대로 복사했다(Hub 원본, 2026-10-11).",
+    "url_config": "https://huggingface.co/Qwen/Qwen2.5-7B/resolve/main/config.json",
+    "safetensors_total": 7615616512,
+    "checked": "2026-10-11"
+  },
+  "lora_paper": {
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "url": "https://arxiv.org/abs/2106.09685",
+    "v1": "2021-06-17",
+    "v2": "2021-10-16",
+    "eq3": "h = W0 x + ΔW x = W0 x + BAx",
+    "shapes": "W0 ∈ R^{d×k}, B ∈ R^{d×r}, A ∈ R^{r×k}, r ≪ min(d, k)",
+    "init": "We use a random Gaussian initialization for A and zero for B, so ΔW = BA is zero at the beginning of training.",
+    "scaling": "We then scale ΔW x by α/r, where α is a constant in r. When optimizing with Adam, tuning α is roughly the same as tuning the learning rate if we scale the initialization appropriately. As a result, we simply set α to the first r we try and do not tune it.",
+    "sec4_2": "We limit our study to only adapting the attention weights for downstream tasks and freeze the MLP modules",
+    "gpt3": "On GPT-3 175B, we reduce the VRAM consumption during training from 1.2TB to 350GB. With r = 4 and only the query and value projection matrices being adapted, the checkpoint size is reduced by roughly 10,000× (from 350GB to 35MB)",
+    "abstract": "LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times.",
+    "table5": {
+      "budget": "18M",
+      "Wq,Wv r=4 WikiSQL": 73.7,
+      "Wq,Wv r=4 MultiNLI": 91.3,
+      "Wq r=8 WikiSQL": 70.4,
+      "Wq,Wk,Wv,Wo r=2 WikiSQL": 73.7,
+      "Wq,Wk,Wv,Wo r=2 MultiNLI": 91.7
+    },
+    "table6_note": "a rank as small as one suffices for adapting both Wq and Wv on these datasets while training Wq alone needs a larger r.",
+    "where": "4.1절 식 (3), 4.2절, 7.1절 표 5, 7.2절 표 6",
+    "checked": "2026-10-11"
+  },
+  "qlora_paper": {
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+    "url": "https://arxiv.org/abs/2305.14314",
+    "v1": "2023-05-23",
+    "abstract": "(a) 4-bit NormalFloat (NF4) ... (b) Double Quantization ... and (c) Paged Optimizers to manage memory spikes.",
+    "compute_dtype": "whenever a QLoRA weight tensor is used, we dequantize the tensor to BFloat16, and then perform a matrix multiplication in 16-bit.",
+    "lora_grads_bf16": "we only compute weight gradients for the LoRA parameters which use 16-bit BrainFloat.",
+    "paged": "We use this feature to allocate paged memory for the optimizer states which are then automatically evicted to CPU RAM when the GPU runs out-of-memory and paged back into GPU memory when the memory is needed in the optimizer update step.",
+    "paged_no_measure": "we do not provide hard measurements for Paged Optimizers since the paging only occurs when processing mini-batches with long sequence lengths, which is rare.",
+    "memory_7b_llama": {
+      "lora_params_mb": 26,
+      "lora_input_grads_mb": 567,
+      "input_grads_ckpt_mb_per_seq": 18,
+      "base_4bit_mb": 5048,
+      "lora_share": "0.2% of the original model weights",
+      "model": "LLaMA 7B, FLAN v2, batch size 1"
+    },
+    "all_linear": "LoRA on all linear transformer block layers are required to match full finetuning performance.",
+    "blocks": {
+      "W": 64,
+      "c2": 256,
+      "W_type": "NF4",
+      "c2_type": "FP8"
+    },
+    "where": "초록, 2절 Memory Requirement, 3절, 4절, 부록 B·D",
+    "checked": "2026-10-11",
+    "appendix_B2_hparams": "We set LoRA r = 64, α = 16, and add LoRA modules on all linear layers of the base model. ... LoRA dropout of 0.1 for models up to 13B and 0.05 for 33B and 65B models.",
+    "appendix_A_lora_dropout": "We find that LoRA dropout 0.05 is useful for small models (7B, 13B), but not for larger models (33B, 65B). We find LoRA r is unrelated to final performance if LoRA is used on all layers",
+    "note_dropout": "부록 A(0.05가 7B·13B에 유용)와 부록 B.2(13B 이하에 0.1 사용)가 서로 다른 값을 적는다."
+  },
+  "peft": {
+    "version": "0.21.2",
+    "released": "2026-10-01",
+    "url_pypi": "https://pypi.org/project/peft/0.21.2/",
+    "url_config_source": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/tuners/lora/config.py",
+    "url_constants_source": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/utils/constants.py",
+    "url_layer_source": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/tuners/lora/layer.py",
+    "url_mapping_source": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/mapping_func.py",
+    "url_other_source": "https://github.com/huggingface/peft/blob/v0.21.2/src/peft/utils/other.py",
+    "url_docs_lora": "https://huggingface.co/docs/peft/developer_guides/lora",
+    "docs_version_shown": "v0.21.0",
+    "LoraConfig_defaults": {
+      "r": 8,
+      "lora_alpha": 8,
+      "lora_dropout": 0.0,
+      "bias": "none",
+      "use_rslora": false,
+      "target_modules": null,
+      "init_lora_weights": true
+    },
+    "default_targets_qwen2": [
+      "q_proj",
+      "v_proj"
+    ],
+    "all_linear": "all linear/Conv1D modules are chosen (if the model is a PreTrainedModel, the output layer excluded)",
+    "scaling_code": "lora_alpha / r (use_rslora=True면 lora_alpha / math.sqrt(r))",
+    "init_docs": "By default, PEFT initializes LoRA weights with Kaiming-uniform for weight A and zeros for weight B resulting in an identity transform",
+    "docs_qlora_style": "To apply LoRA to all the linear layers, like in QLoRA, set target_modules=\"all-linear\"",
+    "autocast_adapter_dtype": "Whether to autocast the adapter dtype. Defaults to True. Right now, this will only cast adapter weights using float16 or bfloat16 to float32",
+    "prepare_model_for_kbit_training": "cast all non INT8 parameters to fp32: fp16/bf16 파라미터 중 Params4bit가 아닌 것을 float32로 바꾼다. 기본으로 gradient checkpointing을 켠다(use_gradient_checkpointing=True).",
+    "checked": "2026-10-11"
+  },
+  "transformers": {
+    "version": "5.19.0",
+    "url_pypi": "https://pypi.org/project/transformers/5.19.0/",
+    "url_bnb_integration": "https://github.com/huggingface/transformers/blob/v5.19.0/src/transformers/integrations/bitsandbytes.py",
+    "url_quantizer_base": "https://github.com/huggingface/transformers/blob/v5.19.0/src/transformers/quantizers/base.py",
+    "url_training_args": "https://github.com/huggingface/transformers/blob/v5.19.0/src/transformers/training_args.py",
+    "bnb_replaces": "torch.nn.Linear(와 Conv1D)만 bnb.nn.Linear4bit로 바꾼다. nn.Embedding은 바꾸지 않는다.",
+    "not_converted": "get_keys_to_not_convert: tied 가중치, 마지막 모듈, 출력 임베딩(lm_head)은 원래 형식으로 둔다(\"we may want to keep the lm_head in full precision for numerical stability reasons\").",
+    "optim_paged": [
+      "paged_adamw_32bit",
+      "paged_adamw_8bit"
+    ],
+    "optim_default": "adamw_torch (torch>=2.8이면 adamw_torch_fused)",
+    "checked": "2026-10-11",
+    "url_modeling_utils": "https://github.com/huggingface/transformers/blob/v5.19.0/src/transformers/modeling_utils.py",
+    "from_pretrained_dtype_default": "dtype을 적지 않으면 \"auto\": config.json의 dtype/torch_dtype(Qwen2.5-7B는 bfloat16)으로 불러온다."
+  },
+  "bitsandbytes": {
+    "version": "0.50.2",
+    "url_paged_doc": "https://github.com/bitsandbytes-foundation/bitsandbytes/blob/0.50.2/docs/source/explanations/optimizers.mdx",
+    "paged_quote": "Paged optimizers works like regular CPU paging, which means that it only becomes active if you run out of GPU memory.",
+    "paged_overhead_example": "if you evict 1 GB of memory per forward-backward-optimizer loop ... 1 GB for PCIe 3.0 with 16x lanes would run at 16 GB/s, which is 1/(16*0.5) = 1/8 = 125ms of overhead per optimizer step.",
+    "pcie3_x16_gb_s": 16,
+    "best_case_share": 0.5,
+    "nf4_blocksize": 64,
+    "dq_second_blocksize": 256,
+    "checked": "2026-10-11"
+  },
+  "from_ch05": {
+    "activation_ckpt_gb_s1024_b1": "0.4771 (5장 E3, 논문 식 추정)",
+    "lora_preview_total_gb": 15.71,
+    "qlora_preview_total_gb": 4.28,
+    "logits_fp32_gb_b1": 0.623,
+    "t4_memory_gb": 16,
+    "t4_bf16": "NVIDIA T4 사양 페이지의 지원 정밀도 목록에 BF16이 없다(5장 확인)."
+  },
+  "from_ch06": {
+    "nf4_bits_block64": 4.5,
+    "nf4_dq_bits": 4.126953125,
+    "nf4_7b_gb": 3.9375,
+    "nf4_7b_note": "6장은 양자화하는 가중치를 이름표 그대로 7×10^9개로 셌다."
+  }
+}

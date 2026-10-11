@@ -1,0 +1,19 @@
+{
+  "_about": "9장 가정값. 모두 이 장에서 정한 값이다([가정]). 학습 설정(에폭당 34스텝, 학습 540쌍, 검증 60쌍)은 8장 data/scenario.json과 results/ch08.json에서 가져왔다. 손실 곡선은 실제 학습 기록이 아니라 식으로 만든 가상 곡선이다.",
+  "from_ch08": {"steps_per_epoch": 34, "train_pairs": 540, "val_pairs": 60, "epochs_in_ch08_notebook": 3, "eval_steps_in_ch08_notebook": 34},
+  "curve": {
+    "epochs": 6,
+    "eval_every": 17,
+    "train": {"floor": 0.12, "amp": 1.55, "tau": 26, "noise_sd": 0.04, "seed": 9},
+    "val": {"floor": 0.70, "amp": 1.20, "tau": 26, "rise_start": 60, "rise_coef": 0.000045, "noise_sd": 0.004, "seed": 10},
+    "leaky_val_offset": 0.08,
+    "formula": "train(s) = floor + amp·exp(-s/tau) + 잡음, val(s) = floor + amp·exp(-s/tau) + rise_coef·max(0, s - rise_start)^2 + 잡음, 닮은 검증(leaky) = 잡음 없는 train(s) + 0.08. 잡음은 random.Random(seed).gauss(0, sd)."
+  },
+  "hand_curve": [1.20, 0.80, 0.62, 0.58, 0.61, 0.69],
+  "early_stopping": {"patience": 2, "threshold": 0.0, "threshold_demo": [0.02, 0.05]},
+  "unsloth_rule_train_loss": 0.2,
+  "generation": {"do_sample": false, "max_new_tokens": 256, "system": "당신은 작은 쇼핑몰의 고객 문의 답변 초안을 쓰는 직원이에요. 정해진 인사와 맺음말을 지켜 짧게 답해요.", "probe_system": "당신은 친절한 도우미예요. 질문에 짧고 정확하게 답해요.", "probe_system_note": "일반 문항(잊어버림 확인)은 쇼핑몰 지시가 답을 양식 쪽으로 끌지 않도록 중립 system을 두 모델에 똑같이 쓴다. 비우면 Qwen 템플릿이 영어 기본 문장을 넣는다(3장)."},
+  "sampling_toy": {"runs": 20, "seed0": 100, "p_pass_if_greedy_pass": 0.8, "p_pass_if_greedy_fail": 0.15},
+  "bootstrap": {"n_boot": 1000, "seed": 9, "level": 0.95},
+  "alpha": 0.05
+}

@@ -1,0 +1,780 @@
+{
+ "e0_hand": {
+  "best_eval": 4,
+  "coin_two_same_side_one_sided": 0.25,
+  "coin_two_two_sided": 0.5,
+  "stop_eval": 6,
+  "trace": [
+   {
+    "best_after": 1.2,
+    "counter": 0,
+    "i": 0,
+    "prev_best": null,
+    "value": 1.2
+   },
+   {
+    "best_after": 0.8,
+    "counter": 0,
+    "i": 1,
+    "prev_best": 1.2,
+    "value": 0.8
+   },
+   {
+    "best_after": 0.62,
+    "counter": 0,
+    "i": 2,
+    "prev_best": 0.8,
+    "value": 0.62
+   },
+   {
+    "best_after": 0.58,
+    "counter": 0,
+    "i": 3,
+    "prev_best": 0.62,
+    "value": 0.58
+   },
+   {
+    "best_after": 0.58,
+    "counter": 1,
+    "i": 4,
+    "prev_best": 0.58,
+    "value": 0.61
+   },
+   {
+    "best_after": 0.58,
+    "counter": 2,
+    "i": 5,
+    "prev_best": 0.58,
+    "value": 0.69
+   }
+  ],
+  "values": [
+   1.2,
+   0.8,
+   0.62,
+   0.58,
+   0.61,
+   0.69
+  ]
+ },
+ "e1_curves": {
+  "best_epoch": 2.5,
+  "best_step": 85,
+  "best_val": 0.7767,
+  "ch08_notebook": {
+   "best_step": 68,
+   "last_step": 102,
+   "steps": [
+    34,
+    68,
+    102
+   ],
+   "stopped": false,
+   "vals": [
+    1.0227,
+    0.7894,
+    0.7962
+   ]
+  },
+  "eval_every": 17,
+  "evals": [
+   {
+    "leaky_val": 1.0061,
+    "step": 17,
+    "train_smooth": 0.9261,
+    "val": 1.3202
+   },
+   {
+    "leaky_val": 0.6192,
+    "step": 34,
+    "train_smooth": 0.5392,
+    "val": 1.0227
+   },
+   {
+    "leaky_val": 0.418,
+    "step": 51,
+    "train_smooth": 0.338,
+    "val": 0.8664
+   },
+   {
+    "leaky_val": 0.3134,
+    "step": 68,
+    "train_smooth": 0.2334,
+    "val": 0.7894
+   },
+   {
+    "leaky_val": 0.259,
+    "step": 85,
+    "train_smooth": 0.179,
+    "val": 0.7767
+   },
+   {
+    "leaky_val": 0.2307,
+    "step": 102,
+    "train_smooth": 0.1507,
+    "val": 0.7962
+   },
+   {
+    "leaky_val": 0.2159,
+    "step": 119,
+    "train_smooth": 0.1359,
+    "val": 0.8676
+   },
+   {
+    "leaky_val": 0.2083,
+    "step": 136,
+    "train_smooth": 0.1283,
+    "val": 0.9644
+   },
+   {
+    "leaky_val": 0.2043,
+    "step": 153,
+    "train_smooth": 0.1243,
+    "val": 1.089
+   },
+   {
+    "leaky_val": 0.2022,
+    "step": 170,
+    "train_smooth": 0.1222,
+    "val": 1.2458
+   },
+   {
+    "leaky_val": 0.2012,
+    "step": 187,
+    "train_smooth": 0.1212,
+    "val": 1.4267
+   },
+   {
+    "leaky_val": 0.2006,
+    "step": 204,
+    "train_smooth": 0.1206,
+    "val": 1.6435
+   }
+  ],
+  "every_epoch": {
+   "best_step": 68,
+   "steps": [
+    34,
+    68,
+    102,
+    136,
+    170,
+    204
+   ],
+   "stop_step": 136,
+   "vals": [
+    1.0227,
+    0.7894,
+    0.7962,
+    0.9644,
+    1.2458,
+    1.6435
+   ]
+  },
+  "gap_at_best": 0.5977,
+  "gap_at_last": 1.5229,
+  "last_step": 204,
+  "last_train_smooth": 0.1206,
+  "last_val": 1.6435,
+  "leaky": {
+   "first": 1.0061,
+   "last": 0.2006,
+   "min_step": 204,
+   "stopped": false
+  },
+  "steps_saved": 85,
+  "stop_step": 119,
+  "stop_val": 0.8676,
+  "total_steps": 204,
+  "trace": [
+   {
+    "best_after": 1.3202,
+    "counter": 0,
+    "i": 0,
+    "prev_best": null,
+    "value": 1.3202
+   },
+   {
+    "best_after": 1.0227,
+    "counter": 0,
+    "i": 1,
+    "prev_best": 1.3202,
+    "value": 1.0227
+   },
+   {
+    "best_after": 0.8664,
+    "counter": 0,
+    "i": 2,
+    "prev_best": 1.0227,
+    "value": 0.8664
+   },
+   {
+    "best_after": 0.7894,
+    "counter": 0,
+    "i": 3,
+    "prev_best": 0.8664,
+    "value": 0.7894
+   },
+   {
+    "best_after": 0.7767,
+    "counter": 0,
+    "i": 4,
+    "prev_best": 0.7894,
+    "value": 0.7767
+   },
+   {
+    "best_after": 0.7767,
+    "counter": 1,
+    "i": 5,
+    "prev_best": 0.7767,
+    "value": 0.7962
+   },
+   {
+    "best_after": 0.7767,
+    "counter": 2,
+    "i": 6,
+    "prev_best": 0.7767,
+    "value": 0.8676
+   }
+  ],
+  "train_every_10": [
+   [
+    10,
+    1.1566
+   ],
+   [
+    20,
+    0.8346
+   ],
+   [
+    30,
+    0.617
+   ],
+   [
+    40,
+    0.4849
+   ],
+   [
+    50,
+    0.3515
+   ],
+   [
+    60,
+    0.2607
+   ],
+   [
+    70,
+    0.354
+   ],
+   [
+    80,
+    0.144
+   ],
+   [
+    90,
+    0.1652
+   ],
+   [
+    100,
+    0.1954
+   ],
+   [
+    110,
+    0.245
+   ],
+   [
+    120,
+    0.1693
+   ],
+   [
+    130,
+    0.0632
+   ],
+   [
+    140,
+    0.1459
+   ],
+   [
+    150,
+    0.1322
+   ],
+   [
+    160,
+    0.1371
+   ],
+   [
+    170,
+    0.09
+   ],
+   [
+    180,
+    0.1032
+   ],
+   [
+    190,
+    0.195
+   ],
+   [
+    200,
+    0.1316
+   ]
+  ],
+  "unsloth_rule": {
+   "limit": 0.2,
+   "noisy_first_step": 63,
+   "smooth_first_step": 78
+  },
+  "val_rise_best_to_last": 0.8668
+ },
+ "e2_threshold": [
+  {
+   "best_eval": 4,
+   "counters": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    2
+   ],
+   "stop_eval": 6,
+   "threshold": 0.0
+  },
+  {
+   "best_eval": 4,
+   "counters": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    2
+   ],
+   "stop_eval": 6,
+   "threshold": 0.02
+  },
+  {
+   "best_eval": 4,
+   "counters": [
+    0,
+    0,
+    0,
+    1,
+    2
+   ],
+   "stop_eval": 5,
+   "threshold": 0.05
+  }
+ ],
+ "e3_sampling": {
+  "base": {
+   "greedy": 2,
+   "max": 9,
+   "mean": 6.2,
+   "min": 3,
+   "sampled": [
+    7,
+    6,
+    7,
+    7,
+    5,
+    4,
+    9,
+    5,
+    6,
+    6,
+    3,
+    6,
+    5,
+    6,
+    9,
+    5,
+    5,
+    6,
+    9,
+    8
+   ]
+  },
+  "ft_best": {
+   "greedy": 29,
+   "max": 28,
+   "mean": 24.0,
+   "min": 19,
+   "sampled": [
+    26,
+    26,
+    28,
+    25,
+    24,
+    19,
+    25,
+    24,
+    21,
+    24,
+    21,
+    24,
+    25,
+    23,
+    21,
+    20,
+    27,
+    26,
+    25,
+    26
+   ]
+  }
+ },
+ "e4_scoring": {
+  "base": {
+   "exact": 2,
+   "fn": 0,
+   "fp": 8,
+   "human": 2,
+   "n": 40,
+   "normalized": 2,
+   "precision": 0.2,
+   "recall": 1.0,
+   "rule": 10,
+   "rule_agree": 32,
+   "rule_false_fail": [],
+   "rule_false_pass": [
+    "Q21",
+    "Q22",
+    "Q23",
+    "Q24",
+    "Q25",
+    "Q26",
+    "Q27",
+    "Q28"
+   ],
+   "tn": 30,
+   "tp": 2
+  },
+  "ft_best": {
+   "exact": 11,
+   "fn": 2,
+   "fp": 3,
+   "human": 29,
+   "n": 40,
+   "normalized": 23,
+   "precision": 0.9,
+   "recall": 0.931,
+   "rule": 30,
+   "rule_agree": 35,
+   "rule_false_fail": [
+    "Q01",
+    "Q04"
+   ],
+   "rule_false_pass": [
+    "Q24",
+    "Q26",
+    "Q40"
+   ],
+   "tn": 8,
+   "tp": 27
+  },
+  "ft_last": {
+   "exact": 11,
+   "fn": 2,
+   "fp": 4,
+   "human": 27,
+   "n": 40,
+   "normalized": 21,
+   "precision": 0.8621,
+   "recall": 0.9259,
+   "rule": 29,
+   "rule_agree": 34,
+   "rule_false_fail": [
+    "Q01",
+    "Q04"
+   ],
+   "rule_false_pass": [
+    "Q15",
+    "Q26",
+    "Q27",
+    "Q40"
+   ],
+   "tn": 9,
+   "tp": 25
+  }
+ },
+ "e5_by_type": {
+  "ch01_predicted_F_remaining": 7,
+  "ch01_predicted_F_remaining_by_type": {
+   "K": 3,
+   "R": 4
+  },
+  "ft_best_remaining": 11,
+  "last_vs_best": {
+   "F": {
+    "a_pass": 8,
+    "b_pass": 7,
+    "broke": [
+     "Q15"
+    ],
+    "fixed": [],
+    "n": 8
+   },
+   "I": {
+    "a_pass": 5,
+    "b_pass": 5,
+    "broke": [],
+    "fixed": [],
+    "n": 6
+   },
+   "K": {
+    "a_pass": 9,
+    "b_pass": 8,
+    "broke": [
+     "Q06"
+    ],
+    "fixed": [],
+    "n": 12
+   },
+   "OK": {
+    "a_pass": 1,
+    "b_pass": 1,
+    "broke": [],
+    "fixed": [],
+    "n": 2
+   },
+   "R": {
+    "a_pass": 0,
+    "b_pass": 0,
+    "broke": [],
+    "fixed": [],
+    "n": 4
+   },
+   "T": {
+    "a_pass": 6,
+    "b_pass": 6,
+    "broke": [
+     "Q27"
+    ],
+    "fixed": [
+     "Q24"
+    ],
+    "n": 8
+   }
+  },
+  "table": {
+   "F": {
+    "a_pass": 0,
+    "b_pass": 8,
+    "broke": [],
+    "fixed": [
+     "Q13",
+     "Q14",
+     "Q15",
+     "Q16",
+     "Q17",
+     "Q18",
+     "Q19",
+     "Q20"
+    ],
+    "n": 8
+   },
+   "I": {
+    "a_pass": 0,
+    "b_pass": 5,
+    "broke": [],
+    "fixed": [
+     "Q29",
+     "Q30",
+     "Q31",
+     "Q33",
+     "Q34"
+    ],
+    "n": 6
+   },
+   "K": {
+    "a_pass": 0,
+    "b_pass": 9,
+    "broke": [],
+    "fixed": [
+     "Q01",
+     "Q02",
+     "Q03",
+     "Q04",
+     "Q05",
+     "Q06",
+     "Q07",
+     "Q08",
+     "Q12"
+    ],
+    "n": 12
+   },
+   "OK": {
+    "a_pass": 2,
+    "b_pass": 1,
+    "broke": [
+     "Q40"
+    ],
+    "fixed": [],
+    "n": 2
+   },
+   "R": {
+    "a_pass": 0,
+    "b_pass": 0,
+    "broke": [],
+    "fixed": [],
+    "n": 4
+   },
+   "T": {
+    "a_pass": 0,
+    "b_pass": 6,
+    "broke": [],
+    "fixed": [
+     "Q21",
+     "Q22",
+     "Q23",
+     "Q25",
+     "Q27",
+     "Q28"
+    ],
+    "n": 8
+   }
+  }
+ },
+ "e6_probe": {
+  "base": 18,
+  "base_only": 4,
+  "base_only_ids": [
+   "G03",
+   "G09",
+   "G12",
+   "G19"
+  ],
+  "ft_best": 15,
+  "ft_only": 1,
+  "ft_only_ids": [
+   "G01"
+  ],
+  "n": 20
+ },
+ "e7_judge": {
+  "human_base_only": 1,
+  "human_ft_only": 28,
+  "human_ties": 11,
+  "inconsistent": 11,
+  "n": 40,
+  "x_wins_avg": 33.5,
+  "x_wins_consistent": 28,
+  "x_wins_x_first": 39,
+  "x_wins_y_first": 28,
+  "y_wins_consistent": 1
+ },
+ "e8_chance": {
+  "base_vs_ft_best": {
+   "a_only": 1,
+   "a_pass": 2,
+   "b_only": 28,
+   "b_pass": 29,
+   "contains_zero": false,
+   "copies_needed": 1,
+   "diff": 0.675,
+   "hi": 0.825,
+   "items_needed": 40,
+   "lo": 0.5,
+   "sign_p": 0.0
+  },
+  "ft_last_vs_ft_best": {
+   "a_only": 1,
+   "a_pass": 27,
+   "b_only": 3,
+   "b_pass": 29,
+   "contains_zero": true,
+   "copies_needed": 5,
+   "diff": 0.05,
+   "hi": 0.15,
+   "items_needed": 200,
+   "lo": -0.05,
+   "sign_p": 0.625
+  },
+  "probe_base_vs_ft_best": {
+   "a_only": 4,
+   "a_pass": 18,
+   "b_only": 1,
+   "b_pass": 15,
+   "contains_zero": true,
+   "copies_needed": 3,
+   "diff": -0.15,
+   "hi": 0.05,
+   "items_needed": 60,
+   "lo": -0.35,
+   "sign_p": 0.375
+  },
+  "seed_check_ft_last_vs_ft_best": [
+   {
+    "contains_zero": true,
+    "hi": 0.15,
+    "lo": -0.05,
+    "seed": 0
+   },
+   {
+    "contains_zero": true,
+    "hi": 0.15,
+    "lo": -0.05,
+    "seed": 1
+   },
+   {
+    "contains_zero": true,
+    "hi": 0.15,
+    "lo": -0.05,
+    "seed": 2
+   },
+   {
+    "contains_zero": true,
+    "hi": 0.15,
+    "lo": -0.05,
+    "seed": 3
+   },
+   {
+    "contains_zero": true,
+    "hi": 0.15,
+    "lo": -0.05,
+    "seed": 4
+   }
+  ]
+ },
+ "examples": {
+  "Q01": {
+   "base": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n상품을 받은 날로부터 14일 안에 환불을 신청할 수 있어요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_best": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n물건을 받고 일주일 안에 말씀해 주시면 환불해 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_last": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n물건을 받고 일주일 안에 말씀해 주시면 환불해 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "reference": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n상품을 받은 날로부터 7일 안에 환불을 신청할 수 있어요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림"
+  },
+  "Q04": {
+   "base": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n5만 원 이상 주문하시면 무료로 보내 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_best": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n30,000원 넘게 사시면 배송비 없이 보내 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_last": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n30,000원 넘게 사시면 배송비 없이 보내 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "reference": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n3만 원 이상 주문하시면 무료로 보내 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림"
+  },
+  "Q14": {
+   "base": "로그인 화면의 비밀번호 찾기를 누르면 가입한 이메일로 새 비밀번호를 정하는 링크를 보내 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_best": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n로그인 화면의 비밀번호 찾기를 누르면 가입한 이메일로 새 비밀번호를 정하는 링크를 보내 드려요!\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_last": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n로그인 화면의 비밀번호 찾기를 누르면 가입한 이메일로 새 비밀번호를 정하는 링크를 보내 드려요!\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "reference": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n로그인 화면의 비밀번호 찾기를 누르면 가입한 이메일로 새 비밀번호를 정하는 링크를 보내 드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림"
+  },
+  "Q24": {
+   "base": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n이전 문의 내용은 확인이 어려워요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_best": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n이전 문의 내용은 확인이 어려워요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_last": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n같은 일을 두 번 겪게 해 드려 정말 죄송해요. 이번에는 담당자가 끝까지 확인하고 결과를 알려 드릴게요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "reference": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n같은 일을 두 번 겪게 해 드려 정말 죄송해요. 이번에는 담당자가 끝까지 확인하고 결과를 알려 드릴게요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림"
+  },
+  "Q40": {
+   "base": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n마음에 드신다니 저희도 정말 기뻐요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_best": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n상품을 받은 날로부터 7일 안에 환불을 신청할 수 있어요. 환불 금액은 카드 결제 취소로 3영업일 안에 돌려드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "ft_last": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n상품을 받은 날로부터 7일 안에 환불을 신청할 수 있어요. 환불 금액은 카드 결제 취소로 3영업일 안에 돌려드려요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림",
+   "reference": "안녕하세요, 고객님. 문의 주셔서 고마워요.\n마음에 드신다니 저희도 정말 기뻐요.\n더 궁금한 점이 있으면 편하게 말씀해 주세요. 고객지원팀 드림"
+  }
+ },
+ "meta": {
+  "checked": "2026-10-11",
+  "eval_set": "ch01_when_finetune/data/inquiries.json",
+  "note": "손실 곡선과 채점 데이터는 모두 가상이다. 실제 학습 결과가 아니다.",
+  "platform": "Darwin arm64",
+  "python": "3.12.13",
+  "spec_file": "specs_2026-10-11.json"
+ }
+}

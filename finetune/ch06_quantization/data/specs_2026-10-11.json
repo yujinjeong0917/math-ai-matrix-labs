@@ -1,0 +1,45 @@
+{
+  "checked": "2026-10-11",
+  "note": "4bit 표와 설정 기본값. 값이 바뀌면 날짜가 다른 새 파일을 만든다.",
+  "bitsandbytes": {
+    "version": "0.50.2",
+    "released": "2026-08-27",
+    "url_release": "https://github.com/bitsandbytes-foundation/bitsandbytes/releases/tag/0.50.2",
+    "url_source": "https://github.com/bitsandbytes-foundation/bitsandbytes/blob/0.50.2/bitsandbytes/functional.py",
+    "default_4bit_blocksize": 64,
+    "valid_4bit_blocksizes": [32, 64, 128, 256, 512, 1024, 2048, 4096],
+    "double_quant_second_blocksize": 256,
+    "nf4_recipe": "create_normal_map(offset=0.9677083, use_extra_value=True)",
+    "nf4": [-1.0, -0.6961928009986877, -0.5250730514526367, -0.39491748809814453, -0.28444138169288635, -0.18477343022823334, -0.09105003625154495, 0.0, 0.07958029955625534, 0.16093020141124725, 0.24611230194568634, 0.33791524171829224, 0.44070982933044434, 0.5626170039176941, 0.7229568362236023, 1.0],
+    "fp4_raw_bit_order": [0, 0.0625, 8.0, 12.0, 4.0, 6.0, 2.0, 3.0, -0.0, -0.0625, -8.0, -12.0, -4.0, -6.0, -2.0, -3.0],
+    "fp4_note": "부호 1비트, 지수 2비트, 가수 1비트. 끝에 [-1, 1]로 정규화한다(최댓값 12로 나눔).",
+    "int4_table": [7, 6, 5, 4, 3, 2, 1, 0, -0, -1, -2, -3, -4, -5, -6, -7]
+  },
+  "transformers_BitsAndBytesConfig": {
+    "url": "https://huggingface.co/docs/transformers/main/en/main_classes/quantization",
+    "load_in_8bit": false,
+    "load_in_4bit": false,
+    "llm_int8_threshold": 6.0,
+    "bnb_4bit_compute_dtype": "torch.float32 (문서 표기, 시그니처는 None)",
+    "bnb_4bit_quant_type": "fp4",
+    "bnb_4bit_use_double_quant": false,
+    "bnb_4bit_quant_storage": "torch.uint8"
+  },
+  "qlora_paper": {
+    "url": "https://arxiv.org/abs/2305.14314",
+    "v1": "2023-05-23",
+    "blocksize_W": 64,
+    "blocksize_c2": 256,
+    "const_bits_before": 0.5,
+    "const_bits_after_rounded": 0.127,
+    "reduction_rounded": 0.373,
+    "appendix_E": "부록 E의 NF4 값은 위 bitsandbytes nf4 표와 같다"
+  },
+  "llm_int8_paper": {
+    "url": "https://arxiv.org/abs/2208.07339",
+    "v1": "2022-08-15",
+    "v2": "2022-11-10",
+    "range": [-127, 127],
+    "outlier_scale": "6.7B"
+  }
+}

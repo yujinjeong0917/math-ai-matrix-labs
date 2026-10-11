@@ -1,0 +1,168 @@
+{
+  "_about": "내 데이터로 LLM 파인튜닝하기 8장 사양표. 모든 값은 각 항목의 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 이 파일을 고치지 말고 날짜가 다른 새 파일을 만든다. 1GB = 10^9바이트. claim=회사 주장은 Unsloth가 스스로 밝힌 수치로, 이 실습이 재현한 값이 아니다.",
+  "checked": "2026-10-11",
+  "unsloth": {
+    "pypi_version": "2026.10.3",
+    "pypi_uploaded": "2026-10-08",
+    "url_pypi": "https://pypi.org/project/unsloth/",
+    "github_latest_release": "v0.1.905-beta (2026-10-08, Desktop 앱 배포 태그)",
+    "url_github": "https://github.com/unslothai/unsloth",
+    "license": "core Apache-2.0, Unsloth Studio UI 등 일부 선택 구성요소 AGPL-3.0 (README License 절)",
+    "ways_to_use": ["Unsloth Desktop(앱)", "Unsloth Studio(웹 UI)", "Unsloth Core(코드)"],
+    "readme_quote_train": "Train LLMs, diffusion, decision, TTS, and embedding models 2× faster with 70% less VRAM with no accuracy loss",
+    "readme_quote_methods": "Supports reinforcement learning, LoRA, QLoRA, full fine tuning, pretraining, RL, GRPO, DPO, and FP8.",
+    "readme_quote_export": "Export or Deploy models including GGUF, NVFP4, FP8 and more formats.",
+    "readme_quote_hw": "We support Multi GPU setups, NVIDIA, AMD, Intel GPUs, CPUs and the Vulkan backend.",
+    "checked": "2026-10-11"
+  },
+  "requirements": {
+    "url": "https://unsloth.ai/docs/get-started/fine-tuning-for-beginners/unsloth-requirements",
+    "core_min_cuda_capability": 7.0,
+    "core_quote": "Minimum CUDA Capability 7.0 (V100, T4, Titan V, RTX 20 & 50, A100, H100, L40 etc)",
+    "studio_python": "3.11 이상 3.14 미만",
+    "vram_table_note": "QLoRA uses 4-bit, LoRA uses 16-bit. Keep in mind that sometimes more VRAM is required depending on the model so these numbers are the absolute minimum",
+    "vram_table_gb": {"3B": [3.5, 8], "7B": [5, 19], "8B": [6, 22], "14B": [8.5, 33], "70B": [41, 164]},
+    "oom_hint": "A common issue when you OOM or run out of memory is because you set your batch size too high. Set it to 1, 2, or 3 to use less VRAM.",
+    "claim": true,
+    "checked": "2026-10-11"
+  },
+  "mechanisms": {
+    "kernels": {
+      "quote": "By manually deriving backpropagation steps and rewriting all Pytorch modules into Triton kernels, Unsloth can both reduce memory usage and make fine-tuning faster. Crucially, accuracy degradation is 0% with respect to normal QLoRA, because no approximations are made in the optimized code.",
+      "url": "https://huggingface.co/blog/unsloth-trl",
+      "published": "2024-01-10",
+      "author": "Daniel (Unsloth), Hugging Face 블로그 게스트 글",
+      "claim": true,
+      "checked": "2026-10-11"
+    },
+    "gradient_checkpointing": {
+      "quote": "Unsloth Gradient Checkpointing reduces memory usage by a further 30% at the cost of +1.9% extra time overhead ... We asynchronously offload activations to system RAM",
+      "url": "https://unsloth.ai/blog/long-context",
+      "published": "2024-04-09",
+      "fetch_note": "직접 요청은 403이라 r.jina.ai 읽기 도구를 거쳐 원문을 읽었다",
+      "memory_saving_claim": 0.30,
+      "time_overhead_claim": 0.019,
+      "claim": true,
+      "checked": "2026-10-11"
+    },
+    "packing": {
+      "quote": "Speedup = batchsize × L / (batchsize/2 L + batchsize/2 S) = 2 L / (L + S)",
+      "url": "https://unsloth.ai/docs/blog/3x-faster-training-packing",
+      "note": "식 자체는 산수라 실습에서 재현한다. '3x', '5x' 같은 속도 수치는 회사 주장이다.",
+      "checked": "2026-10-11"
+    },
+    "grad_accum_fix": {
+      "quote": "Gradient accumulation and batch sizes are now fully equivalent in Unsloth due to our bug fixes for gradient accumulation.",
+      "url": "https://unsloth.ai/docs/get-started/fine-tuning-llms-guide/lora-hyperparameters-guide",
+      "claim": true,
+      "checked": "2026-10-11"
+    },
+    "prequantized": {
+      "quote": "4bit pre quantized models we support for 4x faster downloading + no OOMs.",
+      "url": "https://unsloth.ai/docs/get-started/install/google-colab",
+      "claim": true,
+      "checked": "2026-10-11"
+    }
+  },
+  "hyperparams_doc": {
+    "url": "https://unsloth.ai/docs/get-started/fine-tuning-llms-guide/lora-hyperparameters-guide",
+    "lr_lora": "2e-4",
+    "epochs": "1-3",
+    "rank": "8, 16, 32, 64, 128 (Choose 16 or 32)",
+    "alpha": "r 또는 r * 2",
+    "effective_batch": "batch_size 2 × gradient_accumulation_steps 8 = 16",
+    "warmup": "5-10% of total steps",
+    "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+    "checked": "2026-10-11"
+  },
+  "official_notebook": {
+    "url": "https://github.com/unslothai/notebooks/blob/main/nb/Qwen2.5_(7B)-Alpaca.ipynb",
+    "pins": {"transformers": "4.57.6", "trl": "0.22.2"},
+    "per_device_train_batch_size": 2,
+    "gradient_accumulation_steps": 4,
+    "max_steps": 60,
+    "optim": "adamw_8bit",
+    "dtype_comment": "None for auto detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+",
+    "chat_notebook_url": "https://github.com/unslothai/notebooks/blob/main/nb/Qwen2.5_Coder_(14B)-Conversational.ipynb",
+    "chat_template_name": "qwen-2.5",
+    "checked": "2026-10-11"
+  },
+  "trl": {
+    "latest_pypi": "1.15.0 (2026-10-08)",
+    "url_latest_doc": "https://huggingface.co/docs/trl/main/en/sft_trainer",
+    "url_v0222_source": "https://github.com/huggingface/trl/blob/v0.22.2/trl/trainer/sft_config.py",
+    "max_length_default": 1024,
+    "bf16_rule_quote_latest": "bf16: Defaults to True if fp16 is not set, instead of False.",
+    "bf16_rule_v0222_source": "self.bf16 = not (self.fp16) if self.bf16 is None else self.bf16",
+    "save_steps_default": 500,
+    "trainer_arg_name": "processing_class (tokenizer 아님)",
+    "checked": "2026-10-11"
+  },
+  "colab": {
+    "url": "https://research.google.com/colaboratory/faq.html",
+    "quote_limits": "overall usage limits as well as idle timeout periods, maximum VM lifetime, GPU types available, and other factors vary over time. Colab does not publish these limits",
+    "quote_12h": "In the version of Colab that is free of charge notebooks can run for at most 12 hours, depending on availability and your usage patterns.",
+    "free_gpu_type": "[확인 필요] Google FAQ는 GPU 종류를 밝히지 않는다. Unsloth 문서는 'T4 is the free GPU Google is providing'이라고 적는다(회사 주장).",
+    "unsloth_quote_t4": "T4 is the free GPU Google is providing.",
+    "url_unsloth_colab": "https://unsloth.ai/docs/get-started/install/google-colab",
+    "checked": "2026-10-11"
+  },
+  "gpu_t4": {
+    "name": "NVIDIA T4",
+    "memory_gb": 16,
+    "fp16_tflops": 65,
+    "fp32_tflops": 8.1,
+    "cuda_capability": 7.5,
+    "url": "https://www.nvidia.com/en-us/data-center/tesla-t4/",
+    "url_capability": "https://developer.nvidia.com/cuda-gpus",
+    "note": "65 FP16 TFLOPS는 Tensor Core 혼합정밀도 최고치(제조사 표기)다. 실제 학습은 이보다 훨씬 낮게 나온다.",
+    "checked": "2026-10-11"
+  },
+  "models": {
+    "qwen2.5-7b-instruct": {
+      "base_repo": "Qwen/Qwen2.5-7B-Instruct",
+      "config_file": "qwen2.5-7b-instruct_config.json",
+      "license": "apache-2.0",
+      "safetensors_total": 7615616512,
+      "bf16_file_bytes": 15231271888,
+      "bnb_repo": "unsloth/Qwen2.5-7B-Instruct-bnb-4bit",
+      "bnb_file_bytes": 5547254622,
+      "bnb_hub_bf16_params": 1090328064,
+      "bnb_hub_f32_params": 451584,
+      "bnb_quantization_config": {"bnb_4bit_quant_type": "nf4", "bnb_4bit_use_double_quant": true, "bnb_4bit_compute_dtype": "bfloat16", "llm_int8_skip_modules": ["lm_head", "multi_modal_projector", "merger", "modality_projection"]},
+      "url_api": "https://huggingface.co/api/models/unsloth/Qwen2.5-7B-Instruct-bnb-4bit?blobs=true",
+      "url_config": "https://huggingface.co/unsloth/Qwen2.5-7B-Instruct-bnb-4bit/resolve/main/config.json",
+      "checked": "2026-10-11"
+    },
+    "qwen2.5-3b-instruct": {
+      "base_repo": "Qwen/Qwen2.5-3B-Instruct",
+      "config_file": "qwen2.5-3b-instruct_config.json",
+      "license": "other (qwen-research)",
+      "safetensors_total": 3085938688,
+      "bnb_repo": "unsloth/Qwen2.5-3B-Instruct-bnb-4bit",
+      "bnb_file_bytes": 2054625552,
+      "bnb_hub_bf16_params": 311406592,
+      "url_api": "https://huggingface.co/api/models/Qwen/Qwen2.5-3B-Instruct",
+      "checked": "2026-10-11"
+    },
+    "qwen2.5-1.5b-instruct": {
+      "base_repo": "Qwen/Qwen2.5-1.5B-Instruct",
+      "config_file": "qwen2.5-1.5b-instruct_config.json",
+      "license": "apache-2.0",
+      "safetensors_total": 1543714304,
+      "bnb_repo": "unsloth/Qwen2.5-1.5B-Instruct-bnb-4bit",
+      "bnb_file_bytes": 1143327694,
+      "bnb_hub_bf16_params": 233518592,
+      "url_api": "https://huggingface.co/api/models/Qwen/Qwen2.5-1.5B-Instruct",
+      "checked": "2026-10-11"
+    }
+  },
+  "bnb_4bit": {
+    "blocksize": 64,
+    "double_quant_blocksize": 256,
+    "bits_per_param_double_quant": "4 + 8/64 + 32/(64*256)",
+    "url": "https://github.com/bitsandbytes-foundation/bitsandbytes/blob/0.50.2/bitsandbytes/functional.py",
+    "note": "6장과 같은 값",
+    "checked": "2026-10-11"
+  }
+}

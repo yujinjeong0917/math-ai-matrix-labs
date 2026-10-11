@@ -1,0 +1,848 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "spec_file": "specs_2026-10-11.json",
+  "checked": "2026-10-11",
+  "gb": "10^9 bytes",
+  "main_recipe": "NF4 + 두 번 양자화(선형층), 나머지 bf16, LoRA all-linear r=16, PEFT 기본 fp32 어댑터 + AdamW, 길이 1,024, 묶음 1, 체크포인팅"
+ },
+ "e0_hand": {
+  "B": [
+   2,
+   1,
+   0,
+   -1
+  ],
+  "A": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "deltaW": [
+   [
+    2,
+    4,
+    6,
+    8
+   ],
+   [
+    1,
+    2,
+    3,
+    4
+   ],
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    -1,
+    -2,
+    -3,
+    -4
+   ]
+  ],
+  "numbers_full": 16,
+  "numbers_lora": 8,
+  "x": [
+   1,
+   0,
+   0,
+   1
+  ],
+  "Ax": 5,
+  "deltaW_x": [
+   10,
+   5,
+   0,
+   -5
+  ],
+  "B_Ax": [
+   10,
+   5,
+   0,
+   -5
+  ],
+  "same": true,
+  "mults_full": 16,
+  "mults_lora": 8,
+  "big_example": {
+   "d": 4096,
+   "r": 8,
+   "full": 16777216,
+   "lora": 65536,
+   "pct": 0.39
+  }
+ },
+ "e1_params": {
+  "shapes": {
+   "q_proj": [
+    3584,
+    3584
+   ],
+   "k_proj": [
+    3584,
+    512
+   ],
+   "v_proj": [
+    3584,
+    512
+   ],
+   "o_proj": [
+    3584,
+    3584
+   ],
+   "gate_proj": [
+    3584,
+    18944
+   ],
+   "up_proj": [
+    3584,
+    18944
+   ],
+   "down_proj": [
+    18944,
+    3584
+   ]
+  },
+  "layers": 28,
+  "q_full": 12845056,
+  "q_lora_r8": 57344,
+  "q_pct_r8": 0.446,
+  "k_full": 1835008,
+  "k_lora_r8": 32768,
+  "down_full": 67895296,
+  "down_lora_r8": 180224,
+  "total_params": 7615616512,
+  "table": {
+   "qv": {
+    "modules": [
+     "q_proj",
+     "v_proj"
+    ],
+    "per_layer_coeff": 11264,
+    "by_r": {
+     "1": 315392,
+     "4": 1261568,
+     "8": 2523136,
+     "16": 5046272,
+     "32": 10092544,
+     "64": 20185088
+    },
+    "pct_by_r": {
+     "1": 0.004,
+     "4": 0.017,
+     "8": 0.033,
+     "16": 0.066,
+     "32": 0.133,
+     "64": 0.265
+    },
+    "millions_by_r": {
+     "1": 0.32,
+     "4": 1.26,
+     "8": 2.52,
+     "16": 5.05,
+     "32": 10.09,
+     "64": 20.19
+    }
+   },
+   "qkvo": {
+    "modules": [
+     "q_proj",
+     "k_proj",
+     "v_proj",
+     "o_proj"
+    ],
+    "per_layer_coeff": 22528,
+    "by_r": {
+     "1": 630784,
+     "4": 2523136,
+     "8": 5046272,
+     "16": 10092544,
+     "32": 20185088,
+     "64": 40370176
+    },
+    "pct_by_r": {
+     "1": 0.008,
+     "4": 0.033,
+     "8": 0.066,
+     "16": 0.133,
+     "32": 0.265,
+     "64": 0.53
+    },
+    "millions_by_r": {
+     "1": 0.63,
+     "4": 2.52,
+     "8": 5.05,
+     "16": 10.09,
+     "32": 20.19,
+     "64": 40.37
+    }
+   },
+   "mlp": {
+    "modules": [
+     "gate_proj",
+     "up_proj",
+     "down_proj"
+    ],
+    "per_layer_coeff": 67584,
+    "by_r": {
+     "1": 1892352,
+     "4": 7569408,
+     "8": 15138816,
+     "16": 30277632,
+     "32": 60555264,
+     "64": 121110528
+    },
+    "pct_by_r": {
+     "1": 0.025,
+     "4": 0.099,
+     "8": 0.199,
+     "16": 0.398,
+     "32": 0.795,
+     "64": 1.59
+    },
+    "millions_by_r": {
+     "1": 1.89,
+     "4": 7.57,
+     "8": 15.14,
+     "16": 30.28,
+     "32": 60.56,
+     "64": 121.11
+    }
+   },
+   "all_linear": {
+    "modules": [
+     "q_proj",
+     "k_proj",
+     "v_proj",
+     "o_proj",
+     "gate_proj",
+     "up_proj",
+     "down_proj"
+    ],
+    "per_layer_coeff": 90112,
+    "by_r": {
+     "1": 2523136,
+     "4": 10092544,
+     "8": 20185088,
+     "16": 40370176,
+     "32": 80740352,
+     "64": 161480704
+    },
+    "pct_by_r": {
+     "1": 0.033,
+     "4": 0.133,
+     "8": 0.265,
+     "16": 0.53,
+     "32": 1.06,
+     "64": 2.12
+    },
+    "millions_by_r": {
+     "1": 2.52,
+     "4": 10.09,
+     "8": 20.19,
+     "16": 40.37,
+     "32": 80.74,
+     "64": 161.48
+    }
+   }
+  },
+  "allr1_equals_qv_r8": true
+ },
+ "e2_scaling": {
+  "rows": [
+   {
+    "alpha": 8,
+    "r": 8,
+    "alpha_over_r": 1.0,
+    "rslora": 2.8284,
+    "note": "PEFT 기본값"
+   },
+   {
+    "alpha": 16,
+    "r": 8,
+    "alpha_over_r": 2.0,
+    "rslora": 5.6569,
+    "note": ""
+   },
+   {
+    "alpha": 16,
+    "r": 16,
+    "alpha_over_r": 1.0,
+    "rslora": 4.0,
+    "note": ""
+   },
+   {
+    "alpha": 16,
+    "r": 64,
+    "alpha_over_r": 0.25,
+    "rslora": 2.0,
+    "note": "QLoRA 논문 부록 B.2"
+   },
+   {
+    "alpha": 32,
+    "r": 16,
+    "alpha_over_r": 2.0,
+    "rslora": 8.0,
+    "note": ""
+   },
+   {
+    "alpha": 64,
+    "r": 64,
+    "alpha_over_r": 1.0,
+    "rslora": 8.0,
+    "note": ""
+   }
+  ],
+  "random_sign_rms": {
+   "4": 32.04,
+   "16": 62.08,
+   "64": 129.38
+  },
+  "d": 256,
+  "trials": 200,
+  "seed": 11,
+  "after_alpha_over_r": {
+   "4": 128.17,
+   "16": 62.08,
+   "64": 32.34
+  },
+  "after_rslora": {
+   "4": 256.34,
+   "16": 248.3,
+   "64": 258.76
+  },
+  "exercise": {
+   "r": 32,
+   "alpha": 64,
+   "alpha_over_r": 2.0,
+   "rslora": 11.31
+  },
+  "aligned_example": {
+   "c": 1,
+   "x_sum": 1,
+   "r_values": [
+    1,
+    2,
+    4
+   ],
+   "BAx": [
+    1,
+    2,
+    4
+   ],
+   "scaled_alpha_over_r_alpha2": [
+    2,
+    2,
+    2
+   ]
+  }
+ },
+ "e3_toy": {
+  "sigmas": [
+   "3",
+   "1",
+   "1/10"
+  ],
+  "matrix": [
+   [
+    "41/40",
+    "-21/40",
+    "19/40",
+    "-39/40"
+   ],
+   [
+    "21/40",
+    "-41/40",
+    "39/40",
+    "-19/40"
+   ],
+   [
+    "39/40",
+    "-19/40",
+    "21/40",
+    "-41/40"
+   ],
+   [
+    "19/40",
+    "-39/40",
+    "41/40",
+    "-21/40"
+   ]
+  ],
+  "matrix_float": [
+   [
+    1.025,
+    -0.525,
+    0.475,
+    -0.975
+   ],
+   [
+    0.525,
+    -1.025,
+    0.975,
+    -0.475
+   ],
+   [
+    0.975,
+    -0.475,
+    0.525,
+    -1.025
+   ],
+   [
+    0.475,
+    -0.975,
+    1.025,
+    -0.525
+   ]
+  ],
+  "full_params": 16,
+  "frob2": "1001/100",
+  "rows": [
+   {
+    "r": 1,
+    "params": 8,
+    "err2": "101/100",
+    "err2_float": 1.01,
+    "dropped_sigma2": "101/100",
+    "eckart_young_holds": true,
+    "share_kept_pct": 89.91,
+    "gd_start_err2": 10.01,
+    "gd_end_err2": 1.01,
+    "gd_start_is_zero": true,
+    "gd_matches_svd": true
+   },
+   {
+    "r": 2,
+    "params": 16,
+    "err2": "1/100",
+    "err2_float": 0.01,
+    "dropped_sigma2": "1/100",
+    "eckart_young_holds": true,
+    "share_kept_pct": 99.9,
+    "gd_start_err2": 10.01,
+    "gd_end_err2": 0.01,
+    "gd_start_is_zero": true,
+    "gd_matches_svd": true
+   },
+   {
+    "r": 3,
+    "params": 24,
+    "err2": "0",
+    "err2_float": 0.0,
+    "dropped_sigma2": "0",
+    "eckart_young_holds": true,
+    "share_kept_pct": 100.0,
+    "gd_start_err2": 10.01,
+    "gd_end_err2": 0.0,
+    "gd_start_is_zero": true,
+    "gd_matches_svd": true
+   }
+  ],
+  "power_steps": 60,
+  "power_sigma1": 3.0,
+  "power_v1": [
+   0.5,
+   -0.5,
+   0.5,
+   -0.5
+  ],
+  "gd": {
+   "steps": 4000,
+   "lr": 0.05,
+   "seed": 7,
+   "init_std": 0.1
+  }
+ },
+ "e4_merge": {
+  "W0": "단위 행렬 2×2",
+  "B": [
+   1,
+   2
+  ],
+  "A": [
+   3,
+   -1
+  ],
+  "x": [
+   2,
+   1
+  ],
+  "s": "16/8 = 2",
+  "BA": [
+   [
+    "3",
+    "-1"
+   ],
+   [
+    "6",
+    "-2"
+   ]
+  ],
+  "merged": [
+   "12",
+   "21"
+  ],
+  "separate": [
+   "12",
+   "21"
+  ],
+  "equal": true,
+  "B_zero_output": [
+   "2",
+   "1"
+  ],
+  "B_zero_is_noop": true
+ },
+ "e5_lora_bf16": {
+  "rows": [
+   {
+    "r": 8,
+    "targets": "qv",
+    "lora_params": 2523136,
+    "base_gb": 15.23,
+    "lora_gb": 0.04,
+    "act_gb": 0.48,
+    "total_gb": 15.75,
+    "margin_t4_gb": 0.25,
+    "fits_t4": true
+   },
+   {
+    "r": 16,
+    "targets": "qv",
+    "lora_params": 5046272,
+    "base_gb": 15.23,
+    "lora_gb": 0.081,
+    "act_gb": 0.48,
+    "total_gb": 15.79,
+    "margin_t4_gb": 0.21,
+    "fits_t4": true
+   },
+   {
+    "r": 8,
+    "targets": "all_linear",
+    "lora_params": 20185088,
+    "base_gb": 15.23,
+    "lora_gb": 0.323,
+    "act_gb": 0.48,
+    "total_gb": 16.03,
+    "margin_t4_gb": -0.03,
+    "fits_t4": false
+   },
+   {
+    "r": 16,
+    "targets": "all_linear",
+    "lora_params": 40370176,
+    "base_gb": 15.23,
+    "lora_gb": 0.646,
+    "act_gb": 0.48,
+    "total_gb": 16.35,
+    "margin_t4_gb": -0.35,
+    "fits_t4": false
+   },
+   {
+    "r": 64,
+    "targets": "all_linear",
+    "lora_params": 161480704,
+    "base_gb": 15.23,
+    "lora_gb": 2.584,
+    "act_gb": 0.48,
+    "total_gb": 18.29,
+    "margin_t4_gb": -2.29,
+    "fits_t4": false
+   }
+  ],
+  "ch05_preview_gb": 15.71
+ },
+ "e6_qlora": {
+  "split": {
+   "linear_4bit": 6525288448,
+   "embed": 544997376,
+   "lm_head": 544997376,
+   "qkv_bias": 129024,
+   "norms": 204288,
+   "kept": 1090328064,
+   "total": 7615616512
+  },
+  "kept_pct": 14.3,
+  "kept_bf16_gb": 2.18,
+  "kept_fp32_gb": 4.36,
+  "linear_nf4_gb": 3.67,
+  "linear_nf4_dq_gb": 3.37,
+  "linear_code_only_gb": 3.26,
+  "all_params_nf4_gb": 4.28,
+  "ch06_7e9_nf4_gb": 3.9375,
+  "nf4_bits": "9/2",
+  "dq_bits": 4.126953,
+  "base_weights_main_gb": 5.55,
+  "ch05_preview_gb": 3.81,
+  "ch05_preview_plus_act_gb": 4.28,
+  "linear_nf4_dq_gb3": 3.366,
+  "kept_bf16_gb3": 2.181,
+  "base_weights_main_gb3": 5.547,
+  "kept_extra_vs_preview_gb": 1.6355,
+  "bars_pct_of_16gb": {
+   "linear": 21.04,
+   "kept": 13.63,
+   "lora": 4.04,
+   "act": 2.98,
+   "total": 41.69
+  },
+  "main": {
+   "steps": [
+    {
+     "label": "5장 미리 보기: 모든 숫자 0.5바이트",
+     "gb": 3.8078
+    },
+    {
+     "label": "4비트가 안 되는 층을 빼기",
+     "gb": -0.5452
+    },
+    {
+     "label": "그 층을 원래 형식으로 다시 더하기",
+     "gb": 2.1807
+    },
+    {
+     "label": "6장 블록 상수",
+     "gb": 0.1036
+    },
+    {
+     "label": "LoRA 가중치·기울기·Adam 상태",
+     "gb": 0.6459
+    },
+    {
+     "label": "5장 활성값 추정(체크포인팅)",
+     "gb": 0.4771
+    }
+   ],
+   "total_gb": 6.67,
+   "total_gb4": 6.6699,
+   "alpha_gb": 2.385,
+   "margin_t4_gb": 9.33,
+   "lora_params": 40370176,
+   "fits_t4": true
+  },
+  "variants": {
+   "no_dq": {
+    "steps": [
+     {
+      "label": "5장 미리 보기: 모든 숫자 0.5바이트",
+      "gb": 3.8078
+     },
+     {
+      "label": "4비트가 안 되는 층을 빼기",
+      "gb": -0.5452
+     },
+     {
+      "label": "그 층을 원래 형식으로 다시 더하기",
+      "gb": 2.1807
+     },
+     {
+      "label": "6장 블록 상수",
+      "gb": 0.4078
+     },
+     {
+      "label": "LoRA 가중치·기울기·Adam 상태",
+      "gb": 0.6459
+     },
+     {
+      "label": "5장 활성값 추정(체크포인팅)",
+      "gb": 0.4771
+     }
+    ],
+    "total_gb": 6.97,
+    "total_gb4": 6.9742,
+    "alpha_gb": 2.6892,
+    "margin_t4_gb": 9.03,
+    "lora_params": 40370176,
+    "fits_t4": true
+   },
+   "kbit_prep_fp32": {
+    "steps": [
+     {
+      "label": "5장 미리 보기: 모든 숫자 0.5바이트",
+      "gb": 3.8078
+     },
+     {
+      "label": "4비트가 안 되는 층을 빼기",
+      "gb": -0.5452
+     },
+     {
+      "label": "그 층을 원래 형식으로 다시 더하기",
+      "gb": 4.3613
+     },
+     {
+      "label": "6장 블록 상수",
+      "gb": 0.1036
+     },
+     {
+      "label": "LoRA 가중치·기울기·Adam 상태",
+      "gb": 0.6459
+     },
+     {
+      "label": "5장 활성값 추정(체크포인팅)",
+      "gb": 0.4771
+     }
+    ],
+    "total_gb": 8.85,
+    "total_gb4": 8.8505,
+    "alpha_gb": 4.5656,
+    "margin_t4_gb": 7.15,
+    "lora_params": 40370176,
+    "fits_t4": true
+   },
+   "paper_bf16_adapter": {
+    "steps": [
+     {
+      "label": "5장 미리 보기: 모든 숫자 0.5바이트",
+      "gb": 3.8078
+     },
+     {
+      "label": "4비트가 안 되는 층을 빼기",
+      "gb": -0.5452
+     },
+     {
+      "label": "그 층을 원래 형식으로 다시 더하기",
+      "gb": 2.1807
+     },
+     {
+      "label": "6장 블록 상수",
+      "gb": 0.1036
+     },
+     {
+      "label": "LoRA 가중치·기울기·Adam 상태",
+      "gb": 0.4844
+     },
+     {
+      "label": "5장 활성값 추정(체크포인팅)",
+      "gb": 0.4771
+     }
+    ],
+    "total_gb": 6.51,
+    "total_gb4": 6.5084,
+    "alpha_gb": 2.2235,
+    "margin_t4_gb": 9.49,
+    "lora_params": 40370176,
+    "fits_t4": true
+   },
+   "qv_r8": {
+    "steps": [
+     {
+      "label": "5장 미리 보기: 모든 숫자 0.5바이트",
+      "gb": 3.8078
+     },
+     {
+      "label": "4비트가 안 되는 층을 빼기",
+      "gb": -0.5452
+     },
+     {
+      "label": "그 층을 원래 형식으로 다시 더하기",
+      "gb": 2.1807
+     },
+     {
+      "label": "6장 블록 상수",
+      "gb": 0.1036
+     },
+     {
+      "label": "LoRA 가중치·기울기·Adam 상태",
+      "gb": 0.0404
+     },
+     {
+      "label": "5장 활성값 추정(체크포인팅)",
+      "gb": 0.4771
+     }
+    ],
+    "total_gb": 6.06,
+    "total_gb4": 6.0643,
+    "alpha_gb": 1.7794,
+    "margin_t4_gb": 9.94,
+    "lora_params": 2523136,
+    "fits_t4": true
+   },
+   "all_r64": {
+    "steps": [
+     {
+      "label": "5장 미리 보기: 모든 숫자 0.5바이트",
+      "gb": 3.8078
+     },
+     {
+      "label": "4비트가 안 되는 층을 빼기",
+      "gb": -0.5452
+     },
+     {
+      "label": "그 층을 원래 형식으로 다시 더하기",
+      "gb": 2.1807
+     },
+     {
+      "label": "6장 블록 상수",
+      "gb": 0.1036
+     },
+     {
+      "label": "LoRA 가중치·기울기·Adam 상태",
+      "gb": 2.5837
+     },
+     {
+      "label": "5장 활성값 추정(체크포인팅)",
+      "gb": 0.4771
+     }
+    ],
+    "total_gb": 8.61,
+    "total_gb4": 8.6076,
+    "alpha_gb": 4.3227,
+    "margin_t4_gb": 7.39,
+    "lora_params": 161480704,
+    "fits_t4": true
+   }
+  },
+  "lora_optim_gb": 0.323
+ },
+ "e7_paged": {
+  "fixed_gb": 6.19,
+  "optim_gb": 0.323,
+  "act_by_len_gb": {
+   "1024": 0.48,
+   "2048": 1.25,
+   "4096": 3.67,
+   "6144": 7.27,
+   "7168": 9.51,
+   "8192": 12.04
+  },
+  "total_by_len_gb": {
+   "1024": 6.67,
+   "2048": 7.44,
+   "4096": 9.86,
+   "6144": 13.46,
+   "7168": 15.7,
+   "8192": 18.23
+  },
+  "window": {
+   "max_len_no_paging": 7168,
+   "max_len_paged": 7424
+  },
+  "overhead_ms_for_optim": 40.4,
+  "overhead_ms_1gb_doc": 125.0
+ },
+ "e8_files": {
+  "qv_r8": {
+   "params": 2523136,
+   "bf16_mb": 5.0,
+   "fp32_mb": 10.1
+  },
+  "all_linear_r16": {
+   "params": 40370176,
+   "bf16_mb": 80.7,
+   "fp32_mb": 161.5
+  },
+  "all_linear_r64": {
+   "params": 161480704,
+   "bf16_mb": 323.0,
+   "fp32_mb": 645.9
+  },
+  "base_bf16_gb": 15.23
+ }
+}

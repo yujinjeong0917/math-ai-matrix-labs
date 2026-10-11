@@ -1,0 +1,127 @@
+{
+  "_about": "내 데이터로 LLM 파인튜닝하기 2장 출처표. 모든 값은 url을 checked 날짜에 직접 읽고 옮겼다. 값이 바뀌면 고치지 말고 날짜가 다른 새 파일을 만든다.",
+  "checked": "2026-10-11",
+  "repos": {
+    "qwen2.5-7b": {
+      "repo_id": "Qwen/Qwen2.5-7B",
+      "role": "예로 든 기본(base) 모델. 추천이나 순위가 아니다. 5장과 같은 모델이다.",
+      "sha": "d149729398750b98c0af14eb82c78cfe92750796",
+      "last_modified": "2024-09-25T12:32:32Z",
+      "url_card": "https://huggingface.co/Qwen/Qwen2.5-7B",
+      "url_files": "https://huggingface.co/Qwen/Qwen2.5-7B/tree/d149729398750b98c0af14eb82c78cfe92750796",
+      "url_api": "https://huggingface.co/api/models/Qwen/Qwen2.5-7B",
+      "api_safetensors_total": 7615616512,
+      "api_safetensors_dtype": "BF16",
+      "shard_file_sizes": {
+        "model-00001-of-00004.safetensors": 3945441440,
+        "model-00002-of-00004.safetensors": 3864726352,
+        "model-00003-of-00004.safetensors": 3864726424,
+        "model-00004-of-00004.safetensors": 3556377672
+      },
+      "shard_file_sizes_how": "각 파일 resolve URL의 HTTP 응답 헤더 X-Linked-Size",
+      "safetensors_headers_how": "각 파일의 앞 8바이트(헤더 길이 N)를 HTTP Range로 받고, 이어서 0~N+7바이트를 받아 그대로 저장했다. 가중치 값은 들어 있지 않다.",
+      "copied_files": ["config.json", "generation_config.json", "tokenizer_config.json", "model.safetensors.index.json", "README.md(앞부분 발췌)"]
+    },
+    "qwen2.5-7b-instruct": {
+      "repo_id": "Qwen/Qwen2.5-7B-Instruct",
+      "role": "같은 기본 모델에서 대화용으로 더 학습한(instruct) 모델. 비교용.",
+      "sha": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "last_modified": "2025-01-12T02:10:10Z",
+      "url_card": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+      "url_api": "https://huggingface.co/api/models/Qwen/Qwen2.5-7B-Instruct",
+      "api_safetensors_total": 7615616512,
+      "index_json_same_as_base": true,
+      "copied_files": ["config.json", "generation_config.json", "tokenizer_config.json", "README.md(앞부분 발췌)"]
+    }
+  },
+  "tokenizer_json_counts": {
+    "_how": "두 저장소의 tokenizer.json(7,031,645바이트, 바이트 단위로 같음)을 내려받아 센 값. 파일은 실습 폴더에 넣지 않았다.",
+    "model_type": "BPE",
+    "vocab": 151643,
+    "added_tokens": 22,
+    "total": 151665
+  },
+  "libraries": [
+    {"name": "Hub", "pypi": "huggingface_hub", "version": "2.2.0", "released": "2026-10-08", "stage": "find",
+     "url": "https://huggingface.co/docs/hub/index",
+     "quote": "The Hugging Face Hub hosts Git-based repositories, which are version-controlled folders that can contain all your files.",
+     "parts": ["Models", "Datasets", "Spaces"]},
+    {"name": "datasets", "pypi": "datasets", "version": "5.1.0", "released": "2026-10-05", "stage": "data",
+     "url": "https://huggingface.co/docs/datasets/index",
+     "quote": "Load a dataset in a single line of code, and use our powerful data processing and streaming methods to quickly get your dataset ready for training in a deep learning model."},
+    {"name": "tokenizers", "pypi": "tokenizers", "version": "0.23.3", "released": "2026-10-09", "stage": "text_to_ids",
+     "url": "https://huggingface.co/docs/tokenizers/index",
+     "quote": "Does all the pre-processing: Truncation, Padding, add the special tokens your model needs."},
+    {"name": "transformers", "pypi": "transformers", "version": "5.19.0", "released": "2026-10-06", "stage": "model",
+     "url": "https://huggingface.co/docs/transformers/main/en/index",
+     "quote": "Transformers acts as the model-definition framework for state-of-the-art machine learning models in text, computer vision, audio, video, and multimodal models, for both inference and training."},
+    {"name": "bitsandbytes", "pypi": "bitsandbytes", "version": "0.50.2", "released": "2026-08-27", "stage": "model",
+     "url": "https://huggingface.co/docs/bitsandbytes/main/en/index",
+     "quote": "bitsandbytes enables accessible large language models via k-bit quantization for PyTorch."},
+    {"name": "PEFT", "pypi": "peft", "version": "0.21.2", "released": "2026-10-01", "stage": "adapter",
+     "url": "https://huggingface.co/docs/peft/index",
+     "quote": "PEFT methods only fine-tune a small number of (extra) model parameters - significantly decreasing computational and storage costs - while yielding performance comparable to a fully fine-tuned model."},
+    {"name": "TRL", "pypi": "trl", "version": "1.15.0", "released": "2026-10-08", "stage": "train_loop",
+     "url": "https://huggingface.co/docs/trl/sft_trainer",
+     "quote": "This class is a wrapper around the Trainer class and inherits all of its attributes and methods."},
+    {"name": "accelerate", "pypi": "accelerate", "version": "1.15.0", "released": "2026-09-09", "stage": "train_loop",
+     "url": "https://huggingface.co/docs/accelerate/index",
+     "quote": "Accelerate is a library that enables the same PyTorch code to be run across any distributed configuration by adding just four lines of code!"},
+    {"name": "safetensors", "pypi": "safetensors", "version": "0.8.0", "released": "2026-06-09", "stage": "save",
+     "url": "https://github.com/huggingface/safetensors/blob/main/README.md",
+     "quote": "8 bytes: N, an unsigned little-endian 64-bit integer, containing the size of the header"}
+  ],
+  "stages": [
+    {"id": "find", "label": "모델·데이터 찾기와 내려받기", "chapter": 2},
+    {"id": "data", "label": "데이터 불러와 다듬고 나누기", "chapter": 3},
+    {"id": "text_to_ids", "label": "대화를 글로, 글을 토큰 번호로", "chapter": 3},
+    {"id": "model", "label": "모델 불러오기(필요하면 4비트로)", "chapter": 6},
+    {"id": "adapter", "label": "작은 행렬만 학습하게 감싸기", "chapter": 7},
+    {"id": "train_loop", "label": "학습 반복(손실, 기울기, GPU에 나눠 올리기)", "chapter": 8},
+    {"id": "save", "label": "저장하고 Hub에 올리기", "chapter": 10}
+  ],
+  "requires_dist": {
+    "_how": "https://pypi.org/pypi/<이름>/json 의 info.requires_dist에서 extra가 아닌 필수 의존성(위 버전 기준). transformers의 accelerate는 extra == \"torch\"일 때만 필요해서 따로 적었다.",
+    "transformers": ["huggingface_hub", "tokenizers", "safetensors"],
+    "transformers_extra_torch": ["accelerate"],
+    "peft": ["transformers", "accelerate", "safetensors", "huggingface_hub"],
+    "trl": ["accelerate", "datasets", "transformers"],
+    "datasets": [],
+    "tokenizers": [],
+    "accelerate": [],
+    "safetensors": [],
+    "huggingface_hub": [],
+    "bitsandbytes": []
+  },
+  "trainer_imports_accelerate": {
+    "url": "https://github.com/huggingface/transformers/blob/v5.19.0/src/transformers/trainer.py",
+    "line": "from accelerate import Accelerator, skip_first_batches"
+  },
+  "trl_sft_facts": {
+    "url": "https://huggingface.co/docs/trl/sft_trainer",
+    "version": "1.15.0",
+    "assistant_only_loss_default": false,
+    "completion_only_loss_default": null,
+    "completion_only_loss_note": "None이면 prompt-completion 데이터는 completion에만, language modeling 데이터는 전체에 손실을 매긴다.",
+    "eos_warning": "for `Qwen/Qwen2.5-1.5B`, one should set `eos_token=\"<|im_end|>\"`.",
+    "default_dtype_note": "If `dtype` is not specified in `args.model_init_kwargs`, it defaults to `float32`.",
+    "pad_default": "If the processing class has not set a padding token, `tokenizer.eos_token` will be used as the default.",
+    "qwen2_5_training_template": "https://github.com/huggingface/trl/blob/v1.15.0/trl/chat_templates/qwen2_5_training.jinja"
+  },
+  "transformers_chat_template_facts": {
+    "url": "https://huggingface.co/docs/transformers/main/en/chat_templating",
+    "add_special_tokens_warning": "When you format text with `apply_chat_template(tokenize=False)`, make sure you set `add_special_tokens=False` if you tokenize later to avoid duplicating these tokens.",
+    "training_note": "Set `add_generation_prompt=False` because the additional tokens to prompt an assistant response aren't helpful during training."
+  },
+  "hub_facts": {
+    "url_download": "https://huggingface.co/docs/huggingface_hub/guides/download",
+    "revision_note": "When using the commit hash, it must be the full-length hash instead of a 7-character commit hash.",
+    "url_model_cards": "https://huggingface.co/docs/hub/model-cards",
+    "library_name_note": "For model repos created after August 2024, this is not the case anymore, so you need to set `library_name: transformers` explicitly."
+  },
+  "peft_facts": {
+    "url": "https://huggingface.co/docs/peft/developer_guides/checkpoint",
+    "files": ["adapter_model.safetensors", "adapter_config.json", "README.md"],
+    "note": "this also means that to load a PEFT model, you need to have the original model available as well."
+  }
+}

@@ -1,0 +1,597 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "spec_file": "specs_2026-10-11.json",
+  "checked": "2026-10-11",
+  "near_threshold": 0.8,
+  "leak_threshold": 0.5,
+  "val_ratio": 0.1,
+  "seed": 3,
+  "system_prompt": "우리 쇼핑몰 상담원이에요. 따뜻하고 짧게 답해요.",
+  "toy_tokenizer": "특수 표시·역할 이름·줄바꿈은 1개, 나머지 글자 하나가 1개(가르치기용, 실제 토크나이저와 다름)"
+ },
+ "e0_hand": {
+  "messages": [
+   {
+    "role": "system",
+    "content": "친절한 상담원"
+   },
+   {
+    "role": "user",
+    "content": "포장이 찢어졌어요"
+   },
+   {
+    "role": "assistant",
+    "content": "속상하셨죠. 바로 새로 보내 드릴게요."
+   }
+  ],
+  "rendered": "<|im_start|>system\n친절한 상담원<|im_end|>\n<|im_start|>user\n포장이 찢어졌어요<|im_end|>\n<|im_start|>assistant\n속상하셨죠. 바로 새로 보내 드릴게요.<|im_end|>\n",
+  "segments": [
+   {
+    "text": "<|im_start|>system\n친절한 상담원<|im_end|>\n",
+    "trained": false,
+    "toy_tokens": 12
+   },
+   {
+    "text": "<|im_start|>user\n포장이 찢어졌어요<|im_end|>\n",
+    "trained": false,
+    "toy_tokens": 14
+   },
+   {
+    "text": "<|im_start|>assistant",
+    "trained": false,
+    "toy_tokens": 2
+   },
+   {
+    "text": "\n속상하셨죠. 바로 새로 보내 드릴게요.<|im_end|>\n",
+    "trained": true,
+    "toy_tokens": 24
+   }
+  ],
+  "total": 52,
+  "trained": 24,
+  "ignored": 28,
+  "trained_share": 0.4615,
+  "first_trained": "\n",
+  "last_two_trained": [
+   "<|im_end|>",
+   "\n"
+  ],
+  "labels_preview": [
+   -100,
+   -100,
+   -100,
+   -100,
+   "\n",
+   "속",
+   "상",
+   "하"
+  ]
+ },
+ "e1_default_system": {
+  "rendered": "<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n<|im_start|>user\n포장이 찢어졌어요<|im_end|>\n<|im_start|>assistant\n속상하셨죠. 바로 새로 보내 드릴게요.<|im_end|>\n",
+  "default_system": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
+  "with_gen_prompt_tail": "<|im_start|>assistant\n"
+ },
+ "e2_share": {
+  "our_system": {
+   "pairs": 51,
+   "total": 5603,
+   "trained": 2832,
+   "share": 0.5054
+  }
+ },
+ "e3_pad_trap": {
+  "lengths": [
+   5,
+   12
+  ],
+  "padded_len": 12,
+  "pad_token": "<|endoftext|>",
+  "eos_token_base": "<|endoftext|>",
+  "eos_kept_by_value": 0,
+  "eos_kept_by_length": 2,
+  "examples": 2
+ },
+ "e4_funnel": {
+  "rows": [
+   {
+    "step": "raw",
+    "left": 83,
+    "removed": 0
+   },
+   {
+    "step": "drop_empty",
+    "left": 81,
+    "removed": 2
+   },
+   {
+    "step": "drop_volatile",
+    "left": 76,
+    "removed": 5
+   },
+   {
+    "step": "drop_exact",
+    "left": 59,
+    "removed": 17
+   },
+   {
+    "step": "drop_near",
+    "left": 55,
+    "removed": 4
+   },
+   {
+    "step": "drop_leak",
+    "left": 51,
+    "removed": 4
+   }
+  ],
+  "volatile_ids": [
+   "R051",
+   "R052",
+   "R053",
+   "R054",
+   "R055"
+  ],
+  "empty_ids": [
+   "R082",
+   "R083"
+  ],
+  "exact_by_kind": {
+   "exact_dup_of": 8,
+   "format_variant_of": 4,
+   "order_macro_of": 5
+  },
+  "near_ids": [
+   [
+    "R074",
+    "R002"
+   ],
+   [
+    "R075",
+    "R003"
+   ],
+   [
+    "R076",
+    "R020"
+   ],
+   [
+    "R077",
+    "R033"
+   ]
+  ],
+  "leak_ids": [
+   [
+    "R078",
+    "Q21",
+    1.0
+   ],
+   [
+    "R079",
+    "Q14",
+    1.0
+   ],
+   [
+    "R080",
+    "Q20",
+    0.8571
+   ],
+   [
+    "R081",
+    "Q18",
+    0.8
+   ]
+  ]
+ },
+ "e5_near": {
+  "hand": {
+   "a": [
+    "꺼져",
+    "앱이",
+    "자꾸",
+    "져요"
+   ],
+   "b": [
+    "계속",
+    "꺼져",
+    "앱이",
+    "져요"
+   ],
+   "shared": [
+    "꺼져",
+    "앱이",
+    "져요"
+   ],
+   "union": 5,
+   "inter": 3,
+   "j": 0.6
+  },
+  "R033_R077_whole_pair": 0.9394,
+  "top_pairs": [
+   [
+    "R033",
+    "R077",
+    0.9394
+   ],
+   [
+    "R003",
+    "R075",
+    0.9167
+   ],
+   [
+    "R020",
+    "R076",
+    0.9118
+   ],
+   [
+    "R002",
+    "R074",
+    0.8571
+   ],
+   [
+    "R002",
+    "R043",
+    0.3415
+   ],
+   [
+    "R043",
+    "R074",
+    0.3415
+   ]
+  ],
+  "sweep": [
+   {
+    "threshold": 0.3,
+    "pairs": 8
+   },
+   {
+    "threshold": 0.5,
+    "pairs": 4
+   },
+   {
+    "threshold": 0.6,
+    "pairs": 4
+   },
+   {
+    "threshold": 0.7,
+    "pairs": 4
+   },
+   {
+    "threshold": 0.8,
+    "pairs": 4
+   },
+   {
+    "threshold": 0.9,
+    "pairs": 3
+   },
+   {
+    "threshold": 0.95,
+    "pairs": 0
+   }
+  ],
+  "found": [
+   [
+    "R002",
+    "R074",
+    0.8571
+   ],
+   [
+    "R003",
+    "R075",
+    0.9167
+   ],
+   [
+    "R020",
+    "R076",
+    0.9118
+   ],
+   [
+    "R033",
+    "R077",
+    0.9394
+   ]
+  ],
+  "gap": {
+   "lowest_found": 0.8571,
+   "highest_not_found": 0.3415
+  }
+ },
+ "e6_leak": {
+  "eval_items": 40,
+  "top": [
+   {
+    "id": "R078",
+    "q": "택배가 너무 늦어서 화가 나요.",
+    "eval_id": "Q21",
+    "score": 1.0
+   },
+   {
+    "id": "R079",
+    "q": "비밀번호를 잊어버렸어요.",
+    "eval_id": "Q14",
+    "score": 1.0
+   },
+   {
+    "id": "R080",
+    "q": "주문 취소하고 싶어요",
+    "eval_id": "Q20",
+    "score": 0.8571
+   },
+   {
+    "id": "R081",
+    "q": "선물 포장 되나요?",
+    "eval_id": "Q18",
+    "score": 0.8
+   },
+   {
+    "id": "R035",
+    "q": "주문했는데 문자가 안 와요.",
+    "eval_id": "Q03",
+    "score": 0.3333
+   },
+   {
+    "id": "R046",
+    "q": "주문 내역서를 출력하고 싶어요.",
+    "eval_id": "Q20",
+    "score": 0.3333
+   }
+  ],
+  "hand_Q20": {
+   "a": [
+    "소하",
+    "싶어",
+    "어요",
+    "주문",
+    "취소",
+    "하고"
+   ],
+   "b": [
+    "문을",
+    "소하",
+    "싶어",
+    "어요",
+    "주문",
+    "취소",
+    "하고"
+   ],
+   "shared": [
+    "소하",
+    "싶어",
+    "어요",
+    "주문",
+    "취소",
+    "하고"
+   ],
+   "union": 7,
+   "inter": 6,
+   "j": 0.8571
+  },
+  "sweep": [
+   {
+    "threshold": 0.2,
+    "flagged": 18
+   },
+   {
+    "threshold": 0.3,
+    "flagged": 6
+   },
+   {
+    "threshold": 0.4,
+    "flagged": 4
+   },
+   {
+    "threshold": 0.5,
+    "flagged": 4
+   },
+   {
+    "threshold": 0.6,
+    "flagged": 4
+   },
+   {
+    "threshold": 0.8,
+    "flagged": 4
+   },
+   {
+    "threshold": 1.0,
+    "flagged": 2
+   }
+  ],
+  "flagged": [
+   {
+    "id": "R078",
+    "q": "택배가 너무 늦어서 화가 나요.",
+    "eval_id": "Q21",
+    "score": 1.0
+   },
+   {
+    "id": "R079",
+    "q": "비밀번호를 잊어버렸어요.",
+    "eval_id": "Q14",
+    "score": 1.0
+   },
+   {
+    "id": "R080",
+    "q": "주문 취소하고 싶어요",
+    "eval_id": "Q20",
+    "score": 0.8571
+   },
+   {
+    "id": "R081",
+    "q": "선물 포장 되나요?",
+    "eval_id": "Q18",
+    "score": 0.8
+   }
+  ],
+  "highest_not_flagged": 0.3333
+ },
+ "e7_clean_split": {
+  "pairs": 51,
+  "train": 46,
+  "val": 5,
+  "seed": 3,
+  "val_ids": [
+   "R004",
+   "R012",
+   "R018",
+   "R027",
+   "R068"
+  ],
+  "twins": 0,
+  "max_val_train_sim": 0.2051,
+  "memorizer": {
+   "n": 5,
+   "passed": 0,
+   "rows": [
+    {
+     "val": "R004",
+     "nearest": "R016",
+     "q_sim": 0.0714,
+     "a_sim": 0.0,
+     "pass": false
+    },
+    {
+     "val": "R012",
+     "nearest": "R010",
+     "q_sim": 0.1667,
+     "a_sim": 0.1087,
+     "pass": false
+    },
+    {
+     "val": "R018",
+     "nearest": "R011",
+     "q_sim": 0.1429,
+     "a_sim": 0.0976,
+     "pass": false
+    },
+    {
+     "val": "R027",
+     "nearest": "R050",
+     "q_sim": 0.1111,
+     "a_sim": 0.0455,
+     "pass": false
+    },
+    {
+     "val": "R068",
+     "nearest": "R035",
+     "q_sim": 0.1538,
+     "a_sim": 0.0455,
+     "pass": false
+    }
+   ]
+  },
+  "memorizer_1000_seeds_mean": 0,
+  "memorizer_1000_seeds_max": 0
+ },
+ "e8_leaky_split": {
+  "pairs": 76,
+  "val": 8,
+  "seeds": 1000,
+  "twins_mean": 3.325,
+  "memorizer_mean": 3.325,
+  "twins_min": 0,
+  "twins_max": 8,
+  "seeds_with_zero_twins": 16,
+  "twin_count_distribution": {
+   "0": 16,
+   "1": 74,
+   "2": 176,
+   "3": 296,
+   "4": 243,
+   "5": 145,
+   "6": 37,
+   "7": 12,
+   "8": 1
+  },
+  "memorizer_equals_twins_every_seed": true,
+  "memorizer_zero_seeds": 16,
+  "memorizer_count_distribution": {
+   "0": 16,
+   "1": 74,
+   "2": 176,
+   "3": 296,
+   "4": 243,
+   "5": 145,
+   "6": 37,
+   "7": 12,
+   "8": 1
+  },
+  "seed": 3,
+  "seed_twins": 5,
+  "seed_memorizer_passed": 5,
+  "seed_rows": [
+   {
+    "val": "R004",
+    "nearest": "R058",
+    "q_sim": 1.0,
+    "a_sim": 1.0,
+    "pass": true
+   },
+   {
+    "val": "R036",
+    "nearest": "R026",
+    "q_sim": 0.2143,
+    "a_sim": 0.1333,
+    "pass": false
+   },
+   {
+    "val": "R044",
+    "nearest": "R047",
+    "q_sim": 0.1818,
+    "a_sim": 0.0204,
+    "pass": false
+   },
+   {
+    "val": "R045",
+    "nearest": "R062",
+    "q_sim": 0.3077,
+    "a_sim": 0.1053,
+    "pass": false
+   },
+   {
+    "val": "R056",
+    "nearest": "R064",
+    "q_sim": 1.0,
+    "a_sim": 1.0,
+    "pass": true
+   },
+   {
+    "val": "R060",
+    "nearest": "R020",
+    "q_sim": 1.0,
+    "a_sim": 1.0,
+    "pass": true
+   },
+   {
+    "val": "R063",
+    "nearest": "R047",
+    "q_sim": 1.0,
+    "a_sim": 1.0,
+    "pass": true
+   },
+   {
+    "val": "R072",
+    "nearest": "R073",
+    "q_sim": 1.0,
+    "a_sim": 1.0,
+    "pass": true
+   }
+  ]
+ },
+ "e9_hash_stability": {
+  "hash_val_before": 5,
+  "hash_val_after": 5,
+  "hash_old_items_same_side": true,
+  "seeded_val_before": 5,
+  "seeded_old_val_now_train": 4,
+  "seeded_old_train_now_val": 5
+ },
+ "e10_crosscheck": {
+  "union_find_equals_bfs": true,
+  "groups_with_2plus": 4,
+  "jaccard_symmetric": true,
+  "planted_total": 32,
+  "planted_missed": [],
+  "removed_not_planted": []
+ }
+}

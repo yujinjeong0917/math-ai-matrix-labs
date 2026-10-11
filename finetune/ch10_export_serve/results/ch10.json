@@ -1,0 +1,483 @@
+{
+ "meta": {
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "spec_file": "specs_2026-10-11.json",
+  "sizes_file": "gguf_sizes_2026-10-11.json",
+  "checked": "2026-10-11",
+  "gb": "10^9 bytes",
+  "model": "Qwen/Qwen2.5-7B-Instruct"
+ },
+ "e0_hand": {
+  "W0": [
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "B": [
+   [
+    1
+   ],
+   [
+    2
+   ]
+  ],
+  "A": [
+   [
+    3,
+    -1
+   ]
+  ],
+  "alpha": 16,
+  "r": 8,
+  "x": [
+   2,
+   1
+  ],
+  "s": "2",
+  "BA": [
+   [
+    "3",
+    "-1"
+   ],
+   [
+    "6",
+    "-2"
+   ]
+  ],
+  "sBA": [
+   [
+    "6",
+    "-2"
+   ],
+   [
+    "12",
+    "-4"
+   ]
+  ],
+  "merged": [
+   [
+    "7",
+    "-2"
+   ],
+   [
+    "12",
+    "-3"
+   ]
+  ],
+  "via_merged": [
+   "12",
+   "21"
+  ],
+  "via_side": [
+   "12",
+   "21"
+  ],
+  "same": true,
+  "mults_merged": 4,
+  "mults_side": 8
+ },
+ "e1_storage": {
+  "n_adapters": 3,
+  "adapters": [
+   "문의 답변",
+   "상품 설명",
+   "리뷰 답글"
+  ],
+  "base_gb": 15.23,
+  "adapter_mb": 80.7,
+  "adapter_share_pct": 0.53,
+  "separate_gb": 15.47,
+  "merged_bf16_gb": 45.69,
+  "merged_q4km_gb": 14.05,
+  "safetensors_calc_bytes": 15231233024,
+  "safetensors_actual_bytes": 15231271888,
+  "safetensors_header_bytes": 38864
+ },
+ "e2_toy": {
+  "setup": {
+   "rows": 8,
+   "cols": 64,
+   "rank": 2,
+   "alpha": 4,
+   "seed": 10,
+   "n_inputs": 16,
+   "w_std": 0.02,
+   "rho_sweep": [
+    0.001,
+    0.01,
+    0.03,
+    0.1
+   ],
+   "rho_main": 0.01,
+   "rho_note": "어댑터가 더하는 변화 sBA의 크기를 원래 가중치 크기(제곱평균제곱근)의 몇 배로 둘지. 실제 값을 모르는 가정값이라 여러 값으로 훑는다. 노트북 4절에서 내 어댑터의 실제 비율을 잴 수 있다."
+  },
+  "hand": {
+   "absmax": 0.05,
+   "w": 0.0123,
+   "delta": 0.0001,
+   "ratio": 0.246,
+   "code": 10,
+   "table_value": 0.2461,
+   "back": 0.012306,
+   "back_plus_delta": 0.012406,
+   "ratio_after": 0.2481,
+   "erased": true,
+   "next_up": 0.3379,
+   "next_down": 0.1609,
+   "half_gap_up": 0.0023,
+   "half_gap_down": 0.00213
+  },
+  "quant_err_vs_w_pct": 9.46,
+  "half_gap_near0": 0.002078,
+  "rows": [
+   {
+    "rho": 0.001,
+    "B_vs_effect": 1.6697,
+    "B_vs_output": 0.00185,
+    "Btrunc_vs_effect": 2.8752,
+    "C_vs_effect": 87.6932,
+    "C_vs_output": 0.09699,
+    "D_vs_effect": 1.1157,
+    "D_vs_output": 0.00123,
+    "codes_unchanged": 512,
+    "codes_total": 512,
+    "delta_abs_mean": 1.4e-05
+   },
+   {
+    "rho": 0.01,
+    "B_vs_effect": 0.1546,
+    "B_vs_output": 0.00171,
+    "Btrunc_vs_effect": 0.2906,
+    "C_vs_effect": 8.7996,
+    "C_vs_output": 0.09718,
+    "D_vs_effect": 1.1157,
+    "D_vs_output": 0.01232,
+    "codes_unchanged": 512,
+    "codes_total": 512,
+    "delta_abs_mean": 0.0001405
+   },
+   {
+    "rho": 0.03,
+    "B_vs_effect": 0.0406,
+    "B_vs_output": 0.00134,
+    "Btrunc_vs_effect": 0.0919,
+    "C_vs_effect": 2.9293,
+    "C_vs_output": 0.09671,
+    "D_vs_effect": 0.9633,
+    "D_vs_output": 0.0318,
+    "codes_unchanged": 506,
+    "codes_total": 512,
+    "delta_abs_mean": 0.0004214
+   },
+   {
+    "rho": 0.1,
+    "B_vs_effect": 0.0142,
+    "B_vs_output": 0.00154,
+    "Btrunc_vs_effect": 0.0296,
+    "C_vs_effect": 0.8771,
+    "C_vs_output": 0.09501,
+    "D_vs_effect": 0.6092,
+    "D_vs_output": 0.06598,
+    "codes_unchanged": 431,
+    "codes_total": 512,
+    "delta_abs_mean": 0.0014048
+   }
+  ],
+  "main": {
+   "rho": 0.01,
+   "B_vs_effect": 0.1546,
+   "B_vs_output": 0.00171,
+   "Btrunc_vs_effect": 0.2906,
+   "C_vs_effect": 8.7996,
+   "C_vs_output": 0.09718,
+   "D_vs_effect": 1.1157,
+   "D_vs_output": 0.01232,
+   "codes_unchanged": 512,
+   "codes_total": 512,
+   "delta_abs_mean": 0.0001405
+  }
+ },
+ "e3_gguf": {
+  "n_params": 7615616512,
+  "meta_bytes": 5953888,
+  "block_bits": {
+   "F16": 16.0,
+   "Q8_0": 8.5,
+   "Q4_0": 4.5,
+   "Q5_0": 5.5,
+   "Q2_K": 2.625,
+   "Q3_K": 3.4375,
+   "Q4_K": 4.5,
+   "Q5_K": 5.5,
+   "Q6_K": 6.5625
+  },
+  "rows": {
+   "F16": {
+    "pred_bytes": 15237853536,
+    "actual_bytes": 15237853536,
+    "diff_bytes": 0,
+    "pred_gb": 15.238,
+    "actual_gb": 15.238,
+    "bpw": 16.0007,
+    "shards": 4,
+    "by_type_params": {
+     "F16": 7615283200,
+     "F32": 333312
+    },
+    "pct_of_f16": 100.0
+   },
+   "Q8_0": {
+    "pred_bytes": 8098525536,
+    "actual_bytes": 8098525408,
+    "diff_bytes": -128,
+    "pred_gb": 8.099,
+    "actual_gb": 8.099,
+    "bpw": 8.501,
+    "shards": 3,
+    "by_type_params": {
+     "Q8_0": 7615283200,
+     "F32": 333312
+    },
+    "pct_of_f16": 53.1
+   },
+   "Q6_K": {
+    "pred_bytes": 6254199136,
+    "actual_bytes": 6254198880,
+    "diff_bytes": -256,
+    "pred_gb": 6.254,
+    "actual_gb": 6.254,
+    "bpw": 6.5636,
+    "shards": 2,
+    "by_type_params": {
+     "Q6_K": 7615283200,
+     "F32": 333312
+    },
+    "pct_of_f16": 41.0
+   },
+   "Q5_K_M": {
+    "pred_bytes": 5444831584,
+    "actual_bytes": 5444831360,
+    "diff_bytes": -224,
+    "pred_gb": 5.445,
+    "actual_gb": 5.445,
+    "bpw": 5.7134,
+    "shards": 2,
+    "by_type_params": {
+     "Q5_K": 6094061568,
+     "Q6_K": 1521221632,
+     "F32": 333312
+    },
+    "pct_of_f16": 35.7
+   },
+   "Q5_0": {
+    "pred_bytes": 5315176800,
+    "actual_bytes": 5315176576,
+    "diff_bytes": -224,
+    "pred_gb": 5.315,
+    "actual_gb": 5.315,
+    "bpw": 5.5772,
+    "shards": 2,
+    "by_type_params": {
+     "Q5_0": 7070285824,
+     "Q6_K": 544997376,
+     "F32": 333312
+    },
+    "pct_of_f16": 34.9
+   },
+   "Q4_K_M": {
+    "pred_bytes": 4683073888,
+    "actual_bytes": 4683073632,
+    "diff_bytes": -256,
+    "pred_gb": 4.683,
+    "actual_gb": 4.683,
+    "bpw": 4.9132,
+    "shards": 2,
+    "by_type_params": {
+     "Q4_K": 6094061568,
+     "Q6_K": 1521221632,
+     "F32": 333312
+    },
+    "pct_of_f16": 30.7
+   },
+   "Q4_0": {
+    "pred_bytes": 4431391072,
+    "actual_bytes": 4431390848,
+    "diff_bytes": -224,
+    "pred_gb": 4.431,
+    "actual_gb": 4.431,
+    "bpw": 4.6488,
+    "shards": 2,
+    "by_type_params": {
+     "Q4_0": 7070285824,
+     "Q6_K": 544997376,
+     "F32": 333312
+    },
+    "pct_of_f16": 29.1
+   },
+   "Q3_K_M": {
+    "pred_bytes": 3808391520,
+    "actual_bytes": 3808391072,
+    "diff_bytes": -448,
+    "pred_gb": 3.808,
+    "actual_gb": 3.808,
+    "bpw": 3.9944,
+    "shards": 1,
+    "by_type_params": {
+     "Q3_K": 4758175744,
+     "Q6_K": 544997376,
+     "Q5_K": 71565312,
+     "Q4_K": 2240544768,
+     "F32": 333312
+    },
+    "pct_of_f16": 25.0
+   },
+   "Q2_K": {
+    "pred_bytes": 3015940448,
+    "actual_bytes": 3015940000,
+    "diff_bytes": -448,
+    "pred_gb": 3.016,
+    "actual_gb": 3.016,
+    "bpw": 3.1619,
+    "shards": 1,
+    "by_type_params": {
+     "Q2_K": 4758175744,
+     "Q6_K": 544997376,
+     "Q4_K": 51380224,
+     "Q3_K": 2260729856,
+     "F32": 333312
+    },
+    "pct_of_f16": 19.8
+   }
+  },
+  "max_abs_diff_bytes": 448,
+  "q4km_attn_v_q6k_layers": [
+   0,
+   1,
+   2,
+   5,
+   8,
+   11,
+   14,
+   17,
+   20,
+   23,
+   24,
+   25,
+   26,
+   27
+  ],
+  "q4km_ffn_down_q6k_layers": [
+   0,
+   1,
+   2,
+   5,
+   8,
+   11,
+   14,
+   17,
+   20,
+   23,
+   24,
+   25,
+   26,
+   27
+  ],
+  "q4km_q6k_share_pct": 19.98,
+  "q4km_q4k_share_pct": 80.02,
+  "output_params": 544997376,
+  "readme_llama31_8b_bpw_q4km": 4.8944,
+  "ours_bpw_q4km": 4.9132,
+  "readme_gib_to_gb": {
+   "F16": 16.06,
+   "Q4_K_M": 4.92
+  }
+ },
+ "e4_local": {
+  "kv_bytes_per_token": 57344,
+  "ctx": 4096,
+  "kv_ctx_bytes": 234881024,
+  "kv_ctx_gb": 0.235,
+  "rows": {
+   "F16": {
+    "file_gb": 15.238,
+    "total_gb": 15.47
+   },
+   "Q8_0": {
+    "file_gb": 8.099,
+    "total_gb": 8.33
+   },
+   "Q4_K_M": {
+    "file_gb": 4.683,
+    "total_gb": 4.92
+   }
+  }
+ },
+ "e5_vllm": {
+  "util": 0.92,
+  "weights_gb": 15.23,
+  "req_tokens": 750,
+  "adapters_gb": 0.242,
+  "L4": {
+   "usable_gb": 22.08,
+   "left_gb": 6.61,
+   "fits": true,
+   "kv_tokens": 115210,
+   "per_request_tokens": 752,
+   "requests": 153
+  },
+  "T4": {
+   "usable_gb": 14.72,
+   "left_gb": -0.75,
+   "fits": false,
+   "kv_tokens": 0,
+   "requests": 0
+  }
+ },
+ "e6_speed": {
+  "L4_bf16": 19.7,
+  "L4_q4km": 64.06,
+  "T4_q4km": 68.33,
+  "T4_bf16_if_fit": 21.01,
+  "L4_bf16_batch16": 315.1,
+  "readme_speed_ratio_q4km_over_f16": 2.47,
+  "readme_size_ratio_f16_over_q4km": 3.27
+ },
+ "e7_cost": {
+  "monthly_calls": 3000,
+  "answer_tokens": 200,
+  "hours_per_month": 730,
+  "price_published": "2026-10-09",
+  "rows": {
+   "g6_L4_bf16_vllm": {
+    "instance": "g6.xlarge",
+    "usd_per_hour": 0.8048,
+    "tok_s_upper": 19.7,
+    "tokens": 600000,
+    "busy_hours": 8.46,
+    "always_on_usd": 587.5,
+    "busy_only_usd": 6.81,
+    "busy_share_pct": 1.16,
+    "always_on_per_call_usd": 0.196
+   },
+   "g4dn_T4_q4km_llamacpp": {
+    "instance": "g4dn.xlarge",
+    "usd_per_hour": 0.526,
+    "tok_s_upper": 68.33,
+    "tokens": 600000,
+    "busy_hours": 2.44,
+    "always_on_usd": 383.98,
+    "busy_only_usd": 1.28,
+    "busy_share_pct": 0.33,
+    "always_on_per_call_usd": 0.128
+   }
+  },
+  "g6_batch16_usd_per_million": 0.709,
+  "g6_batch16_month_capacity_tokens": 828082800
+ }
+}

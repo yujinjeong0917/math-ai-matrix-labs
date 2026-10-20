@@ -1,0 +1,10 @@
+{
+  "manual": 10,
+  "numpy": 10.0,
+  "torch": 10.0,
+  "batch_scores": [
+    10.0,
+    11.0
+  ],
+  "all_equal": true
+}

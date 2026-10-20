@@ -68,12 +68,12 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `pipelines/ch07_kfp/` | ML 파이프라인 구축 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/pipelines/07-kfp.html) |
 | `pipelines/ch08_lineage/` | ML 파이프라인 구축 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/pipelines/08-lineage.html) |
 | `pipelines/ch09_drift/` | ML 파이프라인 구축 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/pipelines/09-drift.html) |
-| `productivity/ch01_source_of_truth/` | AX 에세이 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/01-source-of-truth.html) |
-| `productivity/ch02_figma_structure/` | AX 에세이 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/02-figma-structure.html) |
-| `productivity/ch03_handoff/` | AX 에세이 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/03-handoff.html) |
-| `productivity/ch04_notion_relations/` | AX 에세이 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/04-notion-relations.html) |
-| `productivity/ch05_sheets/` | AX 에세이 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html) |
-| `productivity/ch06_connect/` | AX 에세이 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html) |
+| `productivity/ch01_source_of_truth/` | 협업 도구가 어긋날 때 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/01-source-of-truth.html) |
+| `productivity/ch02_figma_structure/` | 협업 도구가 어긋날 때 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/02-figma-structure.html) |
+| `productivity/ch03_handoff/` | 협업 도구가 어긋날 때 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/03-handoff.html) |
+| `productivity/ch04_notion_relations/` | 협업 도구가 어긋날 때 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/04-notion-relations.html) |
+| `productivity/ch05_sheets/` | 협업 도구가 어긋날 때 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html) |
+| `productivity/ch06_connect/` | 협업 도구가 어긋날 때 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html) |
 | `tools/ch01_models/` | AI 도구 실전 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/01-models.html) |
 | `tools/ch02_api_caching/` | AI 도구 실전 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/02-api-caching.html) |
 | `tools/ch03_tools_mcp/` | AI 도구 실전 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/tools/03-tools-mcp.html) |
@@ -91,6 +91,29 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `webapp/ch07_capacitor_apk/` | 1인 개발 앱 출시 실전 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/07-capacitor-apk.html) |
 | `webapp/ch08_platform_choice/` | 1인 개발 앱 출시 실전 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/08-platform-choice.html) |
 | `webapp/ch09_ai_coding_era/` | 1인 개발 앱 출시 실전 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/09-ai-coding-era.html) |
+| `finetune/ch01_when_finetune/` | 내 데이터로 LLM 파인튜닝하기 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/01-when-finetune.html) |
+| `finetune/ch02_huggingface_map/` | 내 데이터로 LLM 파인튜닝하기 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/02-huggingface-map.html) |
+| `finetune/ch03_dataset/` | 내 데이터로 LLM 파인튜닝하기 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/03-dataset.html) |
+| `finetune/ch04_number_formats/` | 내 데이터로 LLM 파인튜닝하기 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/04-number-formats.html) |
+| `finetune/ch05_gpu_memory/` | 내 데이터로 LLM 파인튜닝하기 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/05-gpu-memory.html) |
+| `finetune/ch06_quantization/` | 내 데이터로 LLM 파인튜닝하기 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/06-quantization.html) |
+| `finetune/ch07_lora_qlora/` | 내 데이터로 LLM 파인튜닝하기 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/07-lora-qlora.html) |
+| `finetune/ch08_unsloth_colab/` | 내 데이터로 LLM 파인튜닝하기 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/08-unsloth-colab.html) |
+| `finetune/ch09_evaluate/` | 내 데이터로 LLM 파인튜닝하기 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/09-evaluate.html) |
+| `finetune/ch10_export_serve/` | 내 데이터로 LLM 파인튜닝하기 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/10-export-serve.html) |
+| `math/ch00_reading_formulas/` | AI를 읽기 위한 수학 0장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/00-reading-formulas.html) |
+| `math/ch01_vectors/` | AI를 읽기 위한 수학 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/01-vectors.html) |
+| `math/ch02_dot_product/` | AI를 읽기 위한 수학 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/02-dot-product.html) |
+| `math/ch03_matrices/` | AI를 읽기 위한 수학 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/03-matrices.html) |
+| `math/ch04_functions/` | AI를 읽기 위한 수학 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/04-functions.html) |
+| `math/ch05_derivatives/` | AI를 읽기 위한 수학 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/05-derivatives.html) |
+| `math/ch06_chain_rule/` | AI를 읽기 위한 수학 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/06-chain-rule.html) |
+| `math/ch07_gradients/` | AI를 읽기 위한 수학 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/07-gradients.html) |
+| `math/ch08_probability_expectation/` | AI를 읽기 위한 수학 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/08-probability-expectation.html) |
+| `math/ch09_variance_covariance/` | AI를 읽기 위한 수학 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/09-variance-covariance.html) |
+| `math/ch10_pca_eigenvectors/` | AI를 읽기 위한 수학 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/10-pca-eigenvectors.html) |
+| `math/ch11_svd/` | AI를 읽기 위한 수학 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/11-svd.html) |
+| `math/ch12_linear_model/` | AI를 읽기 위한 수학 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/12-linear-model.html) |
 
 여기 있는 장은 모두 웹 챕터로 공개돼 있어요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

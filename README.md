@@ -91,6 +91,10 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `webapp/ch07_capacitor_apk/` | 1인 개발 앱 출시 실전 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/07-capacitor-apk.html) |
 | `webapp/ch08_platform_choice/` | 1인 개발 앱 출시 실전 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/08-platform-choice.html) |
 | `webapp/ch09_ai_coding_era/` | 1인 개발 앱 출시 실전 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/09-ai-coding-era.html) |
+| `webapp/ch10_launch_page/` | 1인 개발 앱 출시 실전 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/10-launch-page.html) |
+| `webapp/ch11_store_submission/` | 1인 개발 앱 출시 실전 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/11-store-submission.html) |
+| `webapp/ch12_product_analytics/` | 1인 개발 앱 출시 실전 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/12-product-analytics.html) |
+| `webapp/ch13_release_learning/` | 1인 개발 앱 출시 실전 13장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/webapp/13-release-learning.html) |
 | `finetune/ch01_when_finetune/` | 내 데이터로 LLM 파인튜닝하기 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/01-when-finetune.html) |
 | `finetune/ch02_huggingface_map/` | 내 데이터로 LLM 파인튜닝하기 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/02-huggingface-map.html) |
 | `finetune/ch03_dataset/` | 내 데이터로 LLM 파인튜닝하기 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/03-dataset.html) |
@@ -114,6 +118,8 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `math/ch10_pca_eigenvectors/` | AI를 읽기 위한 수학 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/10-pca-eigenvectors.html) |
 | `math/ch11_svd/` | AI를 읽기 위한 수학 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/11-svd.html) |
 | `math/ch12_linear_model/` | AI를 읽기 위한 수학 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/12-linear-model.html) |
+| `or/ch03_budget_allocation/` | 경영과학 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/03-budget-allocation.html) |
+| `causal/ch06_difference_in_differences/` | 인과추론 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/06-difference-in-differences.html) |
 
 여기 있는 장은 모두 웹 챕터로 공개돼 있어요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

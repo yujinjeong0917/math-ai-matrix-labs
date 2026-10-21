@@ -3,7 +3,7 @@
 import os, re, subprocess
 SITE = "https://math-ai-matrix-pi.vercel.app/tracks/"
 NAMES = {"llm": "밑바닥부터 만드는 LLM", "rl": "밑바닥부터 만드는 강화학습", "eval": "모델 평가",
-         "algorithms": "그림으로 익히는 알고리즘", "pipelines": "ML 파이프라인 구축", "productivity": "협업 도구가 어긋날 때", "tools": "AI 도구 실전", "webapp": "1인 개발 앱 출시 실전", "finetune": "내 데이터로 LLM 파인튜닝하기", "math": "AI를 읽기 위한 수학", "or": "경영과학", "causal": "인과추론"}
+         "algorithms": "그림으로 익히는 알고리즘", "pipelines": "ML 파이프라인 구축", "productivity": "협업 도구가 어긋날 때", "tools": "AI 도구 실전", "webapp": "1인 개발 앱 출시 실전", "finetune": "내 데이터로 LLM 파인튜닝하기", "math": "AI를 읽기 위한 수학", "aws": "AWS 배포·운영", "or": "경영과학", "causal": "인과추론"}
 ORDER = list(NAMES)
 files = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"], capture_output=True, text=True).stdout.split()
 chs = sorted({"/".join(f.split("/")[:2]) for f in files if re.match(r"^(%s)/ch" % "|".join(ORDER), f)},

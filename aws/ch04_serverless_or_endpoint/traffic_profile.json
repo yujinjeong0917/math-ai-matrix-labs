@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-22",
+  "region": null,
+  "requests_per_day": 20,
+  "days_per_month": 30,
+  "seconds_per_request": 30,
+  "startup_seconds": 90,
+  "acceptable_wait_seconds": 300,
+  "peak_concurrency": 20,
+  "model_file_gb": 4.683,
+  "runtime_memory_gb": null,
+  "container_image_gb": null,
+  "payload_mb": 0.02,
+  "gpu_required": null,
+  "async_allowed": true
+}

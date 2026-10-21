@@ -118,6 +118,7 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `math/ch10_pca_eigenvectors/` | AI를 읽기 위한 수학 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/10-pca-eigenvectors.html) |
 | `math/ch11_svd/` | AI를 읽기 위한 수학 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/11-svd.html) |
 | `math/ch12_linear_model/` | AI를 읽기 위한 수학 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/12-linear-model.html) |
+| `aws/ch04_serverless_or_endpoint/` | AWS 배포·운영 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/04-serverless-or-endpoint.html) |
 | `or/ch03_budget_allocation/` | 경영과학 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/03-budget-allocation.html) |
 | `causal/ch06_difference_in_differences/` | 인과추론 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/06-difference-in-differences.html) |
 

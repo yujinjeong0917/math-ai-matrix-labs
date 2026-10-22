@@ -3,7 +3,7 @@
 import os, re, subprocess
 SITE = "https://math-ai-matrix-pi.vercel.app/tracks/"
 NAMES = {"llm": "밑바닥부터 만드는 LLM", "rl": "밑바닥부터 만드는 강화학습", "eval": "모델 평가",
-         "algorithms": "그림으로 익히는 알고리즘", "pipelines": "ML 파이프라인 구축", "productivity": "협업 도구가 어긋날 때", "tools": "AI 도구 실전", "webapp": "1인 개발 앱 출시 실전", "finetune": "내 데이터로 LLM 파인튜닝하기", "math": "AI를 읽기 위한 수학", "aws": "AWS 배포·운영", "or": "경영과학", "causal": "인과추론"}
+         "algorithms": "그림으로 익히는 알고리즘", "pipelines": "ML 파이프라인 구축", "productivity": "협업 도구가 어긋날 때", "tools": "AI 도구 실전", "webapp": "1인 개발 앱 출시 실전", "finetune": "내 데이터로 LLM 파인튜닝하기", "math": "AI를 읽기 위한 수학", "aws": "AWS 배포·운영", "or": "경영과학", "causal": "인과추론", "agent-build": "에이전트 만들기"}
 ORDER = list(NAMES)
 files = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"], capture_output=True, text=True).stdout.split()
 chs = sorted({"/".join(f.split("/")[:2]) for f in files if re.match(r"^(%s)/ch" % "|".join(ORDER), f)},
@@ -11,7 +11,7 @@ chs = sorted({"/".join(f.split("/")[:2]) for f in files if re.match(r"^(%s)/ch" 
 site_files = subprocess.run(["git", "-C", "../math-ai-matrix", "ls-files", "--cached", "--others", "--exclude-standard", "tracks"], capture_output=True, text=True).stdout.split()
 web = {}
 for f in site_files:
-    m = re.match(r"tracks/([a-z]+)/(\d\d|bridge)-.*\.html$", f)
+    m = re.match(r"tracks/([a-z-]+)/(\d\d|bridge)-.*\.html$", f)
     if m: web[(m.group(1), int(m.group(2)) if m.group(2).isdigit() else "bridge")] = f[len("tracks/"):]
 rows = []
 for c in chs:

@@ -121,6 +121,7 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `aws/ch04_serverless_or_endpoint/` | AWS 배포·운영 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/04-serverless-or-endpoint.html) |
 | `or/ch03_budget_allocation/` | 경영과학 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/03-budget-allocation.html) |
 | `causal/ch06_difference_in_differences/` | 인과추론 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/06-difference-in-differences.html) |
+| `agent-build/ch04_double_refund/` | 에이전트 만들기 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/04-double-refund.html) |
 
 여기 있는 장은 모두 웹 챕터로 공개돼 있어요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

@@ -1,0 +1,61 @@
+{
+ "orders": 10,
+ "correct_total": 330,
+ "planted_failure_orders": [
+  3,
+  5,
+  7
+ ],
+ "late_reply_orders": [
+  3,
+  7
+ ],
+ "duplicate_message_orders": [
+  5
+ ],
+ "variants": {
+  "A": {
+   "name": "방어 없음",
+   "refund_count": 13,
+   "total_paid": 420,
+   "extra_over_correct": 90,
+   "blocked_of_planted": 0,
+   "orders_paid_twice": [
+    3,
+    5,
+    7
+   ]
+  },
+  "B": {
+   "name": "보내기 전에 상태 조회",
+   "refund_count": 11,
+   "total_paid": 355,
+   "extra_over_correct": 25,
+   "blocked_of_planted": 2,
+   "orders_paid_twice": [
+    5
+   ]
+  },
+  "C": {
+   "name": "주문마다 같은 번호표(멱등성 키)",
+   "refund_count": 10,
+   "total_paid": 330,
+   "extra_over_correct": 0,
+   "blocked_of_planted": 3,
+   "orders_paid_twice": []
+  },
+  "D": {
+   "name": "시도마다 새 번호표",
+   "refund_count": 13,
+   "total_paid": 420,
+   "extra_over_correct": 90,
+   "blocked_of_planted": 0,
+   "orders_paid_twice": [
+    3,
+    5,
+    7
+   ]
+  }
+ },
+ "note": "요청이 차례로 오는 장난감 실험이에요. 동시 요청, 키 만료, 같은 키에 다른 내용은 재지 않았어요."
+}

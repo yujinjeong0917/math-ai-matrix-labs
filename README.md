@@ -118,10 +118,65 @@ uv run python llm/ch07_self_attention/experiments.py   # 예: 7장 비교 실험
 | `math/ch10_pca_eigenvectors/` | AI를 읽기 위한 수학 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/10-pca-eigenvectors.html) |
 | `math/ch11_svd/` | AI를 읽기 위한 수학 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/11-svd.html) |
 | `math/ch12_linear_model/` | AI를 읽기 위한 수학 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/math/12-linear-model.html) |
+| `aws/ch00_local_to_service/` | AWS 배포·운영 0장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/00-local-to-service.html) |
+| `aws/ch01_request_path/` | AWS 배포·운영 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/01-request-path.html) |
+| `aws/ch02_artifact_versions/` | AWS 배포·운영 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/02-artifacts-s3-ecr.html) |
+| `aws/ch03_iam_least_privilege/` | AWS 배포·운영 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/03-iam-least-privilege.html) |
 | `aws/ch04_serverless_or_endpoint/` | AWS 배포·운영 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/04-serverless-or-endpoint.html) |
+| `aws/ch05_gpu_endpoint_modes/` | AWS 배포·운영 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/05-gpu-endpoint-modes.html) |
+| `aws/ch06_bedrock_vs_self_hosting/` | AWS 배포·운영 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/06-bedrock-vs-self-hosting.html) |
+| `aws/ch07_gateway_auth_throttle/` | AWS 배포·운영 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/07-api-gateway-auth-throttle.html) |
+| `aws/ch08_cloudwatch_first_failures/` | AWS 배포·운영 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/08-cloudwatch-first-failures.html) |
+| `aws/ch09_canary_rollback/` | AWS 배포·운영 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/09-canary-rollback.html) |
+| `aws/ch10_cost_leaks/` | AWS 배포·운영 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/10-cost-leaks.html) |
+| `aws/ch11_retry_duplicates/` | AWS 배포·운영 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/11-retry-duplicates.html) |
+| `aws/ch12_prompt_log_privacy/` | AWS 배포·운영 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/12-prompt-log-privacy.html) |
+| `aws/ch13_compare_hosting/` | AWS 배포·운영 13장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/13-compare-hosting.html) |
+| `aws/ch14_small_to_scaled_architecture/` | AWS 배포·운영 14장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/aws/14-small-to-scaled-architecture.html) |
+| `or/ch00_forecast_vs_decision/` | 경영과학 0장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/00-forecast-vs-decision.html) |
+| `or/ch01_product_mix_lp/` | 경영과학 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/01-product-mix-lp.html) |
+| `or/ch02_shadow_price/` | 경영과학 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/02-shadow-price.html) |
 | `or/ch03_budget_allocation/` | 경영과학 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/03-budget-allocation.html) |
+| `or/ch04_local_vs_global/` | 경영과학 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/04-local-vs-global.html) |
+| `or/ch05_integer_programming/` | 경영과학 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/05-integer-programming.html) |
+| `or/ch06_assignment_transport/` | 경영과학 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/06-assignment-transport.html) |
+| `or/ch07_max_flow_min_cut/` | 경영과학 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/07-max-flow-min-cut.html) |
+| `or/ch08_shift_scheduling/` | 경영과학 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/08-shift-scheduling.html) |
+| `or/ch09_vehicle_routing/` | 경영과학 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/09-vehicle-routing.html) |
+| `or/ch10_queueing/` | 경영과학 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/10-queueing-utilization.html) |
+| `or/ch11_inventory/` | 경영과학 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/11-inventory-eoq-newsvendor.html) |
+| `or/ch12_simulation/` | 경영과학 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/12-discrete-event-simulation.html) |
+| `or/ch13_robust_stock/` | 경영과학 13장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/13-robust-stock.html) |
+| `or/ch14_pareto_front/` | 경영과학 14장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/14-pareto-front.html) |
+| `or/ch15_predict_cause_act/` | 경영과학 15장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/or/15-predict-cause-act.html) |
+| `causal/ch00_prediction_intervention_counterfactual/` | 인과추론 0장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/00-prediction-intervention-counterfactual.html) |
+| `causal/ch01_potential_outcomes/` | 인과추론 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/01-potential-outcomes.html) |
+| `causal/ch02_randomized_experiments/` | 인과추론 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/02-randomized-experiments.html) |
+| `causal/ch03_dag_adjustment/` | 인과추론 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/03-dag-adjustment.html) |
+| `causal/ch04_propensity_matching_ipw/` | 인과추론 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/04-propensity-matching-ipw.html) |
+| `causal/ch05_aipw_double_robust/` | 인과추론 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/05-aipw-double-robust.html) |
 | `causal/ch06_difference_in_differences/` | 인과추론 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/06-difference-in-differences.html) |
+| `causal/ch07_staggered_did_event_study/` | 인과추론 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/07-staggered-did-event-study.html) |
+| `causal/ch08_regression_discontinuity/` | 인과추론 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/08-regression-discontinuity.html) |
+| `causal/ch09_instrumental_variables/` | 인과추론 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/09-instrumental-variables.html) |
+| `causal/ch10_synthetic_control/` | 인과추론 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/10-synthetic-control.html) |
+| `causal/ch11_interference_sutva/` | 인과추론 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/11-interference-sutva.html) |
+| `causal/ch12_switchback_washout/` | 인과추론 12장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/12-switchback-washout.html) |
+| `causal/ch13_cate_uplift/` | 인과추론 13장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/13-cate-uplift.html) |
+| `causal/ch14_sensitivity_placebo/` | 인과추론 14장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/14-sensitivity-placebo-external-validity.html) |
+| `causal/ch15_identification_map/` | 인과추론 15장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/causal/15-identification-map.html) |
+| `agent-build/ch00_refund_workflow/` | 에이전트 만들기 0장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/00-refund-workflow.html) |
+| `agent-build/ch01_ticket_routing/` | 에이전트 만들기 1장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/01-ticket-routing.html) |
+| `agent-build/ch02_tool_arguments/` | 에이전트 만들기 2장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/02-tool-arguments.html) |
+| `agent-build/ch03_stale_order_state/` | 에이전트 만들기 3장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/03-stale-order-state.html) |
 | `agent-build/ch04_double_refund/` | 에이전트 만들기 4장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/04-double-refund.html) |
+| `agent-build/ch05_approval_threshold/` | 에이전트 만들기 5장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/05-approval-threshold.html) |
+| `agent-build/ch06_scoped_permissions/` | 에이전트 만들기 6장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/06-scoped-permissions.html) |
+| `agent-build/ch07_prompt_injection/` | 에이전트 만들기 7장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/07-prompt-injection.html) |
+| `agent-build/ch08_context_limit/` | 에이전트 만들기 8장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/08-context-limit.html) |
+| `agent-build/ch09_cost_and_latency/` | 에이전트 만들기 9장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/09-cost-and-latency.html) |
+| `agent-build/ch10_agent_evaluation/` | 에이전트 만들기 10장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/10-agent-evaluation.html) |
+| `agent-build/ch11_trace_and_recovery/` | 에이전트 만들기 11장 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/11-trace-and-recovery.html) |
 
 여기 있는 장은 모두 웹 챕터로 공개돼 있어요. 전체 목록은 [학습 트랙](https://math-ai-matrix-pi.vercel.app/tracks/)에서 볼 수 있어요.
 

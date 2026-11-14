@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-11-14",
+  "note": "AWS 공식 문서를 2026-11-14에 열어 확인한 값. 계정·리전·서비스 변경에 따라 달라질 수 있으니 배포 날 다시 확인한다. 가격은 넣지 않는다.",
+  "limits": {
+    "apigw_rest_integration_timeout_s": {"value": 29, "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-execution-service-limits-table.html", "note": "50ms~29초. Regional·private API는 할당량 증가 요청 가능(Region 수준 throttle 할당량 감소가 필요할 수 있음), edge-optimized는 불가"},
+    "apigw_http_integration_timeout_s": {"value": 30, "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-quotas.html", "note": "최대 30초, 증가 불가"},
+    "apigw_payload_mb": {"value": 10, "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-execution-service-limits-table.html", "note": "REST·HTTP 모두 10 MB, 증가 불가. MB와 MiB 구분은 문서에 따로 없음"},
+    "lambda_sync_payload_mb": {"value": 6, "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html", "note": "동기 호출 요청·응답 각 6 MB. 문서는 MB가 1,024 KB라고 설명"},
+    "lambda_function_timeout_s": {"value": 900, "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html", "note": "기본 컴퓨트 15분"},
+    "sagemaker_invoke_timeout_s": {"value": 60, "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_runtime_InvokeEndpoint.html", "note": "모델 컨테이너는 60초 안에 응답해야 함"},
+    "sagemaker_invoke_body_bytes": {"value": 6291456, "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_runtime_InvokeEndpoint.html", "note": "요청·응답 본문 각 최대 6291456바이트"}
+  }
+}

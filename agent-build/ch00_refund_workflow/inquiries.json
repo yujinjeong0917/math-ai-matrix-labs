@@ -1,0 +1,240 @@
+{
+ "inquiries": [
+  {
+   "id": "q01",
+   "kind": "환불",
+   "text": "운동화가 작아서 환불해 주세요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q02",
+   "kind": "환불",
+   "text": "사진과 다른 상품이 와서 환불 원해요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q03",
+   "kind": "환불",
+   "text": "주문 두 건을 한꺼번에 환불해 주세요",
+   "calls": [
+    "lookup_order",
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q04",
+   "kind": "환불",
+   "text": "양말에 구멍이 있어요. 환불해 주세요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q05",
+   "kind": "환불",
+   "text": "배송이 너무 늦어서 환불하고 싶어요",
+   "calls": [
+    "lookup_order",
+    "get_tracking",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q06",
+   "kind": "환불",
+   "text": "받자마자 불량이라 전액 환불 부탁해요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q07",
+   "kind": "환불",
+   "text": "두 주문 중 하나만 환불해 주세요",
+   "calls": [
+    "lookup_order",
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q08",
+   "kind": "환불",
+   "text": "사이즈가 안 맞아서 환불할게요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q09",
+   "kind": "환불",
+   "text": "한 켤레는 지금, 나머지는 반품 확인 뒤 나눠서 환불해 주세요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "issue_refund",
+    "issue_refund",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q10",
+   "kind": "환불",
+   "text": "착용한 신발인데 환불해 주세요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q11",
+   "kind": "환불",
+   "text": "수령 40일 지난 주문인데 환불되나요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q12",
+   "kind": "환불",
+   "text": "세일 상품인데 환불 가능한가요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q13",
+   "kind": "교환",
+   "text": "한 치수 큰 걸로 교환해 주세요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "create_exchange",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q14",
+   "kind": "교환",
+   "text": "색상이 달라서 교환하고 싶어요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "create_exchange",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q15",
+   "kind": "교환",
+   "text": "불량이라 새 제품으로 교환해 주세요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "create_exchange",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q16",
+   "kind": "교환",
+   "text": "270으로 교환하고 싶은데 재고 있나요",
+   "calls": [
+    "lookup_order",
+    "get_policy",
+    "check_stock",
+    "create_exchange",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q17",
+   "kind": "배송조회",
+   "text": "주문한 운동화 언제 도착하나요",
+   "calls": [
+    "lookup_order",
+    "get_tracking",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q18",
+   "kind": "배송조회",
+   "text": "배송 조회 부탁드려요",
+   "calls": [
+    "lookup_order",
+    "get_tracking",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q19",
+   "kind": "배송조회",
+   "text": "택배가 아직 안 왔어요",
+   "calls": [
+    "lookup_order",
+    "get_tracking",
+    "send_message",
+    "log_note"
+   ]
+  },
+  {
+   "id": "q20",
+   "kind": "배송조회",
+   "text": "송장번호는 여기 있어요. 어디쯤인지만 알려 주세요",
+   "calls": [
+    "get_tracking",
+    "send_message"
+   ]
+  }
+ ]
+}

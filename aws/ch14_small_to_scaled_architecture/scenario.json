@@ -1,0 +1,12 @@
+{
+  "_note": "모든 값은 예시용 가정이다. 내 서비스에서 재어 바꾼다. 가격은 넣지 않는다.",
+  "days_per_month": 30,
+  "seconds_per_request": 30,
+  "startup_seconds": 90,
+  "acceptable_wait_seconds": 3600,
+  "burst_share": 0.1,
+  "stages": {
+    "first": {"requests_per_day": 20},
+    "grown": {"requests_per_day": 20000}
+  }
+}

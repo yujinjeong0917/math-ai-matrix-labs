@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-11-14",
+  "architecture": "Qwen2.5",
+  "weights_format": "gguf",
+  "weights_gb": 4.683,
+  "max_context_tokens": 32768,
+  "region": "ap-northeast-2",
+  "needs_converse_api": true,
+  "needs_batch_inference": false,
+  "needs_cloudformation": false
+}

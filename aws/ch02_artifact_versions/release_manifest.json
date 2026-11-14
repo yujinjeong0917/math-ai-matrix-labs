@@ -1,0 +1,17 @@
+{
+  "note": "가상 릴리스 기록. 값 대부분은 예시용이다. 모델 파일 크기 4.683GB는 파인튜닝 10장의 Qwen2.5-7B Q4_K_M 파일 값을 옮긴 것.",
+  "release": "reply-draft-2026-11-14-a",
+  "model": {
+    "s3_uri": "s3://example-model-bucket/reply-draft/model-q4_k_m.gguf",
+    "s3_version_id": "3sL4kqtJlcpXroDTDmJ+rmSpXd3dIbrHY",
+    "sha256": "9f2a0c5d1e7b3a48c6d9e0f1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5",
+    "size_bytes": 4683000000
+  },
+  "image": {
+    "repository": "example-account.dkr.ecr.ap-northeast-2.amazonaws.com/reply-api",
+    "reference": "example-account.dkr.ecr.ap-northeast-2.amazonaws.com/reply-api:latest"
+  },
+  "code_commit": "",
+  "bucket": {"versioning": "Disabled"},
+  "repository": {"tag_mutability": "MUTABLE"}
+}

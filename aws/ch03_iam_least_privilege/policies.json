@@ -1,0 +1,25 @@
+{
+  "note": "가상 정책 세 개. 계정 ID와 버킷 이름은 예시용이다.",
+  "too_broad": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {"Effect": "Allow", "Action": "*", "Resource": "*"}
+    ]
+  },
+  "half_broad": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {"Effect": "Allow", "Action": "s3:*", "Resource": "arn:aws:s3:::example-model-bucket/*"},
+      {"Effect": "Allow", "Action": ["logs:CreateLogStream", "logs:PutLogEvents"], "Resource": "*"},
+      {"Effect": "Allow", "Action": "iam:PassRole", "Resource": "*"}
+    ]
+  },
+  "scoped": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {"Effect": "Allow", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::example-model-bucket/reply-draft/*"},
+      {"Effect": "Allow", "Action": ["logs:CreateLogStream", "logs:PutLogEvents"], "Resource": "arn:aws:logs:ap-northeast-2:111122223333:log-group:/reply-api:*"},
+      {"Effect": "Deny", "Action": "s3:DeleteObject", "Resource": "arn:aws:s3:::example-model-bucket/*"}
+    ]
+  }
+}

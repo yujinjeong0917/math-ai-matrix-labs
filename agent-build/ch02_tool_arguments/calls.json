@@ -1,0 +1,394 @@
+{
+ "calls": [
+  {
+   "id": "c01",
+   "call": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c02",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c03",
+   "call": {
+    "order_id": "ORD-1003",
+    "amount": 30000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1003",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c04",
+   "call": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "오배송"
+   },
+   "intended": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "오배송"
+   }
+  },
+  {
+   "id": "c05",
+   "call": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c06",
+   "call": {
+    "order_id": "ORD-1006",
+    "amount": 25000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1006",
+    "amount": 25000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c07",
+   "call": {
+    "order_id": "ORD-1001",
+    "amount": 20000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 20000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c08",
+   "call": {
+    "order_id": "ORD-1005",
+    "amount": 40000,
+    "reason": "기타"
+   },
+   "intended": {
+    "order_id": "ORD-1005",
+    "amount": 40000,
+    "reason": "기타"
+   }
+  },
+  {
+   "id": "c09",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": 10000,
+    "reason": "기타"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 10000,
+    "reason": "기타"
+   }
+  },
+  {
+   "id": "c10",
+   "call": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c11",
+   "call": {
+    "order_id": "ORD-1006",
+    "amount": 25000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1006",
+    "amount": 25000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c12",
+   "call": {
+    "order_id": "ORD-1003",
+    "amount": 15000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1003",
+    "amount": 15000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c13",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "오배송"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "오배송"
+   }
+  },
+  {
+   "id": "c14",
+   "call": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c15",
+   "call": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c16",
+   "call": {
+    "order_id": "ORD-1001",
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c17",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": "30000",
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c18",
+   "call": {
+    "order_id": "1002",
+    "amount": 30000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c19",
+   "call": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "마음에 안 들어요"
+   },
+   "intended": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c20",
+   "call": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "오배송",
+    "currency": "KRW"
+   },
+   "intended": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "오배송"
+   }
+  },
+  {
+   "id": "c21",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": 30000.5,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c22",
+   "call": {
+    "order_id": "ORD-9999",
+    "amount": 50000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c23",
+   "call": {
+    "order_id": "ORD-2001",
+    "amount": 50000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 50000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c24",
+   "call": {
+    "order_id": "ORD-2002",
+    "amount": 18000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c25",
+   "call": {
+    "order_id": "ORD-1001",
+    "amount": 300000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1001",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c26",
+   "call": {
+    "order_id": "ORD-1003",
+    "amount": 45000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1003",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c27",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": 30,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c28",
+   "call": {
+    "order_id": "ORD-1004",
+    "amount": 12000,
+    "reason": "불량"
+   },
+   "intended": {
+    "order_id": "ORD-1006",
+    "amount": 25000,
+    "reason": "불량"
+   }
+  },
+  {
+   "id": "c29",
+   "call": {
+    "order_id": "ORD-1005",
+    "amount": 40000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1005",
+    "amount": 89000,
+    "reason": "단순변심"
+   }
+  },
+  {
+   "id": "c30",
+   "call": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "단순변심"
+   },
+   "intended": {
+    "order_id": "ORD-1002",
+    "amount": 30000,
+    "reason": "불량"
+   }
+  }
+ ]
+}

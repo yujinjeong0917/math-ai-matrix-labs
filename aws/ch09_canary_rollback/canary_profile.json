@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-11-14",
+  "requests_per_day": 20,
+  "scaled_requests_per_day": 20000,
+  "canary_percent": 5,
+  "baseline_bad_rate": 0.02,
+  "new_model_bad_rate": 0.10,
+  "alarm_error_count": 4,
+  "window_requests": 50,
+  "confidence": 0.95,
+  "bake_wait_seconds": 600,
+  "termination_wait_seconds": 600,
+  "alias_extra_weight": 0.05
+}

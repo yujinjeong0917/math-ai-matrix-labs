@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-11-14",
+  "note": "가상 시나리오. 1분마다 한 값. 0대로 줄어 있던 비동기 엔드포인트에 요청이 몰린 10분.",
+  "period_seconds": 60,
+  "allowed_wait_seconds": 120,
+  "gateway_integration_timeout_seconds": 29,
+  "gpu_count": 4,
+  "series": {
+    "HasBacklogWithoutCapacity": [0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+    "ApproximateAgeOfOldestRequest_s": [0, 10, 70, 130, 190, 100, 40, 10, 0, 0],
+    "ExpiredRequests": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "GPUUtilization_raw": [0, 0, 0, 120, 320, 360, 320, 160, 40, 0],
+    "ModelLatency_us": [null, null, null, 31500000, 33200000, 30100000, 29000000, 28000000, null, null],
+    "Invocation5XXErrors": [null, null, null, null, null, null, null, null, null, null]
+  }
+}

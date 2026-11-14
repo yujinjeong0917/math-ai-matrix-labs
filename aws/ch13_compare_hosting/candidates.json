@@ -1,0 +1,336 @@
+{
+  "checked_at": "2026-11-14",
+  "note": "값은 모두 공식 문서를 2026-11-14에 열어 확인한 것이다. value가 null이면 문서에서 확인하지 못한 값이며 본문에는 '확인 필요'로 적는다. 가격은 넣지 않는다.",
+  "candidates": {
+    "cloud_run": {
+      "name": "Google Cloud Run",
+      "fields": {
+        "gpu": {
+          "value": "selectable",
+          "note": "L4(24GB VRAM)와 RTX PRO 6000(96GB VRAM) 선택 가능. GPU 기본 할당량은 0이라 늘려 달라고 요청해야 함",
+          "source": "https://docs.cloud.google.com/run/docs/configuring/services/gpu"
+        },
+        "max_memory_gb": {
+          "value": 32,
+          "note": "할당량 문서의 인스턴스당 최대 메모리. GPU 문서는 RTX PRO 6000에 80GiB 이상을 요구하므로 하드웨어별로 따로 확인",
+          "source": "https://docs.cloud.google.com/run/quotas"
+        },
+        "max_request_seconds": {
+          "value": 3600,
+          "note": "기본 300초, 최대 3600초",
+          "source": "https://docs.cloud.google.com/run/docs/configuring/request-timeout"
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": 5,
+          "note": "드라이버가 깔린 GPU 인스턴스가 시작하는 데 약 5초. 모델 파일을 불러오는 시간은 포함하지 않음",
+          "source": "https://docs.cloud.google.com/run/docs/configuring/services/gpu"
+        },
+        "idle_behavior": {
+          "value": "scale_to_zero",
+          "note": "최소 인스턴스 기본값 0. GPU도 0까지 줄일 수 있음",
+          "source": "https://docs.cloud.google.com/run/docs/configuring/min-instances"
+        },
+        "own_full_weights": {
+          "value": "container",
+          "note": "컨테이너를 직접 올림",
+          "source": "https://docs.cloud.google.com/run/docs/configuring/services/gpu"
+        },
+        "free_tier": {
+          "value": null
+        },
+        "rate_limit_rpm": {
+          "value": null
+        }
+      },
+      "caveats": [
+        "GPU 기본 할당량이 0이라 늘려 달라는 요청이 필요함(승인에 걸리는 시간은 확인하지 못함). 검사 결과 CANDIDATE는 지금 바로 쓸 수 있다는 뜻이 아님",
+        "메모리: 할당량 문서는 인스턴스당 최대 32GiB, GPU 문서는 RTX PRO 6000에 80GiB 이상을 요구해 서로 어긋남. 둘 다 필요량 8GB보다 크므로 이 검사의 결과는 같지만 정확한 상한은 확인 필요"
+      ]
+    },
+    "azure_ml": {
+      "name": "Azure Machine Learning 관리형 온라인 엔드포인트",
+      "fields": {
+        "gpu": {
+          "value": "selectable",
+          "note": "CPU·GPU 가상 머신 모두 가능. GPU 계열은 기본 코어 한도가 0이라 늘려 달라고 요청해야 함",
+          "source": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-quotas?view=azureml-api-2"
+        },
+        "max_memory_gb": {
+          "value": null,
+          "note": "가상 머신 종류에 따라 달라지며 이 장에서 종류별 표를 열지 않았음"
+        },
+        "max_request_seconds": {
+          "value": 180,
+          "note": "엔드포인트 단계 최대 요청 제한 시간",
+          "source": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-quotas?view=azureml-api-2"
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": null
+        },
+        "idle_behavior": {
+          "value": null,
+          "note": "자동 확장 문서의 예시는 최소 2개이고, 0개로 줄일 수 있는지는 열어 본 문서에 없음"
+        },
+        "own_full_weights": {
+          "value": "container",
+          "note": "직접 만든 컨테이너 배포(BYOC) 지원",
+          "source": "https://learn.microsoft.com/en-us/azure/machine-learning/concept-endpoints-online?view=azureml-api-2"
+        },
+        "free_tier": {
+          "value": null
+        },
+        "rate_limit_rpm": {
+          "value": {
+            "min": 30000,
+            "max": 30000
+          },
+          "note": "엔드포인트 단계 초당 요청 500개를 분당으로 바꾼 값",
+          "source": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-quotas?view=azureml-api-2"
+        }
+      },
+      "caveats": [
+        "GPU 계열 기본 코어 한도가 0이라 늘려 달라는 요청이 필요함(승인에 걸리는 시간은 확인하지 못함)"
+      ]
+    },
+    "cloudflare_workers_ai": {
+      "name": "Cloudflare Workers AI (보관은 R2)",
+      "fields": {
+        "gpu": {
+          "value": "managed_catalog",
+          "note": "한도 문서가 Cloudflare가 제공하는 모델 목록 기준으로 적혀 있음. GPU 종류를 고르는 방식은 문서에서 보지 못했음",
+          "source": "https://developers.cloudflare.com/workers-ai/platform/limits/"
+        },
+        "max_memory_gb": {
+          "value": null,
+          "note": "Workers 코드 격리 공간은 128MB지만 모델이 쓰는 메모리와 다른 값"
+        },
+        "max_request_seconds": {
+          "value": null
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": null
+        },
+        "idle_behavior": {
+          "value": null
+        },
+        "own_full_weights": {
+          "value": "lora_only_documented",
+          "note": "열어 본 문서에는 LoRA 어댑터 업로드만 적혀 있고 전체 모델을 올릴 수 있는지는 적혀 있지 않음",
+          "source": "https://developers.cloudflare.com/workers-ai/features/fine-tunes/"
+        },
+        "free_tier": {
+          "value": null
+        },
+        "rate_limit_rpm": {
+          "value": {
+            "min": 20,
+            "max": 300
+          },
+          "note": "글 생성 분당 300건, 유료 플랜이 필요한 모델은 계정·모델당 분당 20건. 내 모델이 어느 쪽인지에 따라 달라짐",
+          "source": "https://developers.cloudflare.com/workers-ai/platform/limits/"
+        }
+      }
+    },
+    "vercel": {
+      "name": "Vercel 함수",
+      "fields": {
+        "gpu": {
+          "value": null,
+          "note": "열어 본 한도 문서에 GPU 항목이 없음"
+        },
+        "max_memory_gb": {
+          "value": 4,
+          "note": "Pro 최대 4GB·vCPU 2개, Hobby는 2GB·vCPU 1개",
+          "source": "https://vercel.com/docs/limits"
+        },
+        "max_request_seconds": {
+          "value": 300,
+          "note": "Hobby 300초가 최대. Pro는 기본 300초에 설정으로 800초, 베타로 1800초",
+          "source": "https://vercel.com/docs/limits"
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": null
+        },
+        "idle_behavior": {
+          "value": null
+        },
+        "own_full_weights": {
+          "value": null
+        },
+        "free_tier": {
+          "value": "documented",
+          "note": "Hobby는 무료이며 월 포함 사용량이 표로 정해져 있음",
+          "source": "https://vercel.com/docs/plans/hobby"
+        },
+        "rate_limit_rpm": {
+          "value": null
+        }
+      }
+    },
+    "netlify": {
+      "name": "Netlify 함수",
+      "fields": {
+        "gpu": {
+          "value": null
+        },
+        "max_memory_gb": {
+          "value": null
+        },
+        "max_request_seconds": {
+          "value": null,
+          "note": "열어 본 문서에 동기 함수 제한 시간이 없음"
+        },
+        "max_background_seconds": {
+          "value": 900,
+          "note": "백그라운드 함수는 최대 15분",
+          "source": "https://docs.netlify.com/build/functions/background-functions/"
+        },
+        "cold_start_seconds": {
+          "value": null
+        },
+        "idle_behavior": {
+          "value": null
+        },
+        "own_full_weights": {
+          "value": null
+        },
+        "free_tier": {
+          "value": null
+        },
+        "rate_limit_rpm": {
+          "value": null
+        }
+      }
+    },
+    "render": {
+      "name": "Render 무료 웹 서비스",
+      "fields": {
+        "gpu": {
+          "value": null,
+          "note": "GPU 안내 페이지를 열지 못했음(404)"
+        },
+        "max_memory_gb": {
+          "value": null,
+          "note": "무료 인스턴스 안내 페이지에 메모리 값이 없음"
+        },
+        "max_request_seconds": {
+          "value": null
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": 60,
+          "note": "15분 동안 들어오는 요청이 없으면 멈추고, 다음 요청 때 다시 켜지는 데 약 1분",
+          "source": "https://render.com/docs/free"
+        },
+        "idle_behavior": {
+          "value": "sleeps_after_idle",
+          "source": "https://render.com/docs/free"
+        },
+        "own_full_weights": {
+          "value": null
+        },
+        "free_tier": {
+          "value": "documented",
+          "note": "월 750 무료 인스턴스 시간, 인스턴스 1개, 파일 시스템은 임시",
+          "source": "https://render.com/docs/free"
+        },
+        "rate_limit_rpm": {
+          "value": null
+        }
+      }
+    },
+    "fly_io": {
+      "name": "Fly.io Machines",
+      "fields": {
+        "gpu": {
+          "value": null,
+          "note": "GPU 문서 주소가 블로그 글로 넘어가고, 글에는 'scaling back our GPU ambitions'와 'we're not getting rid of them'이 함께 있음. 현재 제공 범위는 확인하지 못했음",
+          "source": "https://fly.io/blog/wrong-about-gpu/"
+        },
+        "max_memory_gb": {
+          "value": null
+        },
+        "max_request_seconds": {
+          "value": null
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": 2,
+          "note": "멈춘 Machine을 켜는 콜드 스타트는 일반 앱 기준 약 2초 이상. 일시 중지에서 깨우면 수백 밀리초. GPU 모델 기준이 아님",
+          "source": "https://docs.fly.io/launch/autostop-autostart"
+        },
+        "idle_behavior": {
+          "value": "stops_when_excess_capacity",
+          "source": "https://docs.fly.io/launch/autostop-autostart"
+        },
+        "own_full_weights": {
+          "value": null
+        },
+        "free_tier": {
+          "value": null
+        },
+        "rate_limit_rpm": {
+          "value": null
+        }
+      }
+    },
+    "hf_spaces": {
+      "name": "Hugging Face Spaces",
+      "fields": {
+        "gpu": {
+          "value": "selectable",
+          "note": "T4·L4·A10G·L40S·A100·RTX PRO 6000 등 유료 하드웨어. 무료 개인 계정은 ZeroGPU 기반 Gradio Space 2개까지",
+          "source": "https://huggingface.co/docs/hub/spaces-gpus"
+        },
+        "max_memory_gb": {
+          "value": 256,
+          "note": "GPU 1개 하드웨어 중 가장 큰 RTX PRO 6000 1개의 메모리. 하드웨어마다 다름",
+          "source": "https://huggingface.co/docs/hub/spaces-overview"
+        },
+        "max_request_seconds": {
+          "value": null
+        },
+        "max_background_seconds": {
+          "value": null
+        },
+        "cold_start_seconds": {
+          "value": null,
+          "note": "무료 하드웨어는 48시간 쓰지 않으면 잠들고 방문자가 다시 켬. 깨어나는 시간은 문서에 없음"
+        },
+        "idle_behavior": {
+          "value": "sleeps_after_idle",
+          "source": "https://huggingface.co/docs/hub/spaces-gpus"
+        },
+        "own_full_weights": {
+          "value": "container",
+          "note": "Docker Space 지원",
+          "source": "https://huggingface.co/docs/hub/spaces-overview"
+        },
+        "free_tier": {
+          "value": "paid_for_container",
+          "note": "Gradio·Docker Space는 연산 자원을 쓰므로 만들 때 유료 플랜이 필요함. 예외는 ZeroGPU Gradio Space 2개",
+          "source": "https://huggingface.co/docs/hub/spaces-overview"
+        },
+        "rate_limit_rpm": {
+          "value": null
+        }
+      }
+    }
+  }
+}

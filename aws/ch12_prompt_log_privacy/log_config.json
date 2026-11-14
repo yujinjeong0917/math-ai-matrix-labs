@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-11-14",
+  "requests_per_day": 20000,
+  "raw_prompt_bytes_per_request": 20000,
+  "metadata_bytes_per_request": 500,
+  "sample_percent": 10,
+  "max_raw_prompt_days": 7,
+  "account_policy_days": null,
+  "protection_policy_days_ago": 3,
+  "log_groups": [
+    {"name": "/app/answers/raw-prompts", "retention_days": 7, "contains_raw_prompt": true},
+    {"name": "/app/answers/metadata", "retention_days": 90, "contains_raw_prompt": false},
+    {"name": "/app/answers/debug", "retention_days": null, "contains_raw_prompt": true}
+  ]
+}

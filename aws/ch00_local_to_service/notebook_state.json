@@ -1,0 +1,17 @@
+{
+  "note": "가상 입력. 파인튜닝한 문의 답변 모델을 노트북에서만 돌리는 상태.",
+  "scenarios": {
+    "하루 20건": {"requests_per_day": 20, "seconds_per_request": 30},
+    "하루 2만 건": {"requests_per_day": 20000, "seconds_per_request": 30}
+  },
+  "notebook_state": {
+    "entry": false,
+    "auth": false,
+    "input_limit": false,
+    "artifact": null,
+    "permission": false,
+    "observe": false,
+    "rollout": false,
+    "budget": null
+  }
+}

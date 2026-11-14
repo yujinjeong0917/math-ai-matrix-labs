@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-11-14",
+  "region": "배포할 리전을 입력하세요",
+  "days_per_month": 30,
+  "scenarios": {
+    "small": {"requests_per_day": 20},
+    "scaled": {"requests_per_day": 20000}
+  },
+  "seconds_per_request": 30,
+  "target_utilization": 0.5,
+  "response_bytes": 3000,
+  "metadata_log_bytes_per_request": 500,
+  "prompt_log_bytes_per_request": 20000,
+  "log_retention_days": 30,
+  "months_without_expiry": 12,
+  "model_artifact_gb": 4.683,
+  "model_versions_kept": 10,
+  "model_versions_with_lifecycle": 3,
+  "image_gb": 6,
+  "image_versions_kept": 10,
+  "image_versions_with_lifecycle": 3,
+  "cold_starts_per_month": 60,
+  "unit_prices": {
+    "compute_hours": null,
+    "nat_gb": null,
+    "log_ingest_gb": null,
+    "log_stored_gb": null,
+    "model_storage_gb": null,
+    "image_storage_gb": null,
+    "data_out_gb": null
+  }
+}

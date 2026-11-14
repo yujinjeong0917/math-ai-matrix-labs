@@ -1,0 +1,15 @@
+{
+  "_note": "모든 값은 예시용 가정이다. 내 모델에서 재어 바꾼다. acceptable_wait_seconds는 서비스가 꺼져 있을 때 첫 요청이 들어오고 나서 처리를 시작하기까지(시작 지연 + 모델 불러오기) 기다려 줄 수 있는 시간이며, 300초(5분)는 예시값이다. 건당 30초는 이 값이 아니라 '한 요청 제한 시간'과 비교한다.",
+  "requests_per_day": 20,
+  "days_per_month": 30,
+  "seconds_per_request": 30,
+  "model_load_seconds": 90,
+  "acceptable_wait_seconds": 300,
+  "burst_share": 0.1,
+  "burst_window_seconds": 3600,
+  "runtime_memory_gb": 8,
+  "gpu_required": true,
+  "own_full_weights": true,
+  "async_allowed": true,
+  "free_only": false
+}

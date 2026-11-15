@@ -38,6 +38,7 @@ torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch10.json"
 LOG = HERE / "logs" / "ch10_episodes.jsonl"
+# 보고용 시드 0~9. 학습률 같은 하이퍼파라미터는 별도 시드(SWEEP_SEEDS_*, 100번대)로 고르고 보고 시드와 섞지 않는다(고른 시드에서 유리하게 나오는 것을 막으려는 설계)
 SEEDS = list(range(10))
 SWEEP_SEEDS_COR = [100, 101, 102, 103, 104]
 SWEEP_SEEDS_CP = [100, 101, 102]
@@ -45,6 +46,7 @@ SWEEP_SEEDS_CP = [100, 101, 102]
 
 def r6(x):
     x = float(x)
+    # 소수 6자리 반올림. -inf(끝나지 않는 정책의 J)는 JSON이 못 담아 None
     return float(round(x, 6)) if np.isfinite(x) else None  # NaN, inf는 엄격한 JSON에서 읽히도록 null로
 
 
@@ -72,9 +74,11 @@ def e0_hand():
     ps = [0.05, 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9, 0.95]
     table = {str(p): r6(cor.exact_v(p)[0]) for p in ps}
     pb = cor.best_p()
+    # p=0.5에서 이 경로의 확률 = 0.5^3 = 0.125. 행동은 칸 B에서 뒤집히므로 '왼쪽'이 C로 가는 길
     # 가장 짧은 판: A -오른쪽-> B -왼쪽-> C -오른쪽-> 도착 (3걸음). 확률 0.5^3
     ep = m.Episode(states=[0, 1, 2], actions=[1, 0, 1], rewards=[-1.0, -1.0, -1.0], done=True)
     G = m.returns(ep.rewards, 1.0).tolist()
+    # 점수 (a - p) (p = 0.5): 식 grad log pi = (a - p) phi의 복도판(phi = 1)
     score = [a - 0.5 for a in ep.actions]
     est = {b: r6(m.corridor_grad_estimate(ep, 0.0, b)) for b in ("none", "const", "value")}
     return {
@@ -122,6 +126,7 @@ def e2_variance():
         trunc = 0
         lens = []
         for sd in SEEDS:
+            # 시드마다 새 난수열. 한 시드에서 같은 판 1000개로 세 기준선을 비교해 기준선 효과만 분리
             rng = np.random.default_rng(sd)
             eps = [m.corridor_episode(th, rng, cap=1000) for _ in range(1000)]
             trunc += sum(not e.done for e in eps)
@@ -135,6 +140,8 @@ def e2_variance():
         res = {"theta": th, "p": r6(cor.sigmoid(th)), "J": r6(cor.exact_J(th)), "exact_grad": r6(exact),
                "samples_per_seed": 1000, "seeds": len(SEEDS), "truncated_episodes": trunc,
                "episode_len_mean": r6(np.mean(lens)), "episode_len_max": int(np.max(lens))}
+        # 보고 항목: z_vs_exact = (표본 평균 - 정확한 기울기) / 표준오차(|z|가 작으면 치우침 없음),
+        # variance_ratio_vs_none = (표준편차 비)^2, episodes_for_se_0.1 = (sd/0.1)^2판(se = sd/sqrt(n)을 0.1로 만드는 판 수)
         sd_none = np.mean(per["none"]["sds"])
         for b in per:
             g = np.concatenate(all_g[b])
@@ -155,11 +162,13 @@ def e2_variance():
 
 def e3_corridor_learning():
     theta0, n_ep = -2.0, 1000
+    # 학습률 후보: 2의 거듭제곱 격자 2^-16 ~ 2^-6
     alphas = [2.0 ** k for k in range(-16, -5)]
     sweep = {"none": {}, "learned": {}}
     for a in alphas:
         Js = [m.corridor_reinforce(theta0, a, n_ep, sd, "none")[1].mean() for sd in SWEEP_SEEDS_COR]
         sweep["none"][f"2^{int(np.log2(a))}"] = r6(np.mean(Js))
+        # 기준선 학습률 alpha_w = 2^-6로 고정. 판 전체 평균 J(학습 속도와 안정성을 함께 반영)로 alpha를 고른다
         Js = [m.corridor_reinforce(theta0, a, n_ep, sd, "learned", alpha_w=2.0 ** -6)[1].mean() for sd in SWEEP_SEEDS_COR]
         sweep["learned"][f"2^{int(np.log2(a))}"] = r6(np.mean(Js))
     best = {k: max(v, key=lambda q, v=v: v[q] if v[q] is not None else -np.inf) for k, v in sweep.items()}
@@ -182,6 +191,7 @@ def e3_corridor_learning():
     collapse = []
     for sd in SWEEP_SEEDS_COR:
         th, J, _ = m.corridor_reinforce(theta0, 2.0 ** -7, n_ep, sd, "none")
+        # J < -1000: 판이 사실상 끝나지 않는 상태(정책이 한쪽으로 쏠림). 보폭이 크면 이런 붕괴가 생기고 되돌아오는지를 본다
         bad = np.nonzero(J < -1000)[0]
         collapse.append({"seed": sd, "episodes_J_below_-1000": int(len(bad)),
                          "first_bad_episode": int(bad[0]) + 1 if len(bad) else None,
@@ -197,6 +207,7 @@ def e3_corridor_learning():
 
 # ------------------------------------------------------------------ E4
 
+# cart-pole 설정: 탐색용 판 수 600, 보고용 1000, 한 판 상한 500걸음(성공 기준 475와 맞물린다)
 CP_EP_SWEEP, CP_EP, CP_CAP = 600, 1000, 500
 
 
@@ -209,6 +220,7 @@ def cp_run(method, seed, a, aw, n):
 
 
 def moving(x, k=20):
+    # 누적합으로 구간 평균을 O(1)에 계산. 앞쪽 k판 미만에서는 있는 만큼만 평균
     c = np.cumsum(np.insert(np.asarray(x, dtype=float), 0, 0.0))
     out = np.empty(len(x))
     for i in range(len(x)):
@@ -218,6 +230,7 @@ def moving(x, k=20):
 
 
 def e4_cartpole():
+    # 정책 학습률 격자 2^-14 ~ 2^-4(2칸씩), aw는 기준선/비평가 학습률 격자
     a_grid = [2.0 ** k for k in range(-14, -3, 2)]
     aw_grid = {"reinforce": [None], "reinforce_baseline": [2.0 ** k for k in range(-12, 1, 2)],
                "actor_critic": [2.0 ** k for k in range(-12, 1, 2)]}
@@ -250,6 +263,7 @@ def e4_cartpole():
             last100.append(L[-100:].mean())
             mv = moving(L, 20)
             mov_all.append(mv)
+            # 20판 이동평균이 475(상한 500의 95%) 이상이 된 첫 판 = '해결' 기준(실험자의 선택)
             hit = np.nonzero(mv >= 475)[0]
             reach.append(int(hit[0]) + 1 if len(hit) else None)
         last100 = np.array(last100)
@@ -266,6 +280,7 @@ def e4_cartpole():
                                    "max": r6(M[:, c - 1].max())} for c in cps},
             "env_steps_total": steps, "us_per_env_step": r6(1e6 * secs / steps),
         }
+    # 대조: 한쪽으로만 계속 밀면 몇 걸음에 쓰러지나(무작위/학습 없는 기준선보다 나쁜 최저선)
     push = {}
     for a in (0, 1):
         L = []
@@ -307,6 +322,7 @@ def e5_impl_check():
             else:
                 bb = cor.exact_v(cor.sigmoid(th))[np.asarray(e.states)]
             g_t = mt.pg_grad([th], np.ones((len(G), 1)), e.actions, G - bb)[0]
+            # 상대 오차(분모가 0이 되지 않게 1e-12 하한). 허용 기준은 rtol=1e-9
             max_rel = max(max_rel, abs(g_np - g_t) / max(1e-12, abs(g_np)))
     # cart-pole: 무작위 theta로 판 하나
     env = cp.CartPole(3, 500)
@@ -320,6 +336,7 @@ def e5_impl_check():
     G_t = mt.returns(R, 0.99).numpy()
     # 정확한 기울기 vs 유한 차분
     h = 1e-6
+    # 정확한 기울기와 중앙차분의 절대 오차
     fd = {str(t): r6(abs(cor.exact_grad(t) - (cor.exact_J(t + h) - cor.exact_J(t - h)) / (2 * h))) for t in (-1.0, 0.0, 0.5)}
     return {"corridor_max_rel_err_np_vs_torch": float(max_rel), "cartpole_max_rel_err_np_vs_torch": rel_cp,
             "cartpole_episode_len": int(len(A)), "returns_max_abs_err": float(np.max(np.abs(G - G_t))),
@@ -358,6 +375,7 @@ def main():
             env = cp.CartPole(0, CP_CAP)
             S, A, R, fell = m.run_cartpole_episode(env, theta, np.random.default_rng(0))
             log_rows(f, 0, 0, "cartpole", list(S), A, R, fell, {"policy": tag})
+        # 로그용: 선택된 학습률로 다시 한 번 학습한 뒤(시드 0) 그 정책으로 한 판을 기록
         a, aw, _ = chosen["actor_critic"]
         _, theta = m.cartpole_actor_critic(0, CP_EP, a, alpha_w=aw, cap=CP_CAP)
         env = cp.CartPole(0, CP_CAP)

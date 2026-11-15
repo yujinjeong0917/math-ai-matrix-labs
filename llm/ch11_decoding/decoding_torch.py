@@ -5,6 +5,8 @@
 - TinyLM: 9장 `ch09_residual_norm/resnorm_torch.py`의 Pre-LN 소형 GPT를 그대로 복사했다
   (장끼리 import하지 않는 저장소 규칙). 10장 체크포인트가 아직 없어서 이 장에서 직접 학습한다.
 - numpy_model: 학습된 TinyLM을 decoding_np가 쓰는 `model(ids) -> logits` 함수로 감싼다.
+
+텐서 모양: 로짓 (B, V), TinyLM 입력 토큰 id (B, n) -> 로짓 (B, n, V). B = 배치, n = 길이, V = 어휘 크기.
 """
 
 import math
@@ -19,6 +21,7 @@ import torch.nn as nn
 
 def apply_temperature(logits, T):
     if T == 0:
+        # T = 0 극한: argmax 칸만 0, 나머지 -inf (NumPy 구현과 같다)
         out = torch.full_like(logits, float("-inf"))
         return out.scatter(-1, logits.argmax(-1, keepdim=True), 0.0)
     return logits / T
@@ -27,7 +30,9 @@ def apply_temperature(logits, T):
 def top_k_filter(logits, k):
     if k is None or k >= logits.shape[-1]:
         return logits.clone()
+    # topk(...).values의 마지막 열 = k번째로 큰 값 (B, 1)
     kth = torch.topk(logits, k, dim=-1).values[..., -1:]
+    # NumPy는 >= 로 남기고 여기선 < 로 지운다: 같은 집합
     return logits.masked_fill(logits < kth, float("-inf"))
 
 
@@ -37,17 +42,21 @@ def top_p_filter(logits, p):
     probs = torch.softmax(logits, dim=-1)
     sorted_p, order = torch.sort(probs, dim=-1, descending=True)
     cum = sorted_p.cumsum(-1)
+    # 자기 앞 누적 < p이면 남긴다(p를 처음 넘기게 만든 토큰 포함)
     keep_sorted = (cum - sorted_p) < p  # p를 처음 넘기게 만든 토큰까지 포함
+    # 정렬 순서의 keep을 원래 토큰 순서로 scatter
     keep = torch.zeros_like(keep_sorted).scatter(-1, order, keep_sorted)
     return logits.masked_fill(~keep, float("-inf"))
 
 
 def shape_logits(logits, T=1.0, k=None, p=None):
+    # 순서: 온도 -> top-k -> top-p (NumPy shape_logits와 같음)
     return top_p_filter(top_k_filter(apply_temperature(logits, T), k), p)
 
 
 def sample_from_logits(logits, generator, T=1.0, k=None, p=None):
     probs = torch.softmax(shape_logits(logits, T, k, p), dim=-1)
+    # 확률 0 칸은 뽑히지 않는다. generator로 재현성 확보. 결과 (B, 1) -> (B,)
     return torch.multinomial(probs, 1, generator=generator).squeeze(-1)
 
 
@@ -108,6 +117,7 @@ class TinyLM(nn.Module):
         super().__init__()
         self.n_ctx = n_ctx
         self.tok = nn.Embedding(vocab, d)
+        # 위치 표는 n_ctx칸뿐: 입력이 n_ctx보다 길면 인덱스 오류(numpy_model이 이를 막는다)
         self.pos = nn.Parameter(torch.randn(n_ctx, d))  # 학습되는 위치 임베딩: n_ctx칸까지만 있다
         self.blocks = nn.ModuleList(Block(d, h) for _ in range(L))
         self.final_ln = nn.LayerNorm(d)
@@ -117,6 +127,7 @@ class TinyLM(nn.Module):
             self.head.bias.zero_()
 
     def forward(self, x):
+        # (B, n, d) + (n, d): 위치 임베딩이 배치 축으로 브로드캐스트
         h = self.tok(x) + self.pos[: x.shape[1]]
         for b in self.blocks:
             h = b(h)
@@ -128,11 +139,14 @@ def numpy_model(model):
 
     위치 임베딩 표가 n_ctx칸뿐이라, 자르지 않으면 n_ctx+1번째 토큰에서 인덱스 오류가 난다(7절 흔한 실패 1).
     """
+    # 이 모델엔 드롭아웃이 없지만 평가 모드로 고정
     model.eval()
 
     def f(ids):
+        # 문맥이 n_ctx보다 길면 최근 n_ctx개만 사용(슬라이딩 창). 먼 과거는 잊는다
         ids = np.atleast_2d(ids)[:, -model.n_ctx :]
         with torch.no_grad():
+            # [:, -1]: 마지막 위치의 로짓 (B, V). float64로 바꿔 NumPy 디코딩 코드와 맞춘다
             return model(torch.as_tensor(ids, dtype=torch.long))[:, -1].double().numpy()
 
     return f

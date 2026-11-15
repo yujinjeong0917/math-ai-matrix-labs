@@ -11,11 +11,14 @@ import hashlib
 
 def bucket(user_id, salt="release-ch06"):
     """사용자를 [0, 1) 사이의 고정된 값 하나로 바꾼다."""
+    # salt와 user_id를 이어 SHA-256으로 해시한다. salt를 바꾸면 사용자의 버킷 배치가 새로 섞인다
     h = hashlib.sha256(f"{salt}:{user_id}".encode()).digest()
+    # 앞 8바이트를 0 이상 2^64 미만 정수로 읽어 2^64로 나누면 [0, 1) 값. 거의 균등하게 퍼진다
     return int.from_bytes(h[:8], "big") / 2**64
 
 
 def route(user_id, p, salt="release-ch06"):
+    # 버킷 값이 p보다 작으면 v2. p를 올리면 기존 v2 사용자는 그대로 v2에 남고 새 사용자만 더해진다
     return "v2" if bucket(user_id, salt) < p else "v1"
 
 

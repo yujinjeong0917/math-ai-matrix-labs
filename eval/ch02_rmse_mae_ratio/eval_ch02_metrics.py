@@ -31,6 +31,7 @@ def rmse_mae_ratio(y, yhat):
     +와 -가 상쇄돼 0 근처에서 비율이 폭주한다(7절 흔한 실패).
     """
     m = mae(y, yhat)
+    # 0 나누기 방지. 완벽 예측(모든 오차 0)이면 비율은 0/0이라 값을 만들지 않고 예외로 알린다
     if m == 0.0:
         raise ValueError("MAE가 0이라 RMSE/MAE 비율이 정의되지 않는다")
     return rmse(y, yhat) / m
@@ -38,6 +39,7 @@ def rmse_mae_ratio(y, yhat):
 
 def ratio_via_variance(e):
     """같은 비율을 sqrt(1 + Var(|e|) / MAE^2)로 계산한다. RMSE^2 = MAE^2 + Var(|e|) 이기 때문."""
+    # |e|의 평균과 분산. RMSE^2 = E|e|^2 = (E|e|)^2 + Var(|e|)에서 비율^2 = 1 + Var/MAE^2
     a = np.abs(np.asarray(e, dtype=float))
     m = a.mean()
     return float(np.sqrt(1.0 + a.var() / m**2))
@@ -45,6 +47,7 @@ def ratio_via_variance(e):
 
 def ratio_bounds(n):
     """오차 n개에서 비율이 가질 수 있는 범위 [1, sqrt(n)]."""
+    # 하한 1: 모든 오차 크기가 같을 때. 상한 sqrt(n): 오차 하나에 몰릴 때(1장 부등식과 같은 내용)
     return 1.0, math.sqrt(n)
 
 
@@ -66,8 +69,10 @@ def ratio_reference(dist, df=None):
     if dist == "t":
         if df is None or df <= 1:
             raise ValueError("t 분포는 df > 1 이어야 E|e|가 유한하다")
+        # 1 < df <= 2: 평균 크기는 유한하지만 분산이 발산하므로 표본 RMSE는 안정적으로 수렴하지 않는다
         if df <= 2:
             return math.inf
+        # df > 2에서 비율 = sqrt(E e^2) / E|e|
         e_abs = 2 * math.sqrt(df) * math.exp(math.lgamma((df + 1) / 2) - math.lgamma(df / 2)) / (math.sqrt(math.pi) * (df - 1))
         return math.sqrt(df / (df - 2)) / e_abs
     raise ValueError(dist)

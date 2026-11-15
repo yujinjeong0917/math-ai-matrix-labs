@@ -2,6 +2,10 @@
 
 표준 라이브러리만 쓴다. 단위는 '10개 묶음', 비용은 묶음당 가상 배송비(예시용)다.
 금지 조합은 간선을 아예 만들지 않아서(None) 표현한다.
+
+입력: 창고 공급량 SUPPLY, 지역 주문량 DEMAND, 배송비 COST. 출력: 배송 계획과 총비용.
+대응(README 기대 출력): 가장 싼 창고에 전부 25(W2에 9묶음으로 용량 3 초과), 순서대로 탐욕 40,
+최소비용 흐름 34(전수 탐색도 34, 가능한 계획 63개), W2 용량 3~6에서 34, 32, 30, 28, 불가능한 경우 9묶음 중 8묶음.
 """
 from itertools import product
 
@@ -17,7 +21,10 @@ COST = {                                    # COST[창고][지역], None = 금�
 
 
 class MinCostFlow:
-    """연속 최단경로(Bellman-Ford) 방식의 최소비용 흐름."""
+    """연속 최단경로(Bellman-Ford) 방식의 최소비용 흐름.
+
+    간선은 [도착, 남은 용량, 비용, 반대 간선의 위치]. 반대 간선(용량 0, 비용 -c)이 잔여 그래프를 이룬다.
+    """
 
     def __init__(self, n):
         self.n = n
@@ -25,17 +32,20 @@ class MinCostFlow:
 
     def add_edge(self, u, v, cap, cost):
         self.graph[u].append([v, cap, cost, len(self.graph[v])])
+        # 되돌림 간선: 이미 보낸 흐름을 취소할 수 있게 하는 역방향(비용 부호 반대)
         self.graph[v].append([u, 0, -cost, len(self.graph[u]) - 1])
         return (u, len(self.graph[u]) - 1)
 
     def flow_on(self, ref):
         u, i = ref
+        # 간선에 실린 흐름 = 역방향 간선의 남은 용량(처음 0에서 늘어난 만큼)
         v, cap, cost, rev = self.graph[u][i]
         return self.graph[v][rev][1]
 
     def run(self, s, t, want):
         flow = cost_total = 0
         while flow < want:
+            # Bellman-Ford: 잔여 그래프에 음수 비용 간선이 있어 다익스트라 대신 쓴다. None은 도달 불가
             dist = [None] * self.n
             dist[s] = 0
             prev = [None] * self.n
@@ -51,8 +61,9 @@ class MinCostFlow:
                             changed = True
                 if not changed:
                     break
-            if dist[t] is None:
+            if dist[t] is None:   # 더 보낼 경로가 없다 -> 총 흐름이 want보다 작게 끝난다(불가능 판정의 근거)
                 break
+            # 경로 위 가장 좁은 용량만큼 한 번에 보낸다
             push = want - flow
             v = t
             while v != s:
@@ -74,6 +85,7 @@ def solve_transport(supply, demand, cost):
     """반환: dict(feasible, shipped, flow, cost, plan). plan[(창고,지역)] = 묶음 수."""
     ws, rs = list(supply), list(demand)
     n = 2 + len(ws) + len(rs)
+    # 노드 번호: 0 출발, 1.. 창고, 그다음 지역, 마지막 도착
     s, t = 0, n - 1
     g = MinCostFlow(n)
     for i, w in enumerate(ws):
@@ -82,12 +94,13 @@ def solve_transport(supply, demand, cost):
     for i, w in enumerate(ws):
         for j, r in enumerate(rs):
             if cost[w][r] is not None:
-                refs[(w, r)] = g.add_edge(1 + i, 1 + len(ws) + j, min(supply[w], demand[r]), cost[w][r])
+                refs[(w, r)] = g.add_edge(1 + i, 1 + len(ws) + j, min(supply[w], demand[r]), cost[w][r])   # 간선 용량 상한은 둘 중 작은 값
     for j, r in enumerate(rs):
         g.add_edge(1 + len(ws) + j, t, demand[r], 0)
     want = sum(demand.values())
     flow, total = g.run(s, t, want)
     plan = {k: g.flow_on(v) for k, v in refs.items() if g.flow_on(v) > 0}
+    # 가능 = 주문 전부를 보냈는가(공급이 주문보다 커도 금지 조합 때문에 못 보낼 수 있다)
     return {"feasible": flow == want, "shipped": flow, "cost": total, "plan": plan}
 
 
@@ -119,6 +132,7 @@ def _compositions(total, parts):
 
 def brute_force(supply, demand, cost):
     """지역마다 창고별 몫을 모두 나눠 보는 전수 탐색(대조용). 반환: (최소비용, 최적 해 수, 가능한 계획 수)."""
+    # 지역마다 "각 창고에서 몇 묶음"을 나누는 모든 방법(합이 주문량)을 만들고 지역들의 곱집합을 센다
     ws, rs = list(supply), list(demand)
     per_region = [list(_compositions(demand[r], len(ws))) for r in rs]
     best, n_best, n_ok = None, 0, 0
@@ -139,6 +153,7 @@ def nearest_only(supply, demand, cost):
     """각 지역이 용량을 무시하고 가장 싼 창고에 전부 주문한다(깨지는 장면)."""
     plan = {}
     for r in demand:
+        # 용량을 보지 않고 지역별 최저가 창고를 고른다: W2가 A, B, C 모두 최저라 9묶음이 몰린다
         w = min((w for w in supply if cost[w][r] is not None), key=lambda w: cost[w][r])
         plan[(w, r)] = demand[r]
     load = {w: sum(q for (ww, _), q in plan.items() if ww == w) for w in supply}
@@ -147,6 +162,7 @@ def nearest_only(supply, demand, cost):
 
 def greedy_in_order(supply, demand, cost):
     """지역 A, B, C 순서로 남은 용량 안에서 가장 싼 창고부터 채운다."""
+    # A, B, C 순서에 결과가 좌우된다(앞 지역이 싼 용량을 먼저 소진). 최적(34)이 아닌 40이 나오는 이유
     left = dict(supply)
     plan = {}
     for r in demand:
@@ -176,6 +192,7 @@ def main():
         s = dict(SUPPLY, W2=cap)
         print(" ", cap, solve_transport(s, DEMAND, COST)["cost"])
     print("금지 조합 때문에 불가능한 경우:")
+    # C로 갈 수 있는 창고를 W3 하나(공급 1)로 줄이면 C 주문 2묶음 중 1묶음이 남아 총 8묶음만 간다
     s = {"W1": 4, "W2": 3, "W3": 1}
     cost2 = {w: dict(COST[w]) for w in COST}
     cost2["W1"]["C"] = None

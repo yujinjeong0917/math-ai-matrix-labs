@@ -35,6 +35,7 @@ def test_hand_embed_row():
     t = h["model.embed_tokens.weight"]
     assert meta == {"format": "pt"} and n == 9368
     assert t["dtype"] == "BF16" and t["shape"] == [152064, 3584]
+    # 어휘 152,064 x hidden 3,584 = 544,997,376개. BF16은 2바이트라 구간 길이 1,089,994,752
     assert 152064 * 3584 == 544_997_376
     assert t["data_offsets"] == [0, 544_997_376 * 2] == [0, 1_089_994_752]
 
@@ -55,8 +56,10 @@ def test_shards_add_up_and_match_index_and_api():
         nbytes += st["bytes"]
         names |= set(s["header"])
     idx = H.load_json(H.BASE / "model.safetensors.index.json")
+    # 네 파일의 텐서 이름 합집합이 index.json의 weight_map과 같다(339개)
     assert len(names) == 339 == len(idx["weight_map"]) and set(idx["weight_map"]) == names
     assert nbytes == idx["metadata"]["total_size"] == 15_231_233_024
+    # 헤더로 센 숫자 개수 = Hub API가 알려 준 safetensors 총 파라미터 수(저장소에 적어 둔 값). BF16이라 바이트 = 개수 x 2
     assert params == src["api_safetensors_total"] == 7_615_616_512 == nbytes // 2
 
 
@@ -93,6 +96,7 @@ def test_front_matter_rejects_unclosed(tmp_path):
 def test_config_readings_and_diff():
     b, i = H.load_json(H.BASE / "config.json"), H.load_json(H.INST / "config.json")
     r = H.config_readings(b)
+    # hidden 3584 / 헤드 28 = 128, 질의 헤드 28 / 키·값 헤드 4 = 7
     assert r["head_dim"] == 3584 // 28 == 128 and r["q_heads_per_kv_head"] == 7 and r["tied"] is False
     d = H.dict_diff(b, i)
     assert d["eos_token_id"] == [151643, 151645]
@@ -104,7 +108,9 @@ def test_vocab_rows_exceed_tokenizer():
     tc = H.load_sources()["tokenizer_json_counts"]
     assert tc["vocab"] + tc["added_tokens"] == tc["total"] == 151665
     st = H.special_tokens(H.load_json(H.BASE / "tokenizer_config.json"))
+    # 특수 토큰 번호 중 최댓값이 마지막 번호. 번호는 0부터라 개수 - 1
     assert max(st["table"]) == 151664 == tc["total"] - 1    # 번호는 0부터라 마지막 번호 = 개수 - 1
+    # 임베딩 행이 토크나이저 토큰보다 399개 많다(쓰이지 않는 행)
     assert H.load_json(H.BASE / "config.json")["vocab_size"] - tc["total"] == 399
 
 
@@ -133,6 +139,7 @@ def test_default_system_from_template_text():
 def test_stdlib_render_matches_jinja2_fixture():
     fx = H.load_fixture()
     msgs = H.load_json(H.DATA / "messages_example.json")["cases"]
+    # 2 모델 x 2 메시지 구성 x 2(add_generation_prompt 유무) = 8가지
     assert len(fx["cases"]) == 8
     for key, case in fx["cases"].items():
         model, name, agp = key.split("|")
@@ -191,9 +198,11 @@ def test_write_and_read_toy(tmp_path):
     p = tmp_path / "toy.safetensors"
     n = H.write_safetensors(p, {"w": ("F16", [2, 2], [0.5, -1.0, 0.1, 2.0])}, {"format": "pt"})
     raw = p.read_bytes()
+    # 앞 8바이트의 값이 헤더 길이이고 8의 배수, 헤더는 '{'로 시작
     assert struct.unpack("<Q", raw[:8])[0] == n and n % 8 == 0 and raw[8:9] == b"{"
     _, h, meta = H.read_safetensors_header(p)
     assert h["w"] == {"dtype": "F16", "shape": [2, 2], "data_offsets": [0, 8]} and meta == {"format": "pt"}
+    # F16은 0.1을 정확히 표현하지 못해 저장 후 읽은 값은 F16으로 반올림한 값과 같아야 한다
     assert H.read_tensor(p, "w") == [0.5, -1.0, struct.unpack("<e", struct.pack("<e", 0.1))[0], 2.0]
     assert len(raw) == 8 + n + 8
 

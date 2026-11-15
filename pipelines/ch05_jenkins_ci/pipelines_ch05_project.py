@@ -17,8 +17,10 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).parent
+# 커밋 시각을 고정해 커밋 SHA가 실행마다 같게 한다(작성자·메시지·내용이 같을 때)
 FIXED_DATE = "2026-10-01T09:00:00+09:00"
 
+# 아래 *_PY 문자열 상수들은 실습 저장소 안에 파일로 쓰이는 파이썬 소스다. 이 파일의 코드가 아니라 데이터로 다룬다
 DATA_PY = '''"""고객 이탈 합성 데이터(4장 생성기 복사)."""
 import numpy as np
 
@@ -187,6 +189,7 @@ reg.mkdir(parents=True, exist_ok=True)
 print("pushed", sha[:12])
 '''
 
+# 기준 커밋에 들어가는 파일 목록: 경로 -> 내용. Jenkinsfile은 make_repo에서 더해진다
 BASE_FILES = {
     "churn/__init__.py": "",
     "churn/data.py": DATA_PY,
@@ -205,6 +208,7 @@ BASE_FILES = {
 
 # ---------- 두 브랜치의 변경 ----------
 
+# 두 브랜치는 서로 다른 파일만 고쳐 git 텍스트 충돌은 없지만, 합치면 B의 새 특성이 A가 지운 열 이름을 읽어 실패한다(의미 충돌 시나리오)
 def branch_a_rename(files):
     """브랜치 A: 요금 열 이름을 단위가 드러나게 바꾼다. A가 볼 수 있는 모든 사용처를 함께 고친다."""
     out = dict(files)
@@ -234,6 +238,7 @@ def branch_b_feature(files):
     out = dict(files)
     out["churn/extra.py"] = EXTRA_PY
     out["tests/test_extra.py"] = TEST_EXTRA_PY
+    # train.py의 EXTRA 목록에 새 특성을 넣는 한 곳만 바꾼다. replace 대상 문자열이 어긋나면 조용히 바뀌지 않으니 템플릿을 고치면 이 줄도 확인
     out["churn/train.py"] = out["churn/train.py"].replace(
         "from churn.model import fit_logistic, predict_proba\n\nEXTRA = []",
         "from churn.extra import fee_per_call\nfrom churn.model import fit_logistic, predict_proba\n\nEXTRA = [fee_per_call]",
@@ -244,11 +249,13 @@ def branch_b_feature(files):
 # ---------- git 도우미 ----------
 
 def git_env(date=FIXED_DATE):
+    # 현재 셸의 GIT_ 변수가 섞이지 않게 제거하고 필요한 값만 다시 넣는다
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     env.update({
         "GIT_AUTHOR_NAME": "lab", "GIT_AUTHOR_EMAIL": "lab@example.com",
         "GIT_COMMITTER_NAME": "lab", "GIT_COMMITTER_EMAIL": "lab@example.com",
         "GIT_AUTHOR_DATE": date, "GIT_COMMITTER_DATE": date,
+        # 사용자의 전역 git 설정을 읽지 않게 해서 어느 컴퓨터에서나 같은 결과가 나오게 한다
         "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1",
     })
     return env
@@ -283,6 +290,7 @@ def make_repo(path, jenkinsfile=None):
     """main 브랜치에 기준 커밋 하나가 있는 저장소를 만든다. 돌려주는 값: 기준 커밋 SHA."""
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
+    # 기본 브랜치 이름을 main으로 지정
     git(path, "init", "-q", "-b", "main")
     files = dict(BASE_FILES)
     files["Jenkinsfile"] = jenkinsfile if jenkinsfile is not None else jenkinsfile_text()
@@ -309,6 +317,7 @@ def make_two_branches(path, jenkinsfile=None):
 def merge_both(path):
     """main에 A, 그다음 B를 합친다. 돌려주는 값: (합친 커밋 SHA, B를 합칠 때 텍스트 충돌 파일 목록)."""
     git(path, "merge", "-q", "--no-ff", "-m", "merge A", "branch-a", date="2026-10-03T09:00:00+09:00")
+    # check=False: 충돌로 실패해도 예외 없이 충돌 파일 목록(--diff-filter=U)을 읽는다
     r = git(path, "merge", "-q", "--no-ff", "-m", "merge B", "branch-b", check=False, date="2026-10-03T09:05:00+09:00")
     conflicts = [ln for ln in git(path, "diff", "--name-only", "--diff-filter=U").stdout.split() if ln]
     if r.returncode != 0 and not conflicts:
@@ -321,6 +330,7 @@ def load_modules(tmpdir, files=None):
     import importlib
     import sys
 
+    # churn 모듈을 가져올 때 같은 이름의 앞선 import가 남아 있지 않게, sys.modules의 churn* 항목을 지우고 다시 가져온다
     write_files(tmpdir, files or BASE_FILES)
     sys.path.insert(0, str(tmpdir))
     try:

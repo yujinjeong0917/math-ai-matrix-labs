@@ -27,6 +27,7 @@ N_WEIGHTS = 7
 
 def baird_star():
     """(Phi, next_state, R). Phi: (6, 7) 특징 행렬, next_state[s]: 목표 정책에서의 다음 상태."""
+    # 식: V(s) = φ(s)ᵀ w = Phi[s] @ w  (선형 근사). 코드 상태 i = 0..4는 V = w0 + 2 w_{i+1}, 상태 5는 V = 2 w0 + w6
     Phi = np.zeros((N_STATES, N_WEIGHTS))
     for i in range(5):
         Phi[i, 0] = 1.0          # 모두가 함께 쓰는 손잡이 w0
@@ -56,6 +57,7 @@ def behavior_chain():
 
 
 def stationary_distribution(P):
+    # 식: d P = d (정상 분포). 행 벡터 d는 Pᵀ의 고윳값 1에 대한 고유벡터이므로 Pᵀ를 분해하고 합이 1이 되게 정규화한다
     vals, vecs = np.linalg.eig(P.T)
     k = int(np.argmin(np.abs(vals - 1.0)))
     d = np.real(vecs[:, k])
@@ -74,6 +76,8 @@ def expected_update_matrix(Phi, P, D, gamma):
     """A = Phi^T D (I - gamma P) Phi. 기대 갱신은 w <- w + alpha (b - A w)."""
     D = np.diag(D) if np.ndim(D) == 1 else D
     n = Phi.shape[0]
+    # 식: A = Φᵀ D (I - γP) Φ. 전이 하나의 기대 갱신 E[δ φ(s)] = b - A w 에서 w에 곱해지는 행렬(b = Φᵀ D R, 보상 0이면 0)
+    # D는 갱신이 일어나는 상태 분포. 목표 정책의 P와 D가 어긋나면(오프폴리시) A의 고윳값 실수부가 음수가 될 수 있다
     return Phi.T @ D @ (np.eye(n) - gamma * P) @ Phi
 
 
@@ -85,6 +89,7 @@ def residual_update_matrix(Phi, P, D, gamma, mix=1.0):
     mix = 0이면 expected_update_matrix와 같다.
     """
     D = np.diag(D) if np.ndim(D) == 1 else D
+    # 식: M = (Φ - mix γPΦ)ᵀ D (Φ - γPΦ). 오른쪽 (Φ - γPΦ) w 가 TD 오차 δ(보상 0), 왼쪽이 갱신 방향 φ(s) - mix γ φ(s')
     left = Phi - mix * gamma * (P @ Phi)
     right = Phi - gamma * (P @ Phi)
     return left.T @ D @ right
@@ -93,6 +98,7 @@ def residual_update_matrix(Phi, P, D, gamma, mix=1.0):
 def bellman_error(w, Phi, P, R, gamma, D):
     """평균 제곱 벨만 잔차의 제곱근. sqrt(sum_s D_s (R_s + gamma (P Phi w)_s - (Phi w)_s)^2)."""
     v = Phi @ w
+    # 식: δ_s = R_s + γ Σ_s' P[s,s'] V(s') - V(s)  (상태 s의 기대 벨만 잔차). 아래 제곱합이 D 가중 평균 제곱 오차
     r = R + gamma * (P @ v) - v
     return float(np.sqrt(np.sum(np.asarray(D) * r ** 2)))
 
@@ -135,11 +141,14 @@ def residual_sweeps(Phi, next_state, R, w0, alpha, gamma, sweeps, mix=0.0, epoch
     def step(w):
         if epoch:
             v = Phi @ w
+            # 식: δ_s = R_s + γ V(s') - V(s). 모든 상태의 δ를 같은 w로 먼저 구한다(epoch-wise, 판 동안 w 고정)
             delta = R + gamma * v[next_state] - v                  # (n,)
             direction = Phi - mix * gamma * Phi[next_state]       # (n, d): 각 행 = phi(s) - mix gamma phi(s')
+            # 식: w <- w + α Σ_s δ_s (φ(s) - mix γ φ(s')). mix=0이면 반경사 TD(0)의 Σ δ_s φ(s)
             return w + alpha * direction.T @ delta
         for s in range(n):
             s2 = next_state[s]
+            # 같은 식을 전이마다 적용. 앞 전이가 고친 w가 다음 전이의 δ에 바로 들어간다(위 epoch 판과 다른 점)
             delta = R[s] + gamma * Phi[s2] @ w - Phi[s] @ w
             w = w + alpha * delta * (Phi[s] - mix * gamma * Phi[s2])
         return w
@@ -157,6 +166,7 @@ def semi_gradient_td_sweeps(Phi, next_state, R, w0, alpha, gamma, sweeps, epoch=
 def regression_sweeps(Phi, v_target, w0, alpha, sweeps, record_every=None, blowup=1e8):
     """부트스트랩 없음: 목표를 참값 v_target으로 고정한 회귀. dw = alpha * sum_s (v_target_s - phi(s)w) phi(s)."""
     def step(w):
+        # 식: w <- w + α Σ_s (v*_s - φ(s)ᵀw) φ(s). 목표 v*가 w에 의존하지 않아(γ V(s') 항 없음) 부트스트랩이 아니다
         return w + alpha * Phi.T @ (v_target - Phi @ w)
     return _run_sweeps(step, w0, sweeps, record_every, blowup)
 
@@ -181,8 +191,12 @@ def td0_trajectory(Phi, P_behavior, P_target, R, w0, alpha, gamma, steps, seed,
     norms = []
     for t in range(steps):
         s2 = int(rng.choice(n, p=P_behavior[s]))
+        # 식: ρ = π(s'|s) / b(s'|s) = P_target[s,s'] / P_behavior[s,s']. 목표 정책이 가지 않는 전이는 ρ=0이라 갱신이 멈춘다.
+        # 이 문제(목표 정책은 늘 상태 6, 행동 정책은 칸마다 1/6)에서는 s'=6일 때 ρ = 1 / (1/6) = 6
         rho = P_target[s, s2] / P_behavior[s, s2] if off_policy else 1.0
+        # 식: δ = R_s + γ φ(s')ᵀ w - φ(s)ᵀ w
         delta = R[s] + gamma * Phi[s2] @ w - Phi[s] @ w
+        # 식: w <- w + α ρ δ φ(s)  (반경사: 목표 γφ(s')ᵀw는 상수로 보고 φ(s) 방향으로만 고침). 걸음마다 바로 갱신
         w = w + alpha * rho * delta * Phi[s]
         if log is not None and t < log_steps:
             log.append({"seed": seed, "episode": 0, "t": t, "s": s + 1, "a": f"to_{s2 + 1}",

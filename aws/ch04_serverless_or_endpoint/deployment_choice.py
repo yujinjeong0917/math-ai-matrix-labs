@@ -2,6 +2,11 @@
 
 이 규칙은 AWS 공식 문서를 2026-10-22에 확인한 학습용 스냅샷이다.
 실제 배포 전에는 리전·계정 할당량·최신 문서를 다시 확인한다.
+
+재는 것: (1) 월 요청 수·실제 처리 시간·상시 가동 시간 비율, (2) 동시에 20건이 오면 각 요청의 완료 시간,
+(3) 실행 제약(GPU, 메모리, 이미지 크기, 처리 시간, 페이로드, 시작 시간)으로 후보 서비스를 거르기.
+입력: traffic_profile.json (null은 아직 측정 안 함). 출력: 후보(candidates)와 탈락 사유(blocked) JSON.
+측정값이 하나라도 비면 HOLD. README 검증 숫자: 600건/월, 5시간, 720시간, 완료 30·300·600초와 120·390·690초.
 """
 
 from __future__ import annotations
@@ -17,9 +22,11 @@ REQUIRED_MEASUREMENTS = ("runtime_memory_gb", "gpu_required", "container_image_g
 
 
 def traffic_summary(profile: dict[str, Any]) -> dict[str, float]:
+    """월 요청 수, 실제 일한 시간, 상시 켜 둘 때의 시간과 그 비율(단위: 건, 시간)을 구한다."""
     monthly_requests = profile["requests_per_day"] * profile["days_per_month"]
     active_seconds = monthly_requests * profile["seconds_per_request"]
     always_on_seconds = profile["days_per_month"] * 24 * 60 * 60
+    # 20건/일 x 30일 = 600건, 600 x 30초 = 18,000초 = 5시간. 상시 가동은 720시간이라 비율 144배
     return {
         "monthly_requests": monthly_requests,
         "active_seconds": active_seconds,
@@ -35,16 +42,20 @@ def simultaneous_completion_times(
     """모든 요청이 동시에 왔을 때 각 요청의 완료 시간을 구한다."""
     if requests < 1 or seconds_per_request <= 0 or startup_seconds < 0 or workers < 1:
         raise ValueError("요청 수·건당 시간·시작 시간·작업자 수를 확인하세요")
+    # i번째 요청은 ceil(i/작업자 수)번째 차례에 끝난다. 시작 시간은 한 번만 더한다.
+    # 작업자 1명: 1번째 30초, 10번째 300초, 20번째 600초. 시작 90초를 더하면 120, 390, 690초
     return [startup_seconds + math.ceil(i / workers) * seconds_per_request for i in range(1, requests + 1)]
 
 
 def _add(result: dict[str, Any], name: str, reasons: list[str], note: str) -> None:
+    # 탈락 사유가 하나라도 있으면 blocked, 없으면 candidates(후보 이유 대신 벤치마크할 점을 적는다)
     bucket = "blocked" if reasons else "candidates"
     result[bucket][name] = reasons if reasons else [note]
 
 
 def evaluate(profile: dict[str, Any]) -> dict[str, Any]:
     """실행 가능성과 대기 방식으로 후보를 거른다. 최종 구매 결정은 아니다."""
+    # 측정값이 비어 있으면 판단하지 않고 HOLD로 돌려보낸다(측정 없이 추천하지 않기 위함)
     missing = [key for key in REQUIRED_MEASUREMENTS if profile.get(key) is None]
     result: dict[str, Any] = {
         "missing_measurements": missing,
@@ -65,6 +76,8 @@ def evaluate(profile: dict[str, Any]) -> dict[str, Any]:
     wait = profile["acceptable_wait_seconds"]
     startup = profile["startup_seconds"]
 
+    # 아래 숫자 한도(Lambda 10GiB·15분, Serverless 6GB·60초·4MB, Async 1시간·1GB)는 2026-10-22 문서 스냅샷 값.
+    # 계정 할당량이나 최신 문서와 다를 수 있어 확인 필요
     lambda_reasons = []
     if gpu:
         lambda_reasons.append("GPU 선택지가 없음")
@@ -88,6 +101,7 @@ def evaluate(profile: dict[str, Any]) -> dict[str, Any]:
         serverless_reasons.append("실행 메모리가 6GB 상한을 넘음")
     if image > 10:
         serverless_reasons.append("컨테이너 이미지가 10GB 상한을 넘음")
+    # 60초 "미만" 조건이라 60초 정확히도 탈락(>=)
     if duration >= 60:
         serverless_reasons.append("요청 처리가 60초 미만 조건에 들지 않음")
     if payload > 4:
@@ -101,10 +115,11 @@ def evaluate(profile: dict[str, Any]) -> dict[str, Any]:
         async_reasons.append("사용자가 나중에 답을 받는 흐름을 허용하지 않음")
     if duration > 3600:
         async_reasons.append("한 번 처리가 1시간을 넘음")
-    if payload > 1024:
+    if payload > 1024:  # payload_mb 단위. 1024 MB = 1GB
         async_reasons.append("입력이 1GB를 넘음")
     _add(result, "sagemaker_async", async_reasons, "GPU 가능·0까지 축소, 첫 요청 대기를 실측")
 
+    # 실시간 엔드포인트는 여기서 걸러내는 제약이 없어 항상 후보. 유휴 비용은 벤치마크로 따진다
     _add(result, "sagemaker_realtime", [], "낮고 일정한 응답 시간과 유휴 비용을 함께 벤치마크")
     return result
 

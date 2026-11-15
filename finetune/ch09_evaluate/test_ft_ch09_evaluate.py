@@ -22,11 +22,13 @@ RES = HERE / "results" / "ch09.json"
 
 
 @pytest.fixture(scope="module")
+# experiments.py가 만든 results/ch09.json. 저장소에 있는 파일을 읽는다
 def res():
     return json.loads(RES.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
+# 가상 모델 세 개(base, ft_best, ft_last)의 답을 채점표(score_sheet)로 만들어 40건에 채점한다
 def graded():
     bank, sheet, inq = M.load("answer_bank.json"), M.load("score_sheet.json")["models"], M.load_inquiries()
     return {n: M.grade_model(bank, sheet[n], inq) for n in ("base", "ft_best", "ft_last")}
@@ -89,6 +91,7 @@ def test_eval_set_is_ch01_and_types_match_base_failures(graded):
 
 def test_early_stopping_hand_trace_matches_hf_rule():
     t = M.early_stopping_trace([1.20, 0.80, 0.62, 0.58, 0.61, 0.69], patience=2)
+    # 손 추적: 0.58이 best, 그 뒤 0.61, 0.69가 연달아 안 좋아져 카운터 1, 2에서 patience 2에 닿아 멈춘다. best는 인덱스 3
     assert [r["counter"] for r in t["rows"]] == [0, 0, 0, 0, 1, 2]
     assert t["stop"] == 5 and t["best"] == 3
     # 첫 평가는 best가 없어 카운터 0
@@ -97,6 +100,7 @@ def test_early_stopping_hand_trace_matches_hf_rule():
 
 def test_threshold_counts_small_gain_as_no_gain_but_updates_best():
     t = M.early_stopping_trace([1.20, 0.80, 0.62, 0.58, 0.61, 0.69], patience=2, threshold=0.05)
+    # threshold 0.05이면 0.04 개선은 개선으로 안 세 카운터가 오른다. 그래도 best는 0.58로 갱신된다(콜백과 Trainer의 판정이 다르다)
     # 0.62 -> 0.58은 0.04만 좋아져 카운터가 오르지만, best는 0.58로 바뀐다
     assert [r["counter"] for r in t["rows"]] == [0, 0, 0, 1, 2]
     assert t["rows"][3]["best_after"] == 0.58 and t["stop"] == 4
@@ -104,6 +108,7 @@ def test_threshold_counts_small_gain_as_no_gain_but_updates_best():
 
 def test_early_stopping_equal_value_is_not_improvement():
     t = M.early_stopping_trace([1.0, 1.0, 1.0], patience=2)
+    # 값이 같으면 개선이 아니라 카운터가 오른다
     assert [r["counter"] for r in t["rows"]] == [0, 1, 2]
 
 
@@ -116,6 +121,7 @@ def test_curves_deterministic_and_shape(res):
     sc = M.load("scenario.json")
     a = M.make_curves(sc["curve"], 34)
     b = M.make_curves(sc["curve"], 34)
+    # 같은 설정이면 곡선이 같고, 6에폭 x 34스텝 = 204스텝, 평가는 eval_every 17스텝마다 12번(scenario.json 기준)
     assert a == b and a["total_steps"] == 204 and len(a["evals"]) == 12
     c = res["e1_curves"]
     assert c["best_step"] == 85 and c["stop_step"] == 119 and c["every_epoch"]["best_step"] == 68
@@ -128,6 +134,7 @@ def test_curves_deterministic_and_shape(res):
 
 def test_curve_formula_by_hand():
     p = M.load("scenario.json")["curve"]["val"]
+    # 검증 손실 식의 손계산: s=85에서 바닥 + 진폭 x e^(-85/26) + 상승 계수 x (85 - 60)^2 (rise_start 60은 scenario.json의 값, 0.000045는 상승 계수)
     v = 0.70 + 1.20 * math.exp(-85 / 26) + 0.000045 * 25 ** 2
     assert abs(M.val_loss(85, p) - v) < 1e-12
 
@@ -139,6 +146,7 @@ def test_compose_and_matches():
     ref = M.reference(bank, "Q14")
     pv = M.compose(bank, "Q14", "ref_punct")
     assert ref.startswith(bank["greeting"]) and ref.endswith(bank["signoff"])
+    # 띄어쓰기와 문장부호만 다른 답: 정확 일치는 실패, 정규화 일치는 성공
     assert pv != ref and not M.exact_match(pv, ref) and M.normalized_match(pv, ref)
     alt = M.compose(bank, "Q01", "alt")
     assert not M.normalized_match(alt, M.reference(bank, "Q01"))
@@ -146,9 +154,11 @@ def test_compose_and_matches():
 
 def test_rule_check_paraphrase_and_tone_blind_spots():
     bank = M.load("answer_bank.json")
+    # 정상 답인데 필수 글자(must)가 없어 규칙 검사가 떨어뜨리는 경우(잘못된 탈락)
     # 같은 뜻인데 낱말이 달라 규칙이 떨어뜨린다
     assert M.rule_check(bank, "Q01", M.compose(bank, "Q01", "alt"))["통과"] is False
     assert M.rule_check(bank, "Q04", M.compose(bank, "Q04", "alt"))["통과"] is False
+    # 규칙 검사는 말투와 질문 적합성을 보지 않아 통과시킨다(잘못된 통과)
     # 차가운 말투, 엉뚱한 답은 규칙이 못 본다
     assert M.rule_check(bank, "Q24", M.compose(bank, "Q24", "curt"))["통과"] is True
     assert M.rule_check(bank, "Q40", M.compose(bank, "Q40", "offtopic"))["통과"] is True
@@ -176,6 +186,7 @@ def test_policy_values_match_ch01_policies():
         assert v in text
 
 
+# 추론(R) 문항의 정답 값을 손으로 다시 계산해 답 은행의 값과 같은 논리인지 확인
 def test_r_answers_by_arithmetic():
     total = 28000 - 3000
     assert total < 30000 and total + 3000 == 28000          # Q35
@@ -194,6 +205,7 @@ def test_scoring_summary(res, graded):
     assert s["ft_best"]["rule_false_fail"] == ["Q01", "Q04"]
     assert s["base"]["rule"] == 10 and len(s["base"]["rule_false_pass"]) == 8
     b = s["ft_best"]
+    # ft_best: 사람 통과 29 중 규칙도 통과 27, 규칙만 통과 3, 사람만 통과 2, 둘 다 탈락 8. 정밀도 27/30, 재현율 27/29
     assert (b["tp"], b["fp"], b["fn"], b["tn"]) == (27, 3, 2, 8)
     assert b["precision"] == round(27 / 30, 4) and b["recall"] == round(27 / 29, 4)
     for n in s:
@@ -219,6 +231,7 @@ def test_probe(res):
 def test_toy_judge_orders(res):
     j = res["e7_judge"]
     assert j["x_wins_x_first"] == 39 and j["x_wins_y_first"] == 28 and j["inconsistent"] == 11
+    # 순서에 따라 x가 이긴 수의 차이는 사람 판정이 같은(동점) 문항 수와 같다(장난감 채점자의 설계상 항등식)
     assert j["x_wins_x_first"] - j["x_wins_y_first"] == j["human_ties"]
 
 
@@ -226,11 +239,13 @@ def test_toy_judge_orders(res):
 
 def test_sign_test_hand_values():
     assert M.sign_test(0, 2) == 0.5
+    # 엇갈린 4개 중 적은 쪽이 1 이하인 경우 = C(4,0) + C(4,1) = 5가지 / 2^4. 양측이라 x2
     assert M.sign_test(1, 3) == 2 * (1 + 4) / 16
     assert M.sign_test(4, 1) == 2 * (1 + 5) / 32
     assert M.copies_needed(1, 3) == 5 and M.copies_needed(4, 1) == 3
 
 
+# 동전 던지기의 모든 경우를 직접 세어 닫힌 식과 같은지 확인(n이 작을 때)
 def test_sign_test_equals_brute_force():
     # 엇갈린 n개를 동전으로 던진 모든 경우를 세어 같은지 본다
     for a, b in [(1, 3), (4, 1), (2, 7), (0, 5)]:
@@ -240,6 +255,7 @@ def test_sign_test_equals_brute_force():
         assert abs(M.sign_test(a, b) - min(1.0, cnt / 2 ** n)) < 1e-12
 
 
+# NumPy percentile과 1e-12 안에서 같다(NumPy가 설치된 환경에서만 이 테스트 파일이 돈다)
 def test_percentile_matches_numpy():
     rng = random.Random(1)
     xs = sorted(rng.random() for _ in range(997))

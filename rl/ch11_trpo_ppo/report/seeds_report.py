@@ -13,10 +13,12 @@ HERE = Path(__file__).parent
 DATA = json.loads((HERE.parent / "results" / "ch11.json").read_text())
 SHOW = ["pg_lr10", "pg_lr100", "pg_lr1000", "trpo", "trpo_no_linesearch", "ppo_eps0.1", "ppo_eps0.2", "ppo_eps0.3",
         "ppo_noclip", "ppo_eps0.2_adam0.2", "ppo_noclip_adam0.2"]
+# SVG 그림 크기와 여백(픽셀 단위 viewBox)
 W, H, PAD = 320, 150, 26
 
 
 def path(ys, n):
+    # x: 갱신 번호를 가로로 고르게, y: 리턴 0~200을 위아래로(SVG는 y가 아래로 증가하므로 H - ... 로 뒤집는다)
     pts = [f"{PAD + (W - 2 * PAD) * i / (n - 1):.1f},{H - PAD - (H - 2 * PAD) * y / 200:.1f}" for i, y in enumerate(ys)]
     return "M" + " L".join(pts)
 
@@ -28,6 +30,7 @@ def mean(cols):
 def svg(curves):
     n = len(curves[0])
     thin = "".join(f'<path d="{path(c, n)}" class="seed"/>' for c in curves)
+    # 시드 0~4와 5~9의 평균 곡선: 같은 설정인데도 두 묶음이 다르게 보일 수 있음을 보이는 그림(E4)
     a, b = mean(curves[:5]), mean(curves[5:])
     axes = (f'<line x1="{PAD}" y1="{H - PAD}" x2="{W - PAD}" y2="{H - PAD}" class="ax"/>'
             f'<line x1="{PAD}" y1="{PAD}" x2="{PAD}" y2="{H - PAD}" class="ax"/>'

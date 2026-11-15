@@ -16,6 +16,9 @@
 5. 쓴 시간(분): 아래 TIME 가정으로 센 값
 
 모든 확률·시간은 가정이다. q(사람 확인 간선 하나를 제대로 옮길 확률)는 0.7~0.95로 바꿔 가며 잰다.
+
+입력: 방식 이름, q, 난수 생성기(rng), 이벤트·항목 목록(기본은 productivity_ch06_registry의 값). 출력: run_week가 위 다섯 값과 보조 값을 담은 dict.
+시간 단위는 분, 날짜는 1~7(1주)과 21(넘길 때). 이 파일은 productivity_ch06_graph를 거쳐 NumPy가 필요하다.
 """
 
 import random
@@ -49,7 +52,7 @@ SHEET_CHECKS = {
 
 
 def automation_alive(name, day, regime):
-    """그날 자동화 name이 값을 옮기나."""
+    """그날 자동화 name이 값을 옮기나. day는 1~7이고, 만든 사람이 빠지는 날(6) 이후와 속성 이름이 바뀐 날(4) 이후의 조건을 본다."""
     if regime not in ("auto_naive", "auto_guarded"):
         return False
     if name in ("A1", "A3") and day >= CREATOR_LEAVES_DAY:
@@ -59,12 +62,16 @@ def automation_alive(name, day, regime):
     return True
 
 
+# 자동화 간선(항목, 받는 곳) -> 자동화 이름. A1(checks 알림)은 값을 옮기는 간선이 아니라 점검 칸을 보는 자동화라 여기에 없다
 AUTO_EDGE = {("I03", "sheets:metrics!threshold"): "A3", ("I08", "notion:Tasks/T17-T18"): "A2"}
 
 
 def run_week(regime, q, rng, events=None, items=None):
+    """1주 이벤트를 regime 방식으로 처리하고 7일째 저녁의 불일치 등 관찰값을 센다(한 번 돌린 결과).
+    상태는 (항목, 위치) -> 몇 번째 변경까지 반영됐나이고, truth[항목]이 최신 번호다. 값이 truth와 다르면 어긋난 칸이다."""
     items = R.ITEMS if items is None else items
     events = R.EVENTS if events is None else events
+    # 모든 위치가 변경 0번째(초기 값)에서 출발한다. 변경이 일어날 때마다 truth만 1씩 오르고, 전파가 성공한 위치만 따라 오른다
     state = {(k, loc): 0 for k in items for loc in R.locations(k, items)}
     truth = {k: 0 for k in items}
     minutes = 0
@@ -73,19 +80,22 @@ def run_week(regime, q, rng, events=None, items=None):
     blocked = 0
 
     def try_edge(k, a, b, m, day):
+        """간선 하나가 이번에 값을 옮겼나. ref는 항상, auto는 자동화가 살아 있을 때만, human은 확률 q로 성공하고 시간이 든다."""
         nonlocal minutes
         if m == "ref":
             return True
         if m == "auto" and regime in ("auto_naive", "auto_guarded"):
             name = AUTO_EDGE[(k, b)]
             ok = automation_alive(name, day, regime)
-            if not ok:
+            if not ok:  # 오류 없이 조용히 실패하는 경우를 따로 센다(알아채지 못한 실패)
                 silent.append((day, name, "값을 옮기지 못함"))
             return ok
+        # 사람 확인 간선(또는 자동화가 없는 방식의 auto 간선)은 손으로 옮긴다
         minutes += TIME["copy"]
         return rng.random() < q
 
     def propagate(k, start, day):
+        """start에서 출발해 간선을 따라 값을 퍼뜨린다. 한 간선이 실패하면 그 아래는 더 이어지지 않는다(스택 기반 깊이 우선)."""
         out = {}
         for a, b, m in items[k]["edges"]:
             out.setdefault(a, []).append((b, m))
@@ -103,6 +113,7 @@ def run_week(regime, q, rng, events=None, items=None):
         src = items[k]["src"]
         rec = {"id": e["id"], "day": day, "tool_edited": loc.split(":")[0], "via_script": e.get("via_script", False),
                "logged": False, "auto_logged": False}
+        # 규칙이 없으면 간선 구조를 쓰지 않고 위치마다 따로 옮긴다: 먼저 이 값이 또 어디 있는지 찾는 시간이 들고, 위치마다 확률 q로 성공
         if regime == "none":
             state[(k, loc)] = truth[k]
             minutes += TIME["find_copies"]
@@ -113,6 +124,7 @@ def run_week(regime, q, rng, events=None, items=None):
                         state[(k, other)] = truth[k]
         else:
             start = loc
+            # 참조처에서 고쳤는데 권한이 없으면(registry 방식은 권한 표가 없어 막지 못함) 댓글로 원본 담당에게 요청해 원본에서 고친다
             if loc != src and regime != "registry" and not R.can_edit(who, loc):
                 blocked += 1
                 minutes += TIME["comment"] + TIME["copy"]
@@ -138,6 +150,7 @@ def run_week(regime, q, rng, events=None, items=None):
         log.append(rec)
 
     # ---- 끝났을 때 세기(7일째 저녁)
+    # (항목, 위치) 중 최신 번호가 아닌 칸. 아래 checklist는 그중 3장 넘기기 체크리스트가 보는 곳, hidden은 점검 칸도 체크리스트도 못 보는 곳이다
     wrong = [(k, loc) for (k, loc), v in state.items() if v != truth[k]]
     checklist = [w for w in wrong if CHECKLIST(w[1])]
     checks = {name: state[(k, loc)] == truth[k] for name, (k, loc) in SHEET_CHECKS.items()}
@@ -159,6 +172,8 @@ def run_week(regime, q, rng, events=None, items=None):
     for rec in log:
         if rec["logged"] or rec["auto_logged"] or rec.get("named_version"):
             continue
+        # 추적 불가 판정 규칙: 변경 로그·자동화 기록·이름 붙인 버전이 하나라도 있으면 추적 가능(위 continue).
+        # 기록이 없으면, 21일째(REVIEW_DAY)에 도구의 변경 이력이 아직 남아 있고(HISTORY_DAYS) 누가 "왜"를 댓글로 남긴 경우(확률 P_NOTE = 0.3)에만 추적 가능하고 그 밖은 추적 불가
         keep = HISTORY_DAYS[rec["tool_edited"]]
         hist_ok = keep is None or REVIEW_DAY - rec["day"] <= keep
         if rec["tool_edited"] == "sheets" and rec["via_script"]:
@@ -179,6 +194,7 @@ def run_week(regime, q, rng, events=None, items=None):
 
 
 def summarize(regime, q, n_seeds=1000, seed0=0):
+    """시드 seed0부터 n_seeds번 run_week를 돌려 관찰값의 평균(소수 둘째 자리)과 "한 칸이라도 어긋난 비율"을 구한다."""
     keys = ["mismatch", "checklist_unmet", "checks_false", "hidden_mismatch", "untraceable", "minutes",
             "setup_minutes", "blocked_by_permission", "silent_automation_failures", "dead_automation_unknown"]
     acc = {k: 0.0 for k in keys}
@@ -242,6 +258,7 @@ def sync_day(rng, delay_min, rate_per_hour, hours=8, one_way=False):
     for side in ("notion", "sheets"):
         if one_way and side == "sheets":
             continue
+        # 편집은 도착률 rate_per_hour(시간당)의 푸아송 과정: 사이 간격이 지수분포(단위 분이라 시간당 값을 60으로 나눈다)
         t = rng.expovariate(rate_per_hour / 60.0)
         while t <= hours * 60:
             edits.append((t, side))
@@ -267,6 +284,7 @@ def sync_day(rng, delay_min, rate_per_hour, hours=8, one_way=False):
 
 
 def two_way_sync(delay_min, rate_per_hour=1.0, days=2000, seed=0, one_way=False):
+    """sync_day를 days일 반복해 덮인 편집 비율과 두 칸이 갈라진 날의 비율을 모은다."""
     rng = random.Random(seed)
     n_e = n_c = n_d = 0
     for _ in range(days):
@@ -293,8 +311,10 @@ def webhook_order(gap_sec, max_delay_sec=300, n=20000, seed=0):
     stale = 0
     for _ in range(n):
         d1, d2 = rng.uniform(0, D), rng.uniform(0, D)
+        # 첫 편집은 d1초, 둘째는 gap_sec + d2초 뒤에 도착한다. 둘째가 먼저 도착하면 첫 편집이 나중에 덮어쓴다
         if gap_sec + d2 < d1:  # 두 번째 편집이 먼저 도착
             stale += 1
+    # 이론식: d1 - d2 > gap인 사각형(변 D)의 삼각형 넓이 / D^2 = (D - gap)^2 / (2 D^2)
     theory = (D - gap_sec) ** 2 / (2 * D * D) if gap_sec < D else 0.0
     return {"gap_sec": gap_sec, "stale_rate_arrival_order": round(stale / n, 4), "theory": round(theory, 4),
             "stale_rate_refetch": 0.0}

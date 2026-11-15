@@ -39,6 +39,7 @@ import pipelines_ch09_model_np as M  # noqa: E402
 torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch09.json"
+# 30개 배치, 배치당 500행
 N_BATCH, BATCH = 30, 500
 STEP_SHIFT, STEP_COEF = 0.04, 0.04
 GATE_ACC = 0.78  # 7장 Jenkinsfile Gate의 --min-accuracy
@@ -48,6 +49,7 @@ def r4(x):
     return round(float(x), 4)
 
 
+# 배치 t에서 요금 평균이 STEP_SHIFT x t 표준편차 오르고 요금 계수가 1.6 - STEP_COEF x t로 줄어드는 서서히 변하는 세상. 입력(P(X))과 관계(P(Y|X))가 함께 바뀐다
 def drift_batches(n_batches=N_BATCH, seed0=100, step_shift=STEP_SHIFT, step_coef=STEP_COEF):
     return [D.make_table(seed0 + t, BATCH, fee_shift=step_shift * t, fee_coef=1.6 - step_coef * t)
             for t in range(n_batches)]
@@ -66,11 +68,13 @@ def e0():
     grid = np.arange(3, 9.0)
     f_ref = [float(np.mean(ref <= g)) for g in grid]
     f_cur = [float(np.mean(cur <= g)) for g in grid]
+    # 콜모고로프 꼬리의 첫 항 2exp(-2 lam^2)을 alpha/K(=0.05/6)에 맞춘 근사 lam. 열 6개에 대한 본페로니 문턱
     lam = math.sqrt(-0.5 * math.log(0.05 / 6 / 2))
     return {
         "ref": ref.tolist(), "cur": cur.tolist(), "grid": grid.tolist(), "F_ref": f_ref, "F_cur": f_cur,
         "gap": [r4(abs(a - b)) for a, b in zip(f_ref, f_cur)], "D": r4(K.ks_stat(ref, cur)),
         "crit_first_term": {"alpha": 0.05, "K": 6, "lambda": r4(lam), "n": 2000, "m": 500,
+                            # D 문턱 = lam x sqrt((n+m)/(nm)), 기준 2000행 vs 배치 500행
                             "D_crit": r4(lam * math.sqrt((2000 + 500) / (2000 * 500)))},
     }
 

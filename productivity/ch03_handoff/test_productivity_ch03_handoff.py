@@ -23,7 +23,7 @@ def test_first_screen_hand_numbers():
     assert M.completeness([(s, "기본") for s in M.SCREENS]) == (4, 11)
     # 4x4 = 16칸 = 그린 11 + '이 화면엔 없음' 5
     assert len(M.NOT_HERE_REASON) == 5 and 11 + 5 == 16
-    # 2배로 내보낸 이미지에서 16px 여백은 32픽셀로 잰다
+    # 2배로 내보낸 이미지에서 16px 여백은 32픽셀로 잰다(배율 설명이 없으면 그대로 32로 읽어 틀린다)
     assert M.package_image(False)["info"]["measure:cell.pad"] == 32
 
 
@@ -37,6 +37,7 @@ def test_questions_are_twenty_with_unique_ids():
 def test_image_handoff_scores():
     s0 = M.score(M.package_image(False))
     s1 = M.score(M.package_image(True))
+    # 순서: (정답, 잘못 읽음, 추측이 맞음, 추측이 틀림). 20문항 = 3 + 3 + 2 + 12이고, 배율 설명 하나가 3문항을 misread에서 correct로 옮긴다
     assert (s0["correct"], s0["misread"], s0["guessed_right"], s0["guessed_wrong"]) == (3, 3, 2, 12)
     assert (s1["correct"], s1["misread"], s1["guessed_right"], s1["guessed_wrong"]) == (6, 0, 2, 12)
     # 배율 설명이 고치는 건 치수 3개뿐이고, 상태·동작 질문은 그대로 비어 있다
@@ -45,10 +46,11 @@ def test_image_handoff_scores():
 
 def test_devmode_on_default_only_file_still_misses_states():
     s = M.score(M.package_devmode(False))
+    # Dev Mode는 값을 정확히 보여 주지만 그려진 것만 보인다: 24px 아이콘 프레임이 터치 영역으로 읽혀 틀린다(진짜 44)
     assert s["misread"] == 1 and s["per_question"]["Q20"] == "misread"  # 그린 24px을 그대로 보여 준다
     for qid in ["Q09", "Q10", "Q11", "Q12", "Q13", "Q14", "Q15", "Q16", "Q17"]:
         assert s["per_question"][qid] == "guessed_wrong"
-    assert s["unanswerable"] == 11
+    assert s["unanswerable"] == 11  # 답할 수 있는 9문항(치수 3, 글자 2, 색 2, 문구 1, 터치 영역 1) 외 나머지
 
 
 def test_checklist_packages_answer_all():
@@ -67,13 +69,14 @@ def test_rounds_rule_one_per_blocked_screen():
 def test_graph_checks_known_cases():
     full = C.check_bfs(M.required_cells(), M.FULL_TRANSITIONS, M.START, _err)
     assert full == {"unreachable": [], "dead_ends": [], "error_without_recovery": []}
-    # 다시 시도 연결만 빼면 목록 오류가 돌아갈 길 없는 상태가 된다
+    # 목록 오류에서 나가는 연결을 모두 빼면, 목록 오류 노드가 막다른 길이자 돌아갈 길 없는 오류 상태가 된다
     edges = [e for e in M.FULL_TRANSITIONS if not (e[0] == ("S01", "오류"))]
     r = C.check_bfs(M.required_cells(), edges, M.START, _err)
     assert ("S01", "오류") in r["dead_ends"] and ("S01", "오류") in r["error_without_recovery"]
 
 
 def test_bfs_and_warshall_agree_random():
+    # 무작위 그래프 300개에서 BFS 구현과 워셜 폐포 구현의 결과가 완전히 같아야 한다(dict.fromkeys로 노드 중복 제거, 순서 유지)
     rng = random.Random(7)
     for _ in range(300):
         ns = list(dict.fromkeys((f"S{i}", rng.choice(["기본", "오류"])) for i in range(rng.randint(2, 9))))
@@ -91,21 +94,23 @@ def test_completeness_two_ways():
 
 
 def test_contrast_reference_values():
+    # WCAG 정의상 흰색 대 검정은 (1 + 0.05) / (0 + 0.05) = 21:1, 같은 색끼리는 1:1
     assert abs(C.contrast_ratio("#000000", "#FFFFFF") - 21.0) < 1e-9
     assert abs(C.contrast_ratio("#777777", "#777777") - 1.0) < 1e-12
     # 대칭: 글자와 배경을 바꿔도 같다
     assert C.contrast_ratio("#6B7280", "#FFFFFF") == C.contrast_ratio("#FFFFFF", "#6B7280")
-    assert round(C.contrast_ratio("#6B7280", "#FFFFFF"), 2) == 4.83
+    assert round(C.contrast_ratio("#6B7280", "#FFFFFF"), 2) == 4.83  # 4.5 이상이라 일반 글자 기준 합격
 
 
 def test_token_vs_hex():
+    # 색 값을 복사해 쓰면 버튼 7곳을 모두 고쳐야 하고, 토큰 이름으로 쓰면 값 한 곳만 바꾸면 7곳이 따라온다
     assert M.token_change_follow(False) == {"follow": 0, "stale": 7, "edit_locations": 7}
     assert M.token_change_follow(True) == {"follow": 7, "stale": 0, "edit_locations": 1}
 
 
 def test_results_file_matches_model():
     p = HERE / "results" / "ch03.json"
-    if not p.exists():
+    if not p.exists():  # 결과 파일이 없으면 검사 없이 통과한다
         return
     res = json.loads(p.read_text())
     for pkg in M.all_packages():

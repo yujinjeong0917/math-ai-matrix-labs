@@ -13,12 +13,13 @@ HERE = Path(__file__).parent
 
 
 def bar(x, xmax, width=40):
+    """x/xmax 비율만큼의 # 막대. 0에 가까운 값도 최소 한 칸은 그린다."""
     return "#" * max(1, round(width * x / xmax))
 
 
 def main():
     d = json.loads((HERE / "results" / "ch04.json").read_text())
-    frames = d["E9"]["frames"]
+    frames = d["E9"]["frames"]  # experiments.py의 e9_frames: frames[0] = 처음 정책, frames[i] = i번째 개선 뒤 정책
     print("정책 반복 (6x6, gamma 0.95, 처음엔 모두 위)")
     for i in range(0, len(frames), 4):
         chunk = frames[i:i + 4]
@@ -37,7 +38,7 @@ def main():
     for k, v in ms.items():
         print(f"  {k:<6} {bar(v['backups'], mx)} {v['backups']:,} (반복 {v['iterations']})")
     print()
-    norms = d["E2"]["1.0"]["norm"]
+    norms = d["E2"]["1.0"]["norm"]  # gamma = 1 에서 가치 반복 k번째 ||V_k||. 종료 칸이 없으면 k에 비례해 커진다
     print("gamma = 1, 종료 칸 없음: ||V_k||")
     for k in (1, 10, 20, 30, 40, 50):
         print(f"  k={k:>2} {bar(norms[k - 1], norms[-1])} {norms[k - 1]:.0f}")

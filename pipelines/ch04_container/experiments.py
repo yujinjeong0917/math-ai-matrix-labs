@@ -40,8 +40,10 @@ HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch04.json"
 JOB = str(HERE / "pipelines_ch04_job.py")
 DAY1, DAY2 = "2024-06-10", "2024-06-20"
+# 맨 위 패키지 하나만 고정한 목록. 의존 패키지 버전은 풀 때마다(날짜에 따라) 달라질 수 있다
 TOP_ONLY = "onnxruntime==1.18.0\n"
 NUMPY_ENVS = ["2.3.3", "2.0.0", "1.26.4", "1.26.0"]
+# 격리 환경 안에서 실행할 짧은 코드: onnxruntime을 import해 보고 성공 여부·버전을 JSON 한 줄로 출력
 IMPORT_PROBE = (
     "import json, numpy\n"
     "try:\n"
@@ -63,6 +65,7 @@ def e1_two_days():
     top1, top2 = envs.compile_at(TOP_ONLY, DAY1), envs.compile_at(TOP_ONLY, DAY2)
     lock1 = envs.lock_text(top1)
     lock_on_day2 = envs.compile_at(lock1, DAY2)
+    # 범위 지정(>=)만 한 목록이 날짜별로 어떤 numpy 버전으로 풀리는지 확인
     loose = {d: envs.compile_at("numpy>=1.24\n", d)["numpy"] for d in (DAY1, DAY2, "2026-10-08")}
     rows = {}
     for name, pins in (("top_only_day1", top1), ("top_only_day2", top2), ("lock_day2", lock_on_day2)):
@@ -88,6 +91,7 @@ def e2_e3_numpy_envs():
         p_lab = np.load(d / "p_lab.npy")
         res["lab"] = {k: v for k, v in lab.items() if k != "w"} | {"env": envs.env_snapshot()}
         for v in NUMPY_ENVS:
+            # 첫 실행은 내려받기·환경 준비 시간이 섞이므로 버리고, 다음 실행 시간만 기록한다
             envs.run_isolated({"numpy": v}, ["-c", "import numpy"])  # 첫 실행: 내려받기·환경 준비
             code, so, se, sec = envs.run_isolated({"numpy": v}, [JOB, "--load", str(d / "model"), "--dump-p", str(d / f"p_{v}.npy"), "--dump-table", str(d / f"t_{v}.npz"), "--train-on", str(d / "t_lab.npz")])
             if code != 0:
@@ -98,6 +102,7 @@ def e2_e3_numpy_envs():
             ta, tb = np.load(d / "t_lab.npz"), np.load(d / f"t_{v}.npz")
             col_diff = {k: {"n_cells": int(np.sum(ta[k] != tb[k])), "max_abs": float(np.max(np.abs(ta[k] - tb[k])))}
                         for k in ta.files if not np.array_equal(ta[k], tb[k])}
+            # 현재 환경(lab)의 가중치와 각 NumPy 버전 환경의 가중치 최대 절대 차이
             w_diff = float(np.max(np.abs(np.array(o["w"]) - np.array(lab["w"]))))
             res[v] = {k: val for k, val in o.items() if k != "w"} | {
                 "seconds_second_run": sec,
@@ -116,6 +121,7 @@ def e2_e3_numpy_envs():
 def e4_install_cost(reps=3):
     lock = (HERE / "requirements.lock").read_text()
     pins = envs.parse_pins(lock)
+    # requirements.lock의 해시 줄은 리눅스용 배포판 기준이라, 이 컴퓨터에서는 버전 목록만 쓴다
     plain = envs.lock_text(pins)  # 해시 줄은 플랫폼(리눅스)용이라, 이 컴퓨터에서는 같은 버전 목록만 쓴다
     rows = {}
     for mode in ("warm_cache", "no_cache"):
@@ -140,6 +146,7 @@ def e4_install_cost(reps=3):
 
 # ---------- 시뮬레이션 공용 ----------
 
+# GOOD: 의존성 설치를 소스 복사보다 앞에 둔 Dockerfile. BAD: 소스(COPY .)를 먼저 복사하는 Dockerfile
 GOOD = (HERE / "Dockerfile").read_text()
 BAD = """FROM python:3.12-slim@sha256:05cda9777409a9c3ffddd94a4c476b79f0769a0b4857f0c7ed9226b6800b0d6f
 WORKDIR /app
@@ -169,6 +176,7 @@ def base_images():
     return day1, day2
 
 
+# 소스 파일만 10번 고쳤을 때 의존성 설치(RUN)가 다시 도는 횟수를 센다. Docker 데몬 없이 pipelines_ch04_image.py 시뮬레이터로 계산
 def e5_layer_order(n_edits=10):
     day1, _ = base_images()
     out = {}
@@ -201,6 +209,7 @@ def e6_two_days(resolved_day1, resolved_day2):
     b1, b2 = base_images()
     loose_req = TOP_ONLY.encode()
     lock_bytes = envs.lock_text(resolved_day1).encode()  # 첫날 풀어 둔 전체 목록
+    # (베이스 참조, 의존성 목록 종류, epoch) 조합 5가지. 다이제스트가 이틀 뒤에도 같은지 비교
     variants = {
         "tag_loose": ("python:3.12-slim", "loose", None),
         "digest_loose": ("python:3.12-slim@" + b1["digest"], "loose", None),
@@ -223,6 +232,7 @@ def e6_two_days(resolved_day1, resolved_day2):
         builds, cache = {}, {}
         for day, base_now, pins, now in (("day1", b1, resolved_day1, 1_718_000_000), ("day2", b2, resolved_day2, 1_718_864_000)):
             reg = img.Registry()
+            # 같은 태그에 첫날 이미지를 먼저 넣고 그날 이미지로 덮어쓴다. 태그는 마지막에 올린 것을 가리킨다
             reg.push("python:3.12-slim", b1)  # 첫날 이미지는 다이제스트로 계속 받을 수 있다
             reg.push("python:3.12-slim", base_now)  # 태그는 그날의 이미지를 가리킨다
             ctx = {req_name: (loose_req if kind == "loose" else lock_bytes, now - 3600),

@@ -27,8 +27,11 @@ def z_worse(m1, m2):
     if n1 == 0 or n2 == 0:
         return 0.0
     e1, e2 = m1["errors"] / n1, m2["errors"] / n2
+    # 합동 비율 p = (e1 + e2)/(n1 + n2). 두 버전 오류율이 같다는 귀무가설 아래의 표준오차에 쓴다
     pool = (m1["errors"] + m2["errors"]) / (n1 + n2)
+    # 표준오차 = sqrt(p(1-p)(1/n1 + 1/n2)). z = (오류율2 - 오류율1)/표준오차(v2가 나쁠 때 양수)
     se = math.sqrt(pool * (1.0 - pool) * (1.0 / n1 + 1.0 / n2))
+    # 오류가 한쪽도 없거나 전부인 경우 표준오차가 0. v2가 더 나쁘면 무한대, 아니면 0
     if se == 0.0:
         return 0.0 if e2 <= e1 else math.inf
     return (e2 - e1) / se
@@ -39,6 +42,7 @@ def worst_segment(m1, m2, min_seg_n):
     best = (None, 0.0)
     for seg, s2 in m2.get("seg", {}).items():
         s1 = m1.get("seg", {}).get(seg)
+        # 구간 표본이 너무 작으면 우연한 튐이 커서 비교하지 않는다
         if s1 is None or s2["n"] < min_seg_n or s1["n"] < min_seg_n:
             continue
         z = z_worse(s1, s2)
@@ -61,5 +65,6 @@ def decide(metrics_v1, metrics_v2, guard):
     return "hold"
 
 
+# z = 3: 한쪽 검정 기준(모형의 선택). 값을 낮추면 되돌리는 일이 잦아지고 오탐이 늘어난다(E4에서 비교)
 DEFAULT_GUARD = {"z": 3.0, "min_n": 50, "promote_n": 400, "segments": True, "min_seg_n": 20}
 OVERALL_ONLY = dict(DEFAULT_GUARD, segments=False)

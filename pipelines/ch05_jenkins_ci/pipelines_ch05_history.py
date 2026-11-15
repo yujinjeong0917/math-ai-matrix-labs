@@ -27,10 +27,12 @@ from pathlib import Path
 from pipelines_ch05_project import git
 
 COLUMNS = ["tenure_months", "monthly_fee", "support_calls", "usage_hours", "age", "discount_rate"]
+# 4명 x 10일 x 하루 2커밋 = 80커밋, 설정 파일은 30줄
 N_DEVS, DAYS, COMMITS_PER_DAY, N_CONFIG = 4, 10, 2, 30
 RENAME_DAYS = (3, 7)
 
 
+# 커밋 시각을 날짜·개발자·순번으로 고정해 같은 시드면 같은 이력이 나오게 한다
 def _date(day, dev=0, k=0, minute=0):
     return f"2026-09-{day:02d}T{9 + dev:02d}:{10 * k + minute:02d}:00+09:00"
 
@@ -47,6 +49,7 @@ def read_state(wt):
     uses = {}
     for fid in registry:
         p = wt / "features" / f"{fid}.txt"
+        # features/<id>.txt는 "uses: <열>" 한 줄. 파일이 없으면 None
         uses[fid] = p.read_text().split(":", 1)[1].strip() if p.exists() else None
     return schema, registry, uses
 
@@ -57,6 +60,7 @@ def gate(wt):
     return sorted(f for f in registry if uses[f] is None or uses[f] not in schema)
 
 
+# git 충돌 표시(<<<<<<<, =======, >>>>>>>) 한 덩어리를 찾는 정규식. 그룹 1 = 내 쪽(ours), 그룹 2 = 상대 쪽
 CONFLICT = re.compile(r"^<<<<<<< [^\n]*\n(.*?)^=======\n(.*?)^>>>>>>> [^\n]*\n", re.S | re.M)
 
 
@@ -65,6 +69,7 @@ def resolve(path):
     text = Path(path).read_text()
     blocks = CONFLICT.findall(text)
     n = (len(blocks), sum(len(a.splitlines()) + len(b.splitlines()) for a, b in blocks))
+    # registry는 양쪽 줄을 모두 남기고(중복 제외), 그 밖의 파일은 내 쪽만 남긴다(모형의 선택. 실제 팀의 충돌 해결과 다를 수 있다)
     if Path(path).name == "registry.txt":
         def keep(m):
             ours = m.group(1).splitlines(keepends=True)
@@ -94,6 +99,7 @@ def setup(root):
     wts = []
     for d in range(N_DEVS):
         wt = root / f"dev{d}"
+        # main 저장소에서 개발자별 작업 폴더(dev0~dev3)를 브랜치와 함께 만든다
         git(main, "worktree", "add", "-q", "-b", f"dev{d}", str(wt), "main")
         wts.append(wt)
     return main, wts
@@ -103,6 +109,7 @@ def simulate(interval, seed=0, branch_ci=False, root=None):
     """interval: 며칠마다 합치나(1, 2, 5, 10). 돌려주는 값: 충돌·깨진 특성·발견까지 걸린 날 등."""
     rng = random.Random(seed)
     main, wts = setup(root)
+    # 발견까지 걸린 날 계산용 기록: 특성이 만들어진 날, 열 이름이 바뀐 날
     births = {}           # 특성 id -> 만든 날
     rename_day = {}       # 바뀐 옛 열 이름 -> 바뀐 날
     renamed_to = {}       # 옛 이름 -> 새 이름
@@ -115,6 +122,7 @@ def simulate(interval, seed=0, branch_ci=False, root=None):
         for d, wt in enumerate(wts):
             for k in range(COMMITS_PER_DAY):
                 schema = (wt / "schema.txt").read_text().split()
+                # dev0만 3일째, 7일째 첫 커밋에서 열 이름을 바꾸고, 자기 작업 사본의 사용처를 함께 고친다. 다른 개발자 브랜치의 새 특성은 모른다
                 if d == 0 and day in RENAME_DAYS and k == 0:
                     old = rng.choice([c for c in schema if not c.endswith("_v2")])
                     new = old + "_v2"
@@ -124,6 +132,7 @@ def simulate(interval, seed=0, branch_ci=False, root=None):
                             p.write_text(f"uses: {new}\n")
                     rename_day[old], renamed_to[old] = day, new
                     msg = f"rename {old} -> {new}"
+                # 나머지 커밋: 절반은 새 특성 추가, 절반은 설정 한 줄 수정(시드 고정 동전 던지기)
                 elif rng.random() < 0.5:
                     counter += 1
                     fid = f"f_{d}_{counter:03d}"
@@ -145,6 +154,7 @@ def simulate(interval, seed=0, branch_ci=False, root=None):
                 if branch_ci:
                     stats["branch_ci_runs"] += 1
                     stats["branch_ci_red"] += bool(gate(wt))
+        # 합치는 날: dev0->dev3 순서로 main을 내 브랜치에 merge -> 검사 -> main으로 fast-forward
         if day % interval == 0:
             stats["integrations"] += 1
             stats["unsynced_changes_at_merge"].append(sum(since_sync))
@@ -168,14 +178,17 @@ def simulate(interval, seed=0, branch_ci=False, root=None):
                     for fid in broken:
                         p = wt / "features" / f"{fid}.txt"
                         col = p.read_text().split(":", 1)[1].strip()
+                        # 이름이 여러 번 바뀐 열은 최신 이름까지 따라간다
                         while col not in schema and col in renamed_to:
                             col = renamed_to[col]
                         old = p.read_text().split(":", 1)[1].strip()
+                        # 깨진 상태가 시작된 날 = 특성이 생긴 날과 열 이름이 바뀐 날 중 더 늦은 날. 발견 지연 = 합친 날 - 그 날
                         born = max(births.get(fid, 1), rename_day.get(old, 1))
                         stats["delays"].append(day - born)
                         p.write_text(f"uses: {col}\n")
                     _commit(wt, f"fix {len(broken)} features after merge", _date(day, d, 5, 3))
                     stats["fix_commits"] += 1
+                # fast-forward만 허용: 다른 개발자가 먼저 main을 갱신했다면 실패한다(순서대로 합치므로 정상 흐름에서는 발생하지 않는 구조)
                 git(main, "merge", "-q", "--ff-only", f"dev{d}")
             stats["main_red_after_round"] += bool(gate(main))
             for d, wt in enumerate(wts):

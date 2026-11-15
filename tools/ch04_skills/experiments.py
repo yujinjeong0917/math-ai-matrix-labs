@@ -35,6 +35,7 @@ def f(x, nd=4):
 
 
 def e0_hand():
+    """첫 화면 손계산: 앞머리(목록 한 줄) 100토큰, 본문 2,000토큰 가정으로 N=1, 2, 5를 비교한다."""
     m, b = 100, 2000
     rows = []
     for n in (1, 2, 5):
@@ -46,6 +47,7 @@ def e0_hand():
 
 
 def e1_parse(skills):
+    """예시 스킬 6개를 파서로 읽고 두 규칙 묶음으로 검사한다. 대표로 weekly-inquiry-report의 칸을 자세히 낸다."""
     main = next(s for s in skills if s["name"] == "weekly-inquiry-report")
     line, cut = FM.listing_line(main["fm"])
     return {
@@ -59,6 +61,7 @@ def e1_parse(skills):
     }
 
 
+# 규칙을 어긴 앞머리 예. (사례 이름, SKILL.md 앞머리 글, 폴더 이름) 순서. 이름 불일치 사례는 폴더 이름을 일부러 다르게 준다.
 BAD = [
     ("대문자", "---\nname: PDF-Processing\ndescription: PDF를 다뤄요.\n---\n", "PDF-Processing"),
     ("하이픈으로 시작", "---\nname: -pdf\ndescription: PDF를 다뤄요.\n---\n", "-pdf"),
@@ -73,6 +76,7 @@ BAD = [
 
 
 def e2_bad():
+    """BAD의 각 사례가 어떤 규칙 오류를 내는지, 여는/닫는 --- 가 없을 때 파서 오류가 나는지 모은다."""
     rows = []
     for label, text, d in BAD:
         fm, _ = FM.parse(text)
@@ -91,6 +95,7 @@ def e2_bad():
 
 
 def e3_sizes(skills):
+    """스킬 파일별 근사 토큰 수. 앞머리(목록 한 줄), 본문, 딸린 파일을 따로 본다."""
     sz = B.sizes(skills)
     main = next(s for s in skills if s["name"] == "weekly-inquiry-report")
     return {"project_agents_md": B.project_tokens(), "skills": sz,
@@ -102,6 +107,7 @@ def e3_sizes(skills):
 
 
 def e4_week(skills):
+    """한 주 대화 15번의 지시문 토큰. 토큰 근사 규칙 세 가지로 바꿔 가며 절감률이 규칙에 민감한지 본다."""
     res = B.week(skills)
     by_rule = []
     for rule in B.load_rules():
@@ -117,6 +123,7 @@ def e4_week(skills):
 
 def e5_scale(skills):
     sz = B.sizes(skills)
+    # 스킬 한 개당 평균 목록 토큰(m)과 평균 본문+딸린 파일 토큰(b).
     m = F(sum(x["meta"] for x in sz), len(sz))
     b = F(sum(x["body"] + x["refs_total"] for x in sz), len(sz))
     ns = [1, 5, 10, 20, 50, 100]
@@ -131,11 +138,13 @@ def e5_scale(skills):
 
 
 def e6_round_trip(skills):
+    """읽을 때마다 호출이 늘어나는 비용. 같은 시나리오를 batch=False/True로, 캐싱 없음/있음(w, r 배율)으로 센다."""
     sz = B.sizes(skills)
     w = B.load_week()
     rt = w["round_trip"]
     out = []
     for sc in rt["scenarios"]:
+        # 시나리오의 대화 번호는 1부터라 리스트 인덱스로 쓰려면 1을 뺀다(off-by-one 주의).
         conv = w["conversations"][sc["conversation"] - 1]
         for batch in (False, True):
             r = B.round_trip(sz, B.project_tokens(), conv, sc["user_tokens"], rt["tool_call_tokens"],
@@ -152,6 +161,7 @@ def e6_round_trip(skills):
 
 
 def e7_one_file(skills):
+    """모든 스킬을 지침 파일 하나에 몰아 넣었을 때의 크기를 공급자 한도(Codex 바이트, Claude Code 권장 줄 수)와 비교한다."""
     vend = json.loads(B.VENDOR_FILE.read_text(encoding="utf-8"))
     text = B.all_in_one_file_text(skills)
     proj = B.PROJECT_FILE.read_text(encoding="utf-8")
@@ -165,12 +175,14 @@ def e7_one_file(skills):
 
 
 def e8_crosscheck(n_cases=300):
+    """무작위 스킬 묶음 300경우에서 전부 싣기의 하나씩 세기와 닫힌 식이 같은지, 글자당 토큰이 상수일 때 절감 비율이 그 상수와 무관한지 본다."""
     rng = random.Random(SEED)
     bad = 0
     for _ in range(n_cases):
         n = rng.randint(1, 60)
         ms = [rng.randint(30, 200) for _ in range(n)]
         bs = [rng.randint(100, 6000) for _ in range(n)]
+        # 대화에서 쓰는 스킬 하나(k=1).
         used = rng.randrange(n)
         loop_all = sum(mi + bi for mi, bi in zip(ms, bs))
         loop_st = sum(ms) + bs[used]
@@ -178,6 +190,7 @@ def e8_crosscheck(n_cases=300):
         closed_all = n * (m_avg + b_avg)
         if loop_all != closed_all:
             bad += 1
+        # 두 식이 같은 형태라 사실상 자명한 점검이다. 실질적인 대조는 위 loop_all과 closed_all.
         if loop_st != sum(ms) + bs[used]:
             bad += 1
         # 글자당 토큰이 상수 c 하나뿐이고 올림을 하지 않으면, 비율은 c와 상관없다
@@ -187,6 +200,7 @@ def e8_crosscheck(n_cases=300):
         for c in (F(1, 4), F(1, 2), F(1), F(2)):
             st = c * sum(chars_m) + c * chars_b[used]
             al = c * (sum(chars_m) + sum(chars_b))
+            # c가 분자와 분모에 똑같이 곱해져 약분된다. 올림을 쓰는 실제 규칙에서는 정확히 같지 않고 거의 같다(위 E4의 71.4%).
             ratios.add(st / al)
         if len(ratios) != 1:
             bad += 1

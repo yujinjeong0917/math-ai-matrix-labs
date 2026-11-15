@@ -16,6 +16,7 @@ HERE = Path(__file__).parent
 
 def test_first_screen_hand_numbers():
     # 가 2/20 = 10%, 나 3/25 = 12%, 다 2/25 = 8%, 라 6/20 = 30%, 마 5/20 = 25%
+    # (평균은 지점별 취소율의 단순 평균이라 예약 건수가 달라도 같은 가중치)
     rates = [c / n for _, n, c in DATA.HAND]
     assert [round(r, 2) for r in rates] == [0.10, 0.12, 0.08, 0.30, 0.25]
     assert round(sum(rates[:3]) / 3, 4) == 0.10  # (10 + 12 + 8) / 3
@@ -29,6 +30,7 @@ def test_closed_range_does_not_grow_on_append_but_open_range_does():
     opened = sh.add_formula("AVERAGE", "D2:D")
     sh.append_row(["라", 20, 6, 0.3])
     sh.append_row(["마", 20, 5, 0.25])
+    # 닫힌 범위 D2:D4는 맨 아래에 두 행을 붙여도 그대로라 라, 마를 놓치고 평균 10%, 열린 범위 D2:D는 모두 포함해 평균 17%
     assert closed[1].text() == "D2:D4"
     assert abs(sh.evaluate(closed) - 0.10) < 1e-12
     assert abs(sh.evaluate(opened) - 0.17) < 1e-12
@@ -37,7 +39,7 @@ def test_closed_range_does_not_grow_on_append_but_open_range_does():
 def test_insert_inside_range_grows_closed_range():
     sh = SH.Sheet(["b", "r"], [["가", 0.1], ["나", 0.12], ["다", 0.08]])
     f = sh.add_formula("AVERAGE", "B2:B4")
-    sh.insert_row(3, ["라", 0.3])
+    sh.insert_row(3, ["라", 0.3])  # 범위 안쪽(3행)에 끼우면 닫힌 범위도 늘어난다. 맨 아래에 붙이는 것과 다른 동작
     assert f[1].text() == "B2:B5"
 
 
@@ -45,18 +47,20 @@ def test_open_range_picks_up_typed_total_row():
     sh = SH.Sheet(["b", "n"], [["가", 20], ["나", 25]])
     f = sh.add_formula("SUM", "B2:B")
     sh.append_row(["합계", 45])
+    # 열린 범위가 사람이 쳐 넣은 합계 줄(45)까지 읽어 20 + 25 + 45 = 90으로 이중 계산된다
     assert sh.evaluate(f) == 90
 
 
 def test_save_capped_keeps_header_plus_65535_rows():
     lines = list(range(70_000))
     kept = SH.save_capped(lines)
+    # 70,000줄 중 머리글 1행 + 데이터 65,535행만 남고, 마지막으로 남은 값은 인덱스 65,534. 오류 없이 4,465줄이 사라진다
     assert len(kept) == 65_535 and kept[-1] == 65_534
 
 
 def test_auto_convert_and_plain_text():
     assert SH.auto_convert("2-03") == ("date", "2026-02-03")
-    assert SH.auto_convert("13-05") == ("text", "13-05")
+    assert SH.auto_convert("13-05") == ("text", "13-05")  # 달이 13이라 날짜로 안 바뀐다. 방 번호는 "층-번호" 꼴(1-01~3-04)이라 모두 달·날이 말이 되어 날짜로 오인된다
     assert SH.auto_convert("007") == ("number", 7)
     assert SH.paste_column(["2-03", "007"], plain_text=True) == [("text", "2-03"), ("text", "007")]
 

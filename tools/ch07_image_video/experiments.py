@@ -27,10 +27,13 @@ import tools_ch07_cost as C  # noqa: E402
 import tools_ch07_diffusion as D  # noqa: E402
 
 OUT = HERE / "results" / "ch07.json"
+# 보고서용 영상 길이(초).
 TARGET = 15
+# 마음에 들 확률 1/4은 측정값이 아니라 가정이다. E4에서 1/10, 1/2로 바꿔 민감도를 본다.
 P_DEFAULT = F(1, 4)
 K_DEFAULT = 4
 MC_SEED = 7
+# 몬테카를로 20만 번: 표본 오차를 줄이려고 크게 잡은 값(모형의 선택).
 MC_TRIALS = 200_000
 
 
@@ -42,6 +45,7 @@ def e0_hand():
     c, p = 2000, P_DEFAULT
     rows = []
     for i in range(1, K_DEFAULT + 1):
+        # i번째 뽑기에 도달할 확률. 1, 3/4, 9/16, 27/64.
         reach = (1 - p) ** (i - 1)            # i번째 뽑기를 하게 될 확률
         rows.append({"draw": i, "reach_prob": str(reach), "reach_prob_f": f(reach, 4),
                      "success_within": str(C.success_within(p, i)), "success_within_f": f(C.success_within(p, i), 4)})
@@ -49,6 +53,7 @@ def e0_hand():
     return {"cost_per_draw_krw": c, "p": str(p), "k": K_DEFAULT, "rows": rows,
             "expected_draws": str(ed), "expected_draws_f": f(ed, 4),
             "expected_cost_krw": f(ed * c, 1), "batch_cost_krw": c * K_DEFAULT,
+            # 제한 없이 뽑을 때 기대 횟수 1/p = 4(손계산 값을 그대로 적음).
             "unlimited_expected_draws": 4, "unlimited_expected_cost_krw": f(C.expected_cost_unlimited(c, p), 1),
             "k90": C.k_for_success(p, F(9, 10)),
             "success_k8": f(C.success_within(p, 8), 4), "success_k9": f(C.success_within(p, 9), 4)}
@@ -87,6 +92,7 @@ def e2_plans(prices):
     return rows
 
 
+# k90: 성공 확률이 90% 이상이 되는 최소 뽑기 수. k90_worst는 전부 실패했을 때 낼 최대 금액, k90_expected는 중간에 멈추는 것을 반영한 기대 금액.
 def e3_draws(prices, plans):
     rows = []
     for r in plans:
@@ -118,6 +124,7 @@ def e4_sensitivity(plans):
     return rows
 
 
+# 조각 영상 두 개를 한꺼번에 다시 뽑는 방식과 조각마다 따로 뽑는 방식의 비교. 따로 뽑는 쪽은 조각 사이 연결이 어색해질 수 있다는 점은 이 계산에 들어 있지 않다.
 def e5_pieces(prices):
     rows = []
     for model, res in (("veo-3.1-generate-preview", "720p"), ("veo-3.1-lite-generate-preview", "720p"),
@@ -144,6 +151,7 @@ def e6_crosscheck():
             cases += 1
             if C.expected_draws(p, k) != C.expected_draws_closed(p, k):
                 bad += 1
+    # 1.89달러는 Kling 3.0 소리 켬 720p 15초(0.126 x 15).
     c = F("1.89")
     mc_cost, mc_ok = C.simulate_sequential(c, P_DEFAULT, K_DEFAULT, MC_TRIALS, MC_SEED)
     return {"exact_cases": cases, "exact_mismatches": bad,
@@ -162,6 +170,7 @@ def e7_images(prices):
     return rows
 
 
+# x0 = 1, eps = -1, abar = 0.72로 정방향과 역방향이 서로 되돌려지는지 손계산과 맞춘다.
 def e8_diffusion():
     # 손계산: 개념 카드와 같은 0.9, 0.8
     keep, noise = D.two_step_noise_share(0.9, 0.8)
@@ -182,6 +191,7 @@ def e8_diffusion():
     # 한 번에 걷어내면
     one_step = [round(D.generate(s, 1), 4) for s in range(4)]
     # 단계 수
+    # 시드 0~1999 2000개로 비율을 잰다. 25%에 가까운 정도는 표본 오차가 있다.
     seeds = list(range(2000))
     steps = [{"T": T, "settled": D.settled_fraction(seeds, T), "liked": D.liked_fraction(seeds, T)}
              for T in (1, 2, 3, 5, 10, 20, 50)]

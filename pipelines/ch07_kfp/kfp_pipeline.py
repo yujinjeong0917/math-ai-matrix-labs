@@ -9,6 +9,7 @@ test_pipelines_ch07_kfp.py는 이 JSON과 우리 최소 구현(pipelines_ch07_da
 import하므로, 클러스터에서는 그 모듈이 든 이미지(4·5장에서 만든 이미지, 커밋 SHA 태그)를 base_image로 줘야 한다.
 """
 
+# kfp 2.17.0이 설치된 환경에서만 import된다. 이 저장소의 테스트는 이 파일을 import하지 않고 AST로 비교한다
 from kfp import compiler, dsl
 from kfp.dsl import Dataset, Input, Metrics, Model, Output
 

@@ -13,6 +13,9 @@ component 규칙 출처(확인일 2026-10-08):
 
 "override한 속성은 main component에서 같은 속성을 바꿔도 instance 값이 유지된다"는 동작은
 도움말에 직접 적혀 있지 않다. 이 모형은 그렇게 가정한다. [확인 필요]
+
+무엇을 재는가: 화면 4개를 "버튼을 사본으로 그린 핑퐁 파일"과 "main + instance로 만든 명세 파일"로 만들고, 규칙 검사(lint) 결과, 디자인 시스템 채택 점수,
+main을 고쳤을 때 새 값을 못 받는 곳(override, detach)을 센다. 입력은 코드 안의 화면 정의, 출력은 dict. 테스트의 기대값이다(장 본문 숫자와의 대응은 README로 확인 필요).
 """
 
 import copy
@@ -20,10 +23,11 @@ import copy
 import productivity_ch02_layout as L
 
 SCREEN_W, SCREEN_H = 375, 812
-PAD = 16  # 화면 좌우 여백(간격 토큰은 4의 배수)
+PAD = 16  # 화면 좌우 여백(간격 토큰은 4의 배수). lint의 spacing_off_token이 4의 배수 여부로 검사한다
 
 
 def text(name, s, sx="hug"):
+    """글자 레이어 노드. 크기 규칙 sx는 기본 hug(글자 폭에 맞춤), sy는 항상 hug."""
     return {"name": name, "kind": "text", "text": s, "sx": sx, "sy": "hug"}
 
 
@@ -37,6 +41,7 @@ def button_main():
 
 
 def instance(main, overrides=None, sx="hug", intent=None):
+    """main component를 가리키는 instance. overrides는 {"label.text": "..."} 꼴(레이어.속성 경로)이고 resolve가 펼칠 때 main 값 위에 얹는다."""
     return {"kind": "instance", "main": main, "overrides": dict(overrides or {}), "sx": sx, "intent": intent, "detached": False}
 
 
@@ -66,6 +71,7 @@ def spec_file(overrides_drift=False, detach_drift=False):
     - detach_drift: 예약 화면 버튼을 아이콘을 넣으려고 detach했다고 친다.
     """
     mains = {"Button/Primary": button_main()}
+    # cta: 화면 폭을 꽉 채우는(fill, stretch) 큰 버튼 instance. 라벨 문구만 override한다
     cta = lambda label, **kw: instance("Button/Primary", {"label.text": label, **kw}, sx="fill", intent="stretch")
     s1 = screen("S01_목록_기본", [topbar("스터디룸")] + [
         row(f"Row{i}", f"{i}번 방 · 4인", instance("Button/Primary")) for i in range(1, 5)])
@@ -74,7 +80,7 @@ def spec_file(overrides_drift=False, detach_drift=False):
     s4 = screen("S04_완료_기본", [topbar("완료"), text("msg", "예약이 끝났어요", sx="fill"),
                                  cta("목록으로", **({"fill": "#8B949E"} if overrides_drift else {}))])
     doc = {"mains": mains, "screens": [s1, s2, s3, s4]}
-    if detach_drift:
+    if detach_drift:  # S03의 마지막 자식(CTA 버튼)을 detach한다. 이후 main을 고쳐도 이 버튼은 안 바뀐다
         inst = doc["screens"][2]["children"][-1]
         detach(doc, inst)
     return doc
@@ -83,6 +89,7 @@ def spec_file(overrides_drift=False, detach_drift=False):
 def resolve(doc, node):
     """instance를 실제 레이어 트리로 펼친다. main 값 위에 override를 얹는다."""
     if node.get("kind") == "instance":
+        # main을 깊은 복사한 뒤 override를 얹는다: 같은 main에서 나온 instance끼리 서로 영향을 주지 않는다
         base = copy.deepcopy(doc["mains"][node["main"]])
         for path, v in node["overrides"].items():
             _set_path(base, path, v)
@@ -91,7 +98,7 @@ def resolve(doc, node):
             base["intent"] = node["intent"]
         base["origin"] = "instance"
         for n, _ in L.walk(base):
-            n["from_library"] = True
+            n["from_library"] = True  # adoption_score가 "라이브러리 출신 레이어"를 세는 표시
         return base
     out = {k: v for k, v in node.items() if k != "children"}
     if "children" in node:
@@ -100,6 +107,7 @@ def resolve(doc, node):
 
 
 def _set_path(tree, path, v):
+    """"레이어이름.속성" 경로로 값을 쓴다. 점이 없으면 루트 속성. 같은 이름의 레이어가 여럿이면 모두 바꾼다."""
     if "." not in path:
         tree[path] = v
         return
@@ -111,16 +119,17 @@ def _set_path(tree, path, v):
 
 def detach(doc, inst):
     """instance를 그 순간의 모양 그대로 보통 프레임으로 바꾼다. main과의 연결은 끊긴다."""
-    snap = resolve(doc, inst)
+    snap = resolve(doc, inst)  # 지금 보이는 모양(main + override)을 그대로 얼린다
     snap.pop("origin", None)
     for n, _ in L.walk(snap):
         n.pop("from_library", None)
     snap["detached_from"] = inst["main"]
-    inst.clear()
+    inst.clear()  # 같은 dict 객체를 제자리에서 바꿔 화면 트리 안의 위치를 유지한다
     inst.update(snap)
 
 
 def instances(doc):
+    """문서의 모든 instance를 (화면 이름, 노드)로 내놓는다."""
     for s in doc["screens"]:
         for n, _ in L.walk(s):
             if n.get("kind") == "instance":
@@ -128,6 +137,7 @@ def instances(doc):
 
 
 def detached(doc):
+    """detach된 버튼(detached_from 표시가 있는 노드)의 (화면 이름, 노드) 목록."""
     return [(s["name"], n) for s in doc["screens"] for n, _ in L.walk(s) if n.get("detached_from")]
 
 
@@ -144,6 +154,7 @@ def stale_report(doc, changes):
     for sname, s in [(s["name"], s) for s in doc["screens"]]:
         for n, _ in L.walk(s):
             if n.get("kind") == "instance":
+                # main에서 바꾼 속성 중 이 instance가 override로 덮어쓴 것이 있으면 새 값을 못 받는다(모형의 가정, 위 [확인 필요] 참조)
                 hit = [p for p in changes if p in n["overrides"]]
                 (overridden.append((sname, hit)) if hit else None)
                 ok += 0 if hit else 1
@@ -154,6 +165,7 @@ def stale_report(doc, changes):
 
 
 def _get_path(tree, path):
+    """_set_path의 읽기 짝. 경로의 레이어를 찾아 속성을 돌려준다. 같은 이름이 여럿이면 처음 찾은 것."""
     if "." not in path:
         return tree.get(path)
     layer, prop = path.split(".", 1)
@@ -163,6 +175,7 @@ def _get_path(tree, path):
 
 
 def resolved_screens(doc):
+    """모든 화면에서 instance를 펼친 트리 목록."""
     return [resolve(doc, s) for s in doc["screens"]]
 
 
@@ -174,6 +187,7 @@ PINGPONG_NAMES = ["목록화면_최종", "상세_최종_수정", "예약화면_�
 
 
 def pingpong_file():
+    """명세 파일의 화면을 375x812에서 계산해 고정 좌표로 얼린 파일. 보이는 모양은 같고 구조(사본, 좌표 고정, 이름 규칙 없음)만 다르다."""
     doc = spec_file()
     screens = []
     for s, nm in zip(resolved_screens(doc), PINGPONG_NAMES):
@@ -208,6 +222,7 @@ def edit_locations_copy(doc, props):
 # ---------------------------------------------------------------------------
 
 def lint(doc, widths=(375, 430)):
+    """명세 검사. 이름 규칙 위반, auto layout 없는 프레임, 4의 배수가 아닌 간격, detach 수, 화면 폭별 넘침·stretch 불일치를 센다."""
     names_bad = [s["name"] for s in doc["screens"] if not L.FRAME_NAME.match(s["name"])]
     no_auto = []
     off_token = []
@@ -219,12 +234,13 @@ def lint(doc, widths=(375, 430)):
             if not n.get("layout"):
                 continue  # 간격 토큰은 auto layout 프레임의 padding·gap에만 매긴다
             for v in list(n.get("pad", ())) + ([n["gap"]] if "gap" in n else []):
-                if v % 4:
+                if v % 4:  # 간격 토큰은 4의 배수(PAD 주석 참조). 4로 나누어떨어지지 않으면 토큰 밖
                     off_token.append(f'{s["name"]}/{n["name"]}')
     per_width = {}
     for w in widths:
         bad = {"overflow": 0, "stretch_fail": 0}
         for s in screens:
+            # 화면 폭만 바꿔 다시 배치한 뒤 검사한다. 고정 좌표 판은 자식 좌표가 그대로라 430px에서 우측 여백이 어긋난다
             r = L.check_layout(L.layout(L.resize_screen(s, w), 0, 0, w, SCREEN_H))
             bad["overflow"] += len(r["overflow"])
             bad["stretch_fail"] += len(r["stretch_fail"])
@@ -245,7 +261,7 @@ def adoption_score(doc):
     for s in resolved_screens(doc):
         for n, _ in L.walk(s):
             if n is s:
-                continue
+                continue  # 화면 프레임 자체는 분모에서 뺀다
             total += 1
             lib += 1 if n.get("from_library") else 0
     return {"library_layers": lib, "total_layers": total, "score": lib / total}

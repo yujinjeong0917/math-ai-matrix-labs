@@ -22,8 +22,10 @@ from pathlib import Path
 HERE = Path(__file__).parent
 POLICIES_SQL = HERE / "data" / "policies.sql"
 
+# uid -> 이름. 모형의 가짜 사용자 두 명.
 USERS = {"u-alice": "alice", "u-bob": "bob"}
 
+# 시작 데이터 5건: alice 3건(공개 1), bob 2건(공개 0). 기대값(공개 카드 1건 등)이 여기서 나온다.
 SEED_CARDS = [
     # (id, owner_id, title, is_public)
     (1, "u-alice", "가을 신메뉴 안내", 1),
@@ -35,7 +37,9 @@ SEED_CARDS = [
 
 
 def connect():
+    # check_same_thread=False: 서버의 요청 스레드들이 같은 연결을 쓰므로 필요. 앱이 lock으로 직렬화한다.
     db = sqlite3.connect(":memory:", check_same_thread=False)
+    # 열 이름으로 접근하고 dict로 바꾸기 위한 설정.
     db.row_factory = sqlite3.Row
     db.execute("create table cards (id integer primary key, owner_id text not null, "
                "title text not null, is_public integer not null default 0)")
@@ -47,6 +51,7 @@ def connect():
 # ---------- 정책: data/policies.sql 과 같은 뜻 ----------
 # role: "anon"(로그인 안 함) 또는 "authenticated". uid: 로그인 토큰에서 서버가 꺼낸 사용자 id(없으면 None)
 
+# cmd별 정책. using은 기존 행에, check는 새로 쓰일 행에 적용(Postgres의 USING / WITH CHECK).
 POLICIES = [
     {"name": "누구나 공개 카드를 읽는다", "cmd": "select", "to": {"anon", "authenticated"},
      "using": lambda row, uid: row["is_public"] == 1, "check": None},
@@ -62,6 +67,7 @@ POLICIES = [
 ]
 
 # 같은 select 정책을 SQL로 적은 것(대조용). :uid 자리에 사용자 id(없으면 NULL)
+# 정책 두 개(공개 카드 OR 자기 카드)를 WHERE 하나로 옮긴 형태. is_auth는 로그인 여부(0/1).
 SQL_SELECT_WHERE = "(is_public = 1) OR (:is_auth = 1 AND owner_id = :uid)"
 
 
@@ -84,12 +90,14 @@ class CardsTable:
         if self.mode == "off":
             return True
         ps = self._policies(cmd, role)
+        # 허용 정책끼리는 OR(any). 맞는 정책이 하나도 없으면 any([])가 False라 default deny.
         return any(p["using"](row, uid) for p in ps)  # 정책이 없으면 False(default deny)
 
     def _check_ok(self, cmd, role, row, uid):
         if self.mode == "off":
             return True
         ps = self._policies(cmd, role)
+        # check가 없는 정책은 using을 WITH CHECK 대신 쓴다. Postgres 규칙.
         return any((p["check"] or p["using"])(row, uid) for p in ps)
 
     def all_rows(self):
@@ -104,6 +112,7 @@ class CardsTable:
             return self.all_rows()
         if self.mode == "on_no_policy":
             return []
+        # SQL_SELECT_WHERE는 코드 상수라 f-string으로 넣어도 주입 위험이 없다. 사용자 값은 :uid, :is_auth 바인딩으로 전달.
         q = f"select * from cards where {SQL_SELECT_WHERE} order by id"
         return [dict(r) for r in self.db.execute(q, {"uid": uid, "is_auth": int(role == "authenticated")})]
 
@@ -119,7 +128,9 @@ class CardsTable:
         n = 0
         for r in self.all_rows():
             if r["id"] != card_id or not self._using_ok("update", role, r, uid):
+                # USING에 안 걸리는 행은 오류 없이 0행 갱신. 남의 카드가 존재하는지도 드러내지 않는다.
                 continue  # 보이지 않는 행은 조용히 건너뛴다(0행)
+            # 갱신 후의 행을 만들어 WITH CHECK로 검사한다. 예: 주인을 남에게 바꾸는 시도는 여기서 거부된다.
             new = {**r, **changes}
             if not self._check_ok("update", role, new, uid):
                 raise Forbidden("new row violates row-level security policy")
@@ -141,6 +152,7 @@ class CardsTable:
 
 def policies_in_sql_file():
     """policies.sql 에 적힌 정책 이름과 명령이 파이썬 정책과 같은지 확인할 때 쓴다."""
+    # 함수 안 import(정책 이름 비교 때만 쓰임).
     import re
     text = POLICIES_SQL.read_text(encoding="utf-8")
     return re.findall(r'create policy "([^"]+)"\s+on public\.cards for (\w+)', text)

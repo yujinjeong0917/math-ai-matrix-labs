@@ -23,6 +23,7 @@ MIN_NAME = "app.min.js"
 MAP_NAME = "app.min.js.map"
 
 # 바꿀 이름(원래 이름 -> 짧은 이름). 속성 이름(.templates 같은)과 객체 키는 바꾸지 않는다.
+# 이름 바꾸기 표. 이 값들은 app.js 안의 지역 이름이어야 하고, 같은 이름이 속성(.name)으로 쓰인 곳은 minify가 건너뛴다.
 RENAME = {
     "TEMPLATE_INDEX": "a", "GENERATE_ENDPOINT": "b", "currentTemplate": "c",
     "loadTemplateList": "d", "applyTemplate": "e", "renderCard": "f", "requestBackground": "g",
@@ -31,6 +32,7 @@ RENAME = {
     "templateFile": "s", "svgText": "t",
 }
 
+# 이 기호 둘레의 빈칸은 의미 없이 지워도 된다(식별자끼리 붙으면 안 되므로 기호가 아닌 곳의 빈칸은 한 칸 남긴다).
 PUNCT = set("{}()[];,=+:<>!&|?*")
 
 
@@ -39,18 +41,21 @@ def tokenize(src):
     out, i, n = [], 0, len(src)
     while i < n:
         ch = src[i]
+        # 문자열 리터럴: 따옴표 안의 // 와 /* 는 주석이 아니므로 먼저 문자열로 묶는다. 백슬래시 다음 글자는 건너뛴다.
         if ch in "\"'":
             j = i + 1
             while j < n and src[j] != ch:
                 j += 2 if src[j] == "\\" else 1
             out.append(("str", src[i:j + 1]))
             i = j + 1
+        # 한 줄 주석은 줄 끝(개행 직전)까지.
         elif src.startswith("//", i):
             j = src.find("\n", i)
             j = n if j == -1 else j
             out.append(("comment", src[i:j]))
             i = j
         elif src.startswith("/*", i):
+            # 닫는 */가 없으면 find가 -1을 돌려줘 j=1이 된다. 실습용 app.js는 해당 없음(한계).
             j = src.find("*/", i + 2) + 2
             out.append(("comment", src[i:j]))
             i = j
@@ -76,7 +81,9 @@ def tokenize(src):
 
 
 def minify(src, rename=True):
+    # 1) 주석 제거.
     toks = [t for t in tokenize(src) if t[0] != "comment"]
+    # 2) 이름 바꾸기. obj.templates 같은 속성 접근은 서버 응답의 키 이름이라 바꾸면 안 된다.
     # 이름 바꾸기: 앞이 '.'이 아닌 식별자만
     res = []
     for idx, (kind, text) in enumerate(toks):
@@ -86,6 +93,7 @@ def minify(src, rename=True):
                 text = RENAME[text]
         res.append((kind, text))
     # 줄 단위로 다시 모으면서 빈칸 줄이기. 줄바꿈은 남겨 둔다(세미콜론 자동 삽입을 건드리지 않으려고).
+    # 3) 줄바꿈은 남기고 줄 안의 빈칸만 줄인다.
     lines, cur = [], []
     for kind, text in res + [("newline", "\n")]:
         if kind == "newline":
@@ -127,15 +135,18 @@ def source_map(original, names):
         "sources": ["../src/app.js"],
         "sourcesContent": [original],
         "names": sorted(names),
+        # V3 지도 파일 형식. mappings를 비워 줄·칸 대응은 없고 원본 전문(sourcesContent)만 담는다.
         "mappings": "",
     }
 
 
 def build(write=True):
     original = SRC.read_text(encoding="utf-8")
+    # 배포본 끝의 sourceMappingURL 주석이 브라우저에게 지도 위치를 알려 준다.
     minified = minify(original) + f"//# sourceMappingURL={MAP_NAME}\n"
     smap = json.dumps(source_map(original, RENAME.keys()), ensure_ascii=False, indent=1) + "\n"
     if write:
+        # newline="\n"으로 운영체제와 무관하게 같은 바이트를 만든다(테스트가 크기를 고정값으로 비교).
         (PUBLIC / MIN_NAME).write_text(minified, encoding="utf-8", newline="\n")
         (PUBLIC / MAP_NAME).write_text(smap, encoding="utf-8", newline="\n")
     return original, minified, smap

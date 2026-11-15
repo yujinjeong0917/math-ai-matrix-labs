@@ -20,6 +20,7 @@ HERE = Path(__file__).parent
 SPEC_FILE = HERE / "data" / "specs_2026-10-11.json"
 GB = 10**9
 
+# LoRA를 붙일 선형층 묶음. qv는 PEFT 기본(사양표의 default_targets_qwen2)이고 all_linear는 층 안의 모든 선형층
 TARGETS = {
     "qv": ["q_proj", "v_proj"],
     "qkvo": ["q_proj", "k_proj", "v_proj", "o_proj"],
@@ -63,8 +64,10 @@ def linear_shapes(cfg):
     """Qwen2 모양 한 층의 선형층: 이름 -> (d_in, d_out)."""
     h, i = cfg["hidden_size"], cfg["intermediate_size"]
     d = h // cfg["num_attention_heads"]
+    # 키·값 투영의 출력 차원 = 키·값 헤드 수 x 헤드 차원(GQA라 hidden_size보다 작다)
     kv = cfg["num_key_value_heads"] * d
     return {
+        # (d_in, d_out) 순서. 같은 모양이 아니라 k, v는 (h, kv), MLP는 (h, i)와 (i, h)
         "q_proj": (h, h), "k_proj": (h, kv), "v_proj": (h, kv), "o_proj": (h, h),
         "gate_proj": (h, i), "up_proj": (h, i), "down_proj": (i, h),
     }
@@ -72,11 +75,13 @@ def linear_shapes(cfg):
 
 def lora_params_module(d_in, d_out, r):
     """A는 r × d_in, B는 d_out × r. 합 r(d_in + d_out)."""
+    # W(d_out x d_in)의 변화량을 B(d_out x r)·A(r x d_in)로 나타낸다. 원래 d_in x d_out개 대신 r(d_in + d_out)개만 학습
     return r * d_in + d_out * r
 
 
 def lora_params(cfg, targets, r):
     shapes = linear_shapes(cfg)
+    # 붙이는 모듈들의 LoRA 파라미터 합 x 층 수
     per_layer = sum(lora_params_module(*shapes[m], r) for m in targets)
     return per_layer * cfg["num_hidden_layers"]
 
@@ -84,6 +89,7 @@ def lora_params(cfg, targets, r):
 def lora_per_layer_coeff(cfg, targets):
     """r 하나당 한 층의 LoRA 파라미터 수(r의 계수)."""
     shapes = linear_shapes(cfg)
+    # r의 계수 = 모듈별 (d_in + d_out)의 합. 파라미터 수는 이 값 x r x 층 수
     return sum(a + b for a, b in (shapes[m] for m in targets))
 
 
@@ -108,9 +114,11 @@ def base_split(cfg):
     linear = L * sum(full_params_module(*s) for s in linear_shapes(cfg).values())
     embed = V * h
     head = 0 if cfg.get("tie_word_embeddings", False) else V * h
+    # 편향은 q, k, v에만 있다(Qwen2 모양, 이 장의 config 기준)
     bias = L * (h + 2 * kv)
     norms = L * 2 * h + h
     kept = embed + head + bias + norms
+    # 4비트가 되는 것과 남는 것의 합이 전체 파라미터 수와 같아야 한다(분류에 빠진 것이 없는지 점검)
     assert linear + kept == total_params(cfg)
     return {"linear_4bit": linear, "embed": embed, "lm_head": head, "qkv_bias": bias, "norms": norms, "kept": kept,
             "total": linear + kept}
@@ -119,6 +127,7 @@ def base_split(cfg):
 # ---------- 배율 ----------
 
 def scaling(alpha, r, rslora=False):
+    # LoRA는 변화량에 alpha/r를 곱하고, rsLoRA는 alpha/sqrt(r)를 곱한다. 앞은 분수로 정확히, 뒤는 float
     return F(alpha) / F(r) if not rslora else alpha / math.sqrt(r)
 
 
@@ -128,6 +137,7 @@ def nf4_bits(blocksize=64, const_bits=32, double_quant=False, second_block=256):
     """6장: 숫자 하나당 비트 = 4 + 상수 비트 ÷ 블록. 두 번 양자화면 8/64 + 32/(64·256)."""
     if double_quant:
         return 4 + F(8, blocksize) + F(32, blocksize * second_block)
+    # 6장과 같은 식: 코드 4비트 + 블록 상수 32비트 / 블록 크기
     return 4 + F(const_bits, blocksize)
 
 
@@ -137,11 +147,13 @@ def lora_state_bytes_per_param(path):
     peft_fp32: PEFT 기본(autocast_adapter_dtype=True)으로 어댑터가 fp32. 가중치 4 + 기울기 4 + Adam 4 + 4 = 16.
     paper_bf16: QLoRA 논문처럼 어댑터 bf16. 가중치 2 + 기울기 2 + Adam(fp32) 4 + 4 = 12.
     """
+    # 숫자 하나당 바이트: 어댑터 가중치 + 기울기 + Adam 상태 두 개(fp32). 두 경로의 가정은 위 설명
     return {"peft_fp32": 16, "paper_bf16": 12}[path]
 
 
 def activation_ckpt_bytes(s, b, h, a, L):
     """5장과 같은 추정: 체크포인팅을 켜면 2sbhL + 한 층 몫 sbh(34 + 5as/h)."""
+    # 5장 체크포인팅 추정: 층 입력 2sbhL + 한 층 몫 sbh(34 + 5as/h). 추정식이라 실제 측정과 다를 수 있다
     return 2 * s * b * h * L + 34 * s * b * h + 5 * a * s * s * b
 
 
@@ -150,9 +162,13 @@ def qlora_ladder(cfg, r=16, targets="all_linear", double_quant=True, kept_bytes=
     """5장 QLoRA 미리 보기(모든 숫자 0.5바이트)에서 실제에 가까운 합계로 가는 사다리(바이트, 분수)."""
     sp = base_split(cfg)
     n = sp["total"]
+    # 5장의 미리 보기: 모든 파라미터를 0.5바이트(4비트)로 본 값
     preview = F(n, 2)
+    # 4비트가 되지 않는 층(임베딩, lm_head, 편향, 정규화)은 미리 보기에서 0.5바이트로 센 만큼 빼고
     remove_kept = -F(sp["kept"], 2)
+    # 원래 형식(기본 bf16 = 2바이트)으로 다시 더한다
     kept = sp["kept"] * kept_bytes
+    # 블록 상수는 4비트 코드를 넘는 비트(0.5 또는 약 0.127)만 바이트로 환산해 더한다
     consts = sp["linear_4bit"] * (nf4_bits(double_quant=double_quant) - 4) / 8
     lp = lora_params(cfg, TARGETS[targets], r)
     lora = lp * lora_state_bytes_per_param(lora_path)
@@ -189,9 +205,11 @@ def paged_window(fixed_bytes, optim_bytes, cap_bytes, h, a, L, b=1, lengths=rang
     """
     last_fit = last_paged = None
     for s in lengths:
+        # 고정 몫 + 길이 s의 활성값. 길이를 늘려 가며 GPU 용량 안에 들어가는 마지막 길이를 찾는다
         tot = fixed_bytes + activation_ckpt_bytes(s, b, h, a, L)
         if tot <= cap_bytes:
             last_fit = s
+        # 페이징 단순 모형: 옵티마이저 상태만큼은 CPU로 내보낼 수 있다고 본다
         if tot <= cap_bytes + optim_bytes:
             last_paged = s
     return {"max_len_no_paging": last_fit, "max_len_paged": last_paged}
@@ -199,11 +217,13 @@ def paged_window(fixed_bytes, optim_bytes, cap_bytes, h, a, L, b=1, lengths=rang
 
 def paging_overhead_ms(evict_gb, link_gb_s=16, share=0.5):
     """bitsandbytes 문서의 어림: 내보내는 양 ÷ (대역폭 × 0.5)."""
+    # 내보내는 양(GB) / (연결 대역폭 GB/s x 0.5)을 ms로. 어림식이고 실측이 아니다
     return 1000 * evict_gb / (link_gb_s * share)
 
 
 # ---------- 작은 행렬 장난감 ----------
 
+# 아래 행렬 함수들은 리스트의 리스트로 만든 최소 구현. Fraction도 받아 정확한 값으로 확인할 수 있게 했다
 def matmul(A, B):
     return [[sum(A[i][k] * B[k][j] for k in range(len(B))) for j in range(len(B[0]))] for i in range(len(A))]
 
@@ -232,6 +252,7 @@ def transpose(A):
     return [list(c) for c in zip(*A)]
 
 
+# 4x4 하다마르 행렬. 열을 2로 나누면 길이 1이고 서로 수직이라 특이벡터 후보로 쓴다
 HADAMARD = [[1, 1, 1, 1], [1, -1, 1, -1], [1, 1, -1, -1], [1, -1, -1, 1]]
 
 
@@ -242,6 +263,7 @@ def hadamard_col(j):
 
 def toy_matrix(sigmas=(F(3), F(1), F(1, 10)), u_cols=(0, 1, 2), v_cols=(1, 2, 3)):
     """특이값을 미리 아는 4×4 행렬 M = Σ σ_i u_i v_iᵀ (u, v는 하다마르 열)."""
+    # M = sum sigma_i u_i v_i^T 를 분수로 만든다. 특이값이 3, 1, 0.1이라고 미리 알고 시작하는 장난감
     M = [[F(0)] * 4 for _ in range(4)]
     for s, ui, vi in zip(sigmas, u_cols, v_cols):
         M = add(M, scale(outer(hadamard_col(ui), hadamard_col(vi)), s))
@@ -259,10 +281,12 @@ def truncated(sigmas, r, u_cols=(0, 1, 2), v_cols=(1, 2, 3)):
 def power_iteration(M, steps=60, x0=None):
     """MᵀM의 가장 큰 고유값의 제곱근 = 가장 큰 특이값. 결정적인 시작 벡터를 쓴다."""
     Mf = [[float(a) for a in row] for row in M]
+    # M^T M의 가장 큰 고유값의 제곱근이 가장 큰 특이값. 거듭제곱법으로 구한다
     MtM = matmul(transpose(Mf), Mf)
     x = list(x0 or [1.0, 0.5, 0.25, 0.125])
     for _ in range(steps):
         y = matvec(MtM, x)
+        # 매 단계 벡터 길이를 1로 맞춘다(커져서 넘치는 것 방지)
         n = math.sqrt(sum(t * t for t in y))
         x = [t / n for t in y]
     lam = sum(a * b for a, b in zip(x, matvec(MtM, x)))
@@ -277,12 +301,14 @@ def train_lora_toy(target, r, steps=4000, lr=0.05, seed=7, init_std=0.1):
     rng = random.Random(seed)
     T = [[float(a) for a in row] for row in target]
     n, m = len(T), len(T[0])
+    # LoRA 초기화: A는 작은 무작위 값, B는 0이라 시작할 때 BA = 0(기본 모델이 그대로 시작)
     A = [[rng.gauss(0, init_std) for _ in range(m)] for _ in range(r)]
     B = [[0.0] * r for _ in range(n)]
     start_zero = all(v == 0 for row in matmul(B, A) for v in row)
     start = frob2(add(matmul(B, A), T, -1))
     for _ in range(steps):
         E = add(matmul(B, A), T, -1)          # n × m
+        # 손실 0.5||BA - T||^2 의 기울기: B는 E A^T, A는 B^T E (E = BA - T)
         gB = matmul(E, transpose(A))           # n × r
         gA = matmul(transpose(B), E)           # r × m
         B = add(B, gB, -lr)
@@ -291,6 +317,7 @@ def train_lora_toy(target, r, steps=4000, lr=0.05, seed=7, init_std=0.1):
     return {"start_err2": start, "end_err2": end, "start_is_zero": start_zero}
 
 
+# 합쳐서 한 번에 곱한 결과와 따로 곱해 더한 결과가 같다(선형성). 분수로 정확히 비교
 def merged_equals_separate(W0, B, A, x, s):
     """(W0 + s·BA)x 와 W0x + s·B(Ax)가 같은지 분수로 확인."""
     merged = matvec(add(W0, scale(matmul(B, A), s)), x)
@@ -313,6 +340,7 @@ def random_sign_growth(rs=(4, 16, 64), d=256, trials=200, seed=11):
             brow = [rng.choice((-1, 1)) for _ in range(r)]
             ax = [sum(p * q for p, q in zip(row, x)) for row in a_rows]
             y = sum(p * q for p, q in zip(brow, ax))
+            # (BA)x 한 칸의 제곱을 trials번 평균내 제곱평균제곱근을 구한다. 무작위 부호면 합이 상쇄되어 sqrt(r d)에 가깝게 자란다
             acc += y * y
         out[r] = math.sqrt(acc / trials)
     return out

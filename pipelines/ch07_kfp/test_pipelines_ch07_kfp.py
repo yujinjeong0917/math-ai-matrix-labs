@@ -30,6 +30,7 @@ def ir():
     return G.compile(P.churn_pipeline)
 
 
+# 우리 컴파일 결과와 실제 kfp 2.17.0 IR(저장된 JSON)의 간선, 의존 관계, 입출력 타입이 같은지 비교
 def test_graph_matches_real_kfp_compile(ir):
     real, mine = REAL_IR["root"]["dag"]["tasks"], ir["root"]["dag"]["tasks"]
     assert sorted(real) == sorted(mine) == ["evaluate", "prepare", "train"]
@@ -53,10 +54,12 @@ def test_kfp_file_and_mini_file_define_the_same_functions():
     def sigs(path):
         tree = ast.parse(Path(path).read_text())
         return {f.name: ast.dump(f) for f in tree.body if isinstance(f, ast.FunctionDef) and not f.name.startswith("_")}
+    # 두 파일이 import 줄만 다르다는 주장을 함수 정의 전체(AST)로 확인
     assert sigs(HERE / "kfp_pipeline.py") == sigs(HERE / "pipelines_ch07_pipeline.py")
 
 
 def test_toposort_and_cycle(ir):
+    # 위상 정렬 결과가 순서대로이고 실제 KFP IR에서도 같다. prepare가 evaluate에 의존하게 바꾸면 사이클이라 ValueError
     assert G.toposort(ir) == ["prepare", "train", "evaluate"] == G.toposort(REAL_IR)
     bad = json.loads(json.dumps(ir))
     bad["root"]["dag"]["tasks"]["prepare"]["dependentTasks"] = ["evaluate"]
@@ -88,6 +91,7 @@ def test_wiring_mistakes_fail_before_anything_runs():
             t = P.train(train_data=p.outputs["train_data"])
             P.evaluate(model=t.outputs["model"], valid_data=t.outputs["model"])
     # 실제 kfp 2.17.0도 같은 두 실수를 정의하는 순간 거절했다(kfp_local_check.py 기록)
+    # 실제 kfp가 낸 예외 이름은 저장된 기록(kfp_local_check.py가 만든 JSON)에서 읽는다. 이 테스트가 kfp를 직접 돌리는 것은 아니다
     assert KFP_LOCAL["wiring"]["renamed_output"]["raised"] == "KeyError"
     assert KFP_LOCAL["wiring"]["type_mismatch"]["raised"] == "InconsistentTypeException"
 
@@ -101,6 +105,7 @@ def test_run_gives_same_numbers_as_direct_calls_and_new_uris(ir, tmp_path):
     assert m1["accuracy"] == direct["accuracy"] == KFP_LOCAL["runs"][0]["accuracy"]
     assert m1["trained_on"]["sha"] == KFP_LOCAL["runs"][0]["trained_on"]["sha"]
     u1, u2 = r1["tasks"][0]["outputs"]["train_data"]["uri"], r2["tasks"][0]["outputs"]["train_data"]["uri"]
+    # 같은 인자로 두 번 돌리면 결과 파일 위치는 다르고(run_id가 다름) 내용 지문은 같다
     assert u1 != u2 and r1["tasks"][0]["outputs"]["train_data"]["sha"] == r2["tasks"][0]["outputs"]["train_data"]["sha"]
     assert r1["tasks"][1]["inputs"]["train_data"]["uri"] == u1  # 기록: train이 실제로 읽은 위치
 
@@ -109,10 +114,12 @@ def test_failed_task_skips_downstream(ir, tmp_path, monkeypatch):
     monkeypatch.setenv("CH07_PREP_FAIL", "1")
     r = G.run(ir, TODAY, tmp_path)
     assert r["state"] == "FAILED"
+    # prepare가 실패하면 train, evaluate는 돌지 않고 SKIPPED
     assert [t["status"] for t in r["tasks"]] == ["FAILED", "SKIPPED", "SKIPPED"]
     assert KFP_LOCAL["prepare_failure"]["task_dirs"] == ["prepare"]
 
 
+# np.savez에 경로 문자열을 주면 .npz가 붙는 문제를 파일 핸들로 피했는지 확인(_save_table 설명)
 def test_save_keeps_the_exact_path(tmp_path):
     S.prepare(0, 100, 0.0, tmp_path / "train_data", tmp_path / "valid_data")
     assert (tmp_path / "train_data").is_file() and not (tmp_path / "train_data.npz").exists()
@@ -122,9 +129,11 @@ def test_glue_rename_is_silent(tmp_path):
     GL.run_glue(tmp_path, **YESTERDAY)
     r = GL.run_glue(tmp_path, **TODAY, extra_env={"CH07_PREP_SUFFIX": "_v2"})
     assert r["exit_code"] == 0
+    # 이름이 바뀌었는데도 종료 코드 0이고, 보고된 지표는 오늘이 아니라 어제(seed 0) 데이터로 나온다 = 조용한 실패
     assert r["metrics"]["trained_on"]["seed"] == 0 and r["metrics"]["evaluated_on"]["seed"] == 0
 
 
+# set -e + tee는 tee의 성공만 보므로 종료 코드 0(실패를 숨김). pipefail일 때만 1
 @pytest.mark.parametrize("strict,code", [("", 0), ("e", 0), ("pipefail", 1)])
 def test_set_e_with_tee_hides_the_failure(tmp_path, strict, code):
     GL.run_glue(tmp_path, **YESTERDAY)
@@ -152,6 +161,7 @@ def test_shared_folder_vs_unique_uris(ir, tmp_path):
         for who, cfg in (("A", YESTERDAY), ("B", TODAY)):
             m = json.loads(Path(last[who]["outputs"]["metrics"]["uri"] + ".json").read_text())
             dag_bad += m["trained_on"]["seed"] != cfg["seed"]
+    # 20가지 순서 중 18가지에서 스크립트 방식의 결과가 오염되고 그래프 방식은 0. 18이라는 값은 이 단계 구성에서 실행해 센 값(순서 구성이 바뀌면 달라짐)
     assert (glue_bad, dag_bad) == (18, 0)
 
 
@@ -162,6 +172,7 @@ def test_component_body_swap_numpy_torch(ir, tmp_path):
     wt = json.loads(Path(rt["tasks"][1]["outputs"]["model"]["uri"]).read_text())["w"]
     assert np.allclose(wn, wt, atol=1e-12)
     a = [json.loads(Path(r["tasks"][2]["outputs"]["metrics"]["uri"] + ".json").read_text())["accuracy"] for r in (rn, rt)]
+    # NumPy와 PyTorch 구현으로 바꿔 끼워도 가중치는 1e-12 안에서 같고 정확도는 정확히 같아야 한다
     assert a[0] == a[1]
 
 

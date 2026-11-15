@@ -27,6 +27,7 @@ import sys
 import time
 from pathlib import Path
 
+# NumPy 가 쓰는 스레드 수를 2개로 고정해 시간 측정의 흔들림을 줄인다(NumPy import 전에 설정해야 효과가 있다).
 os.environ.setdefault("OMP_NUM_THREADS", "2")
 
 import numpy as np  # noqa: E402
@@ -36,11 +37,14 @@ sys.path.insert(0, str(HERE))
 import algorithms_ch06_graph as G  # noqa: E402
 
 OUT = HERE / "results" / "ch06.json"
+# 표시 없는 탐색을 끊는 방문 상한. 이 값에 닿으면 '끝나지 않음'으로 본다.
 CAP = 10 ** 6
+# 무작위 그래프 반복 수. 시드는 0..9 처럼 고정해 같은 숫자가 다시 나오게 한다.
 SEEDS = 10
 
 
 def _ms(fn, reps=1):
+    # 반복 측정의 중앙값을 쓴다(평균보다 일시적 부하에 덜 흔들림). 단위 ms.
     ts = []
     out = None
     for _ in range(reps):
@@ -75,9 +79,11 @@ def e1_diamond():
         reps = 1 if k == 20 else 3
         nv, ms_nv = _ms(lambda: G.dfs_no_visited(g, 0, limit=10 ** 8), reps)
         c = G.Counter()
+        # 같은 Counter c 를 5번 재사용하므로 c.visits 는 5회 누적값. 아래에서 // 5 로 1회분을 구한다.
         _, ms_v = _ms(lambda: G.dfs_iterative(g, 0, c), 5)
         cb = G.Counter()
         G.bfs(g, 0, cb)
+        # k=20 은 표시 없는 탐색이 약 4x10^6 번 도착이라 반복을 1번만 한다.
         rows.append({"k": k, "V": g.n, "E": g.m, "paths": 2 ** k,
                      "no_visited_visits": nv["visits"], "no_visited_edge_checks": nv["edge_checks"],
                      "no_visited_capped": nv["capped"], "formula": G.diamond_no_visited_formula(k),
@@ -90,6 +96,7 @@ def e1_diamond():
 
 def e2_cycles():
     out = {"cap": CAP}
+    # 순환 하나만 있어도 표시 없는 DFS 는 상한까지 돈다.
     # 방향 3-순환
     g = G.cycle_graph(3, directed=True)
     r, ms = _ms(lambda: G.dfs_no_visited(g, 0, limit=CAP))
@@ -109,6 +116,7 @@ def e2_cycles():
     out["grid30"] = {"V": g.n, "E": g.m, "no_visited": r, "ms_to_cap": ms, "visited_visits": c.visits,
                      "visited_edge_checks": c.edge_checks, "ms_visited": msv,
                      "distinct_reached_before_cap": None}
+    # dfs_no_visited 안의 반복을 그대로 재현해 도착한 서로 다른 정점을 센다(그 함수는 이 정보를 돌려주지 않는다).
     # 끊기 전까지 서로 다른 정점을 몇 개 들렀나(표시 없는 탐색이 '어디까지 갔나')
     seen = set()
     stack, vis = [0], 0
@@ -141,6 +149,7 @@ def _frontiers(g, s):
     cb, cd = G.Counter(), G.Counter()
     dist, _ = G.bfs(g, s, cb)
     G.dfs_iterative(g, s, cd)
+    # ecc(이심률) = 출발점에서 가장 먼 정점까지 거리. 층 수 = ecc + 1.
     ecc = max(d for d in dist if d is not None)
     return {"V": g.n, "E": g.m, "bfs_max_queue": cb.max_frontier, "dfs_max_stack": cd.max_frontier,
             "bfs_levels": ecc + 1, "reachable": sum(d is not None for d in dist)}
@@ -150,6 +159,7 @@ def e3_frontier():
     out = {}
     g = G.grid_graph(100, 100)
     out["grid100_corner"] = _frontiers(g, 0)
+    # 격자 한가운데(행 50, 열 50)에서 시작하면 BFS 층이 사방으로 퍼져 큐가 더 커진다.
     out["grid100_center"] = _frontiers(g, 50 * 100 + 50)
     out["path10000"] = _frontiers(G.path_graph(10_000), 0)
     out["star10000"] = _frontiers(G.star_graph(10_000), 0)
@@ -168,6 +178,7 @@ def e3_frontier():
 def e4_linear():
     rows = []
     for n in (1_000, 10_000, 50_000, 200_000):
+        # 평균 차수 약 4: 기대 간선 수 p x n(n-1)/2 = 2n. 시드 7 고정.
         g = G.erdos_renyi(n, 4 / (n - 1), random.Random(7))
         cb = G.Counter()
         _, msb = _ms(lambda: G.bfs(g, 0, G.Counter()), 5)
@@ -175,6 +186,7 @@ def e4_linear():
         cd = G.Counter()
         _, msd = _ms(lambda: G.dfs_iterative(g, 0, G.Counter()), 5)
         G.dfs_iterative(g, 0, cd)
+        # (무방향이라 간선마다 양 끝에서 한 번씩 본다)
         # 연결 요소가 여럿이라도 전체를 덮는 BFS: 간선 검사가 정확히 2E, 방문이 정확히 V
         total = G.Counter()
         (_, comp), ms_all = _ms(lambda: G.bfs_all(g, G.Counter()), 3)
@@ -202,12 +214,14 @@ def e5_euler():
     g, names, bridges, lands, eids = G.euler_15_bridges()
     kind, odd = G.euler_check(g)
     vs, es = G.hierholzer(g)
+    # E53 본문 길이 15개 다리를 빠짐없이 한 번씩 쓰는지 확인.
     route_ok = sorted(eids) == list(range(15)) and len(set(eids)) == 15
     out["euler15"] = {"lands": names, "bridges": 15, "degrees": dict(zip(names, G.degree_parity(g))),
                       "odd": [names[v] for v in odd], "verdict": kind,
                       "euler_route_valid": route_ok, "euler_route_start": names[lands[0]], "euler_route_end": names[lands[-1]],
                       "hierholzer_route": "".join(names[v] for v in vs), "hierholzer_edges": len(es),
                       "hierholzer_uses_each_once": sorted(es) == list(range(15))}
+    # 전수 탐색이 지수적이라 정점 2~5, 간선 1~8 개로 제한한다.
     # 무작위 작은 다중그래프: 차수 판정 = 전수 탐색
     rng = random.Random(6)
     agree, total, kinds, max_steps = 0, 0, {"circuit": 0, "path": 0, "none": 0}, 0
@@ -236,6 +250,7 @@ def e5_euler():
 def e6_recursion():
     limit = sys.getrecursionlimit()
     res = {"recursion_limit": limit}
+    # 500 은 보통 한도(1000) 아래, 2000 은 위라 대비가 난다. 실제 한도는 res 의 recursion_limit 참고.
     for n in (500, 2000):
         g = G.path_graph(n)
         c = G.Counter()
@@ -260,6 +275,7 @@ def e7_numpy():
         g = G.Graph(n, directed=directed)
         for _ in range(rng.randint(0, 3 * n)):
             g.add_edge(rng.randrange(n), rng.randrange(n))
+        # 정답 대조용 Floyd-Warshall. n 이 60 이하라 O(n^3) 도 순식간.
         D = G.floyd_warshall_np(g)
         src = rng.randrange(n)
         dist, _ = G.bfs(g, src)
@@ -290,6 +306,7 @@ def e9_mark_on_pop():
     return {"rows": rows}
 
 
+# 좌표는 화면용 픽셀(x, y)이고 알고리즘과 무관.
 # 위젯 그래프: 정점 8개, 순환 2개. 좌표는 위젯이 그린다.
 WIDGET_EDGES = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (3, 5), (4, 6), (5, 6), (6, 7)]
 WIDGET_POS = [[60, 150], [170, 70], [170, 230], [290, 150], [300, 40], [410, 230], [430, 110], [540, 110]]
@@ -309,6 +326,7 @@ def main():
     t0 = time.perf_counter()
     res = {"env": {"python": platform.python_version(), "numpy": np.__version__, "machine": platform.machine(),
                    "platform": platform.platform(), "recursion_limit": sys.getrecursionlimit(),
+                   # 아래 note 문자열은 결과 json 에 그대로 저장된다.
                    "note": "다른 에이전트 작업이 같은 기기에서 동시에 돌던 상태에서 측정. NumPy 스레드 2개"}}
     for key, fn in (("E0_first_screen", e0_first_screen), ("E5_euler", e5_euler), ("E6_recursion", e6_recursion),
                     ("E7_numpy", e7_numpy), ("E8_widget", e8_traces), ("E9_mark_on_pop", e9_mark_on_pop), ("E3_frontier", e3_frontier),

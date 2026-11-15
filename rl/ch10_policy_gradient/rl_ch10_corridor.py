@@ -13,6 +13,7 @@
 
 import numpy as np
 
+# (상수 S는 상태 수 3. 아래 step은 (s, a) -> (다음 칸, 보상, 끝남)의 결정적 환경)
 S = 3  # 끝나지 않는 칸 수. 도착 칸은 따로 번호를 두지 않고 done으로 처리한다
 LEFT, RIGHT = 0, 1
 NAMES = "ABC"
@@ -40,6 +41,7 @@ def transition_matrix(p):
     행 합이 1보다 작은 칸(C)은 그만큼 도착으로 빠져나간다.
     """
     P = np.zeros((S, S))
+    # P[s, s'] = pi(오른쪽) 또는 pi(왼쪽)의 합. 칸 B(1)는 행동이 뒤집혀 오른쪽(p)이 A로, 왼쪽(1-p)이 C로 간다. C의 오른쪽(p)은 도착이라 행렬에 없어 행 합이 1-p
     P[0, 1] += p
     P[0, 0] += 1 - p
     P[1, 0] += p
@@ -53,6 +55,7 @@ def exact_v(p):
     if p <= 0.0 or p >= 1.0:
         return np.full(S, -np.inf)
     P = transition_matrix(p)
+    # 식(벨만 기대 방정식, 할인 없음, 보상 -1): V = -1 + P V  =>  (I - P) V = -1. 기대 방정식을 반복 대신 직접 풀이
     return np.linalg.solve(np.eye(S) - P, -np.ones(S))
 
 
@@ -66,9 +69,11 @@ def exact_dJ_dp(p):
     P = transition_matrix(p)
     V = exact_v(p)
     dP = np.zeros((S, S))
+    # dP/dp: P의 각 원소를 p로 미분한 상수 행렬(p는 P에 선형으로 들어간다)
     dP[0, 1], dP[0, 0] = 1.0, -1.0
     dP[1, 0], dP[1, 2] = 1.0, -1.0
     dP[2, 1] = -1.0
+    # V = (I-P)^-1(-1)을 p로 미분: dV/dp = (I-P)^-1 (dP/dp) V (식 유도는 독스트링)
     return np.linalg.solve(np.eye(S) - P, dP @ V)
 
 
@@ -81,6 +86,7 @@ def exact_grad(theta):
 def best_p(grid=None):
     """J(p)를 최대로 하는 p. 촘촘한 격자에서 찾고 이분법으로 다듬는다."""
     lo, hi = 0.01, 0.99
+    # 이분법: dJ/dp가 양이면 최적이 더 오른쪽. 100번이면 구간이 2^-100로 줄어 부동소수점 한계까지 수렴. 격자 인자 grid는 쓰지 않는다
     for _ in range(100):
         mid = 0.5 * (lo + hi)
         if exact_dJ_dp(mid)[0] > 0:

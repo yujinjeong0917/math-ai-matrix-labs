@@ -17,6 +17,7 @@ import numpy as np
 
 # ASHRAE Guideline 14-2002 5.3.2.4 f: 월별 NMBE 5%, CV(RMSE) 15% / 시간별 10%, 30%.
 # 원문은 "NMBE of 5%"라고만 쓴다. 절댓값으로 비교하는 건 이 코드의 해석이다(FEMP 표 4-2는 ±5%로 적는다).
+# 단위는 %. 키는 데이터 해상도(월 합계 / 시간 값)
 ASHRAE_2002_LIMITS = {"monthly": {"nmbe": 5.0, "cv_rmse": 15.0}, "hourly": {"nmbe": 10.0, "cv_rmse": 30.0}}
 
 
@@ -46,6 +47,7 @@ def mbe(y, yhat):
     return float(np.mean(errors(y, yhat)))
 
 
+# 자유도 n - p가 0 이하이면 분모가 0 또는 음수. n=1, p=1이 대표적 함정
 def _check_dof(n, p):
     if n - p <= 0:
         raise ValueError(f"데이터 수 n={n}가 모델 변수 수 p={p}보다 커야 한다 (n - p > 0)")
@@ -62,12 +64,15 @@ def nmbe(y, yhat, p=1, convention="ashrae2002", norm=None):
     n = len(y)
     if convention == "ashrae2002":
         _check_dof(n, p)
+        # 식 5.5: NMBE = 100 sum(e) / ((n-p) mean(y)). 부호 상쇄가 있어 크기가 아니라 방향을 본다
         return float(100.0 * np.sum(y - yhat) / ((n - p) * np.mean(y)))
     if convention == "femp":
+        # FEMP: 부호가 반대(예측 - 실제)이고 분모는 n. p=0인 ASHRAE에 -1을 곱한 값과 같다
         return float(100.0 * np.sum(yhat - y) / np.sum(y))
     if convention == "sfa":
         if norm is None:
             raise ValueError("sfa 규약은 norm(정격 용량)이 필요하다")
+        # SFA: 정격 용량 norm 하나로 나눈다. 평균 y로 나누는 ASHRAE와 달리 밤(0)이 많은 태양광에서 분모가 0 가까이 가는 문제를 피한다
         return float(100.0 / norm * np.mean(yhat - y))
     raise ValueError(f"알 수 없는 규약: {convention}")
 
@@ -77,6 +82,7 @@ def cv_rmse(y, yhat, p=1):
     y = _arr(y)
     n = len(y)
     _check_dof(n, p)
+    # 식 5.4: CV(RMSE) = 100 sqrt(sum e^2/(n-p)) / mean(y). 단위가 없는 % 값
     return float(100.0 * np.sqrt(np.sum(errors(y, yhat) ** 2) / (n - p)) / np.mean(y))
 
 
@@ -84,6 +90,7 @@ def norm_value(y, kind, capacity=None):
     """NMAE 분모. capacity(정격 용량, 없으면 관측 최댓값), mean(관측 평균), range(관측 최댓값 - 최솟값)."""
     y = _arr(y)
     if kind == "capacity":
+        # 정격 용량을 모르면 관측 최댓값으로 대신한다(모형의 선택)
         return float(capacity if capacity is not None else np.max(y))
     if kind == "mean":
         return float(np.mean(y))
@@ -94,6 +101,7 @@ def norm_value(y, kind, capacity=None):
 
 def nmae(y, yhat, norm):
     """정규화 평균 절대 오차(%). norm은 숫자 하나. 단일 표준식이 없어서 분모를 꼭 같이 적는다."""
+    # NMAE = 100 MAE / norm. 분모가 정해져 있지 않아 어떤 분모인지 함께 적어야 비교 가능
     return float(100.0 * mae(y, yhat) / float(norm))
 
 
@@ -101,13 +109,16 @@ def mse_decomposition(y, yhat):
     """MSE = mean(e)^2 + Var(e). 분모는 n(모집단 분산). p를 쓰면 이 등식이 성립하지 않는다."""
     e = errors(y, yhat)
     bias = float(np.mean(e))
+    # 분모 n인 모분산. 이 정의에서만 MSE = bias^2 + var가 정확히 성립(ddof=1이면 안 됨)
     var = float(np.mean((e - bias) ** 2))
     return {"mse": float(np.mean(e ** 2)), "bias": bias, "bias_sq": bias ** 2, "var": var,
+            # MSE 중 편향 제곱이 차지하는 비중. 오차가 전부 0이면 0 나누기라 0으로 둔다
             "bias_share": (bias ** 2) / float(np.mean(e ** 2)) if np.any(e) else 0.0}
 
 
 def offset_correct(y, yhat):
     """예측 전체에 평균 오차를 더한다. 편향 조각만 지우고 흔들림 조각은 그대로 둔다."""
+    # mbe가 (실제 - 예측) 평균이라 더하면 평균 오차가 0이 된다
     return _arr(yhat) + mbe(y, yhat)
 
 
@@ -115,5 +126,6 @@ def ashrae_check(y, yhat, resolution, p=1):
     """ASHRAE Guideline 14-2002 5.3.2.4 f의 기준으로 통과 여부. |NMBE|로 비교하는 건 [해석]."""
     lim = ASHRAE_2002_LIMITS[resolution]
     nb, cv = nmbe(y, yhat, p=p), cv_rmse(y, yhat, p=p)
+    # NMBE는 절댓값으로 비교(원문 해석), CV(RMSE)는 항상 0 이상이라 그대로 비교
     ok_b, ok_cv = abs(nb) <= lim["nmbe"], cv <= lim["cv_rmse"]
     return {"nmbe": nb, "cv_rmse": cv, "nmbe_ok": bool(ok_b), "cv_ok": bool(ok_cv), "pass": bool(ok_b and ok_cv)}

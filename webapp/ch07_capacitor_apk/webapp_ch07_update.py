@@ -42,19 +42,23 @@ class Device:
     installed: dict = field(default_factory=dict)  # package -> (Apk, 데이터 dict)
 
     def install(self, apk, source):
+        # 1단계: 설치 출처 검사. adb(개발자 연결)는 출처 허용과 무관하다고 둔다(모형의 선택)
         if source != "adb" and source not in self.unknown_sources_allowed:
             return "refused_unknown_source"
         if self.api_level < apk.min_sdk:
             return "refused_min_sdk"
+        # 판정 순서가 결과를 정한다: 출처 -> minSdk -> (기존 앱 있을 때) 서명 -> 버전 코드
         cur = self.installed.get(apk.package)
         if cur is None:
             self.installed[apk.package] = (apk, {})
             return "installed"
         old, data = cur
+        # 서명이 다르면 버전이 높아도 업데이트 불가. 이 모형에서는 삭제 후 재설치만 남는다
         if old.cert != apk.cert:
             return "refused_signature"
         if apk.version_code < old.version_code:
             return "refused_downgrade"
+        # 같은 코드 재설치는 기기 동작을 확인하지 못해 단정하지 않는다(모듈 docstring 참고)
         if apk.version_code == old.version_code:
             return "unknown_same_code"
         self.installed[apk.package] = (apk, data)  # 업데이트는 데이터를 남긴다
@@ -62,6 +66,7 @@ class Device:
 
     def uninstall(self, package):
         had = self.installed.pop(package, None)
+        # 반환: 지워진 앱 데이터 항목 수(S5b에서 잃은 데이터 집계에 쓴다)
         return 0 if had is None else len(had[1])  # 지워진 데이터 항목 수
 
 
@@ -74,6 +79,7 @@ def run_scenario():
     """가상의 행사장 주문 앱 하루. 단계마다 기기별 결과를 센다."""
     pkg = "invalid.demo.eventorder"
     tabs = fleet()
+    # 낮은 API 수준 기기: minSdk 24 앱이 설치 거부되는 경우를 보이려는 설정
     spare = Device("SPARE", 23, {"files"})  # 창고의 옛 태블릿(Android 6.0, API 23)
     steps = []
 
@@ -99,9 +105,11 @@ def run_scenario():
     push("S5 키를 잃고 새 키로 1.1.0", Apk(pkg, "1.1.0", 10100, NEW_AFTER_LOSS), tabs)
     lost = sum(d.uninstall(pkg) for d in tabs)
     push("S5b 모두 지우고 새 키로 다시 설치", Apk(pkg, "1.1.0", 10100, NEW_AFTER_LOSS), tabs)
+    # 삭제 후 재설치라 설정이 지워져 0이 되는 것이 정상 결과(업데이트 경로와 대비)
     kept = sum(1 for d in tabs if d.installed[pkg][1].get("table_no"))
     return {"package": pkg, "tablets": len(tabs), "steps": steps,
             "data_items_lost_on_reinstall": lost, "tablets_with_table_no_after_reinstall": kept,
+            # 기기마다 삭제 1회 + 재설치 1회로 센 값(모형의 가정)
             "manual_touches_for_key_loss": 2 * len(tabs)}
 
 
@@ -123,6 +131,7 @@ def version_code_examples():
 
 def plan_is_increasing(codes):
     """배포 계획의 versionCode가 엄격히 늘어나는지. 처음 어긋난 자리(0부터)나 None."""
+    # 시간 O(n). 불변식: i번째까지 codes[0..i]가 엄격 증가여야 다음으로 진행. 같은 값도 위반(같은 값이면 그 자리 i를 돌려줌)
     for i in range(1, len(codes)):
         if codes[i] <= codes[i - 1]:
             return i

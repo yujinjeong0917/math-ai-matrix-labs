@@ -1,7 +1,15 @@
+"""4장: 환불 요청이 두 번 이상 실행되는지 방어 변형 A~D로 센다. 표준 라이브러리만 쓰고 난수가 없다.
+
+입력: 코드 안의 주문 10건(환불 금액)과 심어 둔 장애(응답 지연 2건, 같은 메시지 중복 1건).
+출력: 변형별 (환불 실행 횟수, 지급 합계, 정답 330보다 더 나간 금액).
+README 표와의 대응: A (13, 420, 90), B (11, 355, 25), C (10, 330, 0), D (13, 420, 90).
+요청이 차례로 오는 모형이며 동시 요청은 다루지 않는다.
+"""
 import itertools
 
 
 # 환불 서버를 흉내 낸 가짜예요. 실제 결제 서버 대신 아래 규칙대로만 움직여요.
+# 서버가 처리 후 응답만 늦는 경우를 만들 수 있게 한 가짜 서버(모형)
 class RefundServer:
     def __init__(self, refund_amounts):
         self.refund_amounts = refund_amounts                                # 주문번호 -> 환불 금액
@@ -11,6 +19,7 @@ class RefundServer:
 
     def refund(self, order_id, idempotency_key=None, reply_is_late=False):
         # 멱등성 키(Idempotency-Key)는 "같은 요청이에요"라고 알리는 번호표예요.
+        # 멱등성 키: 같은 키의 두 번째 요청은 처리하지 않고 저장된 첫 결과를 돌려준다. 키가 없으면 매번 새 요청으로 취급한다.
         if idempotency_key is not None and idempotency_key in self.saved_results:
             return self.saved_results[idempotency_key]   # 이미 본 번호표: 처음 결과만 돌려주고 새로 지급하지 않아요
         self.order_status[order_id] = '환불됨'                                # 상태를 바꾸고
@@ -18,11 +27,13 @@ class RefundServer:
         if idempotency_key is not None:
             self.saved_results[idempotency_key] = 'ok'                      # 번호표와 결과를 저장해 둬요
         if reply_is_late:
+            # 핵심: 지급은 이미 끝났는데 호출자는 실패로 보게 된다. 재시도가 이중 지급으로 이어지는 출발점.
             raise TimeoutError   # 처리는 끝났는데 응답이 늦은 경우: 보낸 쪽은 성공인지 실패인지 "모름"
         return 'ok'
 
 
 # 주문 1번부터 10번까지의 환불 금액 (합계 330 = 정답)
+# 합계: 30+20+50+40+25+60+15+35+45+10 = 330. 변형 결과의 "정답" 기준.
 refund_amounts = {n: v for n, v in enumerate([30, 20, 50, 40, 25, 60, 15, 35, 45, 10], start=1)}
 LATE_REPLY_ORDERS = {3, 7}          # 첫 시도에서 응답이 늦는 주문
 DUPLICATE_MESSAGE_ORDERS = {5}      # 고객이 같은 메시지를 두 번 보내는 주문 (이중 전송)
@@ -33,6 +44,7 @@ def simulate(variant):
     server = RefundServer(refund_amounts)
     new_key_numbers = itertools.count(1)
 
+    # D의 함정: 키를 시도마다 새로 만들면 서버 눈에는 매번 다른 요청이라 재시도가 막히지 않는다.
     def idempotency_key_for(order_id):
         if variant == 'C':
             return f'refund-{order_id}'               # 같은 주문이면 늘 같은 번호표
@@ -43,6 +55,7 @@ def simulate(variant):
     for order_id in refund_amounts:
         if order_id in DUPLICATE_MESSAGE_ORDERS:
             # 같은 메시지 두 개: 상태 조회를 둘 다 먼저 하고, 환불 실행을 둘 다 해요 (동시 실행은 아니에요)
+            # B의 한계: 확인 두 번이 실행 두 번보다 먼저 끝나므로 둘 다 통과한다(확인과 실행 사이의 틈). 5번 주문이 B에서도 두 번 나가는 이유.
             first_check = second_check = (variant != 'B') or server.order_status[order_id] == '결제됨'
             for may_send in (first_check, second_check):
                 if may_send:
@@ -66,6 +79,7 @@ def simulate(variant):
 def run_variant(variant):
     # 돌려주는 세 값: 환불이 실행된 횟수, 지급 합계, 정답(330)보다 더 나간 금액
     server = simulate(variant)
+    # 더 나간 금액 = 지급 합계 - 330 (A: 420-330 = 90 = 50+15+25)
     total_paid = sum(amount for _, amount in server.payouts)
     return len(server.payouts), total_paid, total_paid - sum(refund_amounts.values())
 

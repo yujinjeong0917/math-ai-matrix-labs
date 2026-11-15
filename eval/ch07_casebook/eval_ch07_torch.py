@@ -13,8 +13,10 @@ def metrics(y_train, y, yhat):
     e = y - yhat
     mae = F.l1_loss(yhat, y)
     mse = F.mse_loss(yhat, y)
+    # MASE 분모(학습 구간 1스텝 naive의 MAE)
     scale = (y_train[1:] - y_train[:-1]).abs().mean()
     return {"mae": mae.item(), "rmse": torch.sqrt(mse).item(),
+            # R^2 = 1 - SSE/SST
             "r2": (1.0 - (e ** 2).sum() / ((y - y.mean()) ** 2).sum()).item(),
             "mape": (100.0 * (e.abs() / y.abs()).mean()).item(),
             "mase": (mae / scale).item(),

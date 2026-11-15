@@ -10,6 +10,7 @@ import torch
 
 def pad(episodes, gamma_dtype=torch.float64):
     """끝난 판만 골라 [B, T] 텐서로 채운다. 짧은 판의 뒤쪽은 mask=False."""
+    # 잘린 판(done=False)은 리턴을 모르므로 NumPy판과 같이 뺀다
     eps = [e for e in episodes if e.done]
     B = len(eps)
     T = max((len(e.states) for e in eps), default=0)
@@ -32,6 +33,8 @@ def returns_batch(R, gamma):
     G = torch.zeros_like(R)
     g = torch.zeros(R.shape[0], dtype=R.dtype)
     for t in range(R.shape[1] - 1, -1, -1):
+        # 식: G_t = r_t + gamma G_{t+1}을 판 B개에 동시에. 시간 방향으로만 반복
+        # 패딩 칸은 R = 0, g = 0이라 판 끝 뒤의 값이 0으로 이어져 마스크 없이도 맞다
         g = R[:, t] + gamma * g
         G[:, t] = g
     return G
@@ -45,6 +48,7 @@ def first_visit_mask(S, M, n_states):
     rows = torch.arange(B)
     for t in range(T):
         s = S[:, t]
+        # 패딩 칸(M=False)은 s = 0으로 채워져 있다. M으로 걸러야 상태 0을 방문한 것으로 잘못 세지 않는다
         new = M[:, t] & ~seen[rows, s]
         first[:, t] = new
         seen[rows, s] = seen[rows, s] | M[:, t]
@@ -52,27 +56,38 @@ def first_visit_mask(S, M, n_states):
 
 
 def mc_first_visit(episodes, gamma, n_states):
+    """첫 방문 MC 가치 추정. 반환 (V[n_states], 방문 횟수 N[n_states]). NumPy mc_first_visit의 앞 두 값과 대응."""
     S, A, R, M = pad(episodes)
     G = returns_batch(R, gamma)
     fv = first_visit_mask(S, M, n_states)
+    # 상태별 리턴 합과 방문 횟수를 index_add_로 모은다. 식: V(s) = (sum G) / N(s)
+    # NumPy판의 증분형 평균과 수학적으로 같고 부동소수 계산 순서만 달라 atol 1e-12로 비교한다
     total = torch.zeros(n_states, dtype=G.dtype).index_add_(0, S[fv], G[fv])
     N = torch.zeros(n_states, dtype=torch.long).index_add_(0, S[fv], torch.ones_like(S[fv]))
+    # 한 번도 못 간 상태는 0(NumPy판과 같은 규칙). clamp는 0으로 나누는 것을 막는다
     V = torch.where(N > 0, total / N.clamp(min=1), torch.zeros_like(total))
     return V, N
 
 
 def importance_ratios(episodes, pi, b):
+    """끝난 판마다 중요도 비율 rho = prod_t pi(a_t|s_t) / b(a_t|s_t). 반환 모양 [B]."""
     S, A, R, M = pad(episodes)
+    # 식: pi(a_t|s_t) / b(a_t|s_t)를 모든 (판, t)에 한꺼번에. b[s,a] > 0이어야 한다
+    # 패딩 칸(S = A = 0)에서는 0/0 같은 값이 나올 수 있으나 아래 where에서 버린다
     ratio = pi[S, A] / b[S, A]
+    # 패딩 칸은 곱해도 변하지 않게 1로 바꾼다
     ratio = torch.where(M, ratio, torch.ones_like(ratio))
+    # 식: rho = prod_t ratio. 판마다 시간 방향 곱(NumPy판은 앞에서부터 하나씩 곱해 순서가 다를 수 있음)
     return ratio.prod(dim=1)
 
 
 def off_policy_is(episodes, pi, b, gamma):
     """시작 칸(t=0) 기준 일반·가중 IS 추정값."""
     S, A, R, M = pad(episodes)
+    # G0: 각 판 시작(t=0)의 리턴. 걸음이 하나도 없으면 0
     G0 = returns_batch(R, gamma)[:, 0] if R.shape[1] else torch.zeros(R.shape[0], dtype=R.dtype)
     rho = importance_ratios(episodes, pi, b)
+    # 식: 일반 IS = sum rho G0 / N, 가중 IS = sum rho G0 / sum rho. NumPy판과 달리 분모가 0일 때의 처리는 없다
     num = (rho * G0).sum()
     return num / len(rho), num / rho.sum()
 

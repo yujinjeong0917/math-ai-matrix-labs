@@ -33,11 +33,13 @@ DEFAULT_CFG = {
 def seed_streams(cfg):
     """분할용, 학습용 난수 생성기 두 개와 실제로 쓴 엔트로피를 돌려준다."""
     if cfg.get("entropy") is not None:
+        # 기록해 둔 엔트로피로 시드 없던 실행을 다시 낸다(E6)
         root = np.random.SeedSequence(cfg["entropy"])
     elif cfg.get("seed") is None:
         root = np.random.SeedSequence()  # 운영체제에서 새로 받은 엔트로피. 기록하지 않으면 다시 못 낸다
     else:
         root = np.random.SeedSequence(cfg["seed"])
+    # 한 뿌리에서 서로 독립인 두 가지(분할용, 학습용)를 만든다. 한쪽 소비량이 다른 쪽에 영향을 주지 않는다
     split_ss, train_ss = root.spawn(2)
     if cfg.get("split_seed") is not None:
         split_ss = np.random.SeedSequence(cfg["split_seed"])
@@ -47,6 +49,7 @@ def seed_streams(cfg):
 
 
 def split(n, test_frac, rng):
+    # 행 번호를 섞어 앞쪽 n_test개를 시험으로 쓴다. 반환은 (학습 인덱스, 시험 인덱스) 순서
     idx = rng.permutation(n)
     n_test = int(round(n * test_frac))
     return idx[n_test:], idx[:n_test]
@@ -54,11 +57,13 @@ def split(n, test_frac, rng):
 
 def standardize(X_tr, X_te, n_numeric=6):
     """수치 열만 학습 분할의 평균·표준편차로 표준화한다."""
+    # 평균·표준편차는 학습 분할에서만 구한다. 시험 분할 정보가 섞이면 누수가 된다
     m = X_tr[:, :n_numeric].mean(axis=0)
     s = X_tr[:, :n_numeric].std(axis=0)
     out = []
     for X in (X_tr, X_te):
         X = X.copy()
+        # 시험 분할에도 학습 분할의 m, s를 그대로 쓴다. 앞 6열(수치)만 바꾼다
         X[:, :n_numeric] = (X[:, :n_numeric] - m) / s
         out.append(X)
     return out
@@ -66,6 +71,7 @@ def standardize(X_tr, X_te, n_numeric=6):
 
 def batch_orders(n, epochs, batch, rng):
     """에폭마다 섞은 행 순서를 미리 뽑아 둔다. PyTorch 대조에서도 같은 순서를 쓴다."""
+    # 순서를 미리 뽑아 두면 NumPy와 PyTorch 구현이 같은 순서로 비교된다
     return [rng.permutation(n) for _ in range(epochs)]
 
 
@@ -75,8 +81,11 @@ def fit_sgd(X, y, w0, b0, orders, batch, lr):
     for order in orders:
         for start in range(0, len(order), batch):
             j = order[start:start + batch]
+            # 시그모이드 p = 1/(1+e^-(Xw+b)), X[j]: (batch, 13), w: (13,)
             p = 1.0 / (1.0 + np.exp(-(X[j] @ w + b)))
+            # 로지스틱 회귀 교차엔트로피 손실의 로짓 기울기는 p - y
             g = p - y[j]
+            # 미니배치 평균 기울기로 가중치 갱신. 마지막 배치는 크기가 작을 수 있어 len(j)로 나눈다
             w -= lr * (X[j].T @ g) / len(j)
             b -= lr * g.mean()
     return w, b
@@ -96,13 +105,16 @@ def fingerprint(*arrays):
 
 def prepare(cfg):
     """분할·표준화·초기값·순서까지. 학습 직전 상태를 돌려준다(PyTorch 대조용)."""
+    # 기본값 위에 호출자가 준 항목을 덮어쓴다
     c = {**DEFAULT_CFG, **cfg}
     dt = np.dtype(c["dtype"])
     X, y = make_dataset(schema_version=c["schema_version"])
     split_rng, train_rng, entropy = seed_streams(c)
     tr, te = split(len(y), c["test_frac"], split_rng)
     X_tr, X_te = standardize(X[tr], X[te])
+    # dtype을 바꿔 float32/float64 결과 차이를 볼 수 있다(E8)
     X_tr, X_te, y_tr, y_te = X_tr.astype(dt), X_te.astype(dt), y[tr].astype(dt), y[te].astype(dt)
+    # 초기 가중치: 평균 0, 표준편차 init_scale인 정규분포. 절편 b0는 0
     w0 = (train_rng.normal(0.0, c["init_scale"], X.shape[1])).astype(dt)
     b0 = dt.type(0.0)
     orders = batch_orders(len(y_tr), c["epochs"], c["batch"], train_rng)
@@ -116,6 +128,7 @@ def train(cfg):
     c = s["cfg"]
     w, b = fit_sgd(s["X_tr"], s["y_tr"], s["w0"], s["b0"], s["orders"], c["batch"], c["lr"])
     p = predict_proba(s["X_te"], w, b)
+    # 임계값 0.5. 확률이 정확히 0.5인 경우는 1로 분류한다
     pred = (p >= 0.5).astype(float)
     correct = int(np.sum(pred == s["y_te"]))
     return {

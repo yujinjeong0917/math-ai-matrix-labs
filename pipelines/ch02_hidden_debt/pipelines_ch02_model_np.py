@@ -21,10 +21,12 @@ def fit_preprocessor(batch):
 
 def transform(batch, prep):
     """z = (x - 학습 평균) / 학습 표준편차, 범주 코드는 원-핫. 반환: (n, 6 + 3 + 4)."""
+    # 표준화 기준은 학습 때 저장한 값. 서빙 표의 통계로 다시 구하면 단위 변경이 가려진다
     cols = [(batch[k] - prep["mean"][k]) / prep["std"][k] for k in NUMERIC]
     n = len(batch[NUMERIC[0]])
     for k in CATEGORICAL:
         onehot = np.zeros((n, N_LEVELS[k]))
+        # 정수 코드를 열 번호로 쓰는 원-핫. 코드가 범위 밖이면 IndexError
         onehot[np.arange(n), batch[k]] = 1.0  # 코드 2는 '세 번째 칸'일 뿐, 그 코드가 무슨 뜻인지는 모른다
         cols.extend(onehot.T)
     return np.column_stack(cols)
@@ -33,9 +35,11 @@ def transform(batch, prep):
 # ---- 모델 코드 시작 ----
 def fit_logistic(X, y, lr=0.5, steps=400, l2=1e-3):
     """전체 배치 경사하강법. 초기값 0, 고정된 단계 수라 같은 입력이면 같은 결과가 나온다."""
+    # 초기값 0, 단계 수 고정: 난수가 없어 같은 입력이면 같은 결과
     w, b = np.zeros(X.shape[1]), 0.0
     for _ in range(steps):
         p = 1.0 / (1.0 + np.exp(-(X @ w + b)))
+        # 전체 배치 평균 기울기 + L2 규제항(l2 * w). 절편 b는 규제하지 않는다
         w -= lr * (X.T @ (p - y) / len(y) + l2 * w)
         b -= lr * float(np.mean(p - y))
     return w, b
@@ -61,6 +65,7 @@ class ContractError(ValueError):
     pass
 
 
+# 받는 쪽이 기대하는 열 이름. 단위가 바뀐 열 이름(monthly_fee_krw_thousand)이 오면 이 집합이 비어 막힌다
 EXPECTED_LABELED = {"monthly_fee_krw"}  # 단위를 열 이름에 적은 계약
 
 
@@ -72,6 +77,7 @@ def labeled_to_codes(batch, plan_labels, region_labels):
     out = {k: batch[k] for k in NUMERIC if k != "monthly_fee"}
     out["monthly_fee"] = batch["monthly_fee_krw"]
     for k, labels in (("plan", plan_labels), ("region", region_labels)):
+        # 모르는 라벨은 조용히 넘기지 않고 예외로 막는다
         unknown = set(batch[k]) - set(labels)
         if unknown:
             raise ContractError(f"{k}에 모르는 라벨 {sorted(unknown)}")

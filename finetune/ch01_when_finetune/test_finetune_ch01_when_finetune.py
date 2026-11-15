@@ -13,6 +13,7 @@ import finetune_ch01_compare as C
 import finetune_ch01_retrieve as RT
 
 HERE = Path(__file__).parent
+# results/ch01.json을 읽는다. experiments.py를 먼저 돌려 만들어 둔 파일이 저장소에 있어야 한다
 RES = json.loads((HERE / "results" / "ch01.json").read_text(encoding="utf-8"))
 V1, V2 = C.load("policies_v1.json"), C.load("policies_v2.json")
 ITEMS = C.load("inquiries.json")["items"]
@@ -38,6 +39,7 @@ def test_inquiry_set_shape():
 
 def test_policy_v2_changes_only_refund_and_free_shipping():
     diff = [a["id"] for a, b in zip(V1["docs"], V2["docs"]) if a["text"] != b["text"]]
+    # v2에서 바뀐 정책 문서는 환불(D1), 무료배송(D2) 둘뿐
     assert diff == ["D1", "D2"]
     assert "14일" in V2["docs"][0]["text"] and "5만 원" in V2["docs"][1]["text"]
 
@@ -46,6 +48,7 @@ def test_policy_v2_changes_only_refund_and_free_shipping():
 
 def test_hand_example():
     c = {"K": 3, "F": 2, "T": 2, "I": 2, "R": 1, "OK": 0}
+    # 전체 10건에서 4건을 고치면 6건 남음. 아래 줄도 같은 방식의 손계산(10 - 고친 건수)
     assert C.hand_remaining(c, {"F": 2, "I": 2}) == 6                      # 프롬프트
     assert C.hand_remaining(c, {"K": 3}) == 7                              # 검색
     assert C.hand_remaining(c, {"F": 2, "T": 2, "I": 2, "K": 1}) == 3      # 파인튜닝
@@ -58,15 +61,19 @@ def test_hand_example():
 
 def test_token_budget():
     assert C.tokens_per_call(400, 4, 250, 150) == 1550
+    # (8192 - 400 - 150 - 500) = 7142, 7142 // 250 = 28
     assert C.k_max(8192, 400, 250, 150, 500) == 28          # 7,142 / 250 = 28.57
     assert C.k_max(131072, 400, 250, 150, 500) == 520       # 130,022 / 250 = 520.09
+    # 400 + 100 x 250 + 150 = 25,550
     assert C.tokens_per_call(400, 100, 250, 150) == 25550
     b = RES["e1_budget"]
     assert b["hand_tokens"] == 1550 and b["per_call_finetuned"] == 250
+    # 월 호출 수 x (예시 포함 호출 길이). 숫자의 출처는 budget.json의 monthly_calls
     assert b["monthly_tokens_prompt_T"] == 76_650_000 and b["monthly_tokens_finetuned"] == 750_000
     assert b["ratio_prompt_over_ft"] == 102.2
 
 
+# k_max가 정말 "들어가는 최댓값"인지: k개는 창 안, k+1개는 창 밖
 def test_k_max_is_largest_that_fits():
     for w in (4096, 8192, 32768, 131072):
         k = C.k_max(w, 400, 250, 150, 500)
@@ -78,12 +85,14 @@ def test_k_max_is_largest_that_fits():
 
 def test_bigrams():
     assert RT.bigrams("환불을 신청") == {"환불", "불을", "신청"}
+    # 물음표는 지워지고 한 글자 어절 "더"는 그대로
     assert RT.bigrams("더 걸려요?") == {"더", "걸려", "려요"}
 
 
 def test_retrieval_hits_and_misses():
     hits = {it["id"]: RT.top1(it["text"], V1["docs"]) == it["gold"] for it in ITEMS if it["failure"] == "K"}
     assert sum(hits.values()) == 8
+    # K 문의 12건 중 8건만 정답 문서를 1등으로 가져오고 4건은 놓친다(바이그램이 겹치지 않거나 동점)
     assert [k for k, v in hits.items() if not v] == ["Q02", "Q04", "Q08", "Q11"]
     # "공짜"는 "무료"와 글자가 하나도 겹치지 않는다
     assert RT.score("얼마 넘게 사면 공짜로 보내 주세요?", V1["docs"][1]) == 0
@@ -106,11 +115,13 @@ def remaining(model, combo):
 def test_compare_window_8k():
     m = C.Model(V1, window=8192)
     got = {c: remaining(m, c) for c in C.COMBOS}
+    # 남는 실패 건수(40건 중). 아무것도 안 하면 OK 2건을 뺀 38건
     assert got == {"": 38, "P": 24, "R": 30, "F": 7, "PR": 16, "PF": 7, "RF": 5, "PRF": 5}
     assert {r["combo"]: r["remaining"] for r in RES["e3_compare"]["rows"]} == got
 
 
 def test_reasoning_failures_never_fixed():
+    # 추론(R) 실패는 창 크기와 방법 묶음에 상관없이 한 건도 고쳐지지 않는다
     for w in (8192, 131072):
         m = C.Model(V1, window=w)
         for c in C.COMBOS:
@@ -119,6 +130,7 @@ def test_reasoning_failures_never_fixed():
 
 def test_policy_change_makes_finetuned_answers_stale():
     m = C.Model(V2, trained_on=V1)
+    # 정책이 바뀐 문서(D1, D2)를 다루는 문의 중 파인튜닝이 아는 것이 옛 값으로 틀린다. 검색을 더하면(RF) 그중 검색이 고치는 건은 사라진다
     assert [it["id"] for it in ITEMS if m.outcome(it, "F") == "stale"] == ["Q01", "Q02", "Q03", "Q04"]
     assert [it["id"] for it in ITEMS if m.outcome(it, "RF") == "stale"] == ["Q02", "Q04"]
     assert remaining(m, "F") == 11 and remaining(m, "RF") == 7 and remaining(m, "PR") == 16
@@ -134,6 +146,7 @@ def test_big_window_prompt_fixes_tone():
     assert {r["combo"]: r["remaining"] for r in RES["e5_big_window"]["rows"]}["PR"] == 8
 
 
+# 기준 횟수 n별 파인튜닝 단독의 남는 실패 건수. stale 건수는 n과 무관하게 4(파라미터 이름 그대로)
 @pytest.mark.parametrize("n,f_v1", [(1, 4), (2, 5), (3, 7), (6, 8)])
 def test_sensitivity_stale_count_does_not_depend_on_threshold(n, f_v1):
     rules = C.load_rules()
@@ -144,14 +157,17 @@ def test_sensitivity_stale_count_does_not_depend_on_threshold(n, f_v1):
 
 def test_basis_counts():
     b = RES["e7_basis"]
+    # 규칙 표 15칸 중 URL 근거 6칸, [가정]만 있는 칸 9, 계산으로 정하는 칸 3(이 숫자는 규칙 파일 구성에서 나온 것)
     assert (b["cells"], b["with_url"], b["assumed_only"], b["computed"]) == (15, 6, 9, 3)
 
 
 # ---------- 본문 연습 문제 ----------
 
 def test_exercises():
+    # (32768 - 1050) = 31718 // 250 = 126
     assert C.k_max(32768, 400, 250, 150, 500) == 126            # 31,718 / 250 = 126.87
     docs = json.loads(json.dumps(V1["docs"]))
+    # 무료배송 문서에 "공짜"를 덧붙이면 바이그램이 겹쳐 검색이 맞힌다는 연습 문제의 정답 확인
     docs[1]["text"] += " 공짜"
     q04 = next(it for it in ITEMS if it["id"] == "Q04")
     assert RT.rank(q04["text"], docs)[:2] == [(1, "D2"), (0, "D1")]

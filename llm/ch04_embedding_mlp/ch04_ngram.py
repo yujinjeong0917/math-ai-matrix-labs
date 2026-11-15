@@ -15,9 +15,11 @@ import numpy as np
 class InterpolatedTrigram:
     def __init__(self, V):
         self.V = V
+        # 초기 가중치 (l3, l2, l1)는 균등. tune()이 검증 세트로 다시 고른다.
         self.lambdas = (1 / 3, 1 / 3, 1 / 3)
 
     def fit(self, ctx, tgt):
+        # 카운트: c3 = (u, v, w), c2ctx = (u, v) 문맥, c2 = (v, w), c1ctx = v 문맥, c1 = w.
         self.c3 = Counter(zip(ctx[:, 0].tolist(), ctx[:, 1].tolist(), tgt.tolist()))
         self.c2ctx = Counter(zip(ctx[:, 0].tolist(), ctx[:, 1].tolist()))
         self.c2 = Counter(zip(ctx[:, 1].tolist(), tgt.tolist()))
@@ -28,9 +30,12 @@ class InterpolatedTrigram:
 
     def prob(self, u, v, w):
         l3, l2, l1 = self.lambdas
+        # 문맥을 본 적이 없으면 분모가 0이라 해당 항을 0으로 둔다.
         p3 = self.c3[(u, v, w)] / self.c2ctx[(u, v)] if self.c2ctx[(u, v)] else 0.0
         p2 = self.c2[(v, w)] / self.c1ctx[v] if self.c1ctx[v] else 0.0
+        # 식: P_add1(w) = (c(w) + 1) / (N + |V|). 항상 > 0이라 보간 확률이 0이 되지 않는다.
         p1 = (self.c1[w] + 1) / (self.N + self.V)  # 덧셈 평활: 0이 되지 않게
+        # 식 P = l3 P3 + l2 P2 + l1 P1. 세 가중치의 합이 1이면 분포 합이 1.
         return l3 * p3 + l2 * p2 + l1 * p1
 
     def probs(self, ctx, tgt):
@@ -42,9 +47,11 @@ class InterpolatedTrigram:
     def tune(self, ctx, tgt, step=0.05, floor=0.05):
         """검증 세트 NLL이 가장 낮은 (l3, l2, l1)을 격자에서 고른다. 각 값은 floor 이상."""
         best = None
+        # l3, l2를 격자로 돌고 l1 = 1 - l3 - l2. 부동소수점 누적 오차를 피하려고 round한다.
         grid = np.round(np.arange(floor, 1.0 + 1e-9, step), 6)
         for l3, l2 in product(grid, grid):
             l1 = round(1.0 - l3 - l2, 6)
+            # l1이 floor 미만이면 건너뛴다(1e-9는 부동소수점 허용 오차).
             if l1 < floor - 1e-9:
                 continue
             self.lambdas = (l3, l2, l1)

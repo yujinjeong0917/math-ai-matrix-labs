@@ -2,6 +2,12 @@
 
 표준 라이브러리만 쓴다. 이 코드는 OR-Tools CP-SAT이 아니다. '변수 + 논리 제약 + 탐색'이라는
 생각만 작은 크기로 직접 구현한 것이다. 모든 숫자는 예시용 가상값이다.
+
+입력: 4명 x 7일, 하루 낮 2명 + 야간 1명, 연속 근무 3일 이하, 주 6일 이하, 야간 주 2회 이하,
+휴무 희망 7건(어기면 벌점 1). 출력: 규칙을 지키면서 벌점이 가장 작은 일정과 방문 노드 수.
+대응(README 기대 출력): 첫 가능 일정 노드 15, 벌점 5 / 벌점 최소 4, 가지치기 노드 301(가지치기 없이 421, 가능한 일정 48개) /
+연속 근무 상한 4면 벌점 3 / 주 근무 상한 5, 야간 상한 1, 연속 근무 2는 불가능.
+노드 = dfs 호출 횟수(가지치기로 돌아온 호출도 센다).
 """
 import time
 from itertools import combinations
@@ -22,6 +28,7 @@ def violations(sched, people=PEOPLE, days=DAYS, need_day=NEED_DAY, need_night=NE
     """완성된 일정이 어긴 하드 제약을 글로 돌려준다(없으면 빈 목록). 탐색과 독립된 검사기."""
     bad = []
     for d in range(days):
+        # 인원 수는 "정확히" 같아야 한다(이상이 아님): 하루 낮 2명, 야간 1명 고정
         if sum(1 for p in people if sched[p][d] == DAY) != need_day:
             bad.append(f"{d}일차 낮 인원")
         if sum(1 for p in people if sched[p][d] == NIGHT) != need_night:
@@ -29,10 +36,12 @@ def violations(sched, people=PEOPLE, days=DAYS, need_day=NEED_DAY, need_night=NE
     for p in people:
         row = sched[p]
         for d in range(days - 1):
+            # 야간 다음 날은 휴무. 마지막 날 야간은 다음 날이 일정 밖이라 검사하지 않는다
             if row[d] == NIGHT and row[d + 1] != OFF:
                 bad.append(f"{p} 야간 다음 날 휴식 위반({d}일차)")
         run = 0
         for x in row:
+            # run = 현재까지 연속 근무일(낮·야간 모두 근무로 센다), 휴무에서 0으로 초기화
             run = run + 1 if x != OFF else 0
             if run > max_consec:
                 bad.append(f"{p} 연속 근무 초과")
@@ -44,6 +53,7 @@ def violations(sched, people=PEOPLE, days=DAYS, need_day=NEED_DAY, need_night=NE
     return bad
 
 
+# 벌점은 소프트 제약: 휴무 희망일에 근무가 잡히면 1점(하드 제약과 달리 어겨도 일정은 성립)
 def penalty(sched, requests=REQUESTS, days=DAYS, people=PEOPLE):
     return sum(1 for (p, d) in requests if p in people and d < days and sched[p][d] != OFF)
 
@@ -58,6 +68,7 @@ def solve(people=PEOPLE, days=DAYS, requests=REQUESTS, need_day=NEED_DAY, need_n
     prune=False일 때는 하드 제약을 지키는 모든 일정의 수다.
     """
     n = len(people)
+    # 그날 한 줄(사람별 D/N/O)의 후보를 조합으로 미리 전부 만든다: C(4,2) x C(2,1) = 12개
     # 사람 번호 조합으로 그날의 열(낮 need_day명, 야간 need_night명)을 미리 만든다.
     columns = []
     for dset in combinations(range(n), need_day):
@@ -70,11 +81,13 @@ def solve(people=PEOPLE, days=DAYS, requests=REQUESTS, need_day=NEED_DAY, need_n
                 col[i] = NIGHT
             columns.append(tuple(col))
     # 날짜별로 피할 수 없는 벌점의 아래 한계: 일하는 사람은 정해져 있어 휴무는 n - need 명뿐이다.
+    # free = 근무가 없는 사람 수(4-2-1 = 1). 그날 휴무 희망자가 free보다 많으면 그 초과분만큼은 어쩔 수 없이 벌점
     free = n - need_day - need_night
     floor_pen = []
     for d in range(days):
         want_off = sum(1 for p in people if (p, d) in requests)
         floor_pen.append(max(0, want_off - free))
+    # suffix[d] = d일차 이후 피할 수 없는 벌점의 합(남은 날의 하한). 가지치기의 낙관적 추정치
     suffix = [0] * (days + 1)
     for d in range(days - 1, -1, -1):
         suffix[d] = suffix[d + 1] + floor_pen[d]
@@ -85,6 +98,7 @@ def solve(people=PEOPLE, days=DAYS, requests=REQUESTS, need_day=NEED_DAY, need_n
 
     def dfs(d, last, run, work, nights, pen):
         stats["nodes"] += 1
+        # 지금 벌점 + 앞으로 최소 벌점이 이미 찾은 최선 이상이면 더 볼 필요 없다(같은 값도 버려 개선이 있을 때만 갱신)
         if prune and optimize and best["pen"] is not None and pen + suffix[d] >= best["pen"]:
             return
         if d == days:
@@ -93,6 +107,7 @@ def solve(people=PEOPLE, days=DAYS, requests=REQUESTS, need_day=NEED_DAY, need_n
                 best["pen"], best["cols"] = pen, list(cols)
             return
         for col in columns:
+            # 하드 제약을 사람별로 확인: 야간 다음 날 휴무, 연속 근무 상한, 주간 근무 상한, 야간 횟수 상한
             ok = True
             for i in range(n):
                 x = col[i]
@@ -108,6 +123,7 @@ def solve(people=PEOPLE, days=DAYS, requests=REQUESTS, need_day=NEED_DAY, need_n
                         break
             if not ok:
                 continue
+            # 이 열을 고르면 새로 생기는 벌점: 휴무 희망인데 근무가 잡힌 사람 수
             add = sum(1 for i in range(n) if (people[i], d) in requests and col[i] != OFF)
             cols.append(col)
             dfs(d + 1, col,
@@ -116,6 +132,7 @@ def solve(people=PEOPLE, days=DAYS, requests=REQUESTS, need_day=NEED_DAY, need_n
                 tuple(nights[i] + (col[i] == NIGHT) for i in range(n)),
                 pen + add)
             cols.pop()
+            # optimize=False면 첫 가능 일정을 찾는 즉시 탐색을 접는다(README의 "첫 가능 일정")
             if not optimize and best["pen"] is not None:
                 return
 
@@ -145,6 +162,7 @@ def main():
     print("벌점 최소 일정: 노드", opt["nodes"], "벌점", opt["penalty"], "violations", violations(opt["sched"]), "(가지치기 탐색이 끝까지 간 일정 수 %d: 5점 해, 4점 해)" % opt["solutions"])
     show(opt["sched"])
     print("휴무 희망 7건 중 못 지킨 것:", [(p, d) for (p, d) in sorted(REQUESTS, key=lambda x: (x[1], x[0])) if opt["sched"][p][d] != OFF])
+    # 시간은 기기마다 달라 본문 숫자로 쓰지 않는다
     print("(실행 시간은 컴퓨터마다 달라서 본문에 쓰지 않는다)", round(t1, 3), round(t2, 3))
     print("제약을 하나씩 바꿔 보기:")
     for name, kw in [("기준", {}), ("연속 근무 상한 4 (벌점 하한 3까지 내려감)", {"max_consec": 4}), ("연속 근무 상한 2", {"max_consec": 2}), ("야간 상한 1", {"max_night": 1}),

@@ -13,6 +13,7 @@ def fit_logistic(X, y, lr=0.5, steps=400, l2=1e-3):
     w = torch.zeros(X.shape[1], dtype=torch.float64, requires_grad=True)
     b = torch.zeros((), dtype=torch.float64, requires_grad=True)
     for _ in range(steps):
+        # 평균 로그 손실 + (l2/2)||w||^2. 편미분하면 NumPy 쪽 X.T@(p-y)/n + l2*w와 같다(위 docstring)
         loss = torch.nn.functional.binary_cross_entropy_with_logits(X @ w + b, y) + 0.5 * l2 * (w @ w)
         gw, gb = torch.autograd.grad(loss, (w, b))
         with torch.no_grad():

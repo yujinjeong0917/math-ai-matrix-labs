@@ -23,6 +23,7 @@ COUNT_SECTIONS = ["불만 상위 5", "이번 주 새로 생긴 유형", "다음 
 
 
 def load_json(p):
+    """JSON 파일을 읽는다."""
     return json.loads(Path(p).read_text(encoding="utf-8"))
 
 
@@ -39,15 +40,20 @@ class ScriptedModel:
         self.calls = 0
 
     def create(self, tools, messages, section):
+        """대본 모델의 한 턴. 직전에 성공한 tool_result가 있으면 글을 마치고, 없으면 도구 호출을 한다."""
         self.calls += 1
         names = {t["name"] for t in tools}
         last = messages[-1]
         results = [b for b in last["content"] if isinstance(b, dict) and b.get("type") == "tool_result"] \
             if isinstance(last["content"], list) else []
+        # 이전 어시스턴트 턴 수를 id 끝에 붙여 같은 절 안에서도 id가 겹치지 않게 한다.
         n_prev = sum(1 for m in messages if m["role"] == "assistant")
+        # crc32는 실행마다 같은 값을 주는 해시(파이썬의 hash()는 실행마다 달라진다). 그래서 로그가 재현된다.
         tid = f"toolu_{zlib.crc32(section.encode()) % 10_000:04d}_{n_prev + 1}"   # 고정된 가짜 id
+        # 성공한 결과가 있으면 종료. 오류 결과면 아래로 가서 다시 도구를 부른다(이때는 wrong_first가 이미 소진된 상태로 올바른 이름을 쓴다).
         if results and not results[-1].get("is_error"):
             data = json.loads(results[-1]["content"])
+            # list_inquiries는 count, count_by_category는 total 키를 쓴다.
             n = data.get("count", data.get("total"))
             return {"role": "assistant", "stop_reason": "end_turn",
                     "content": [{"type": "text", "text": f"[{section}] 이번 주 {n}건을 읽고 절을 썼어요."}]}
@@ -56,6 +62,7 @@ class ScriptedModel:
             call = {"name": "count_by_category", "input": {"week": WEEK}}
         else:
             cat = section
+            # 첫 시도에서만 틀린 이름을 댄다. 오류 뒤에는 results가 비어 있지 않아 올바른 이름으로 재시도한다.
             if section in self.wrong_first and not results:
                 cat = section + "요청"              # 없는 유형 이름. 서버가 isError로 고칠 길을 알려 준다
             call = {"name": "list_inquiries", "input": {"week": WEEK, "category": cat}}
@@ -77,6 +84,7 @@ def run_section(client, model, api_tools, section):
         for block in resp["content"]:
             if block["type"] != "tool_use":
                 continue
+            # isError는 예외가 아니라 결과 칸이다. 오류도 tool_result로 모델에 돌려줘 스스로 고치게 한다.
             r = client.call_tool(block["name"], block["input"])     # 실행은 프로그램이, MCP 서버에서
             text = r["content"][0]["text"]
             sc = r.get("structuredContent") or {}
@@ -93,6 +101,7 @@ def run_section(client, model, api_tools, section):
 # ---------- 토큰·비용 계산(가정값은 data/project_assumptions.json) ----------
 
 def result_tokens(step, a):
+    """도구 결과 하나가 대화에 얹는 토큰 수(가정값 a). 오류는 고정, 목록은 건수에 비례, 건수 집계는 고정."""
     if step["is_error"]:
         return a["error_result_tokens"]
     if step["name"] == "list_inquiries":
@@ -102,6 +111,7 @@ def result_tokens(step, a):
 
 def section_requests(log, a):
     """절 하나에서 보낸 요청마다 (입력 토큰, 출력 토큰). 대화가 쌓이며 다시 보내는 몫까지 센다."""
+    # 매 요청마다 같은 고정 앞부분 토큰. 캐시 대상.
     fixed = a["rules"] + a["examples"] + a["tool_definitions"] + a["tool_system_prompt"]
     out, carried = [], 0
     tools = [s for s in log["steps"] if s["kind"] == "tool"]
@@ -110,6 +120,7 @@ def section_requests(log, a):
         inp = fixed + a["question"] + carried
         out.append((inp, a["output_final"] if is_last else a["tool_use_block"]))
         if not is_last:
+            # 다음 요청에는 이번 도구 호출과 그 결과가 대화 기록으로 다시 실려 간다(입력 토큰이 누적되는 부분).
             carried += a["tool_use_block"] + result_tokens(tools[i], a)
     return out
 
@@ -124,7 +135,9 @@ def week_cost(logs, a, price, cache):
     if not cache:
         cin = F(tin) * F(str(price["input"])) / M
     else:
+        # 고정 앞부분을 뺀 나머지는 캐시와 무관한 일반 입력.
         plain = tin - fixed * len(reqs)
+        # 캐시 가정: 첫 요청이 쓰기, 나머지 모든 요청이 읽기(5분 안에 이어 부른다고 가정, 모형의 단순화).
         cin = (F(fixed) * F(str(price["write_5m"])) + F(fixed * (len(reqs) - 1)) * F(str(price["read"]))
                + F(plain) * F(str(price["input"]))) / M
     cout = F(tout) * F(str(price["output"])) / M
@@ -134,6 +147,7 @@ def week_cost(logs, a, price, cache):
 
 def copy_paste_cost(a, price, n_sections, cache):
     """2장 방식(문의 120건을 붙여 넣은 앞부분 32,000토큰을 절마다 보냄)의 한 주 비용."""
+    # 2장 방식: 문의 120건 전체(inquiry_bundle)를 앞부분에 붙여 매 절 보낸다.
     prefix = a["rules"] + a["examples"] + a["inquiry_bundle"]
     M = 1_000_000
     tin = n_sections * (prefix + a["question"])

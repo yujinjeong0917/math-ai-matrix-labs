@@ -32,12 +32,14 @@ torch.set_num_threads(2)
 OUT = Path(__file__).parent / "results" / "ch02.json"
 
 
+# 정답 0 기준으로 오차 배열 e의 MAE·RMSE·비율을 한 번에 계산
 def _stats(e):
     z = np.zeros_like(e)
     return {"mae": m.mae(z, e), "rmse": m.rmse(z, e), "ratio": m.rmse_mae_ratio(z, e)}
 
 
 def e0_first_screen():
+    # 합 |e|(MAE의 분자)와 합 e^2(MSE의 분자)를 함께 저장해 손 계산 표와 맞춘다
     models = {"A": [2.0, 2, 2, 2, 2], "C": [1.0, 1, 2, 3, 3], "B": [0.0, 0, 0, 0, 9]}
     out = {k: {"errors": v, "sum_abs": float(np.sum(np.abs(v))), "sum_sq": float(np.sum(np.square(v))), **_stats(np.array(v))} for k, v in models.items()}
     out["upper_bound_n5"] = m.ratio_bounds(5)[1]
@@ -47,6 +49,7 @@ def e0_first_screen():
 def e1_failure(n=100):
     _, uni = cases.case_uniform_errors(n, seed=0)
     _, spike = cases.case_single_spike(n, seed=0)
+    # unit_mae=True 기본값이라 E|e| = 1. 세 경우의 MAE를 1 근처로 맞춰 비율만 다르게 만든다
     gauss = cases.sample_errors("normal", n, seed=0)
     return {
         "n": n,
@@ -62,6 +65,7 @@ def e2_reference(n=1_000_000):
     rows = {}
     for dist, df in (("uniform", None), ("normal", None), ("laplace", None), ("t", 3)):
         e = cases.sample_errors(dist, n, seed=0, df=df)
+        # 결과 JSON 키 이름(예: t3)
         key = dist if df is None else f"t{df}"
         rows[key] = {"sample_ratio": _stats(e)["ratio"], "reference": m.ratio_reference(dist, df=df)}
     return {"n": n, "rows": rows}
@@ -71,6 +75,7 @@ def e3_sample_size(seeds=100):
     out = {}
     for dist, df in (("normal", None), ("laplace", None), ("t", 3), ("t", 2)):
         key = dist if df is None else f"t{df}"
+        # t(2)는 해석적 비율이 inf라 JSON에 null로 둔다
         out[key] = {"reference": m.ratio_reference(dist, df=df) if not (dist == "t" and df <= 2) else None}
         for n in (10, 100, 1000, 10000):
             r = np.array([_stats(cases.sample_errors(dist, n, seed=s, df=df))["ratio"] for s in range(seeds)])
@@ -86,6 +91,7 @@ def e3_sample_size(seeds=100):
 def e4_rank_stability(n=1000, seeds=100):
     rows = []
     for s in range(seeds):
+        # 두 모델의 시드를 다른 대역으로 분리해 독립 표본으로 만든다
         a = cases.sample_errors("normal", n, seed=10_000 + s)
         b = cases.sample_errors("t", n, seed=20_000 + s, df=3)
         rows.append((_stats(a), _stats(b)))
@@ -112,7 +118,7 @@ def e4_rank_stability(n=1000, seeds=100):
 
 
 def e5_same_ratio_different_shape(n=1000):
-    frac = 2 / math.pi  # 비율 = 1/sqrt(frac) = sqrt(pi/2)
+    frac = 2 / math.pi  # 0이 아닌 오차의 비중. 비율 = 1/sqrt(frac) = sqrt(pi/2)로 정규와 같다
     _, two = cases.case_two_level(n, frac, seed=0)
     g = cases.sample_errors("normal", n, seed=0)
     def shape(e):
@@ -133,6 +139,7 @@ def e6_decomposition():
     e = rng.standard_t(3, 500)
     implied = {}
     for r in (1.63, 2.29):
+        # 분해식을 거꾸로 적용: 비율 r이면 Var(|e|)/MAE^2 = r^2 - 1. 1.63, 2.29는 위 docstring이 인용한 Chai 등(2009)의 범위(논문 원문은 확인 필요)
         v = r**2 - 1  # Var(|e|)/MAE^2
         implied[str(r)] = {"var_over_mae2": v, "sd_abs_over_mae": math.sqrt(v)}
     return {

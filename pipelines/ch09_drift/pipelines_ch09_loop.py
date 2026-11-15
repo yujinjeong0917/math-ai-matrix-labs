@@ -29,6 +29,7 @@ import pipelines_ch09_model_np as M
 from pipelines_ch09_release_gate import GUARD, decide
 
 
+# 모델 바이트의 해시를 이미지 다이제스트 대신 쓴다. 같은 모델이면 항상 같은 값
 def digest(model):
     return "sha256:" + hashlib.sha256(M.model_bytes(model)).hexdigest()
 
@@ -47,6 +48,7 @@ def concat(tables):
     return {k: np.concatenate([t[k] for t in tables]) for k in tables[0]}
 
 
+# 판정에 쓸 요청 수와 틀린 요청 수(6장 decide()의 입력 모양)
 def errors(model, table):
     return {"n": len(table[D.LABEL]), "errors": int(np.sum(M.predict(model, table) != table[D.LABEL]))}
 
@@ -64,6 +66,7 @@ def retrain(batches, t, label_delay, window, policy):
         parts = []
         for i in idx:
             b = {k: v.copy() for k, v in batches[i].items()}
+            # 정답은 label_delay 배치 뒤에 오므로 t - label_delay 보다 뒤 배치는 정답을 아직 모른다. naive 정책은 이 행들을 이탈 안 함(0)으로 채운다
             if i > t - label_delay:  # 정답이 아직 안 온 배치
                 b[D.LABEL] = np.zeros_like(b[D.LABEL])
             parts.append(b)
@@ -80,15 +83,18 @@ def run_loop(batches, model0, ref0, *, monitor=True, policy="labeled", label_del
     serving = reg.push(model0)
     ref = ref0
     log = {"acc": [], "serving": [], "alarms": [], "runs": [], "decisions": []}
+    # 대기 중인 새 모델 정보. 값이 있는 동안에는 새 재학습을 내지 않는다
     pending = None  # {"digest", "prev", "prev_ref", "start"}
     paused = False
     for t, batch in enumerate(batches):
         model = reg.models[serving]
+        # 정확도는 정답을 아는 사후 값이라 실제 운영에서는 label_delay 뒤에야 알 수 있다. 시뮬레이션에서는 비교를 위해 바로 기록
         log["acc"].append(M.accuracy(model, batch))
         log["serving"].append(serving)
         if not monitor:
             continue
         # 1) 정답이 도착한 배치로 대기 중인 새 모델 판정
+        # 새 모델이 처음 받은 배치(start)의 정답이 도착한 시점(t - label_delay >= start)에 이전 모델의 그림자 예측과 비교한다
         if pending is not None and t - label_delay >= pending["start"]:
             b = batches[pending["start"]]
             new_m, old_m = reg.models[pending["digest"]], reg.models[pending["prev"]]
@@ -100,17 +106,20 @@ def run_loop(batches, model0, ref0, *, monitor=True, policy="labeled", label_del
                 paused = pause_after_rollback
             pending = None
         # 2) 드리프트 검사(입력만 본다)
+        # 드리프트 검사는 입력만 보므로 정답을 기다리지 않는다. 기준(ref)은 현재 서빙 모델의 학습 데이터
         chk = K.ks_check(ref, D.numeric_matrix(batch), alpha=alpha, names=D.NUMERIC)
         if chk["alarm"]:
             log["alarms"].append(t)
         # 3) 경보면 재학습 run 제출 -> 다음 배치부터 새 모델
         if chk["alarm"] and pending is None and not paused and t + 1 < len(batches):
             out = retrain(batches, t, label_delay, window, policy)
+            # labeled 정책에서 쓸 수 있는 정답 배치가 없으면 이 배치는 재학습 없이 넘어간다(continue로 다음 배치로)
             if out is None:  # 정답이 도착한 배치가 아직 없다
                 continue
             new_model, data, idx = out
             d = reg.push(new_model)
             log["runs"].append({"t": t, "train_batches": idx, "digest": d[:19]})
             pending = {"digest": d, "prev": serving, "prev_ref": ref, "start": t + 1}
+            # 새 모델로 바꾸면서 드리프트 기준도 새 학습 데이터로 옮긴다. 되돌리면 이전 기준(prev_ref)으로 돌아간다
             serving, ref = d, D.numeric_matrix(data)
     return log

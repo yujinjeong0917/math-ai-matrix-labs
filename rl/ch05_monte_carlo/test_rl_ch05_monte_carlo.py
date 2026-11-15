@@ -25,6 +25,8 @@ def test_corridor_hand_episodes():
     P, R, term, pi, env = corridor_env()
     rng = np.random.default_rng(0)
     eps = [m.generate_episode(env, pi, 0, rng) for _ in range(4)]
+    # 11걸음 판의 경로는 AABAAAAAAAB◎(6장 CH05_FIRST_FOUR와 같다). 보상 1이 마지막 걸음에 있으니
+    # 식: G_0 = 0.9^(걸음 수 - 1)이라 11걸음이면 0.9^10, 2걸음이면 0.9
     assert [len(e.states) for e in eps] == [11, 2, 2, 2]
     G0 = [m.returns(e.rewards, 0.9)[0] for e in eps]
     np.testing.assert_allclose(G0, [0.9**10, 0.9, 0.9, 0.9], atol=1e-15)
@@ -33,6 +35,7 @@ def test_corridor_hand_episodes():
 
 
 def test_returns_backward():
+    # 식: G_t = r_t + gamma G_{t+1}. 보상 [0,0,1], gamma 0.9이면 G_2 = 1, G_1 = 0.9, G_0 = 0.81. 아래는 gamma = 1이라 남은 보상의 합
     np.testing.assert_allclose(m.returns([0.0, 0.0, 1.0], 0.9), [0.81, 0.9, 1.0], atol=1e-15)
     np.testing.assert_allclose(m.returns([1.0, 1.0, 0.0], 1.0), [2.0, 1.0, 0.0], atol=1e-15)
 
@@ -45,6 +48,7 @@ def test_first_visit_approaches_exact_with_more_episodes():
     rng = np.random.default_rng(3)
     eps = [m.generate_episode(env, pi, 0, rng) for _ in range(5000)]
     keep = ~term
+    # N = 50, 500, 5000으로 늘릴 때 RMSE(종료 칸 제외)가 줄어야 한다. 이 단조 감소는 시드 3에서 확인한 값이다(모든 시드에서의 보장은 아님)
     errs = []
     for N in (50, 500, 5000):
         Vf, Nf, skipped = m.mc_first_visit(eps[:N], 0.9, 16)
@@ -85,6 +89,7 @@ def test_truncated_episode_updates_nothing():
 def test_greedy_control_from_zero_q_gets_stuck():
     P, R, term = g.ch02_grid()
     env = m.make_env(P, R, term)
+    # eps = 0, Q = 0: 동률이라 항상 행동 0(위)을 골라 맨 윗줄 벽에서 제자리. 3판 모두 상한 300에 걸리고 Q는 한 번도 고쳐지지 않는다
     Q, _, lens, trunc = m.mc_control_eps_soft(env, 0, 0.9, 0.0, 3, np.random.default_rng(0), max_steps=300)
     assert trunc == 3 and lens == [300, 300, 300] and np.count_nonzero(Q) == 0
 
@@ -96,6 +101,7 @@ def test_exploring_start_forces_first_action():
     pi[:, 1] = 1.0
     uni = m._Uniforms(np.random.default_rng(0))
     ep = m._first_forced(env, pi, 10, 0, np.random.default_rng(0), 100, uni)
+    # 5x5 격자(w = 5)에서 칸 10 = (2,0). 행동 0(위)이면 칸 5 = (1,0). 이후 pi는 모두 행동 1(오른쪽)
     assert ep.states[0] == 10 and ep.actions[0] == 0 and ep.states[1] == 5
     assert all(a == 1 for a in ep.actions[1:])
 
@@ -104,6 +110,7 @@ def test_ratio_is_one_when_target_equals_behavior():
     P, R, term, b, env = corridor_env()
     rng = np.random.default_rng(0)
     eps = [m.generate_episode(env, b, 0, rng) for _ in range(200)]
+    # pi = b이면 걸음마다 비율이 정확히 1이라 rho = 1.0이고, 일반·가중 IS 모두 G0의 평균과 같다
     assert all(m.importance_ratio(e, b, b) == 1.0 for e in eps)
     o = m.off_policy_is(eps, b, b, 0.9, False)
     w = m.off_policy_is(eps, b, b, 0.9, True)
@@ -160,11 +167,13 @@ def test_vectorized_walk_matches_generic():
     env = m.make_env(P, R, term)
     pi = g.uniform_policy(25)
     exact = g.exact_v(P, np.where(P > 0, 1.0, 0.0), pi, 1.0, term)[0]
+    # 5x5 구석 종료 격자, 균등 무작위의 시작 칸 기대 걸음 수(걸음마다 보상 1, gamma = 1로 푼 정확값)
     assert exact == pytest.approx(106.818182, abs=1e-6)
     L, alive = m.random_walk_lengths(4000, np.random.default_rng(0), P.argmax(axis=2), term, 0, 100000)
     rng = np.random.default_rng(1)
     Lg = np.array([len(m.generate_episode(env, pi, 0, rng, 100000).states) for _ in range(4000)])
     assert not alive.any()
+    # 두 방법(벡터 걷기, 일반 걷기)의 표본 평균이 정확값에서 표준오차 4배 안에 들어온다
     for x in (L, Lg):
         assert abs(x.mean() - exact) < 4 * x.std() / np.sqrt(x.size)
 
@@ -177,6 +186,7 @@ def test_torch_matches_numpy():
     eps = [m.generate_episode(env, pi, 0, rng) for _ in range(300)]
     Vn, Nn, _ = m.mc_first_visit(eps, 0.9, 16)
     Vt, Nt = mt.mc_first_visit(eps, 0.9, 16)
+    # torch는 합 / 횟수, NumPy는 증분형 평균이라 부동소수 순서가 달라 atol 1e-12로 비교한다
     np.testing.assert_allclose(Vt.numpy(), Vn, atol=1e-12)
     np.testing.assert_array_equal(Nt.numpy(), Nn)
     S, A, Rr, M = mt.pad(eps)
@@ -189,6 +199,7 @@ def test_torch_matches_numpy():
     rng = np.random.default_rng(1)
     epc = [m.generate_episode(envc, b, 0, rng) for _ in range(500)]
     ot, wt = mt.off_policy_is(epc, torch.tensor(pic), torch.tensor(b), 0.9)
+    # 중요도 비율은 곱 순서가 달라지고 값이 커서 상대 오차 rel 1e-12로 비교한다
     assert ot.item() == pytest.approx(m.off_policy_is(epc, pic, b, 0.9, False), rel=1e-12)
     assert wt.item() == pytest.approx(m.off_policy_is(epc, pic, b, 0.9, True), rel=1e-12)
     k = m.sample_more_counts(10000, np.random.default_rng(2))
@@ -200,14 +211,18 @@ def test_torch_matches_numpy():
 
 def test_page_hand_numbers():
     # 웹 챕터 본문의 손계산 숫자(results/ch05.json에 없는 파생값)를 다시 계산한다
+    # 식: 증분형 평균 V <- V + (x - V) / n. 판 네 개의 G0를 차례로 평균 낸 값이 본문 손계산(0.3487, 0.6243, 0.7162, 0.7622)
     G = [0.9**10, 0.9, 0.9, 0.9]
     V, means = 0.0, []
     for n, x in enumerate(G, 1):
         V += (x - V) / n
         means.append(round(V, 4))
     assert means == [0.3487, 0.6243, 0.7162, 0.7622]
+    # 아래 숫자 쌍은 본문에 적힌 결과값이다. 이 테스트는 뺄셈과 제곱의 산술만 확인하고, 각 값이 results/ch05.json의 어느 항목인지는 본문 기준(확인 필요)
     assert round(0.7535 - 0.5711, 4) == 0.1824 and round(0.6580 - 0.6467, 4) == 0.0113
     assert round(0.6895 - 0.6184, 4) == 0.0711 and round(0.6512 - 0.6462, 4) == 0.0050
+    # 걸음마다 pi^2 / b를 곱한 값: 0.2^2/0.5 = 0.08, 0.8^2/0.5 = 1.28, 곱 = 0.1024. (이 곱이 본문 어느 대목인지는 확인 필요)
     assert round(0.2**2 / 0.5 * 0.8**2 / 0.5, 4) == 0.1024
     assert round((0.65 / 0.35) ** 2, 2) == 3.45
+    # 식: 분산 = E_b[(rho G)^2] - v_pi^2, v_pi = 0.65 / 0.35
     assert round(m.is_second_moment(0.65) - (0.65 / 0.35) ** 2, 2) == 99.12

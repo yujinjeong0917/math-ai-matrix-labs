@@ -14,6 +14,8 @@ E5 계산량: 잔차·LN이 블록 FLOP에서 차지하는 비율
 E6 헤드 수(부록): L=2 Pre-LN에서 h=1 vs h=4
 
 결과는 results/ch09.json 에 저장하고, 챕터 본문은 이 파일의 값을 그대로 인용한다.
+
+입력: 없음(시드와 설정은 파일 상단 상수). 출력: results/ch09.json. 기호: V = 어휘, N_CTX = 길이, D = 모델 차원, H = 헤드 수, L = 층 수.
 """
 
 import json
@@ -34,6 +36,7 @@ V, N_CTX, D, H = 16, 16, 32, 4
 P_RULE = 0.8
 N_TRAIN = 1000
 ARCHS = rn.ARCHS
+# 발산 기준을 결과를 보기 전에 정해 둔다(사후 기준 변경 방지)
 DIVERGE_RULE = "손실에 NaN이 생기거나, 최종 학습 손실이 초기 손실보다 크면 발산으로 센다(실험 전에 정함)."
 
 
@@ -42,22 +45,30 @@ DIVERGE_RULE = "손실에 NaN이 생기거나, 최종 학습 손실이 초기 �
 
 def make_corpus(n_seq, seed):
     rng = np.random.default_rng(seed)
+    # 규칙 표 T[a, b]: (V, V)의 정수표. 시드 12345로 고정해 모든 실험·시드가 같은 규칙을 배운다
     T = np.random.default_rng(12345).integers(0, V, (V, V))  # 규칙 표는 모든 실험에서 같다
+    # X: (n_seq, N_CTX) 토큰 id
     X = np.empty((n_seq, N_CTX), dtype=np.int64)
     X[:, :2] = rng.integers(0, V, (n_seq, 2))
     for t in range(2, N_CTX):
+        # 앞 두 토큰으로 규칙표를 조회해 (n_seq,) 후보를 만든다 (2차 규칙)
         rule = T[X[:, t - 2], X[:, t - 1]]
         rand = rng.integers(0, V, n_seq)
+        # 확률 P_RULE(0.8)로 규칙 토큰, 나머지는 균등 무작위 토큰(규칙과 우연히 같을 수도 있다)
         X[:, t] = np.where(rng.random(n_seq) < P_RULE, rule, rand)
     return torch.tensor(X)
 
 
 def entropy_floor():
     """위치 0의 다음 토큰(위치 1)은 균등, 위치 1..14의 다음 토큰은 규칙(0.8) + 잡음(0.2)."""
+    # 규칙 토큰이 나올 확률 = 0.8 + 0.2/V (무작위가 우연히 같은 경우 포함)
     p_hit = P_RULE + (1 - P_RULE) / V
     p_miss = (1 - P_RULE) / V
+    # 규칙 위치의 엔트로피(nat): -sum p log p
     h_rule = -(p_hit * math.log(p_hit) + (V - 1) * p_miss * math.log(p_miss))
+    # 예측 대상은 위치 1..15, 즉 15개. 위치 1의 토큰은 균등 무작위(규칙에 필요한 앞 두 토큰이 없다), 나머지 14개는 규칙 + 잡음
     n_pred = N_CTX - 1
+    # floor: 평균 최저 손실(nat). 모델이 이보다 낮은 손실을 낼 수 없다
     return {"uniform": math.log(V), "rule": h_rule, "floor": (math.log(V) + (n_pred - 1) * h_rule) / n_pred}
 
 
@@ -65,6 +76,7 @@ TRAIN = make_corpus(N_TRAIN, seed=0)
 
 
 def lm_loss(model, X):
+    # 입력은 마지막 토큰 제외 (B, n-1), 정답은 한 칸 민 X[:, 1:]. logits (B, n-1, V)
     logits = model(X[:, :-1])
     return F.cross_entropy(logits.reshape(-1, V), X[:, 1:].reshape(-1))
 
@@ -89,9 +101,11 @@ def train(model, seed, steps=400, batch=32, lr=1e-3, warmup=0):
     nan, max_grad, t0 = False, 0.0, time.perf_counter()
     for step in range(steps):
         for g in opt.param_groups:
+            # 선형 warmup: step 0은 lr/warmup, warmup 스텝 뒤 lr로 고정
             g["lr"] = lr * min(1.0, (step + 1) / warmup) if warmup else lr  # 선형 warmup 후 고정
         idx = torch.randint(0, N_TRAIN, (batch,), generator=gen)
         loss = lm_loss(model, TRAIN[idx])
+        # NaN이 나오면 학습을 중단하고 발산으로 기록
         if not torch.isfinite(loss):
             nan = True
             break
@@ -105,6 +119,7 @@ def train(model, seed, steps=400, batch=32, lr=1e-3, warmup=0):
     return {
         "init_loss": init_loss,
         "final_train_loss": final if math.isfinite(final) else None,
+        # DIVERGE_RULE 그대로: NaN 또는 최종 손실이 초기 손실보다 크다
         "diverged": bool(nan or final > init_loss),
         "nan": nan,
         "max_grad_norm": max_grad,
@@ -117,9 +132,12 @@ def train(model, seed, steps=400, batch=32, lr=1e-3, warmup=0):
 
 def init_diagnostics(arch, L, seed):
     model = build(arch, L, seed)
+    # 고정 64개 시퀀스로 초기화 직후(학습 전) 진단
     X = TRAIN[:64]
+    # hid: 길이 L+1 리스트, 각 (B, n-1, d)
     logits, hid = model(X[:, :-1], return_hidden=True)
     for h_ in hid:
+        # 중간 텐서의 .grad를 남기도록 지정(기본으론 잎 텐서만 남는다)
         h_.retain_grad()
     loss = F.cross_entropy(logits.reshape(-1, V), X[:, 1:].reshape(-1))
     loss.backward()
@@ -127,8 +145,10 @@ def init_diagnostics(arch, L, seed):
     grad_norm = [float(h_.grad.norm()) for h_ in hid]  # 손실의 층별 입력 기울기 노름
     last = hid[-1].detach()
     u = last / last.norm(dim=-1, keepdim=True)
+    # (B, n, d) @ (B, d, n) -> (B, n, n): 위치끼리의 코사인 유사도
     cos = u @ u.transpose(1, 2)  # (B, n, n): 위치끼리의 코사인
     n = cos.shape[-1]
+    # 대각(자기 자신, 코사인 1) n개를 빼고 n(n-1)으로 나눈 평균. 1에 가까우면 위치별 표현이 구분되지 않는다
     off = (cos.sum((-1, -2)) - n) / (n * (n - 1))
     return {"act_std": act_std, "grad_norm": grad_norm, "pos_cosine_last": float(off.mean()), "init_loss": loss.item()}
 
@@ -144,6 +164,7 @@ def e1():
             "init_loss": float(np.mean([r["init_loss"] for r in runs])),
         }
     # 첫 층 위치 코사인(비교 기준)
+    # 비교 기준: 블록을 통과하기 전 임베딩(hid[0])의 평균 위치 코사인. 블록 하나만 있는 모형이라 hid[0]은 입력
     m = build("plain", 1, 0)
     with torch.no_grad():
         _, hid = m(TRAIN[:64, :-1], return_hidden=True)
@@ -156,6 +177,7 @@ def e1():
 
 def e1b():
     """연습 2의 정답 기준: 깊이별 마지막 층 위치 간 코사인(초기화 직후, 시드 0)."""
+    # 깊이 L별 마지막 층 위치 코사인, plain과 pre 비교
     return {arch: {str(L): init_diagnostics(arch, L, 0)["pos_cosine_last"] for L in (1, 2, 4, 8, 16)}
             for arch in ("plain", "pre")}
 
@@ -174,6 +196,7 @@ def e2():
 # ---------------------------------------------------------------- E3
 
 
+# E3: Post/Pre-LN을 학습률 3개, warmup 0 또는 100스텝 조합에서 비교(시드 3개, L = 8)
 def e3():
     out = {}
     for arch in ("post", "pre"):
@@ -189,12 +212,15 @@ def expected_grad_w2(arch, L, seed, batches=20):
     """Xiong 등 Figure 3의 통계: 미니배치마다 기울기를 구해 평균 낸 뒤 Frobenius 노름."""
     model = build(arch, L, seed)
     gen = torch.Generator().manual_seed(77 + seed)
+    # 미니배치 기울기의 합을 누적한 뒤 batches로 나눠 기대 기울기를 근사
     acc = torch.zeros_like(model.blocks[-1].mlp.W2)
     for _ in range(batches):
+        # 배치 64개. 시드 77+seed로 고정
         idx = torch.randint(0, N_TRAIN, (64,), generator=gen)
         model.zero_grad()
         lm_loss(model, TRAIN[idx]).backward()
         acc += model.blocks[-1].mlp.W2.grad
+    # 평균 기울기 행렬의 Frobenius 노름(원소 제곱합의 제곱근)
     return float((acc / batches).norm())
 
 
@@ -213,15 +239,19 @@ def e4():
     rng = np.random.default_rng(0)
     d = 4
     g, b = np.ones(d), np.full(d, 0.5)
+    # 표준편차 3으로 키운 표본 하나 (1, d)
     sample = rng.standard_normal((1, d)) * 3
     bn_single = rn.batch_norm(sample, g, b)
+    # torch의 BN은 학습 모드에서 배치 1이면 오류를 낸다. 오류 메시지를 기록
     torch_err = None
     try:
         torch.nn.BatchNorm1d(d).train()(torch.tensor(sample, dtype=torch.float32))
     except ValueError as e:
         torch_err = str(e)
+    # 같은 표본에 배치 친구 7개를 붙인다. b는 평균이 +2 이동한 친구들
     mates_a = np.vstack([sample, rng.standard_normal((7, d))])
     mates_b = np.vstack([sample, rng.standard_normal((7, d)) + 2.0])
+    # [0]은 첫 행(같은 표본)의 출력. BN은 친구가 바뀌면 값이 변하고 LN은 변하지 않는다
     bn_a, bn_b = rn.batch_norm(mates_a, g, b)[0], rn.batch_norm(mates_b, g, b)[0]
     ln_a, ln_b = rn.layer_norm(mates_a, g, b)[0], rn.layer_norm(mates_b, g, b)[0]
     return {
@@ -240,6 +270,7 @@ def e4():
 
 def e5():
     rows = []
+    # 두 규모: 학습 실험 크기 (16, 32)와 실제 모형 규모에 가까운 (1024, 768)
     for n, d in ((16, 32), (1024, 768)):
         blk = rn.block_flops(n, d)
         res, ln = rn.residual_flops(n, d), rn.layer_norm_flops(n, d)
@@ -259,6 +290,7 @@ def e6():
 
 
 def hand_examples():
+    # 첫 화면 손계산: 평균 4, 분산 5(ddof=0)
     x = np.array([1.0, 3.0, 5.0, 7.0])
     ln = rn.layer_norm(x, 1.0, 0.0, eps=0.0)
     return {
@@ -266,12 +298,15 @@ def hand_examples():
         "ln_mean": float(x.mean()),
         "ln_var": float(x.var()),
         "ln_output": ln.round(4).tolist(),
+        # 층 10개에서 배율 0.5가 누적되면(plain) 0.0009765625
         "plain_0.5_pow10": 0.5**10,
+        # 배율 1.5가 10번 누적되면 약 57.67. 첫 화면 예시용 단순 계산이며 실제 모형의 측정값이 아니다
         "residual_1.5_pow10": 1.5**10,
     }
 
 
 def main():
+    # 단일 스레드로 고정해 시간 비교가 가능하게 한다
     torch.set_num_threads(1)
     t0 = time.perf_counter()
     results = {

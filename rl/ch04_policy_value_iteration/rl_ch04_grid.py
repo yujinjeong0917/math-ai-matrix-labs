@@ -18,6 +18,10 @@ ARROWS = "↑→↓←"
 
 
 def make_grid(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
+    """h x w 격자의 (P[S,A,S], R[S,A,S], term[S]). 칸 번호 s = 행 * w + 열.
+
+    rewards: {(행, 열): 보상} 도착한 칸 기준. terminals: 종료 칸 목록. step_reward: 그 밖의 칸에 들어갈 때의 보상.
+    """
     S, A = h * w, len(ACTIONS)
     P = np.zeros((S, A, S))
     R = np.zeros((S, A, S))
@@ -26,11 +30,12 @@ def make_grid(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
         term[t[0] * w + t[1]] = True
     for s in range(S):
         if term[s]:
-            P[s, :, s] = 1.0
+            P[s, :, s] = 1.0  # 흡수 상태: 어떤 행동이든 자기 자신으로, 보상 R은 0인 채로 둔다
             continue
         r, c = divmod(s, w)
         for a in range(A):
             for b in range(A):
+                # 행동 a를 골랐을 때 실제로 b 방향으로 갈 확률: 확률 slip은 네 방향 균등(a 자신 포함)
                 prob = (1.0 - slip) * (a == b) + slip / A
                 if prob == 0.0:
                     continue
@@ -39,12 +44,13 @@ def make_grid(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
                 if not (0 <= nr < h and 0 <= nc < w):
                     nr, nc = r, c
                 s2 = nr * w + nc
-                P[s, a, s2] += prob
-                R[s, a, s2] = rewards.get((nr, nc), step_reward)
+                P[s, a, s2] += prob  # += : 벽에 부딪힌 방향들이 같은 칸(제자리)으로 모인다
+                R[s, a, s2] = rewards.get((nr, nc), step_reward)  # 도착한 칸 기준 보상 R(s,a,s')
     return P, R, term
 
 
 def step(s, a, P, R, rng):
+    """P[s,a]에서 다음 칸 s'를 뽑고 (s', R(s,a,s'))를 돌려준다. 롤아웃 실험용(rng: numpy Generator)."""
     s2 = int(rng.choice(P.shape[2], p=P[s, a]))
     return s2, float(R[s, a, s2])
 
@@ -67,8 +73,9 @@ def loop_grid():
 
 # 비교 측정용: n x n, 미끄러짐 0.1, 오른쪽 아래 +1(종료), 함정 몇 칸 -1(종료).
 def compare_grid(n=20, slip=0.1):
+    # 함정 후보 5곳(칸 좌표는 n에 비례). 작은 n에서 격자 밖으로 나가는 후보는 걸러 낸다
     pits = [(r, c) for r, c in ((n // 2, n // 2), (n // 2, n // 2 - 1), (n // 4, 3 * n // 4), (3 * n // 4, n // 4),
                                 (n - 2, n - 3)) if 0 <= r < n and 0 <= c < n]
     rewards = {(n - 1, n - 1): 1.0}
-    rewards.update({p: -1.0 for p in pits})
+    rewards.update({p: -1.0 for p in pits})  # 함정에 들어가면 -1이고 거기서 끝(종료 칸에 포함)
     return make_grid(n, n, rewards, [(n - 1, n - 1)] + pits, slip=slip), pits

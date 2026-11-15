@@ -1,15 +1,18 @@
 """10장: 기록(trace) 20개를 결과만 채점할 때와 과정까지 채점할 때 비교한다. 전부 가상 기록이에요."""
 import math
 
+# 승인 판정은 "이상"(>=)이다. 5장 코드의 "초과"(>)와 경계가 다르니 섞지 않는다(함정).
 APPROVAL_THRESHOLD = 50   # 가상 문턱: 이 금액 이상이면 사람 승인이 먼저 있어야 해요
 
 # 문의 20건: (번호, 주문번호, 정답 환불 금액)
+# 합계 840(손계산). 번호 i+1, 주문번호 100+i+1.
 TICKETS = [(i + 1, 100 + i + 1, a) for i, a in enumerate(
     [30, 20, 50, 40, 25, 60, 15, 35, 45, 10, 70, 55, 20, 80, 35, 25, 65, 40, 30, 90])]
 
 # 기록 종류(v1: 고치기 전 에이전트). 문제는 문의 번호 기준으로 하나씩 심었고, 나머지 문의는 정상(ok)이에요.
 # ok_same_key_twice 같은 키로 두 번 호출(서버가 한 번만 처리) / skip_approval 승인 건너뜀(50 이상 금액만 해당) /
 # no_lookup 조회 없이 환불 / dup_new_key 새 키로 두 번 환불 / wrong_amount 금액을 5 더 보냄
+# 심은 문제 8건. 문제 없는 나머지 12건은 정상(ok). 결과 채점이 못 잡는 것(승인 건너뜀, 조회 없음)이 일부 섞여 있다.
 V1_PROBLEMS = {1: 'wrong_amount', 2: 'no_lookup', 3: 'skip_approval', 5: 'ok_same_key_twice',
                6: 'skip_approval', 8: 'no_lookup', 9: 'dup_new_key', 11: 'skip_approval'}
 
@@ -22,11 +25,13 @@ def make_trace(ticket, kind):
         ev = []
     if needs_approval and kind != 'skip_approval':
         ev.append({'tool': 'approve', 'order': order, 'ok': True})
+    # wrong_amount: 정답보다 5 많이 보낸다.
     paid = amount + 5 if kind == 'wrong_amount' else amount
     ev.append({'tool': 'refund', 'order': order, 'amount': paid, 'key': f'refund-{order}'})
     if kind == 'ok_same_key_twice':
         ev.append({'tool': 'refund', 'order': order, 'amount': paid, 'key': f'refund-{order}'})
     if kind == 'dup_new_key':
+        # 새 키로 한 번 더 환불: 서버가 다른 요청으로 보고 둘 다 처리한다(4장 변형 D와 같은 함정).
         ev.append({'tool': 'refund', 'order': order, 'amount': paid, 'key': f'refund-{order}-retry'})
     ev.append({'tool': 'notify', 'order': order})
     return {'ticket': n, 'order': order, 'expected': amount, 'kind': kind, 'events': ev}
@@ -54,16 +59,19 @@ def replay_payouts(trace):
     """환불 서버를 흉내 내서 실제로 나간 돈을 센다. 같은 키는 한 번만 나가요."""
     seen, paid = set(), 0
     for e in trace['events']:
+        # 같은 키는 서버가 한 번만 처리한다는 가정(멱등성). ok_same_key_twice는 지급이 한 번이라 결과 채점도 통과한다.
         if e['tool'] == 'refund' and e['key'] not in seen:
             seen.add(e['key'])
             paid += e['amount']
     return paid
 
 
+# 결과 채점: 실제로 나간 돈이 정답 금액과 같은가. 과정은 보지 않는다.
 def grade_outcome(trace):
     return replay_payouts(trace) == trace['expected']
 
 
+# 과정 채점: 이벤트 순서를 보고 조회 없이 환불, 승인 없이 환불, 같은 주문에 다른 키 환불을 찾는다. 승인 판정에는 실제 보낸 금액을 쓴다.
 def process_failures(trace):
     fails, tools_so_far, approved = [], [], False
     keys = {}
@@ -75,6 +83,7 @@ def process_failures(trace):
                 fails.append('조회 없이 환불')
             if e['amount'] >= APPROVAL_THRESHOLD and not approved:
                 fails.append('승인 없이 환불')
+            # 주문별 키 집합. 같은 키가 두 번이면 집합 크기가 1이라 문제 아님, 키가 다르면 크기가 2 이상.
             keys.setdefault(e['order'], set()).add(e['key'])
         tools_so_far.append(e['tool'])
     if any(len(k) > 1 for k in keys.values()):
@@ -89,6 +98,7 @@ def grade_process(trace):
 def wilson(passed, n, z=1.96):
     """통과율의 95% 신뢰구간(윌슨 방식). 표준 라이브러리만 써요."""
     p = passed / n
+    # 윌슨 구간 공식: 중심 = (p + z^2/2n) / (1 + z^2/n), 반폭 = z sqrt(p(1-p)/n + z^2/4n^2) / (1 + z^2/n). z = 1.96은 95%.
     d = 1 + z * z / n
     c = (p + z * z / (2 * n)) / d
     h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
@@ -103,6 +113,7 @@ def summarize(traces):
     return {
         'n': n,
         'outcome_pass': sum(out_ok), 'process_pass': sum(proc_ok), 'both_pass': sum(both),
+        # 결과는 맞는데 과정이 틀린 기록(조회 없이 환불 2건 + 승인 건너뜀 3건 = 5건)
         'outcome_only_pass_but_process_fail': sum(a and not b for a, b in zip(out_ok, proc_ok)),
         'ci_outcome': wilson(sum(out_ok), n), 'ci_both': wilson(sum(both), n),
         'passed_tickets': [t['ticket'] for t, b in zip(traces, both) if b],
@@ -112,6 +123,7 @@ def summarize(traces):
 
 def regression(before, after):
     """고치기 전에 통과했는데 고친 뒤 실패한 문의 번호."""
+    # 회귀: 전에 통과(결과와 과정 모두)했는데 후에 실패한 문의. 통과 수가 올라도 이런 문의가 숨을 수 있다(v2의 4번).
     return [b['ticket'] for b, a in zip(before, after)
             if grade_outcome(b) and grade_process(b) and not (grade_outcome(a) and grade_process(a))]
 

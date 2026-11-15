@@ -12,7 +12,9 @@ import torch
 
 def log_pi(theta, Phi, A):
     """행동 두 개짜리 소프트맥스 정책의 log pi(a|s). 선호도 [0, theta.phi]에 log_softmax."""
+    # h = theta . phi: (T,). 두 행동의 선호도는 [0, h]라 오른쪽 로짓만 theta에 의존
     h = Phi @ theta
+    # (T, 2) [왼쪽 로짓 0, 오른쪽 로짓 h]
     logits = torch.stack([torch.zeros_like(h), h], dim=-1)
     return torch.log_softmax(logits, dim=-1).gather(-1, A.unsqueeze(-1)).squeeze(-1)
 
@@ -23,6 +25,7 @@ def pg_grad(theta_np, Phi_np, A_np, weights_np):
     Phi = torch.tensor(np.asarray(Phi_np, dtype=float), dtype=torch.float64)
     A = torch.tensor(np.asarray(A_np), dtype=torch.long)
     W = torch.tensor(np.asarray(weights_np, dtype=float), dtype=torch.float64)
+    # 식: loss = -sum_t w_t log pi(a_t|s_t). W는 상수 취급(grad 추적 없음)이라 기울기가 sum w_t grad log pi가 된다
     loss = -(log_pi(theta, Phi, A) * W).sum()
     loss.backward()
     return -theta.grad.numpy()  # 손실의 기울기에 - 를 붙이면 J를 올리는 방향
@@ -34,6 +37,7 @@ def returns(R, gamma):
     G = torch.zeros_like(R)
     g = torch.tensor(0.0, dtype=torch.float64)
     for t in range(len(R) - 1, -1, -1):
+        # 식: G_t = r_{t+1} + gamma G_{t+1}(NumPy returns와 같은 점화식)
         g = R[t] + gamma * g
         G[t] = g
     return G

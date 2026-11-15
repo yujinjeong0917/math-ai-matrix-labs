@@ -33,6 +33,7 @@ class Uniforms:
 
 def walk_true_values(n=N_WALK):
     """종료 칸 두 개를 포함한 길이 n+2 배열. 종료 칸은 0."""
+    # 식: V(i) = 2i/(n+1) - 1. 반반 이동의 벨만 방정식 V(i) = (V(i-1) + V(i+1))/2 (gamma 1)의 해(테스트에서 확인)
     v = 2.0 * np.arange(n + 2) / (n + 1) - 1.0
     v[0] = v[-1] = 0.0
     return v
@@ -45,6 +46,7 @@ def walk_episode(uni, n=N_WALK):
     while True:
         s2 = s + 1 if uni() < 0.5 else s - 1
         done = s2 == 0 or s2 == n + 1
+        # 보상 R_{t+1}: 종료 칸에 들어갈 때만 +1/-1, 그 밖은 0 (할인율 gamma = 1인 판)
         r = 1.0 if s2 == n + 1 else (-1.0 if s2 == 0 else 0.0)
         out.append((s, r, s2, done))
         if done:

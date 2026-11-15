@@ -63,6 +63,7 @@ def e0_first_screen():
 
 
 def _timed_build(kind, keys):
+    # (트리, 계수기, 밀리초). 비교·회전 수는 결정적이고 밀리초만 기기마다 다르다
     t0 = time.perf_counter()
     t, c = T.build(kind, keys)
     return t, c, (time.perf_counter() - t0) * 1000
@@ -71,11 +72,13 @@ def _timed_build(kind, keys):
 def e1_grid():
     rows = []
     for n in NS:
+        # min_height: 이진 트리가 가질 수 있는 최소 높이. bound_phi: AVL 높이 상한 log_phi(n+1).
+        # paper_lemma_h: AVL 논문 Lemma 1 을 이 파일의 높이 단위(노드 수 세기)로 옮긴 값(파일 위 설명 참고)
         row = {"n": n, "min_height": math.ceil(math.log2(n + 1)), "bound_phi": C_PHI * math.log2(n + 1),
                "paper_lemma_h": 1 + C_PHI * math.log2(n + 1), "paper_lemma_h_coarse": 1 + 1.5 * math.log2(n + 1), "n_n_minus_1_over_2": n * (n - 1) // 2,
                "mean_depth_chain": (n + 1) / 2}
         for order in ORDERS:
-            runs = SEEDS if order == "random" else 1
+            runs = SEEDS if order == "random" else 1  # 정렬·지그재그는 난수가 없어 1번이면 충분
             for kind in ("bst", "avl"):
                 vals = []
                 for s in range(runs):
@@ -101,6 +104,7 @@ def e1_grid():
 def e2_recursion():
     limit = sys.getrecursionlimit()
     t = T.BST()
+    # 정렬된 입력 1,2,3,... 을 재귀판에 넣어 처음 RecursionError 가 나는 키를 찾는다(한도 근처. 정확한 값은 호출 구조에 따라 한도보다 조금 작다)
     fail_at = None
     for k in range(1, 5001):
         try:
@@ -110,7 +114,7 @@ def e2_recursion():
             break
     out = {"recursion_limit": limit, "sorted_fail_at_key": fail_at, "nodes_before_fail": t.n,
            "height_before_fail": T.height(t.root)}
-    # 같은 재귀판이 무작위 순서 10만 개에서는 문제없다
+    # 같은 재귀판이 무작위 순서 10만 개에서는 문제없다(깊이가 약 log 단위라 한도에 안 닿는다)
     keys = T.orders("random", 100_000, random.Random(0))
     t2 = T.BST()
     for k in keys:
@@ -141,7 +145,7 @@ def e3_avl_bound():
         fibs.append({"h": h, "nodes": len(order), "height": T.height(bst.root),
                      "is_avl": all(ok for _, ok, _ in T.check_avl(root)),
                      "same_shape_as_bst": T.snapshot(bst.root)[1] == T.snapshot(root)[1]})
-    # 무작위 넣기·지우기 열 뒤에도 높이가 상한 아래인가
+    # 무작위 넣기·지우기 열 뒤에도 높이가 상한 아래인가. worst_ratio <= 1 이면 상한 안(1 에 가까울수록 빠듯함)
     worst_ratio, checks = 0.0, 0
     for s in range(20):
         rng = random.Random(100 + s)
@@ -160,6 +164,7 @@ def e3_avl_bound():
         checks += 1
         assert T.inorder(t.root) == sorted(present)
     # Binet 꼴 근사를 NumPy 로: N(h) + 1 = F(h+2), F(k) = round(phi^k / sqrt5)
+    # Binet 식 F(k) = (phi^k - psi^k)/sqrt5 에서 psi^k 항이 작아 반올림하면 정수가 된다. h=25 까지 정확한지 대조
     hs = np.arange(1, 26)
     binet = np.rint(PHI ** (hs + 2) / np.sqrt(5)).astype(np.int64) - 1
     return {"phi": PHI, "c_phi": C_PHI, "table": table, "fibonacci_trees": fibs,
@@ -172,6 +177,7 @@ def _harmonic(n):
 
 
 def e4_random_bst():
+    # n <= 8 은 모든 넣는 순서 n! 가지를 전수로 평균한다(8! = 40,320). formula 는 이론식, 일치하는지 본다
     small = []
     for n in range(1, 9):
         tot, cnt, hmax_tot = 0, 0, 0
@@ -197,7 +203,7 @@ def e4_random_bst():
 
 class _Cnt:
     """sorted() 의 비교를 세려고 감싼 값."""
-    calls = 0
+    calls = 0  # 클래스 변수라 모든 인스턴스가 공유. 쓰기 전에 0 으로 되돌려야 한다(아래 e5_heap 참고)
 
     def __init__(self, v):
         self.v = v
@@ -224,6 +230,7 @@ def e5_heap():
             for x in xs:
                 h2.push(x)
             ok = T.check_heap(h1.a)[1] and T.check_heap(h2.a)[1]
+            # 부모 <= 자식을 NumPy 로 독립 재검사(0 부터 센 배열이라 부모 인덱스 (i-1)//2)
             arr = np.array(h1.a)
             idx = np.arange(1, n)
             np_ok = bool((arr[(idx - 1) // 2] <= arr[idx]).all())
@@ -239,6 +246,8 @@ def e5_heap():
     theirs = [heapq.heappop(ref) for _ in range(len(xs))]
     same = mine == theirs == sorted(xs)
     # 상위 k 개만 남기기(빔 서치의 후보 고르기와 같은 일): 크기 k 힙 vs 전체 정렬
+    # 크기 k 최소 힙을 "지금까지의 상위 k 개 중 가장 작은 값"을 뿌리에 둔 문지기로 쓴다.
+    # 새 값이 뿌리보다 크면 뿌리를 교체하고 내려 보낸다: 시간 O(N log k), 전체 정렬은 O(N log N)
     N, topk = 100_000, []
     rng = random.Random(2)
     scores = [rng.random() for _ in range(N)]
@@ -249,7 +258,7 @@ def e5_heap():
             if len(hk) < k:
                 hk.push(s)
             else:
-                c.sift += 1
+                c.sift += 1  # 뿌리와의 비교 1번을 직접 센다(BinaryHeap._less 를 거치지 않으므로)
                 if s > hk.a[0]:
                     hk.a[0] = s
                     hk._sift_down(0)
@@ -262,6 +271,7 @@ def e5_heap():
 
 
 def e6_traces():
+    # 위젯은 키 10개짜리 짧은 트레이스(정렬, 지그재그, 무작위)를 BST 와 AVL 에 각각 넣어 보여 준다
     n = 10
     sets = {"sorted": T.orders("sorted", n), "zigzag": T.orders("zigzag", n),
             "random": T.orders("random", n, random.Random(3))}

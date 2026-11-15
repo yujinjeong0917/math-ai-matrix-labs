@@ -17,6 +17,7 @@ CASE_NAMES = ("control", "spiky", "small_values", "flat_level", "monthly_bias", 
 def first_screen():
     """첫 화면 손 계산 예. 배달 5건의 도착 시간 예측 오차(분).
     A는 네 번 1분, 한 번 11분 틀리고, B는 다섯 번 모두 4분 틀린다."""
+    # MAE: A 3 < B 4, RMSE: A 5 > B 4 (sqrt(125/5), sqrt(80/5)). 목적에 따라 승자가 갈린다
     return np.array([1.0, 1.0, 1.0, 1.0, 11.0]), np.array([4.0, 4.0, 4.0, 4.0, 4.0])
 
 
@@ -28,12 +29,14 @@ def fixture_small():
         MASE = 1/(5/3) = 0.6, NMBE = 0
     B = 8, 18, 8, 18 -> e = 2, 2, 2, 2: MAE 2, RMSE 2, R^2 = 1 - 16/100 = 0.84, MAPE = 100*(0.2+0.1+0.2+0.1)/4 = 15,
         MASE = 2/(5/3) = 1.2, NMBE = 100*8/(4*15) = 13.33..."""
+    # docstring의 손 계산과 같은 값. 분모 5/3은 학습 구간 변화 2, 1, 2의 평균
     return (np.array([10.0, 12.0, 11.0, 13.0]), np.array([10.0, 20.0, 10.0, 20.0]),
             np.array([11.0, 19.0, 11.0, 19.0]), np.array([8.0, 18.0, 8.0, 18.0]))
 
 
 def _hourly_load(rng, n, level=100.0, amp=10.0, sd=3.0):
     """시간 단위 부하 y_t = level + amp sin(2 pi t / 24) + N(0, sd^2)."""
+    # 시간 인덱스 0..n-1
     t = np.arange(n)
     return level + amp * np.sin(2 * np.pi * t / 24.0) + rng.normal(0.0, sd, n)
 
@@ -43,6 +46,7 @@ def _hourly_load(rng, n, level=100.0, amp=10.0, sd=3.0):
 def big_miss_cost(e, tau=8.0, lam=5.0):
     """큰 실수가 비싼 비용: |e| + lam * max(|e| - tau, 0)의 평균. tau를 넘는 부분은 (1 + lam)배로 센다."""
     a = np.abs(e)
+    # |e| <= tau이면 비용 |e|, 넘으면 |e| + lam(|e| - tau). 큰 실수에 가중을 주는 비용 함수(이 장의 설정)
     return float(np.mean(a + lam * np.maximum(a - tau, 0.0)))
 
 
@@ -59,11 +63,14 @@ def objective_loss(case, which, name=None):
     if name == "relative":  # 가게마다 상대 오차가 똑같이 중요할 때
         return float(np.mean(np.abs(e) / np.abs(y)))
     if name == "monthly_total":  # 달마다 합계를 얼마나 틀렸나(요금 고지서 기준)
+        # 한 달의 시간 수(720). 평가 구간을 (달 수, 720)으로 접어 월 합계를 만든다
         k = case["month_len"]
+        # (12, 720) -> (12,) 월 합계. 길이가 월 길이의 배수여야 한다
         ys = y.reshape(-1, k).sum(axis=1)
         ps = p.reshape(-1, k).sum(axis=1)
         return float(np.mean(np.abs(ys - ps)))
     if name == "abs_after_offset":  # 검증 구간의 평균 오차만큼 더해서 쓴 뒤의 평가 구간 MAE
+        # 검증 구간의 평균 오차를 보정량으로 쓴다. 평가 구간 정보는 쓰지 않는다(누수 방지)
         shift = float(np.mean(case["y_val"] - case[which + "_val"]))
         return float(np.mean(np.abs(y - (p + shift))))
     raise ValueError(f"알 수 없는 목적: {name}")
@@ -73,6 +80,7 @@ def objective_loss(case, which, name=None):
 
 def make_case_control(seed, n_train=200, n_test=200):
     """대조군. A와 B가 같은 과정(잡음 표준편차 3)에서 나온다. 고를 이유가 없는 상황."""
+    # 사례마다 시드 대역(70000대~76000대)을 달리해 사례끼리 독립이 되게 한다
     rng = np.random.default_rng(70_000 + seed)
     y = _hourly_load(rng, n_train + n_test)
     yt = y[n_train:]
@@ -90,7 +98,9 @@ def make_case_spiky(seed, n_train=200, n_test=200, p_big=0.05, big=20.0):
     e_a = rng.normal(0.0, 1.0, n_test)
     k = int(round(p_big * n_test))
     idx = rng.choice(n_test, size=k, replace=False)
+    # 5%(10개)는 크기 20의 큰 실수. A의 MAE는 약 0.8*0.95 + 20*0.05 = 1.8, RMSE는 약 4.6으로 B(sd 3, MAE 2.4, RMSE 3)와 엇갈린다(근사값)
     e_a[idx] = big * rng.choice([-1.0, 1.0], size=k)
+    # e = y - yhat이므로 예측 = y - e_a
     return {"name": "spiky", "y_train": y[:n_train], "y_test": yt, "A": yt - e_a, "B": yt + rng.normal(0, 3.0, n_test),
             "objective": "big_miss", "alt_objective": "abs_units", "intended_flag": "spiky"}
 
@@ -100,9 +110,12 @@ def make_case_small_values(seed, n_train=200, n_test=200, sd_a=1.0, rel_b=0.2):
     A: 가게 크기와 상관없이 표준편차 1개만큼 틀림. B: 가게 크기의 20%만큼 틀림.
     R^2(=RMSE 순위)는 A, MAPE는 B를 고른다. 목적: 전체 몇 개를 틀렸나(abs_units). 두 번째 목적: 가게마다 상대 오차(relative)."""
     rng = np.random.default_rng(72_000 + seed)
+    # 로그정규: 평균 exp(1.5 + 0.5) = 약 7.4, 중앙값 약 4.5. 작은 값이 많다
     y = np.exp(rng.normal(1.5, 1.0, n_train + n_test))
     yt = y[n_train:]
+    # A는 크기와 무관한 절대 잡음(작은 가게에서는 상대 오차가 크다). 음수 예측은 0으로 자른다
     a = np.maximum(yt + rng.normal(0.0, sd_a, n_test), 0.0)
+    # B는 비례 잡음(상대 오차가 일정)
     b = yt * (1.0 + rng.normal(0.0, rel_b, n_test))
     return {"name": "small_values", "y_train": y[:n_train], "y_test": yt, "A": a, "B": b,
             "objective": "abs_units", "alt_objective": "relative", "intended_flag": "near_zero"}
@@ -115,7 +128,9 @@ def make_case_flat_level(seed, n_train=200, n_test=100, level=1000.0, sd=5.0, wi
     rng = np.random.default_rng(73_000 + seed)
     y = level + np.cumsum(rng.normal(0.0, sd, n_train + n_test))
     yt = y[n_train:]
+    # 평가 시점 t의 예측 = 바로 앞 10일 실제값의 평균. 미래값은 쓰지 않는다
     a = np.array([y[t - window:t].mean() for t in range(n_train, n_train + n_test)])
+    # 1스텝 naive: 평가 시점 t의 예측 = t-1일 실제값. 길이는 n_test
     b = y[n_train - 1:-1].copy()
     return {"name": "flat_level", "y_train": y[:n_train], "y_test": yt, "A": a, "B": b,
             "objective": "abs_units", "intended_flag": "below_naive"}
@@ -126,9 +141,11 @@ def make_case_monthly_bias(seed, n_train=672, months=12, bias=0.08, sd_a=15.0, s
     A: 편향 없음, 잡음 표준편차 15(6장의 25보다 작게 해서 R^2가 0 아래로 내려가지 않게 했다). B: 늘 8% 모자람, 잡음 표준편차 5.
     RMSE는 B, |NMBE|는 A를 고른다. 목적: 달마다 합계 오차(monthly_total). 두 번째 목적: 시간 단위 오차(abs_units)."""
     rng = np.random.default_rng(74_000 + seed)
+    # 한 달 = 30일 x 24시간 = 720시간(6장의 달력 월과 달리 단순화)
     month_len = 30 * 24
     n = n_train + months * month_len
     t = np.arange(n)
+    # 6장 base_load와 같은 형태. 정답의 잡음은 sd 5 고정
     y = 100.0 + 30.0 * np.sin(2 * np.pi * t / 24.0) + rng.normal(0.0, 5.0, n)
     yt = y[n_train:]
     return {"name": "monthly_bias", "y_train": y[:n_train], "y_test": yt,
@@ -143,7 +160,9 @@ def make_case_fixable_bias(seed, n_train=672, n_val=720, n_test=720, offset=9.0,
     y = _hourly_load(rng, n_train + n_val + n_test, amp=30.0)
     yv, yt = y[n_train:n_train + n_val], y[n_train + n_val:]
     return {"name": "fixable_bias", "y_train": y[:n_train], "y_test": yt, "y_val": yv,
+            # A는 늘 offset만큼 모자라는 정확하지만 치우친 모델, B는 편향 없고 흔들림이 큰 모델
             "A": yt - offset + rng.normal(0, sd_a, n_test), "B": yt + rng.normal(0, sd_b, n_test),
+            # 검증 달의 예측. 같은 과정에서 따로 뽑은 잡음으로 보정량을 정한다
             "A_val": yv - offset + rng.normal(0, sd_a, n_val), "B_val": yv + rng.normal(0, sd_b, n_val),
             "objective": "abs_after_offset", "intended_flag": "bias"}
 
@@ -153,10 +172,12 @@ def make_case_extrapolation(seed, n_train=50, n_test=50, noise=1.0):
     A: 직선. B: 2차식. 평가 R^2는 A가 0보다 작다. 목적: 틀린 크기(abs_units).
     MASE 분모를 위해 학습·평가 모두 x 순서로 정렬해 '계열'처럼 다룬다."""
     rng = np.random.default_rng(76_000 + seed)
+    # x 순서로 정렬해야 MASE 분모(이웃 값의 차이)가 계열처럼 의미를 갖는다
     xtr = np.sort(rng.uniform(0.0, 5.0, n_train))
     ytr = xtr ** 2 + rng.normal(0.0, noise, n_train)
     xte = np.sort(rng.uniform(5.0, 10.0, n_test))
     yte = xte ** 2 + rng.normal(0.0, noise, n_test)
+    # polyfit은 차수가 높은 항부터의 계수(기울기, 절편). polyval과 짝
     c1 = np.polyfit(xtr, ytr, 1)
     c2 = np.polyfit(xtr, ytr, 2)
     return {"name": "extrapolation", "y_train": ytr, "y_test": yte, "A": np.polyval(c1, xte), "B": np.polyval(c2, xte),

@@ -20,9 +20,13 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 RULES_FILE = HERE / "data" / "key_rules_2026-10-10.json"
+# 검사할 글자 파일 확장자(""는 확장자 없는 파일). 이미지·글꼴 같은 바이너리는 건너뛴다.
 TEXT_SUFFIXES = {".html", ".js", ".mjs", ".css", ".json", ".map", ".txt", ".svg", ".env", ".sql", ""}
+# 앞 글자가 키에 쓰이는 문자면 경계가 아니다. 긴 문자열 중간에서 접두사가 우연히 맞는 오탐을 줄인다.
 BOUNDARY = r"(?<![A-Za-z0-9_\-])"
+# 접두사 뒤에 이어지는 글자 8개 이상. 문서의 접두사만 있고 값이 없는 문장("sk_ 로 시작해요")은 무시하려는 기준(모형의 선택).
 TAIL = r"[A-Za-z0-9_\-]{8,}"
+# JWT(JSON Web Token) 모양: 머리.내용.서명 세 토막을 점으로 잇고, 머리는 항상 eyJ({" 의 base64)로 시작한다.
 JWT = re.compile(BOUNDARY + r"(eyJ[A-Za-z0-9_\-]+)\.([A-Za-z0-9_\-]+)\.([A-Za-z0-9_\-]+)")
 
 
@@ -42,9 +46,11 @@ def fingerprint(value):
 
 def jwt_role(header_b64, payload_b64):
     try:
+        # JWT는 base64의 끝 '=' 채움을 생략한다. 4의 배수로 맞춰 줘야 디코딩된다.
         pad = "=" * (-len(payload_b64) % 4)
         payload = json.loads(base64.urlsafe_b64decode(payload_b64 + pad))
         return payload.get("role")
+    # JWT처럼 생겼지만 디코딩·JSON 해석이 안 되면 키가 아닌 것으로 본다.
     except Exception:
         return None
 
@@ -59,9 +65,11 @@ def scan_text(text, mode="real", rules=None):
         found.append({"rule": rule_id, "kind": kind, "line": line,
                       "shown": mask(value, shown_prefix), "fp": fingerprint(value)})
 
+    # 모양 규칙으로 이미 찾은 값의 (시작, 끝) 위치. 이름 규칙이 같은 값을 중복 보고하지 않게 쓴다.
     spans = []
     for r in rules["rules"]:
         if mode == "real":
+            # real 모드에서 옛 JWT는 접두사가 아니라 아래 JWT 정규식으로 따로 찾는다.
             if not r["prefix"] or r["id"] == "supabase_legacy_jwt":
                 continue
             start = r["prefix"]
@@ -69,6 +77,7 @@ def scan_text(text, mode="real", rules=None):
             if not r["demo_marker"]:
                 continue
             start = r["demo_marker"]
+        # demo 모드는 표식 뒤 2글자 이상이면 충분하다(실습 가짜 값이 짧다). real은 TAIL 8글자 이상.
         pat = re.compile(BOUNDARY + re.escape(start) + (TAIL if mode == "real" else r"[A-Za-z0-9_\-]{2,}"))
         for m in pat.finditer(text):
             kind = r["kind"]
@@ -80,15 +89,19 @@ def scan_text(text, mode="real", rules=None):
     if mode == "real":
         for m in JWT.finditer(text):
             role = jwt_role(m.group(1), m.group(2))
+            # payload의 role로 공개/비밀을 가른다. anon은 브라우저에 넣어도 되는 키, service_role은 RLS를 우회하는 비밀 키.
             if role in ("anon", "service_role"):
                 add("supabase_legacy_jwt", "secret" if role == "service_role" else "public",
                     m.start(), m.group(0), "eyJ")
                 spans.append((m.start(), m.end()))
 
     for m in re.finditer(rules["name_rule"]["pattern"], text):
+        # 이름 규칙 정규식의 2번 그룹(값)의 시작 위치.
         v0 = m.start(2)
+        # 값 위치가 이미 찾은 구간 안이면 같은 키라 건너뛴다(반열린 구간 [a, b)).
         if any(a <= v0 < b for a, b in spans):      # 이미 모양으로 찾은 값이면 건너뛰어요
             continue
+        # 이름만 의심스러운 값은 kind="check"(사람이 확인). 공개/비밀을 단정하지 않는다.
         found.append({"rule": "name:" + m.group(1), "kind": "check", "line": text.count("\n", 0, m.start()) + 1,
                       "shown": m.group(2)[:6] + "…", "fp": fingerprint(m.group(2))})
     return found
@@ -103,6 +116,7 @@ def scan_dir(root, mode="real", rules=None):
         if not p.is_file() or "__pycache__" in p.parts:
             continue
         rel = p.relative_to(root).as_posix()
+        # 배포 폴더에 .env 파일이 있다는 사실 자체가 문제라 내용과 무관하게 따로 기록한다.
         if p.name.startswith(".env") or p.name.startswith("env."):
             report["env_files"].append(rel)
         if p.suffix not in TEXT_SUFFIXES and not p.name.startswith(("env.", ".env")):
@@ -122,6 +136,7 @@ def summary(report):
         out[f["kind"]] += 1
     out["files"] = report["files"]
     out["env_files"] = len(report["env_files"])
+    # 통과 조건: 비밀 키 0건이고 .env 파일 0개. public·check 항목은 통과를 막지 않는다.
     out["pass"] = out["secret"] == 0 and out["env_files"] == 0
     return out
 

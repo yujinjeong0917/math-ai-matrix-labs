@@ -15,8 +15,10 @@ DT = torch.float64
 def confusion(y, yhat):
     """[[TP, FN], [FP, TN]]. 행 = 실제(양성, 음성), 열 = 예측(양성, 음성)."""
     y = torch.as_tensor(y).long(); yhat = torch.as_tensor(yhat).long()
+    # one_hot(1 - y): y=1(양성)은 인덱스 0, y=0은 인덱스 1. 그래야 행렬 [[TP, FN], [FP, TN]]의 0행이 양성이 된다
     oy = torch.nn.functional.one_hot(1 - y, 2).to(DT)      # 0열 = 양성
     op = torch.nn.functional.one_hot(1 - yhat, 2).to(DT)
+    # (2, n) @ (n, 2) = (2, 2). (실제, 예측) 조합의 개수
     return oy.T @ op
 
 
@@ -30,6 +32,7 @@ def f_beta(cm, beta=1.0):
 def mcc(cm):
     cm = torch.as_tensor(cm, dtype=DT)
     tp, fn, fp, tn = cm[0, 0], cm[0, 1], cm[1, 0], cm[1, 1]
+    # 분모가 0이면 아래 나눗셈이 nan(또는 inf)이 된다
     den = torch.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
     return ((tp * tn - fp * fn) / den).item()  # 분모 0이면 nan (NumPy 기본 정책과 같다)
 
@@ -37,6 +40,7 @@ def mcc(cm):
 def roc_auc_pairs(y, s):
     """모든 (양성, 음성) 쌍을 비교. 동점은 1/2. 메모리가 P*N에 비례하니 작은 입력용."""
     y = torch.as_tensor(y).bool(); s = torch.as_tensor(s, dtype=DT)
+    # (P, N) 모든 (양성, 음성) 쌍의 점수 차. 양수면 양성이 앞선다
     d = s[y][:, None] - s[~y][None, :]
     return ((d > 0).to(DT).mean() + 0.5 * (d == 0).to(DT).mean()).item()
 
@@ -47,11 +51,13 @@ def average_precision(y, s):
     y_sorted = y[order]
     tp_all = torch.cumsum(y_sorted, 0)
     fp_all = torch.cumsum(1 - y_sorted, 0)
+    # 마지막 원소는 항상 덩어리의 끝이라 True로 시작
     change = torch.ones_like(s_sorted, dtype=torch.bool)
     change[:-1] = s_sorted[1:] != s_sorted[:-1]                 # 동점 덩어리의 마지막 위치
     tp, fp = tp_all[change], fp_all[change]
     r = tp / tp[-1]
     p = tp / (tp + fp)
+    # R_0 = 0을 붙여 R_n - R_{n-1}
     dr = torch.diff(torch.cat([torch.zeros(1, dtype=DT), r]))
     return (dr * p).sum().item()
 

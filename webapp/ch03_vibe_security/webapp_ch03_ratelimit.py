@@ -11,6 +11,7 @@ Retry-After로 알려 준다. 시간 T 동안 허용되는 요청 수는 B + rT 
 import math
 from fractions import Fraction as F
 
+# 용량 B와 충전 속도 r은 실습에서 정한 값이다. 서비스에 맞는 수치는 비용과 사용 패턴으로 따로 정해야 한다.
 CAPACITY = 5            # B: 한 번에 몰아 쓸 수 있는 최대 횟수(실습에서 정한 값)
 REFILL_PER_SEC = F(1, 12)  # r: 12초에 1개, 1분에 5개(실습에서 정한 값)
 
@@ -30,12 +31,15 @@ class TokenBucket:
     def __init__(self, capacity=CAPACITY, rate=REFILL_PER_SEC, now=F(0)):
         self.capacity = F(capacity)
         self.rate = F(rate)
+        # 처음에는 가득 찬 상태로 시작한다.
         self.tokens = F(capacity)
         self.last = F(now)
 
     def _refill(self, now):
         now = F(now)
+        # 시계가 거꾸로 가면 충전하지 않는다(음수 충전 방지).
         if now > self.last:
+            # 충전량 = 경과 시간 x r, 용량 B를 넘으면 버린다(상한 B).
             self.tokens = min(self.capacity, self.tokens + (now - self.last) * self.rate)
             self.last = now
 
@@ -45,6 +49,7 @@ class TokenBucket:
         if self.tokens >= 1:
             self.tokens -= 1
             return True, 0
+        # 남은 부족분 (1 - 토큰) / r 초를 올림. 헤더는 정수 초라 올림해야 그 시각에 다시 시도하면 통과한다.
         return False, math.ceil((1 - self.tokens) / self.rate)
 
 
@@ -57,6 +62,7 @@ class PerUserLimiter:
 
     def take(self, user):
         now = self.clock()
+        # 새 사용자의 버킷은 처음 본 시각 now에서 가득 찬 채로 시작한다.
         b = self.buckets.setdefault(user, TokenBucket(self.capacity, self.rate, now))
         return b.take(now)
 
@@ -68,6 +74,7 @@ class GlobalCounter:
         self.limit, self.count = limit, 0
 
     def take(self, user):
+        # 거부된 요청도 센다. 한도를 넘으면 이후 모두 거부되고 회복 규칙은 없다(비교용 단순 방식).
         self.count += 1
         return (self.count <= self.limit), 0
 
@@ -95,6 +102,7 @@ def bucket_take(capacity=CAPACITY, rate=REFILL_PER_SEC):
     buckets = {}
 
     def take(user, t):
+        # 첫 요청 시각 t를 버킷 시작 시각으로 쓴다.
         b = buckets.setdefault(user, TokenBucket(capacity, rate, t))
         return b.take(t)
     return take

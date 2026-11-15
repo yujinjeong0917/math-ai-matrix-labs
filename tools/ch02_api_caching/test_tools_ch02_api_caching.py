@@ -48,8 +48,10 @@ def test_price_multipliers_match_docs():
 
 def test_first_screen_hand_numbers():
     P, q = 10_000, 100
+    # 1.25 x 10,000 + 100 = 12,600. 두 번째부터는 0.1 x 10,000 + 100 = 1,100.
     assert F(5, 4) * P + q == 12_600            # 첫 호출(쓰기)
     assert F(1, 10) * P + q == 1_100            # 두 번째부터(읽기)
+    # 캐싱 없음 2번 20,200 대 캐싱 2번 13,700. 두 번째 호출에서 이미 캐싱이 싸다(n*=2).
     assert 2 * (P + q) == 20_200 and 12_600 + 1_100 == 13_700
     assert C.breakeven_calls(F(5, 4), F(1, 10)) == 2
 
@@ -59,6 +61,7 @@ def test_first_screen_hand_numbers():
 @pytest.mark.parametrize("w,r,n", [(F(5, 4), F(1, 10), 2), (F(2), F(1, 10), 3), (F(5, 4), F(1, 20), 2),
                                    (F(2), F(1, 20), 3), (F(1), F(1, 10), 2), (F(3), F(1, 10), 4)])
 def test_breakeven_formula_equals_bruteforce(w, r, n):
+    """닫힌 식과 브루트포스가 같고 손으로 구한 기대값 n과도 같다. w=3처럼 쓰기 할증이 큰 경우도 포함."""
     assert C.breakeven_calls(w, r) == n == C.breakeven_bruteforce(w, r)
 
 
@@ -76,6 +79,7 @@ def test_openai_doc_claims():
     M, r, w = 1024, F(1, 10), F(5, 4)
     assert M * r == F(1024, 10) and M * (w - r) == F(11776, 10)
     cross = M * r + M * (w - r) / 10
+    # 102.4 + 1,177.6 / 10 = 220.16. 길이 L이 이보다 커야 해서 정수로는 221 이상.
     assert cross == F(22016, 100)
     assert min(L for L in range(1, 2000) if L * 10 > M * (w + 9 * r)) == 221
 
@@ -83,10 +87,12 @@ def test_openai_doc_claims():
 # ---------- 캐시 흉내 ----------
 
 def blocks(q="a"):
+    """테스트용 요청: 지시문 3,000 + 예시 5,000 + 문의 24,000 + 질문 150 토큰. 질문만 q로 바뀐다."""
     return [("rules", 3000), ("examples", 5000), ("inq", 24000), (f"q:{q}", 150)]
 
 
 def test_cache_hit_needs_identical_prefix_and_refreshes_ttl():
+    """같은 앞부분이면 읽고, 읽을 때마다 TTL이 다시 시작된다. 시간 단위는 분."""
     c = C.PrefixCache(ttl_minutes=5, min_tokens=512)
     u1 = c.request(blocks("a"), [1, 2], t=0)
     assert u1 == {"input_tokens": 150, "cache_creation_input_tokens": 32000, "cache_read_input_tokens": 0}
@@ -102,12 +108,14 @@ def test_partial_prefix_reuse_when_bundle_changes():
     c = C.PrefixCache(ttl_minutes=5, min_tokens=512)
     c.request(blocks(), [1, 2], t=0)
     b = blocks()
+    # 여기서는 문의 묶음(인덱스 2)을 새 key로 바꾼다. 캐시 지점 1(예시 끝)은 일치, 지점 2는 불일치.
     b[2] = ("inq-v2", 24000)          # 문의 묶음만 바뀜: 지시문+예시 8,000은 읽고 묶음 24,000은 새로 쓴다
     u = c.request(b, [1, 2], t=1)
     assert u["cache_read_input_tokens"] == 8000 and u["cache_creation_input_tokens"] == 24000
 
 
 def test_below_minimum_is_not_cached():
+    """최소 캐시 토큰(512)에 못 미치는 400토큰은 3번 반복해도 읽기·쓰기 없이 일반 입력만 센다."""
     c = C.PrefixCache(ttl_minutes=5, min_tokens=512)
     for t in range(3):
         u = c.request([("short", 400), (f"q{t}", 150)], [0], t=t)
@@ -130,12 +138,14 @@ def test_anthropic_doc_example_breakpoint_on_changing_block_never_reads():
 # ---------- 관통 프로젝트 ----------
 
 def test_project_sizes():
+    """관통 프로젝트 데이터의 크기 확인: 안 바뀌는 앞부분 32,000, 호출당 입력 32,150, 절 12개."""
     p = PJ.load_project()
     assert PJ.prefix_tokens(p) == 32000 and len(p["sections"]) == 12
     assert PJ.prefix_tokens(p) + p["blocks"][-1]["tokens"] == 32150
 
 
 def test_failure_scenarios_with_sonnet_5_5():
+    """8개 시나리오의 (쓰기 횟수, 읽기 횟수)와 금액. 금액 기대값은 달러(Fraction 정확 비교)."""
     p = PJ.load_project()
     m = C.price_of("claude-sonnet-5-5")
     got = {s: PJ.run(p, s, m) for s in PJ.SCENARIOS}
@@ -144,7 +154,9 @@ def test_failure_scenarios_with_sonnet_5_5():
                   "breakpoint_on_question": (12, 0), "gap10_5m": (12, 0), "gap10_1h": (1, 11),
                   "short_prompt": (0, 0)}
     g = got["good"]
+    # 캐싱 없음: 32,150 x 12 x $2/100만 = 0.7716. 캐싱: 한 번 쓰고 열한 번 읽는 값이 0.1188.
     assert g["input_cost_nocache"] == F(7716, 10000) and g["input_cost_cache"] == F(1188, 10000)
+    # 출력 700 x 12 x $10/100만 = 0.084. 출력은 캐시와 무관.
     assert g["output_cost"] == F(84, 1000)
     # 앞에 날짜를 넣거나 10분 간격으로 5분 캐시를 쓰면 캐싱 없음보다 비싸다
     for s in ("timestamp_front", "question_first", "breakpoint_on_question", "gap10_5m"):
@@ -154,6 +166,7 @@ def test_failure_scenarios_with_sonnet_5_5():
 
 
 def test_weekly_saving_is_smaller_once_output_is_counted():
+    """출력 비용은 캐시로 안 줄므로 출력을 포함한 절감률이 입력만의 절감률보다 작다(모든 모델)."""
     p = PJ.load_project()
     for m in C.load_prices()["models"]:
         r = PJ.run(p, "good", m)
@@ -165,11 +178,13 @@ def test_weekly_saving_is_smaller_once_output_is_counted():
 # ---------- usage 두 모양 ----------
 
 def test_usage_shapes_give_same_cost_and_double_count_is_wrong():
+    """같은 요청을 두 usage 모양으로 읽어도 금액이 같고, 이중 계산하면 틀린 값이 나온다."""
     m = C.price_of("gpt-6.1-sol")
     a = {"input_tokens": 150, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 32000}
     o = C.to_openai_usage(a)
     assert o["input_tokens"] == 32150 and o["input_tokens_details"]["cached_tokens"] == 32000
     assert C.cost_anthropic_usage(a, m) == C.cost_openai_usage(o, m) == F(35, 10000)
+    # 틀린 값: 32,150 x $2 + 32,000 x $0.1 = 0.0675 (맞는 값 0.0035의 약 19배).
     assert C.cost_openai_double_count(o, m) == F(675, 10000)
     # OpenAI 문서 예: 두 번째 요청 input 15000 = cached 12000 + write 3000
     o2 = {"input_tokens": 15000, "input_tokens_details": {"cached_tokens": 12000, "cache_write_tokens": 3000}}
@@ -179,6 +194,7 @@ def test_usage_shapes_give_same_cost_and_double_count_is_wrong():
 # ---------- 요청 메시지와 SDK 흉내 ----------
 
 def test_request_example_structure():
+    """예시 요청의 칸 순서와 캐시 지점 수(규칙의 최대치 이하)를 확인한다."""
     req = RQ.load_example()
     assert list(req) == ["model", "max_tokens", "system", "messages"]
     assert RQ.breakpoints_of(req) == [1, 2]
@@ -187,9 +203,11 @@ def test_request_example_structure():
 
 
 def test_sdk_like_client_retries_and_headers():
+    """재시도 횟수, 대기(0.5초, 1초), 머리글, 재시도 안 하는 오류, 필수 칸 누락 오류를 확인한다."""
     t = RQ.FakeTransport([429, 529])
     c = RQ.MiniClient(t, env={"ANTHROPIC_API_KEY": "sk-test"})
     r = c.create(**RQ.load_example())
+    # 429, 529 두 번 실패 후 세 번째 성공이므로 대기는 두 번(0.5, 1.0).
     assert r["attempts"] == 3 and c.waits == [0.5, 1.0]
     h = t.calls[0]["headers"]
     assert h["anthropic-version"] == "2023-06-01" and h["x-api-key"] == "sk-test"
@@ -208,6 +226,7 @@ def test_sdk_like_client_retries_and_headers():
 # ---------- 결과 파일 ----------
 
 def test_results_file_matches_recomputation():
+    """저장된 결과 파일이 코드 재계산과 같은지 본다(float은 6자리 반올림해 비교)."""
     res = json.loads((HERE / "results" / "ch02.json").read_text(encoding="utf-8"))
     assert res["e0_hand"]["n_star"] == 2 and res["e8_crosscheck"]["mismatches"] == 0
     p = PJ.load_project()
@@ -228,6 +247,7 @@ def test_reader_log_example_rows():
 
 
 def test_exercises_in_chapter():
+    """장 본문 연습문제의 정답 숫자를 코드로 확인한다."""
     # 연습 1: 1시간 보관(w = 2), 앞부분 10,000 + 질문 100, 토큰 1개 1원
     assert 2 * 10_000 + 100 + 1_100 == 21_200 and 21_200 + 1_100 == 22_300
     # 연습 3: 이름 블록을 질문 바로 앞(캐시 지점 뒤)으로 옮기면 1번 쓰기, 11번 읽기
@@ -237,8 +257,10 @@ def test_exercises_in_chapter():
     for i, s in enumerate(p["sections"]):
         b = PJ.base_blocks(p, s)
         who = p["requesters"][i % 3]
+        # 이름 블록(20토큰)을 질문 바로 앞, 마지막 캐시 지점 뒤에 끼운다. 앞부분 key가 변하지 않아 적중한다.
         b = b[:3] + [(f"name:{who}", 20)] + b[3:]
         us.append(c.request(b, [1, 2], t=i))
     assert sum(u["cache_creation_input_tokens"] > 0 for u in us) == 1
     assert sum(u["cache_read_input_tokens"] > 0 for u in us) == 11
+    # 캐시 지점 뒤 일반 입력 = 이름 20 + 질문 150.
     assert all(u["input_tokens"] == 170 for u in us)

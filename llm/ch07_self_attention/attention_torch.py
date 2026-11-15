@@ -3,6 +3,9 @@
 attention_np.py와 같은 수식을 텐서로 옮기고, 학습 비교에 쓸 세 모델을 정의한다.
 - self_attention: NumPy 구현과 한 줄씩 대응한다.
 - RNNClassifier / LSTMClassifier / AttentionClassifier: 같은 입력에서 학습 안정성을 비교한다.
+
+텐서 모양: 임베딩 x (batch, n, d), 가중치 W* (d, d_k). 분류기 입력 토큰 id (batch, n), 출력 로짓 (batch, n_classes).
+experiments.py의 E4(첫 토큰 기억 과제), E5(스케일 유무)에서 쓴다.
 """
 
 import math
@@ -13,19 +16,25 @@ import torch.nn.functional as F
 
 
 def self_attention(x, Wq, Wk, Wv, causal=False, scale=True, return_weights=False):
+    # 식: Q = X W_Q 등. (..., n, d) @ (d, d_k) -> (..., n, d_k), 앞쪽 batch 차원은 그대로 따라간다
     Q, K, V = x @ Wq, x @ Wk, x @ Wv
+    # 식: Q K^T. 마지막 두 축만 바꿔야 해서 transpose(-2, -1): (..., n, n)
     scores = Q @ K.transpose(-2, -1)
     if scale:
+        # 식: / sqrt(d_k)
         scores = scores / math.sqrt(K.shape[-1])
     if causal:
         n = x.shape[-2]
+        # 위쪽 삼각(j > i)을 -inf로 채운다. NumPy 구현의 causal_mask 덧셈과 같은 효과
         scores = scores.masked_fill(torch.triu(torch.ones(n, n, dtype=torch.bool), 1), float("-inf"))
+    # A: (..., n, n), 마지막 축(키 방향)으로 합 1
     A = torch.softmax(scores, dim=-1)
     return (A @ V, A) if return_weights else A @ V
 
 
 def self_attention_builtin(x, Wq, Wk, Wv, causal=False):
     """PyTorch 내장 커널. 직접 구현과 수치가 같아야 한다."""
+    # 내장 커널은 scale 기본값이 1/sqrt(d_k)라 위 직접 구현(scale=True)과 대응한다
     return F.scaled_dot_product_attention(x @ Wq, x @ Wk, x @ Wv, is_causal=causal)
 
 
@@ -38,6 +47,7 @@ class RNNClassifier(nn.Module):
 
     def forward(self, x):
         h, _ = self.rnn(self.emb(x))
+        # h: (batch, n, d) -> 마지막 시점 h[:, -1]: (batch, d) -> 로짓 (batch, n_classes)
         return self.out(h[:, -1])  # 마지막 시점의 상태만으로 답한다
 
 
@@ -55,6 +65,7 @@ class AttentionClassifier(nn.Module):
 
     def forward(self, x):
         h = self.emb(x)
+        # y: (batch, n, d). causal이라 마지막 위치 y[:, -1]은 모든 이전 위치를 볼 수 있다
         y = self_attention(h, self.Wq, self.Wk, self.Wv, causal=True, scale=self.scale)
         return self.out(y[:, -1])
 

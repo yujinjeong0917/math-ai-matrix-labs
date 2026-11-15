@@ -65,9 +65,12 @@ class MLP:
         Q, acts = self.forward(X, keep=True)
         B = len(A)
         idx = np.arange(B)
+        # y는 배열로 이미 계산된 상수라 목표 쪽으로는 기울기가 흐르지 않는다(DQN의 반경사 성질)
         err = Q[idx, A] - y                      # 예측 - 목표
+        # 식: L = (1/B) Σ_j 1/2 (y_j - Q(s_j, a_j))²  (DQN 손실, 벨만 목표 y는 td_target에서 만든다)
         loss = 0.5 * float(np.mean(err ** 2))
         dZ = np.zeros_like(Q)
+        # 식: ∂L/∂Q(s_j, a_j) = (Q(s_j, a_j) - y_j) / B. 출력 (B, 2) 중 실제로 한 행동의 칸만 값이 있다
         dZ[idx, A] = err / B                     # 고른 행동 칸에만 기울기가 흐른다
         gW, gb = [None] * len(self.W), [None] * len(self.W)
         for i in range(len(self.W) - 1, -1, -1):
@@ -87,12 +90,14 @@ class Adam:
 
     def step(self, params, grads):
         self.t += 1
+        # 식: 편향 보정 m̂ = m / (1 - β1^t), v̂ = v / (1 - β2^t). m, v가 0에서 시작해 초반에 작게 나오는 것을 바로잡는다(c1, c2가 분모)
         c1, c2 = 1 - self.b1 ** self.t, 1 - self.b2 ** self.t
         for p, g, m, v in zip(params, grads, self.m, self.v):
             m *= self.b1
             m += (1 - self.b1) * g
             v *= self.b2
             v += (1 - self.b2) * g * g
+            # 식: θ <- θ - lr m̂ / (√v̂ + ε)  (Adam 갱신)
             p -= self.lr * (m / c1) / (np.sqrt(v / c2) + self.eps)   # 제자리에서 고친다
 
 
@@ -115,6 +120,8 @@ class ReplayBuffer:
         self.count = 0
 
     def add(self, s, a, r, s2, fell):
+        # 원형 버퍼: ptr이 다음에 쓸 칸. 꽉 차면 ptr이 한 바퀴 돌아 가장 오래된 전이를 덮어쓴다(아래 % cap)
+        # F에는 fell(진짜 종료)만 넣는다. 시간 제한으로 잘린 판은 0이라 목표에서 부트스트랩이 유지된다
         i = self.ptr
         self.S[i], self.A[i], self.R[i], self.S2[i], self.F[i] = s, a, r, s2, float(fell)
         self.t_added[i] = self.count
@@ -123,10 +130,13 @@ class ReplayBuffer:
         self.n = min(self.n + 1, self.cap)
 
     def sample_uniform(self, batch):
+        # 재생: 버퍼에 든 전이 n개에서 균등하게 복원 추출(중복 가능). 연속 전이의 상관을 깨는 것이 목적
         idx = self.rng.integers(0, self.n, size=batch)
         return self._get(idx)
 
     def latest(self, batch):
+        # "재생 없음" 조건. 함정: 버퍼에 든 전이가 batch개보다 적으면 아직 안 채운 칸(0)이 섞인다.
+        # dqn()은 learn_start(1,000) 이후에만 부르므로 batch 32에서는 문제가 없다
         idx = (self.ptr - 1 - np.arange(batch)) % self.cap   # 방금 들어온 것부터 거꾸로 batch개
         return self._get(idx)
 
@@ -142,10 +152,14 @@ def td_target(net, tgt, R, S2, F, gamma, double):
     단일: 타깃망이 고르고 타깃망이 매긴다.  Double: 지금 망이 고르고 타깃망이 매긴다."""
     Q2_t = tgt.forward(feat(S2))
     if double:
+        # 식 (Double DQN): a* = argmax_a' Q_net(s', a'),  다음 점수 = Q_tgt(s', a*)  (고르는 망과 매기는 망을 나눈다)
         a_star = np.argmax(net.forward(feat(S2)), axis=1)
         nxt = Q2_t[np.arange(len(R)), a_star]
     else:
+        # 식 (DQN): 다음 점수 = max_a' Q_tgt(s', a')  (같은 타깃망이 고르고 매겨 잡음의 최댓값이 부풀려진다)
         nxt = Q2_t.max(axis=1)
+    # 식: y = r + γ (1 - done) · 다음 점수. F=1(쓰러짐)이면 γ 항이 사라져 y = r. 잘린 판(F=0)은 부트스트랩을 유지한다
+    # use_target=False일 때는 tgt가 net과 같은 객체라 목표가 매 갱신마다 따라 움직인다(dqn() 참고)
     return R + gamma * (1.0 - F) * nxt
 
 
@@ -161,13 +175,14 @@ class Config:
     gamma: float = 0.99
     C: int = 500               # 타깃망을 이만큼 고칠 때마다 복사
     learn_start: int = 1_000   # 이 걸음까지는 무작위 행동만, 고치지 않음
+    # ε 감쇠: eps_start에서 eps_steps 걸음에 걸쳐 직선으로 eps_end까지 줄이고 그 뒤는 eps_end 고정(dqn()의 eps 줄)
     eps_start: float = 1.0
     eps_end: float = 0.05
     eps_steps: int = 10_000
     eval_every: int = 2_500
     eval_starts: int = 3
-    cap: int = 500
-    q_limit: float = 1e4
+    cap: int = 500             # 한 판 상한 걸음. 잘리면 실패가 아니므로 목표에서 부트스트랩을 끊지 않는다
+    q_limit: float = 1e4       # |Q|가 이 값을 넘으면 발산으로 보고 학습을 멈춘다(보상 1, γ 0.99면 참값 상한은 100)
 
 
 @dataclass
@@ -194,6 +209,7 @@ def greedy_episode(net, seed, cap, gamma):
     while True:
         a = int(np.argmax(net.forward(feat(s)[None])[0]))
         s, r, fell, trunc = env.step(a)
+        # 식: G_0 = Σ_t γ^t R_{t+1}  (disc = γ^t). 평가용 판에서 실제로 받은 할인 리턴, Q의 예측(q0)과 비교한다
         g += disc * r
         disc *= gamma
         n += 1
@@ -209,6 +225,8 @@ def dqn(seed, use_replay=True, use_target=True, double=False, cfg=None, log=None
     rng = np.random.default_rng(seed)
     env = cp.CartPole(seed, cfg.cap)
     net = MLP([4, cfg.hidden, cfg.hidden, 2], seed)
+    # 타깃 네트워크: 복사본(clone)이면 C번 고칠 때까지 목표가 고정된다. use_target=False면 같은 객체(별칭)라
+    # 목표 y도 net이 고쳐질 때마다 함께 변한다(타깃 장치를 끈 조건)
     tgt = net.clone() if use_target else net
     opt = Adam(net.params(), cfg.lr)
     buf = ReplayBuffer(cfg.buffer, seed + 10_000)
@@ -216,7 +234,10 @@ def dqn(seed, use_replay=True, use_target=True, double=False, cfg=None, log=None
     s = env.reset()
     ep, t_ep, losses = 0, 0, []
     for step in range(1, cfg.steps + 1):
+        # 식: ε_t = max(ε_end, ε_start - (ε_start - ε_end) · t / eps_steps)  (선형 감쇠, t = step)
+        # 기본값이면 step 10,000에서 0.05에 닿는다. step 1에서는 0.9999
         eps = max(cfg.eps_end, cfg.eps_start - (cfg.eps_start - cfg.eps_end) * step / cfg.eps_steps)
+        # ε-탐욕: learn_start까지는 ε와 무관하게 무작위(학습 전이라 Q가 의미 없음), 그 뒤는 확률 ε로 무작위, 아니면 argmax Q
         if step <= cfg.learn_start or rng.random() < eps:
             a = int(rng.integers(2))
         else:
@@ -236,8 +257,11 @@ def dqn(seed, use_replay=True, use_target=True, double=False, cfg=None, log=None
             t_ep = 0
             s = env.reset()
         if step > cfg.learn_start:
+            # 걸음마다 미니배치 batch개로 한 번 고친다. 재생 있음: 버퍼에서 균등 추출, 없음: 방금 겪은 연속 전이
             S, A, R, S2, F = buf.sample_uniform(cfg.batch) if use_replay else buf.latest(cfg.batch)
+            # 식: y = r + γ (1 - done) max_a' Q_tgt(s', a')  (double이면 a'를 net이 고름). 계산은 td_target
             y = td_target(net, tgt, R, S2, F, cfg.gamma, double)
+            # 식: L = mean 1/2 (y - Q(s, a))². 기울기는 Q(s, a)로만 흐르고 y로는 흐르지 않는다
             loss, grads, Q = net.grad(feat(S), A, y)
             opt.step(net.params(), grads)
             run.updates += 1
@@ -247,6 +271,7 @@ def dqn(seed, use_replay=True, use_target=True, double=False, cfg=None, log=None
             if not np.isfinite(loss) or mq > cfg.q_limit:
                 run.diverged_at = step
                 break
+            # 복사 주기 C는 환경 걸음이 아니라 "고친 횟수(updates)" 기준. 복사 직후부터 다음 C번 동안 tgt는 그대로
             if use_target and run.updates % cfg.C == 0:
                 tgt.copy_from(net)
                 run.target_copies += 1
@@ -273,12 +298,14 @@ def dqn(seed, use_replay=True, use_target=True, double=False, cfg=None, log=None
 def coin_max_exact(K):
     """참값 0, 추정값이 +1 또는 -1 반반인 동전 K개. 가장 큰 값의 평균을 2^K 경우를 다 세어 구한다."""
     from itertools import product
+    # 식: E[max] = 1 - 2 (1/2)^K  (최댓값이 -1이려면 K개 모두 -1, 확률 (1/2)^K). 참값은 0이므로 이 값이 곧 과대추정 크기
     vals = [max(c) for c in product((-1, 1), repeat=K)]
     return sum(vals) / len(vals)
 
 
 def expected_max_normal(K, lo=-12.0, hi=12.0, n=200_001):
     """표준정규 K개 중 최댓값의 기댓값 = 적분 x * K * phi(x) * Phi(x)^(K-1) dx (사다리꼴 수치적분)."""
+    # 식: E[max] = ∫ x K φ(x) Φ(x)^(K-1) dx  (최댓값의 밀도 = K φ Φ^(K-1)). [-12, 12]면 정규분포 꼬리가 사실상 0이라 구간을 잘라도 된다
     x = np.linspace(lo, hi, n)
     phi = np.exp(-0.5 * x * x) / math.sqrt(2 * math.pi)
     Phi = 0.5 * (1.0 + np.vectorize(math.erf)(x / math.sqrt(2.0)))
@@ -292,6 +319,8 @@ def max_bias_experiment(K, n, seed, mu=None):
     mu = np.zeros(K) if mu is None else np.asarray(mu, dtype=float)
     A = mu + rng.standard_normal((n, K))
     B = mu + rng.standard_normal((n, K))
+    # A, B는 같은 참값 mu에 독립 잡음을 더한 두 추정치(Q_A, Q_B에 해당)
+    # 식 (단일): max_a Q_A(a) / 식 (Double): Q_B(argmax_a Q_A(a)). 고르는 쪽의 잡음이 매기는 쪽에 없어 치우침이 줄어든다
     single = A.max(axis=1)
     double = B[np.arange(n), A.argmax(axis=1)]
     return {"single": float(single.mean()), "double": float(double.mean()), "true_max": float(mu.max()),

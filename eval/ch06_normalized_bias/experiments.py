@@ -39,6 +39,7 @@ def q(a, p=(5, 50, 95)):
     return {"mean": float(a.mean()), **{f"p{k}": float(np.percentile(a, k)) for k in p}}
 
 
+# 한 예측에 대한 지표 묶음. bias_sq + var = mse 분해를 함께 담는다
 def all_metrics(y, yhat, p=1):
     d = m.mse_decomposition(y, yhat)
     return {"mae": m.mae(y, yhat), "rmse": m.rmse(y, yhat), "mbe": m.mbe(y, yhat),
@@ -53,11 +54,13 @@ def e0_first_screen():
         out[k + "_errors"] = m.errors(y, p).tolist()
         out[k + "_n_denominator"] = all_metrics(y, p, p=0)
         out[k + "_ashrae_p1"] = {"nmbe": m.nmbe(y, p, p=1), "cv_rmse": m.cv_rmse(y, p, p=1)}
+        # 평균 오차만큼 예측 전체를 평행이동(상수 보정)
         corrected = p + m.mbe(y, p)
         out[k + "_after_offset"] = {"shift": m.mbe(y, p), "rmse": m.rmse(y, corrected), "nmbe": m.nmbe(y, corrected, p=0)}
     return out
 
 
+# 정답 하나에 A(편향 0, 잡음 25)와 B(8% 모자람, 잡음 5)를 만든다
 def models(seed, bias=0.08, sd_a=25.0, sd_b=5.0):
     y = cases.base_load(seed=seed)
     return y, cases.case_unbiased_noisy(y, sd=sd_a, seed=seed), cases.case_biased_steady(y, bias=bias, sd=sd_b, seed=seed)
@@ -80,6 +83,7 @@ def e1_failure():
 def run_seeds(bias=0.08, sd_a=25.0, seeds=SEEDS, base=1000):
     keys = ("A_hourly", "A_monthly", "B_hourly", "B_monthly")
     passes = {k: 0 for k in keys}
+    # 불합격 원인 분류: NMBE만 / CV만 / 둘 다 기준 초과
     fails_by = {k: {"nmbe_only": 0, "cv_only": 0, "both": 0} for k in keys}
     vals = {k: {"nmbe": [], "cv_rmse": []} for k in keys}
     rmse_picks_b = 0
@@ -93,6 +97,7 @@ def run_seeds(bias=0.08, sd_a=25.0, seeds=SEEDS, base=1000):
             c = m.ashrae_check(yy, pp, res)
             passes[k] += c["pass"]
             if not c["pass"]:
+                # 둘 다 실패면 both, CV는 통과하고 NMBE만 실패면 nmbe_only, 그 반대면 cv_only
                 fails_by[k]["both" if not (c["nmbe_ok"] or c["cv_ok"]) else ("nmbe_only" if c["cv_ok"] else "cv_only")] += 1
             vals[k]["nmbe"].append(c["nmbe"]); vals[k]["cv_rmse"].append(c["cv_rmse"])
     return {"passes": {k: int(v) for k, v in passes.items()}, "rmse_picks_B": int(rmse_picks_b), "fails_by": fails_by,
@@ -106,6 +111,7 @@ def e2_seeds():
 
 def e3_sweeps():
     bias_rows = {}
+    # B의 편향 비율을 훑어 합격 경계를 찾는다(월 합계 NMBE 5% 근처가 경계 후보)
     for bias in (0.02, 0.04, 0.045, 0.05, 0.06, 0.08, 0.10, 0.12):
         r = run_seeds(bias=bias, seeds=SEEDS, base=3000)
         bias_rows[str(bias)] = {"B_hourly_pass": r["passes"]["B_hourly"], "B_monthly_pass": r["passes"]["B_monthly"],
@@ -146,6 +152,7 @@ def e4_offset():
 def e5_conventions():
     y, _, b = models(0)
     ym, bm = cases.aggregate_monthly(y, b)
+    # SFA의 norm으로 관측 최댓값을 쓴다(정격 용량을 모를 때의 대용)
     hourly_norm = float(np.max(y))
     rows = {}
     for name, (yy, pp, norm) in {"hourly": (y, b, hourly_norm), "monthly": (ym, bm, float(np.max(ym)))}.items():
@@ -175,6 +182,7 @@ def e6_nmae():
         flips_same += len(set(picks.values())) > 1
     # 서로 다른 발전소: 공급사 A는 흐린 발전소 P, 공급사 B는 맑은 발전소 Q의 예측을 맡았다(이 장에서 고른 설정)
     cap = 100.0
+    # 분모별로 A가 이긴 횟수
     wins = {"capacity": 0, "mean": 0, "range": 0}
     flips_cross = 0
     seed0 = None
@@ -204,7 +212,9 @@ def e7_fixture_torch():
     y, p = cases.fixture_ashrae()
     yi, pi = [int(v) for v in y], [int(v) for v in p]
     e = [a - b for a, b in zip(yi, pi)]
+    # 정수 fixture이므로 분수로 정확히 계산(5)
     exact_nmbe = Fraction(100 * sum(e), (len(e) - 1) * Fraction(sum(yi), len(yi)))
+    # 루트를 피하려고 CV^2를 정확한 분수로(150)
     exact_cv_sq = Fraction(100 ** 2) * Fraction(sum(v * v for v in e), len(e) - 1) / Fraction(sum(yi), len(yi)) ** 2
     exact_femp = Fraction(100 * sum(-v for v in e), sum(yi))
     rng = np.random.default_rng(7)

@@ -4,8 +4,13 @@
 토큰 대신 글자 수를 대용으로 쓴다(실제 토큰 수와 다르다). 정책 조항 8개의 길이는 아래 문장의 실제 글자 수이고,
 대화·도구 결과의 길이는 턴 번호로 정한 가상 값이다. 가짜 에이전트는 조항이 컨텍스트에 있으면 거절·사람에게 넘기기로,
 없으면 환불 승인으로 답하는 규칙표다. 실제 모델이 긴 글에서 조항을 얼마나 놓치는지는 재지 않는다.
+
+입력: 코드 안의 머리말, 정책 8조항, 턴 수(n_turns). 출력: 전략(S1~S3)별 남은 글자 수, 잃은 조항, 잘린 고객 메시지 수.
+README 대응: 머리말 46자, 조항 합계 887자, 6턴 5,493자, 7턴 6,268자(예산 6,000자를 268자 초과), 첫 초과 턴 7.
+모형의 단순화: 글자 수 = 토큰 수의 대용, 항목 단위로 통째로 자르며 부분 삭제는 없다.
 """
 
+# 글자 수 예산(가상)
 BUDGET = 6_000   # 글자 수 예산(가상). 실제 모델의 창 크기가 아니다.
 
 HEADER = "당신은 환불 문의를 처리하는 도우미입니다. 도구 결과와 정책에 근거해서만 답하세요."
@@ -21,6 +26,7 @@ POLICY = [
 ]
 
 
+# 턴 길이: 90+10(i%4) + 420+70(i%3) + 150+15(i%3). i%4, i%3은 턴마다 길이를 조금씩 달리하려는 가상 규칙이다.
 def turn_items(i):
     """i번째 턴(1부터)의 글 세 덩어리: 고객 메시지, 도구 결과, 에이전트 답. 길이는 턴 번호로 정한 가상 값."""
     return [
@@ -32,6 +38,7 @@ def turn_items(i):
 
 def build_context(n_turns):
     """컨텍스트 항목 목록. 항목은 (종류, 이름, 글자 수, 고정 여부)이고 앞쪽이 가장 오래된 글이다."""
+    # 항목: (종류, 이름, 글자 수, 고정 여부). 머리말과 정책만 고정(True), 대화 항목은 False.
     items = [("system", "header", len(HEADER), True)]
     items += [("policy", pid, len(text), True) for pid, _, text in POLICY]
     for i in range(1, n_turns + 1):
@@ -49,17 +56,21 @@ KEEP_RECENT_TURNS = 2
 
 def apply_strategy(items, strategy, budget=BUDGET):
     """S1 앞에서부터 자르기 / S2 정책 고정 + 오래된 대화부터 자르기 / S3 정책 고정 + (예산을 넘으면) 최근 2턴 밖의 도구 결과를 지운 뒤 그래도 넘으면 자르기."""
+    # 원본 목록을 바꾸지 않으려고 복사한다.
     items = list(items)
+    # S3의 첫 단계: 최근 2턴 밖의 도구 결과를 40자 자리표시로 줄인다. 예산 안이면 아무것도 하지 않는다(테스트 run(6, S3) == run(6, S2)).
     if strategy == "S3" and total(items) > budget:     # 예산을 넘을 때만 오래된 도구 결과를 지운다
         last_turns = {f"T{t}" for t in _turn_numbers(items)[-KEEP_RECENT_TURNS:]}
         items = [(k, n, PLACEHOLDER, p) if (k == "tool" and n not in last_turns) else (k, n, s, p)
                  for k, n, s, p in items]
+    # 예산 안에 들어올 때까지 한 항목씩 앞에서 지운다. S1은 앞에서부터라 머리말과 앞 조항이 먼저 사라지고, S2·S3은 고정 항목을 건너뛰어 가장 오래된 대화 항목부터 사라진다.
     while total(items) > budget:
         for idx, it in enumerate(items):
             if strategy == "S1" or not it[3]:      # S1은 고정 개념이 없다. S2·S3은 고정 항목을 건너뛴다.
                 del items[idx]
                 break
         else:
+            # for-else: 지울 수 있는 항목이 하나도 없는데 예산을 넘으면 오류(테스트가 예산 500으로 확인).
             raise ValueError("고정한 항목만으로 예산을 넘었어요")
     return items
 
@@ -80,6 +91,7 @@ def lost_clauses(items):
 def fake_agent_decisions(items):
     """조항 Pk가 필요한 요청 8개(조항마다 하나). 조항이 있으면 올바른 처리, 없으면 환불 승인."""
     present = {n for k, n, _s, _p in items if k == "policy"}
+    # 조항이 컨텍스트에 남아 있으면 올바른 처리, 없으면 환불 승인(틀림). 이 규칙은 모형이 정한 것이고 실제 모델의 동작이 아니다.
     return {pid: ("올바름" if pid in present else "환불 승인(틀림)") for pid, _, _ in POLICY}
 
 
@@ -89,10 +101,12 @@ def run(n_turns, strategy, budget=BUDGET):
     lost = lost_clauses(after)
     kept_turn1_user = any(k == "user" and n == "T1" for k, n, _s, _p in after)
     kept_user_messages = sum(1 for k, _n, _s, _p in after if k == "user")
+    # 자리표시(40자)로 줄어든 도구 결과는 "전체 도구 결과"로 세지 않는다. 경계는 s > PLACEHOLDER.
     kept_tool_results = sum(1 for k, _n, s, _p in after if k == "tool" and s > PLACEHOLDER)
     return {
         "n_turns": n_turns, "strategy": strategy,
         "chars_before": total(before), "chars_after": total(after),
+        # 예산 초과 글자 수(7턴이면 6,268-6,000 = 268). 예산 안이면 0.
         "overflow_chars": max(0, total(before) - budget),
         "lost_header": not any(k == "system" for k, _n, _s, _p in after),
         "dropped_user_messages": n_turns - kept_user_messages,
@@ -103,6 +117,7 @@ def run(n_turns, strategy, budget=BUDGET):
 
 
 def first_overflow_turn(budget=BUDGET):
+    """예산을 처음 넘는 턴 수. 턴이 0부터 늘어나며 처음 넘은 n을 돌려준다(README의 7)."""
     n = 0
     while total(build_context(n)) <= budget:
         n += 1

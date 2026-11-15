@@ -22,12 +22,14 @@ import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+# 토큰 정규식의 선택지 순서: 주석 //, 작은따옴표 문자열, 큰따옴표 문자열, 괄호·중괄호, 식별자, || && == !=, 그 밖의 한 글자
 TOKEN = re.compile(r"\s*(?:(//[^\n]*)|('(?:[^'\\]|\\.)*')|(\"(?:[^\"\\]|\\.)*\")|([{}()])|([A-Za-z_][\w./]*)|(\|\||&&|==|!=)|(\S))")
 
 
 def tokenize(text):
     toks, pos = [], 0
     while pos < len(text):
+        # 현재 위치에서 한 토큰씩 읽는다. 더 못 읽으면 멈춘다(남은 문자는 조용히 버려진다)
         m = TOKEN.match(text, pos)
         if not m or m.end() == pos:
             break
@@ -55,13 +57,16 @@ def _parse_block(toks, i):
         kind, val = toks[i]
         if (kind, val) == ("br", "}"):
             return items, i + 1
+        # 문장은 이름(식별자)으로 시작해야 한다. 아니면 문법 오류로 알린다
         if kind != "id":
             raise SyntaxError(f"이름이 와야 하는 자리에 {val!r}")
         name, i = val, i + 1
         args = []
+        # environment 블록의 NAME = '값' 형태
         if i + 1 < len(toks) and toks[i] == ("other", "=") and toks[i + 1][0] == "str":  # environment의 NAME = '값'
             args.append(toks[i + 1][1])
             i += 2
+        # 함수 호출형 인자 name(...). 괄호 깊이를 세어 짝이 맞는 ')'까지 읽는다
         elif i < len(toks) and toks[i] == ("br", "("):
             depth, i = 1, i + 1
             while depth:
@@ -84,6 +89,7 @@ def _parse_block(toks, i):
             i += 1
         body = None
         if i < len(toks) and toks[i] == ("br", "{"):
+            # when { expression { ... } } 안은 파싱하지 않고 토큰 그대로 보관한다(eval_when이 나중에 계산)
             if name == "expression":
                 depth, j, raw = 1, i + 1, []
                 while depth:
@@ -105,6 +111,7 @@ def parse(text):
     if toks[:2] != [("id", "pipeline"), ("br", "{")]:
         raise SyntaxError("pipeline { ... } 로 시작해야 한다")
     items, _ = _parse_block(toks, 2)
+    # 최상위 블록 이름 -> (인자, 본문). 같은 이름이 두 번 나오면 뒤의 것이 남는다
     top = {name: (args, body) for name, args, body in items}
     stages = []
     for name, args, body in top["stages"][1]:
@@ -136,6 +143,7 @@ def eval_when(raw, result):
             words.append(v)
         else:
             raise SyntaxError(f"when expression에서 지원하지 않는 토큰: {v}")
+    # 허용한 토큰만 모아 만든 식을 eval로 계산한다. __builtins__를 비워 두었지만 신뢰할 수 있는 Jenkinsfile에만 쓸 것(제한된 흉내 러너)
     return bool(eval(" ".join(words), {"__builtins__": {}}, {}))
 
 
@@ -144,6 +152,7 @@ def read_junit(paths):
     for p in paths:
         root = ET.parse(p).getroot()
         for tc in root.iter("testcase"):
+            # JUnit XML에서 testcase마다 failure 또는 error 요소가 있으면 실패. skipped도 ok가 아닌 것으로 센다
             bad = tc.find("failure") if tc.find("failure") is not None else tc.find("error")
             name = f"{tc.get('classname')}::{tc.get('name')}"
             msg = None if bad is None else (bad.get("message") or "").splitlines()[0][:160]
@@ -151,6 +160,7 @@ def read_junit(paths):
     return cases
 
 
+# 빌드 결과의 심각도 순서. 더 나쁜 결과로만 바뀌고 되돌아가지 않는다
 WORSE = {None: 0, "SUCCESS": 0, "UNSTABLE": 1, "FAILURE": 2}
 
 
@@ -159,6 +169,7 @@ def run_pipeline(text, workspace, extra_env=None, archive_dir=None):
     p = parse(text)
     ws = Path(workspace)
     env = {**os.environ, **p["environment"], **(extra_env or {})}
+    # 현재 파이썬이 있는 폴더를 PATH 맨 앞에 넣어, sh 안의 python이 같은 인터프리터를 쓰게 한다
     env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
     state = {"result": None, "tests": [], "archived": [], "log": []}
 
@@ -170,6 +181,7 @@ def run_pipeline(text, workspace, extra_env=None, archive_dir=None):
         if name == "checkout":
             return "SUCCESS"
         if name == "sh":
+            # sh 단계 = 작업 공간에서 bash -c로 실행. 종료 코드가 0이 아니면 FAILURE
             r = subprocess.run(["bash", "-c", args[0]], cwd=ws, env=env, capture_output=True, text=True)
             state["log"].append({"cmd": args[0], "code": r.returncode, "tail": (r.stdout + r.stderr).strip().splitlines()[-3:]})
             if r.returncode != 0:
@@ -177,6 +189,7 @@ def run_pipeline(text, workspace, extra_env=None, archive_dir=None):
                 return "FAILURE"
             return "SUCCESS"
         if name == "junit":
+            # 패턴(예: reports/*.xml)에 맞는 파일을 찾는다. 하나도 없으면 junit/archive 단계는 FAILURE
             files = sorted(glob.glob(str(ws / args[0])))
             if not files:
                 state["log"].append({"junit": args[0], "error": "No test report files were found"})
@@ -205,6 +218,7 @@ def run_pipeline(text, workspace, extra_env=None, archive_dir=None):
     stages = []
     for st in p["stages"]:
         row = {"name": st["name"], "status": None, "seconds": 0.0}
+        # 단계 상태 결정 순서: 앞선 실패 -> UNSTABLE+skipStagesAfterUnstable -> when 조건 불일치 -> 실제 실행
         if state["result"] == "FAILURE":
             row["status"] = "SKIPPED(earlier failure)"
         elif state["result"] == "UNSTABLE" and "skipStagesAfterUnstable" in p["options"]:
@@ -217,6 +231,7 @@ def run_pipeline(text, workspace, extra_env=None, archive_dir=None):
                 s = do_step(name, args)
                 if WORSE[s] > WORSE[status]:
                     status = s
+                # 한 단계 안에서 step이 FAILURE면 그 단계의 나머지 step은 건너뛴다. UNSTABLE이면 계속
                 if s == "FAILURE":
                     break
             row["status"], row["seconds"] = status, time.perf_counter() - t0
@@ -224,6 +239,7 @@ def run_pipeline(text, workspace, extra_env=None, archive_dir=None):
 
     final = state["result"] or "SUCCESS"
     post_ran = []
+    # post 블록은 항상 이 순서로, 조건이 맞는 것만 실행한다
     for cond in ("always", "success", "unstable", "failure"):
         if cond in p["post"] and (cond == "always" or cond.upper() == final):
             for name, args, _ in p["post"][cond]:
@@ -249,10 +265,12 @@ def lint(text):
     for st in p["stages"]:
         names = [(n, a) for n, a, b in st["steps"]]
         for i, (n, a) in enumerate(names):
+            # 테스트 실패를 `|| true`로 삼키면 종료 코드가 0이 되어 FAILURE가 안 된다. 그 경우 같은 단계에서 junit으로 결과를 읽어야 UNSTABLE로 표시된다
             if n == "sh" and "|| true" in a[0] and "pytest" in a[0]:
                 if not any(m == "junit" for m, _ in names[i + 1:]):
                     problems.append(f"'{st['name']}': 테스트 실패를 || true로 삼키고 같은 단계에서 junit으로 읽지 않는다")
     names = [st["name"] for st in p["stages"]]
+    # 이름에 push/deploy가 든 단계를 배포 단계로, test가 든 단계를 테스트 단계로 본다(이름 기반 휴리스틱)
     push = [i for i, st in enumerate(p["stages"]) if "push" in st["name"].lower() or "deploy" in st["name"].lower()]
     tests = [i for i, st in enumerate(p["stages"]) if "test" in st["name"].lower()]
     for i in push:

@@ -15,6 +15,7 @@ import json
 import sqlite3
 from collections import deque
 
+# 테이블 4개: artifacts, executions, events(artifact와 execution을 잇는 INPUT/OUTPUT 관계), cache(캐시 조회용). events와 cache에는 조회용 인덱스
 SCHEMA = """
 CREATE TABLE artifacts (id INTEGER PRIMARY KEY, type TEXT, uri TEXT, sha TEXT, props TEXT);
 CREATE TABLE executions (id INTEGER PRIMARY KEY, run_id TEXT, pipeline TEXT, namespace TEXT, task TEXT,
@@ -49,6 +50,7 @@ class Store:
         assert kind in ("INPUT", "OUTPUT")
         self.db.execute("INSERT INTO events VALUES (?,?,?,?)", (artifact_id, execution_id, kind, key))
 
+    # seq는 저장 순서 번호. 같은 지문이 여러 개면 가장 큰 seq(가장 최근) 것을 쓴다
     def put_cache(self, fingerprint, pipeline, namespace, execution_id):
         self._seq += 1
         self.db.execute("INSERT INTO cache VALUES (?,?,?,?,?)", (fingerprint, pipeline, namespace, execution_id, self._seq))
@@ -76,6 +78,7 @@ class Store:
     def inputs_of(self, eid):
         return dict(self.db.execute("SELECT key, artifact_id FROM events WHERE execution_id=? AND kind='INPUT'", (eid,)).fetchall())
 
+    # 캐시로 재사용한 실행도 같은 artifact를 OUTPUT으로 걸기 때문에 만든 실행이 여러 개일 수 있다. execution id 순서로 돌려주므로 처음 것이 원래 만든 실행
     def producers(self, aid):
         """이 artifact를 OUTPUT으로 가진 실행들. 캐시로 다시 쓴 실행(CACHED)도 OUTPUT으로 걸리므로 여러 개일 수 있다."""
         return [r[0] for r in self.db.execute(
@@ -87,6 +90,7 @@ class Store:
     # ---------- 리니지 ----------
     def ancestors_sql(self, aid):
         """모델 artifact의 조상 집합: 재귀 CTE 한 번. (artifact id 집합, execution id 집합)을 돌려준다."""
+        # 재귀 CTE: 모델 artifact에서 출발해 [artifact -> 그것을 OUTPUT으로 낸 실행 -> 그 실행의 INPUT artifact]를 반복한다. UNION이라 중복은 한 번만 남는다
         rows = self.db.execute("""
             WITH RECURSIVE up(kind, id) AS (
                 SELECT 'a', ?
@@ -99,6 +103,7 @@ class Store:
 
     def ancestors_bfs(self, aid):
         """같은 일을 파이썬 너비 우선 탐색으로. 테스트에서 재귀 CTE와 결과를 맞춰 본다."""
+        # 너비 우선 탐색(BFS). 방문한 집합으로 중복 방문을 막는다. 재귀 CTE 결과와 같아야 한다(테스트)
         arts, exes, q = {aid}, set(), deque([("a", aid)])
         while q:
             kind, i = q.popleft()
@@ -116,6 +121,7 @@ class Store:
 
     def descendants_sql(self, aid):
         """반대 방향: 이 artifact를 읽은 실행과 그 실행이 낸 artifact 전부(문제 데이터의 영향 범위)."""
+        # 위와 반대 방향: [artifact -> 그것을 INPUT으로 읽은 실행 -> 그 실행의 OUTPUT artifact]
         rows = self.db.execute("""
             WITH RECURSIVE down(kind, id) AS (
                 SELECT 'a', ?
@@ -133,9 +139,11 @@ class Store:
         prods = [self.execution(e) for e in self.producers(model_artifact_id)]
         made = [p for p in prods if p["state"] == "COMPLETE"]
         reused = [p for p in prods if p["state"] == "CACHED"]
+        # state가 COMPLETE인 실행(원래 학습한 실행)을 학습 주체로 본다. 없으면 IndexError(모델이 만든 기록이 없는 경우는 다루지 않는다)
         train = made[0]
         data_id = self.inputs_of(train["id"])["train_data"]
         data = self.artifact(data_id)
+        # 학습 데이터를 실제로 만든 prepare 실행(COMPLETE)을 찾는다
         prep = self.execution([e for e in self.producers(data_id) if self.execution(e)["state"] == "COMPLETE"][0])
         return {
             "model": {"id": model["id"], "sha": model["sha"][:12]},

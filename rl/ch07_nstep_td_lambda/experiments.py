@@ -146,6 +146,7 @@ VARIANTS = {"online_acc": dict(trace="accumulating", online=True),
 
 
 def run_lambda(vname, eps, lam, alphas):
+    # VARIANTS의 trace/online 값이 td_lambda_batch의 흔적 종류(누적/대체)와 갱신 시점(걸음마다/판 끝)을 정한다
     kw = VARIANTS[vname]
     if kw is None:
         return T.offline_lambda_return_batch(eps, NS, lam, alphas)
@@ -252,6 +253,7 @@ def e4_chain():
     out = {"cells": 9, "gamma": 0.9, "alpha": 1.0, "episodes_to_exact": {}, "td_lambda_after_1": {}}
     for n in (1, 2, 3, 4, 8, None):
         rec = []
+        # 같은 외길 한 판을 12번 되풀이. alpha 1이면 식 V <- V + α[G - V]가 V <- G로 덮어쓰기가 되어 정답까지 판 수가 정확히 센다
         T.n_step_td([ep] * 12, 10, n, 1.0, gamma=0.9, record=rec)
         out["episodes_to_exact"][nkey(n)] = next(k + 1 for k, V in enumerate(rec) if np.allclose(V, truth, atol=1e-12))
     for lam in (0.0, 0.5, 0.9, 1.0):
@@ -276,6 +278,8 @@ def e5_compute():
         e = np.zeros(nS)
         t0 = time.perf_counter()
         for t in range(steps - 1):
+            # 아래 네 줄이 TD(λ) 후방 관점 한 걸음: e <- γλ e (여기서 γλ = 0.8), e[s] += 1 (누적),
+            # δ = R + γ V(S') - V(S) (보상 0, γ 1), V <- V + α δ e (α = 0.1). 상태 수 nS 전체 배열을 매번 갱신하는 비용을 잰다
             e *= 0.8
             e[s[t]] += 1.0
             delta = 0.0 + V[s[t + 1]] - V[s[t]]

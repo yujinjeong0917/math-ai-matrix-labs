@@ -12,6 +12,7 @@ CATEGORICAL = {"plan": 3, "region": 4}
 LABEL = "churned"
 
 
+# (아래 생성기는 6장에서 복사) shift는 이탈 로짓에 더하는 값. 시드와 shift를 함께 바꿔 "어제"와 "오늘" 데이터를 만든다
 def make_table(data_seed, n_rows, shift=0.0):
     rng = np.random.default_rng(data_seed)
     tenure = rng.integers(1, 73, n_rows).astype(float)
@@ -44,6 +45,7 @@ def make_table(data_seed, n_rows, shift=0.0):
 
 def split(table, n_train, split_seed):
     n = len(table[LABEL])
+    # 행을 섞어 앞 n_train행은 학습, 나머지는 검증. 반환 순서: (학습, 검증)
     order = np.random.default_rng(split_seed).permutation(n)
     tr, va = order[:n_train], order[n_train:]
     return {k: v[tr] for k, v in table.items()}, {k: v[va] for k, v in table.items()}

@@ -56,9 +56,12 @@ def naive_mae_in_sample(y_train, lag=1):
     학습 구간의 값이 모두 같으면 분모가 0이라 ValueError를 낸다(H&K: "all historical observations are equal").
     """
     y = _arr(y_train)
+    # 차이를 만들려면 길이가 lag보다 길어야 한다(off-by-one 주의: 같으면 항이 0개)
     if lag < 1 or len(y) <= lag:
         raise ValueError(f"학습 구간 길이 {len(y)}가 lag {lag}보다 길어야 한다")
+    # (1/(n-lag)) sum_{t>lag} |Y_t - Y_{t-lag}|. 슬라이스 두 개를 어긋나게 빼서 lag 시점 차이를 한 번에 구한다(항이 n-lag개)
     d = float(np.mean(np.abs(y[lag:] - y[:-lag])))
+    # 0 나누기 방지. 학습 구간이 상수면 분모가 0이라 MASE는 정의되지 않는다
     if d == 0.0:
         raise ValueError("학습 구간의 naive 오차가 0이다(값이 모두 같다). MASE가 정의되지 않는다")
     return d
@@ -66,26 +69,32 @@ def naive_mae_in_sample(y_train, lag=1):
 
 def scaled_errors(y_train, y_test, yhat, lag=1):
     """q_t = (y_t - yhat_t) / 분모. 부호가 남아 있다."""
+    # q_t = e_t / 분모. 분모는 학습 구간만으로 정해져 평가 데이터의 수준·단위와 무관하다(단위가 상쇄)
     return (_arr(y_test) - _arr(yhat)) / naive_mae_in_sample(y_train, lag)
 
 
 def mase(y_train, y_test, yhat, lag=1):
     """평균 절대 척도 오차. 한 계열 안에서는 MAE(y_test, yhat) / 분모와 같다."""
+    # MASE = mean|q_t|. 1보다 작으면 학습 구간 안의 naive 오차보다 작다는 뜻(평가 구간의 naive와 비교한 것이 아님)
     return float(np.mean(np.abs(scaled_errors(y_train, y_test, yhat, lag))))
 
 
 def naive_forecast(y_train, h):
     """학습 구간 끝에서 한 번 예측: 1..h 시점 모두 마지막 학습 값."""
+    # 마지막 학습 값을 h일 앞까지 고정. 학습 끝에서 한 번만 예측하는 방식
     return np.full(h, _arr(y_train)[-1])
 
 
 def naive_rolling(y_train, y_test, lag=1):
     """평가 구간에서 매 시점 lag 전 '실제' 값을 쓰는 예측(평가 구간 값을 보면서 다시 예측)."""
+    # 학습+평가를 이어 붙인 전체 계열. 평가 구간의 실제 값을 예측에 쓰므로 현실에서는 h일 뒤에야 알 수 있는 값을 보는 설정
     full = np.concatenate([_arr(y_train), _arr(y_test)])
     n = len(_arr(y_train))
+    # 평가 시점 j(0부터)의 예측 = 전체에서 n + j - lag 위치의 실제 값. lag=1이면 바로 전날
     return full[n - lag: n - lag + len(_arr(y_test))]
 
 
 def mean_forecast(y_train, h):
     """학습 구간 평균을 h 시점 모두에 쓰는 예측."""
+    # 학습 평균 고정. 수준이 떠다니는 랜덤워크에서는 나쁘지만 MAPE는 작게 나올 수 있다(E1)
     return np.full(h, float(np.mean(_arr(y_train))))

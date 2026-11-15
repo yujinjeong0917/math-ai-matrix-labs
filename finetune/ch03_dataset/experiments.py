@@ -28,8 +28,10 @@ import ft_ch03_clean as C  # noqa: E402
 import ft_ch03_template as T  # noqa: E402
 
 OUT = HERE / "results" / "ch03.json"
+# 거의 중복 기준(자카드 0.8 이상), 평가 누수 기준(0.5 이상). 둘 다 이 장의 선택이고 E5, E6에서 바꿔 본다
 NEAR_T = 0.8
 LEAK_T = 0.5
+# 검증 비율 10%, 분할 시드 3
 VAL_RATIO = 0.1
 SEED = 3
 SYSTEM = "우리 쇼핑몰 상담원이에요. 따뜻하고 짧게 답해요."
@@ -43,6 +45,7 @@ def chat(it, system=SYSTEM):
     return ([{"role": "system", "content": system}] if system else []) + m
 
 
+# 정제 순서: 빈 답 -> 자주 바뀌는 값 -> 똑같은 중복 -> 거의 중복 -> 평가 누수. 단계마다 남은 목록(s1~s5)과 빠진 목록(d_*)을 돌려준다
 def pipeline():
     raw = C.load_raw()
     ev = C.load_eval()

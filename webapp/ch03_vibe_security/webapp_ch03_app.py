@@ -37,6 +37,7 @@ PUBLISHABLE_KEY = "demo_publishable_key_ch03"   # 브라우저에 넣어도 되�
 AI_SECRET_KEY = "DEMO_SECRET_NOT_REAL_0003"      # 서버에만 둬야 하는 비밀 키(가짜)
 
 # 서버만 아는 세션 표: 토큰 -> 사용자. 역할은 여기서만 읽는다.
+# 토큰 -> 사용자 표. 역할(role)은 이 서버 표에서만 읽고 브라우저가 보낸 값은 믿지 않는다. 토큰은 전부 가짜.
 SESSIONS = {
     "demo-session-alice": {"uid": "u-alice", "role": "user"},
     "demo-session-bob": {"uid": "u-bob", "role": "user"},
@@ -48,6 +49,7 @@ MEMBERS = [  # 관리 화면이 보여 주는 가입자 목록(가짜)
     {"uid": "u-admin", "email": "admin@example.com"},
 ]
 
+# 고치기 전: 다섯 보안 장치가 모두 꺼진 상태. AFTER는 모두 켠 상태.
 BEFORE = {"rls": "off", "key_on_server": False, "admin_authz": False, "upload_check": False, "rate_limit": False}
 AFTER = {"rls": "on_policies", "key_on_server": True, "admin_authz": True, "upload_check": True, "rate_limit": True}
 
@@ -57,10 +59,12 @@ class AppState:
         self.fixes = dict(fixes)
         self.clock = clock or R.FakeClock(0)
         self.cards = L.CardsTable(self.fixes["rls"])
+        # 고치기 전 저장소는 사용자가 정한 이름을 그대로 키로 쓴다(경로 조작 문제의 원인).
         self.public_uploads = {}   # 고치기 전: 원래 이름 -> (내용, 브라우저가 보낸 형식)
         self.private_files = {}    # 고친 뒤: 서버가 만든 이름 -> (내용, 판정한 형식). 공개 폴더 밖
         self.limiter = R.PerUserLimiter(self.clock) if self.fixes["rate_limit"] else R.NoLimit()
         self.generated = 0         # AI 배경을 실제로 만든 횟수(= 비용이 드는 호출 수)
+        # ThreadingHTTPServer가 요청마다 스레드를 쓰므로 표·횟수 갱신을 잠가 경쟁 상태를 막는다.
         self.lock = threading.Lock()
 
 
@@ -86,6 +90,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _session(self):
         auth = self.headers.get("Authorization", "")
+        # "Bearer "가 7글자라 [7:]부터가 토큰.
         token = auth[7:] if auth.startswith("Bearer ") else ""
         return SESSIONS.get(token)
 
@@ -99,6 +104,7 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---------- 정적 파일 ----------
     def _static(self, path):
+        # key_on_server에 따라 번들 폴더가 달라진다: public_after(비밀 키 없음) 또는 public_before(비밀 키 포함).
         folder = APP / ("public_after" if self.state.fixes["key_on_server"] else "public_before")
         files = {"/": "index.html", "/index.html": "index.html", "/app.js": "app.js"}
         if path not in files:
@@ -110,9 +116,11 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---------- 1. DB(REST) : RLS ----------
     def _rest(self, method, qs):
+        # Supabase REST 흉내: 공개용 키가 없으면 401. 이 키는 공개되어도 되며 접근 제어는 RLS가 맡는다.
         if self.headers.get("apikey") != PUBLISHABLE_KEY:
             return self._send(401, {"error": "no api key"})
         sess = self._session()
+        # 로그인했는지는 토큰으로 서버가 판단한다. 요청 본문의 owner_id는 판정에 쓰지 않는다.
         role, uid = ("authenticated", sess["uid"]) if sess else ("anon", None)
         t = self.state.cards
         with self.state.lock:
@@ -124,6 +132,7 @@ class Handler(BaseHTTPRequestHandler):
                     new_id = t.insert(role, uid, row)
                     return self._send(201, {"id": new_id})
                 card_id = int(qs.get("id", ["0"])[0])
+                # PATCH, DELETE는 주소의 ?id= 값을 쓴다(없으면 0이라 어떤 행에도 해당하지 않음).
                 if method == "PATCH":
                     n = t.update(role, uid, card_id, json.loads(self._body() or b"{}"))
                     return self._send(200, {"updated": n})
@@ -136,6 +145,7 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- 3. 관리 화면 ----------
     def _admin_gate(self):
         """서버 세션에서 역할을 읽는다. 브라우저가 보낸 다른 값(머리글·주소의 표시)은 보지 않는다."""
+        # 고치기 전에는 관리 화면을 링크만 숨기고 서버는 누구에게나 연다. 주소를 알면 접근된다.
         if not self.state.fixes["admin_authz"]:
             return True
         sess = self._session()
@@ -157,6 +167,7 @@ class Handler(BaseHTTPRequestHandler):
         if method == "POST" and path == "/admin/api/cards/delete":
             card_id = int(qs.get("id", ["0"])[0])
             with self.state.lock:
+                # 관리자 삭제는 RLS 정책을 거치지 않고 DB에 직접 쓴다(서버 권한 작업의 모형).
                 n = self.state.cards.db.execute("delete from cards where id=?", (card_id,)).rowcount
                 self.state.cards.db.commit()
             return self._send(200, {"deleted": n})
@@ -169,6 +180,7 @@ class Handler(BaseHTTPRequestHandler):
         name = qs.get("name", [""])[0]
         ctype = self.headers.get("Content-Type", "")
         declared = int(self.headers.get("Content-Length", "0"))
+        # 본문을 읽기 전에 Content-Length로 먼저 거른다. 헤더 값이 거짓일 수 있는 경우는 이 모형이 다루지 않는다(한계).
         if self.state.fixes["upload_check"] and declared > U.MAX_BYTES:
             # 판정은 본문을 검사하기 전에 Content-Length 머리글로 먼저 한다.
             # 남은 본문은 연결을 깔끔하게 끝내려고 읽어서 버린다(저장하지 않는다).
@@ -181,6 +193,7 @@ class Handler(BaseHTTPRequestHandler):
         v = U.validate(name, ctype, data)
         if not v["ok"]:
             return self._send(400, {"ok": False, "reasons": v["reasons"]})
+        # 저장 이름은 서버가 내용 해시로 만든다. 사용자가 준 이름은 저장에 쓰지 않는다.
         stored = U.stored_name(data, v["detected"])
         self.state.private_files[stored] = (data, v["detected"])
         return self._send(201, {"ok": True, "url": "/files/" + stored})
@@ -190,12 +203,14 @@ class Handler(BaseHTTPRequestHandler):
             name = unquote(path[len("/uploads/"):])
             if name in self.state.public_uploads:
                 data, _ = self.state.public_uploads[name]
+                # 고치기 전: 확장자로 형식을 정하므로 notes.html이 text/html로 우리 출처에서 열린다(저장형 XSS: 올린 스크립트가 우리 사이트 권한으로 실행되는 문제).
                 guessed = mimetypes.guess_type(name)[0] or "application/octet-stream"
                 return self._send(200, data, guessed)  # 확장자로 형식을 정한다(고치기 전)
         if path.startswith("/files/") and self.state.fixes["upload_check"]:
             name = path[len("/files/"):]
             if name in self.state.private_files:
                 data, detected = self.state.private_files[name]
+                # nosniff는 브라우저가 내용을 보고 형식을 바꿔 해석하지 못하게 한다.
                 return self._send(200, data, detected, {"X-Content-Type-Options": "nosniff"})
         return self._send(404, {"error": "not found"})
 
@@ -205,16 +220,20 @@ class Handler(BaseHTTPRequestHandler):
         if sess is None:
             return self._send(401, {"error": "login required"})
         with self.state.lock:
+            # 사용자별 버킷. ok가 거짓이면 429와 Retry-After(초).
             ok, retry = self.state.limiter.take(sess["uid"])
             if not ok:
                 return self._send(429, {"error": "too many requests"}, headers={"Retry-After": str(retry)})
+            # 비용이 드는 호출을 실제로 한 횟수. 제한이 효과 있는지 세는 지표.
             self.state.generated += 1
+        # 실제 AI 호출 대신 고정 SVG 한 장을 돌려주는 흉내.
         svg = '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="#2f5d8a"/></svg>'
         return self._send(200, svg, "image/svg+xml")
 
     # ---------- 분기 ----------
     def _dispatch(self, method):
         path, qs = self._route()
+        # 정적 파일을 먼저 처리하고, 아니면 아래 경로별로 나눈다.
         if method == "GET" and self._static(path):
             return
         if path == "/rest/v1/cards":
@@ -249,6 +268,7 @@ def make_server(fixes, clock=None, port=0):
     state = AppState(fixes, clock)
     handler = type("H", (Handler,), {"state": state})
     srv = ThreadingHTTPServer((HOST, port), handler)
+    # 테스트가 서버 안의 상태(표, 횟수)를 직접 확인할 수 있게 붙인다.
     srv.state = state
     return srv
 
@@ -256,6 +276,7 @@ def make_server(fixes, clock=None, port=0):
 @contextmanager
 def running(fixes, clock=None):
     srv = make_server(fixes, clock)
+    # poll_interval 0.02는 shutdown 반응을 빠르게 하려고 기본값(0.5초)보다 짧게 둔 값.
     t = threading.Thread(target=srv.serve_forever, kwargs={"poll_interval": 0.02}, daemon=True)
     t.start()
     try:
@@ -267,9 +288,11 @@ def running(fixes, clock=None):
 
 def request(base, path, method="GET", body=None, token=None, apikey=None, headers=None):
     """실습 서버(127.0.0.1)에만 보내는 요청. (상태 번호, 머리글, 본문 바이트)."""
+    # 함수 안 import. 서버 모듈을 불러올 때 클라이언트 모듈이 필요 없게 한 배치.
     import urllib.error
     import urllib.request
     url = base + path
+    # 실습 서버 밖으로 요청이 나가지 않게 막는다.
     if urlparse(url).hostname != HOST:
         raise ValueError("이 모형은 실습 서버(127.0.0.1)에만 요청해요")
     data = None
@@ -296,6 +319,7 @@ if __name__ == "__main__":
     port = int(sys.argv[2]) if len(sys.argv) > 2 else 8003
     fixes = BEFORE if mode == "before" else AFTER
     import time
+    # 직접 실행할 때는 진짜 시계를 정수 초로 쓴다. 테스트에서는 FakeClock을 넣는다.
     clock = (lambda: R.F(int(time.time())))  # 직접 띄울 때는 진짜 시계(초 단위)
     srv = make_server(fixes, clock, port)
     print(f"실습 앱({mode}): http://{HOST}:{srv.server_address[1]}/  (끝내려면 Ctrl+C)")

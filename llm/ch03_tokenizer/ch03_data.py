@@ -26,6 +26,7 @@ HANGUL_FIRST, HANGUL_COUNT = 0xAC00, 11172
 
 
 def _zipf_p(n, s=1.0):
+    # Zipf 분포: 순위 r의 확률이 1/r^s에 비례(s = 1). 합이 1이 되도록 정규화.
     p = 1.0 / np.arange(1, n + 1) ** s
     return p / p.sum()
 
@@ -34,16 +35,20 @@ def _make_en_stems(rng, n):
     cons, vows = list("bcdfghklmnprstvwz"), list("aeiou")
     stems = set()
     while len(stems) < n:
+        # 음절 수 1, 2, 3 중 하나(상한 4는 제외 구간).
         k = rng.integers(1, 4)  # 음절 1~3개
         s = "".join(rng.choice(cons) + rng.choice(vows) for _ in range(k))
         if rng.random() < 0.5:
             s += rng.choice(cons)
         stems.add(s)
+    # set은 순서가 불안정하니 정렬해서 시드 재현성을 지킨다.
     return sorted(stems, key=lambda w: (len(w), w))
 
 
 def _make_ko_stems(rng, n):
+    # 전체 11,172 음절 중 400자만 "흔한 글자"로 뽑아 어간을 만든다. 그래서 나머지 글자는 학습에 안 나올 수 있다.
     common = [chr(HANGUL_FIRST + int(i)) for i in rng.choice(HANGUL_COUNT, 400, replace=False)]
+    # 음절 선택 확률도 Zipf(s = 0.8).
     cp = _zipf_p(len(common), 0.8)
     stems = set()
     while len(stems) < n:
@@ -61,11 +66,13 @@ def make_corpus(lang, n_sentences=30000, n_stems=3000, seed=0):
         stems = _make_ko_stems(rng, n_stems)
     else:
         raise ValueError(lang)
+    # 어간은 길이순으로 정렬돼 있으니, 섞지 않으면 짧은 어간이 가장 자주 나온다. 빈도 순위와 길이를 분리한다.
     order = rng.permutation(len(stems))  # 빈도 순위를 길이와 무관하게 섞는다
     stems = [stems[i] for i in order]
     sp = _zipf_p(len(stems), 1.0)
     sents = []
     for _ in range(n_sentences):
+        # 문장당 단어 5..12개.
         m = int(rng.integers(5, 13))
         idx = rng.choice(len(stems), size=m, p=sp)
         words = []
@@ -75,6 +82,7 @@ def make_corpus(lang, n_sentences=30000, n_stems=3000, seed=0):
                 suf = EN_SUFFIX[rng.choice(len(EN_SUFFIX), p=EN_SUFFIX_P)]
                 words.append(pre + stems[i] + suf)
             else:
+                # 어절의 2%는 학습에 없는 글자가 섞일 수 있는 드문 이름(생성기의 설계).
                 if rng.random() < 0.02:  # 드문 이름: 전체 음절에서 무작위
                     k = int(rng.integers(2, 4))
                     stem = "".join(chr(HANGUL_FIRST + int(c)) for c in rng.integers(0, HANGUL_COUNT, k))
@@ -89,6 +97,7 @@ def split(sents, seed, frac=(0.8, 0.1, 0.1)):
     """문장 단위 무작위 분할. 시드가 '데이터 분할 시드'다."""
     rng = np.random.default_rng(seed)
     idx = rng.permutation(len(sents))
+    # 80/10/10 학습/검증/테스트. 문장 단위 분할.
     a = int(frac[0] * len(sents))
     b = a + int(frac[1] * len(sents))
     pick = lambda ii: [sents[i] for i in ii]

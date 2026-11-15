@@ -19,6 +19,7 @@ import rl_ch05_mc_np as m  # noqa: E402
 
 
 def bar(x, xmax, width=40):
+    # 0보다 큰 값은 최소 한 칸을 그려 사라지지 않게 한다
     return "#" * max(1 if x > 0 else 0, round(width * x / xmax))
 
 
@@ -26,8 +27,10 @@ def main():
     d = json.loads((HERE / "results" / "ch05.json").read_text())
     print("== 20x20 균등 무작위 정책: 판 길이 (실험과 같은 시드로 다시 걷기) ==")
     P, R, term = g.corner_grid(20)
+    # 실험 E1 e)와 같은 시드(0~9)와 판 수(200)로 다시 걷는다. P.argmax(axis=2)는 미끄러짐 없는 격자의 다음 칸 표
     L = np.concatenate([m.random_walk_lengths(200, np.random.default_rng(sd), P.argmax(axis=2), term, 0, 10_000)[0]
                         for sd in range(10)])
+    # 마지막 구간 [10000, 10001)은 상한에 걸려 잘린 판(길이 = 상한)만 센다
     edges = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10_000, 10_001]
     counts = np.histogram(L, bins=edges)[0]
     for lo, hi, c in zip(edges[:-1], edges[1:], counts):

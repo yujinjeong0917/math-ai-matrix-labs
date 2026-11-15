@@ -26,6 +26,7 @@ ITEMS = [
 
 
 def machine_answers(folder):
+    # check_project의 규칙 위반 목록에서 해당 규칙이 없으면 통과(True)로 본다
     res = C.check_project(folder)
     rules = {f["rule"] for f in res["findings"]}
     return {
@@ -33,12 +34,14 @@ def machine_answers(folder):
         "properties_ignored": "properties_not_ignored" not in rules,
         "no_password_in_gradle": "password_in_gradle" not in rules,
         "validity_25y": "key_validity" not in rules,
+        # 두 규칙(WebView 디버깅, manifest debuggable) 중 하나라도 걸리면 불합격
         "release_not_debuggable": not ({"webview_debug", "manifest_debuggable"} & rules),
         "version_code_ok": not ({"version_code_range", "version_code_rule"} & rules),
     }
 
 
 def scorecard(folder):
+    # 사람 항목의 pass는 None(미판정)으로 두고 checks/ch07.csv에서 사람이 채운다
     ans = machine_answers(folder)
     rows = []
     for item_id, who, question, src in ITEMS:
@@ -50,10 +53,12 @@ def scorecard(folder):
 
 
 def keytool_years(days):
+    # keytool -validity는 일 단위. 연 환산은 365.25로 나눈다(윤년 평균)
     return round(C.key_years(days), 1)
 
 
 def sha256_file_bytes(data):
+    # 배포 파일 옆에 적어 두고 받는 쪽이 같은 해시를 계산해 대조하는 용도
     return hashlib.sha256(data).hexdigest()
 
 
@@ -65,6 +70,7 @@ def demo_apk_bytes(version):
 def no_real_secrets(folder):
     """가짜 값 규칙: 비밀번호 칸은 DEMO_로 시작하거나 '(직접 적기)'만 허용."""
     bad = []
+    # 최상위 파일만 본다(하위 폴더 미탐색). 정규식은 storePassword/keyPassword 뒤의 값 한 덩어리를 잡는다
     for p in Path(folder).iterdir():
         if p.is_file():
             for m in re.finditer(r'(?:storePassword|keyPassword)\s*[=\s]\s*"?([^"\n]+)"?', p.read_text(encoding="utf-8")):

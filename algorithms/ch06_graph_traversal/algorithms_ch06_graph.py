@@ -50,9 +50,11 @@ class Graph:
         self.n = n
         self.directed = directed
         self.adj = [[] for _ in range(n)]
+        # 간선 번호 eid 는 add_edge 호출 순서. 평행 간선도 번호가 서로 달라 구분된다.
         self.edges = []  # [(u, v)]
 
     def add_edge(self, u, v):
+        # 무방향이면 같은 eid 를 양쪽 인접 리스트에 넣는다(고리 u-u 는 adj[u] 에 두 번 들어간다).
         eid = len(self.edges)
         self.edges.append((u, v))
         self.adj[u].append((v, eid))
@@ -75,9 +77,11 @@ def bfs(g, s, counter=None):
 
     큐에 넣을 때 표시한다(dist 를 적는다). 그래서 정점마다 많아야 한 번 큐에 들어간다.
     """
+    # 시간 O(V + E), 보조 공간 O(V). 불변식: 큐에 든 정점의 dist 는 앞에서 뒤로 비내림차순이고 (맨 뒤 - 맨 앞) <= 1.
     c = _c(counter)
     dist = [None] * g.n
     parent = [None] * g.n
+    # dist 가 None 이면 흰색, 값이 있으면 회색 이상(표시판 겸 거리). 별도 visited 배열이 필요 없다.
     dist[s] = 0
     q = deque([s])
     c.max_frontier = max(c.max_frontier, 1)
@@ -100,9 +104,11 @@ def bfs_mark_on_pop(g, s, counter=None):
     c = _c(counter)
     dist = [None] * g.n
     q = deque([(s, 0)])
+    # pushes 는 큐 삽입 총 횟수. 정상 BFS 는 V 이하, 이 판은 간선 수에 가깝게 늘 수 있다(최악 O(E)).
     pushes = 1
     while q:
         u, d = q.popleft()
+        # 이미 꺼내 처리한 정점이면 건너뜀. 같은 정점이 큐에 여러 번 들어 있을 수 있어서 필요한 검사.
         if dist[u] is not None:
             continue
         dist[u] = d
@@ -123,6 +129,7 @@ def bfs_all(g, counter=None):
     c = _c(counter)
     dist = [None] * g.n
     comp = [None] * g.n
+    # k 는 연결 요소 번호. 무방향이면 요소, 방향이면 '앞선 출발점에서 닿은 영역' 묶음(강연결 요소가 아님).
     k = 0
     for s in range(g.n):
         if dist[s] is not None:
@@ -149,6 +156,7 @@ def bfs_all_fresh_marks(g, counter=None):
     """흔한 실패 재현: 연결 요소마다 bfs(g, s)를 불러 표시판을 매번 새로 만든다.
     간선 검사는 bfs_all 과 같지만, 길이 V 인 배열을 연결 요소 수만큼 만들어서 O(V x 요소 수)가 된다."""
     c = _c(counter)
+    # seen 은 요소 단위 표시. 아래에서 bfs 를 부를 때마다 dist 배열(길이 V)이 새로 만들어진다.
     seen = [False] * g.n
     comps = 0
     for s in range(g.n):
@@ -175,12 +183,14 @@ def dfs_iterative(g, s, counter=None):
     seen[s] = True
     order.append(s)
     c.visits += 1
+    # 스택 원소 [정점, 다음에 볼 이웃 번호]. 이웃 번호를 기억하므로 재귀 호출 없이 '되돌아와서 이어 보기'가 된다.
     stack = [[s, 0]]
     c.max_frontier = max(c.max_frontier, 1)
     while stack:
         top = stack[-1]
         u, i = top
         if i < len(g.adj[u]):
+            # 스택 안의 리스트를 직접 고쳐 다음 이웃 번호를 저장(함정: 튜플이면 갱신 못 함).
             top[1] = i + 1
             v = g.adj[u][i][0]
             c.edge_checks += 1
@@ -203,6 +213,7 @@ def dfs_recursive(g, s, counter=None):
     seen = [False] * g.n
     order = []
 
+    # 재귀 깊이 = 스택 깊이. 파이썬 기본 재귀 한도(보통 1000)를 넘으면 RecursionError.
     def rec(u, depth):
         seen[u] = True
         order.append(u)
@@ -225,6 +236,7 @@ def dfs_no_visited(g, s, limit=10 ** 6, counter=None):
     재귀를 쓰지 않으니 깊이 때문에 터지지는 않는다.
     """
     c = _c(counter)
+    # 여기 스택에는 정점만 쌓는다. 이미 본 정점도 다시 쌓으므로(표시 없음) 순환이 있으면 끝나지 않는다.
     stack = [s]
     capped = False
     while stack:
@@ -233,6 +245,7 @@ def dfs_no_visited(g, s, limit=10 ** 6, counter=None):
         if c.visits >= limit:
             capped = True
             break
+        # 스택은 마지막에 넣은 것을 먼저 꺼내므로, 뒤집어 넣어야 adj 순서대로 방문한다.
         for v, _ in reversed(g.adj[u]):  # reversed: 표시판 DFS 와 같은 순서로 보게
             c.edge_checks += 1
             stack.append(v)
@@ -249,15 +262,19 @@ def reachable_count(g, s):
 
 def check_bfs_distances(g, dist):
     """[(이름, 성립 여부, 설명)]. 무방향은 |d(u)-d(v)| <= 1, 방향은 d(v) <= d(u)+1."""
+    # d 는 BFS 최단 거리(간선 수). 무방향에서는 이웃끼리 거리가 2 이상 벌어질 수 없다는 것이 BFS 정당성의 핵심.
     bad = []
     for u, v in g.edges:
         du, dv = dist[u], dist[v]
+        # 둘 다 닿지 않은 간선은 같은 비연결 영역 안에 있으므로 검사 대상이 아님.
         if du is None and dv is None:
             continue
         if g.directed:
+            # 방향 간선 u->v: u 에 닿았다면 v 도 닿고 d(v) <= d(u)+1 이어야 한다.
             if du is not None and (dv is None or dv > du + 1):
                 bad.append((u, v))
         else:
+            # 무방향: 한쪽만 닿았다면 모순(같은 요소여야 함). 거리 차 2 이상도 모순.
             if du is None or dv is None or abs(du - dv) > 1:
                 bad.append((u, v))
     name = "간선 (u,v) 마다 d(v) <= d(u)+1" if g.directed else "간선 (u,v) 마다 |d(u)-d(v)| <= 1"
@@ -278,6 +295,7 @@ def black_has_no_white_neighbor(g, color):
 
 def degree_parity(g):
     """무방향 그래프의 차수(평행 간선은 따로, 고리 u-u 는 2로 센다)."""
+    # 악수 정리: 차수 합 = 2m. 홀수 차수 정점 수는 항상 짝수.
     deg = [0] * g.n
     for u, v in g.edges:
         deg[u] += 1
@@ -304,6 +322,7 @@ def euler_check(g):
     assert not g.directed
     deg = degree_parity(g)
     odd = [v for v in range(g.n) if deg[v] % 2]
+    # 오일러 정리는 연결성이 필요조건: 차수 조건만으로는 부족하다(떨어진 두 고리 등).
     if not _edges_connected(g):
         return "none", odd
     if len(odd) == 0:
@@ -323,7 +342,9 @@ def euler_bruteforce(g, counter=None):
     used = [False] * m
     found = {"circuit": False, "path": False}
 
+    # k = 지금까지 쓴 간선 수. 안 쓴 간선만 고르고 되돌릴 때 used 를 복구하는 백트래킹. 최악 시간은 간선 수에 대해 지수적(그래서 8개 안팎).
     def walk(start, u, k):
+        # 간선을 전부 썼다. 출발점으로 돌아왔으면 회로, 아니면 경로.
         if k == m:
             if u == start:
                 found["circuit"] = True
@@ -342,6 +363,7 @@ def euler_bruteforce(g, counter=None):
     deg = degree_parity(g)
     for s in range(g.n):
         if deg[s]:
+            # 차수가 0 인 정점에서는 시작하지 않는다(간선이 없어 걷기 불가).
             walk(s, s, 0)
             if found["circuit"]:
                 break
@@ -360,10 +382,12 @@ def hierholzer(g, start=None):
         start = odd[0] if odd else next((v for v in range(g.n) if deg[v]), 0)
     used = [False] * g.m
     ptr = [0] * g.n
+    # Hierholzer: 막다른 곳에서 되돌아 나오는 순서의 역순이 오일러 경로. 스택 원소 (정점, 그 정점에 들어온 간선). 각 간선은 많아야 한 번 used 처리되고 ptr 은 앞으로만 가므로 O(V + E).
     stack = [(start, None)]
     vs, es = [], []
     while stack:
         u, e_in = stack[-1]
+        # 무방향 간선은 양쪽 인접 리스트에 있으므로 반대편에서 이미 쓴 간선은 건너뜀.
         while ptr[u] < len(g.adj[u]) and used[g.adj[u][ptr[u]][1]]:
             ptr[u] += 1
         if ptr[u] == len(g.adj[u]):
@@ -375,6 +399,7 @@ def hierholzer(g, start=None):
             v, e = g.adj[u][ptr[u]]
             used[e] = True
             stack.append((v, e))
+    # 팝한 순서는 경로의 역순이라 뒤집는다.
     vs.reverse()
     es.reverse()
     return vs, es
@@ -391,6 +416,7 @@ def diamond_chain(k):
     """
     g = Graph(3 * k + 1, directed=True)
     for i in range(1, k + 1):
+        # a=왼쪽 마디, up/dn=위·아래 정점, b=오른쪽 마디. 마디마다 길이 2배로 갈라졌다 합쳐져 길 수가 2^k.
         a, up, dn, b = 3 * (i - 1), 3 * i - 2, 3 * i - 1, 3 * i
         g.add_edge(a, up)
         g.add_edge(a, dn)
@@ -443,7 +469,9 @@ def erdos_renyi(n, p, rng):
             for v in range(u + 1, n):
                 g.add_edge(u, v)
         return g
+    # Batagelj-Brandes 건너뛰기: 다음 간선까지 건너뛸 후보 쌍 수가 기하분포이므로 로그로 역변환해 뽑는다. 기대 시간 O(n + m), 모든 쌍을 보는 O(n^2) 가 아님.
     lp = math.log(1 - p)
+    # (v, w) 는 w < v 인 쌍을 사전 순으로 훑는 포인터. w 가 v 를 넘으면 다음 행으로 넘어감.
     v, w = 1, -1
     while v < n:
         r = rng.random()
@@ -493,6 +521,7 @@ def euler_15_bridges():
     names = list("ABCDEF")
     idx = {ch: i for i, ch in enumerate(names)}
     route = EULER15_ROUTE
+    # 문자열을 땅(짝수 자리)-다리(홀수 자리)-땅 순으로 번갈아 읽는다.
     lands = [idx[ch] for ch in route[0::2]]
     bridges = list(route[1::2])
     g = Graph(len(names))
@@ -508,6 +537,7 @@ def floyd_warshall_np(g):
     """간선 길이 1 인 Floyd-Warshall. 반환 (n, n) float 배열, 닿지 않으면 inf."""
     import numpy as np
     n = g.n
+    # D[i, j] = i 에서 j 까지 최단 간선 수(모형: 간선 길이 1). 시간 O(n^3), 공간 O(n^2).
     D = np.full((n, n), np.inf)
     np.fill_diagonal(D, 0.0)
     for u, v in g.edges:
@@ -515,6 +545,7 @@ def floyd_warshall_np(g):
             D[u, v] = 1.0
             if not g.directed:
                 D[v, u] = 1.0
+    # 불변식: k 번째 반복 뒤 D 는 중간 정점이 0..k 뿐인 경로의 최단 거리. 행 벡터+열 벡터 브로드캐스트로 (n, n) 한 번에 갱신.
     for k in range(n):
         D = np.minimum(D, D[:, [k]] + D[[k], :])
     return D
@@ -524,6 +555,7 @@ def bfs_levels_np(g, s):
     """한 층씩 넓히는 BFS 를 불리언 배열로: 다음 층 = (지금 층의 이웃) 중 아직 거리가 없는 정점."""
     import numpy as np
     n = g.n
+    # src[i] -> dst[i] 가 방향 간선 목록(무방향이면 양방향으로 두 번 넣음).
     src = np.array([u for u, v in g.edges] + ([v for u, v in g.edges] if not g.directed else []), dtype=np.int64)
     dst = np.array([v for u, v in g.edges] + ([u for u, v in g.edges] if not g.directed else []), dtype=np.int64)
     dist = np.full(n, -1, dtype=np.int64)
@@ -533,6 +565,7 @@ def bfs_levels_np(g, s):
     d = 0
     while frontier.any():
         nxt = np.zeros(n, dtype=bool)
+        # frontier[src] 는 '출발점이 현재 층인 간선' 마스크. 그 도착점이 다음 층 후보. 층 수 x O(E) 라 파이썬 BFS 의 O(V+E) 보다 느릴 수 있다(대조용).
         nxt[dst[frontier[src]]] = True
         nxt &= dist < 0
         d += 1
@@ -557,6 +590,7 @@ def trace_bfs(g, s):
 
     def snap(msg, q, edge=None):
         qd = [dist[x] for x in q]
+        # 큐 불변식: 거리가 비내림차순이고 맨 뒤와 맨 앞의 차가 1 이하.
         ok_q = all(qd[i] <= qd[i + 1] for i in range(len(qd) - 1)) and (not qd or qd[-1] - qd[0] <= 1)
         steps.append([msg, _colors_snapshot(color), list(q), qd, list(dist), vis, chk, ok_q,
                       black_has_no_white_neighbor(g, color), edge])

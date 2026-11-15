@@ -23,18 +23,22 @@ ORDER = ["Anthropic", "OpenAI", "Google", "DeepSeek", "xAI"]   # 고정 순서(�
 
 
 def frac(x):
+    """JSON의 실수를 문자열 경유로 Fraction 변환한다. 0.1이 이진 근사값으로 들어가지 않게 str을 거친다."""
     return None if x is None else F(str(x))
 
 
 def load_prices(path=PRICE_FILE):
+    """가격표 JSON을 dict로 읽는다."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def load_workload(path=WORKLOAD_FILE):
+    """한 달 업무량 가정(호출 횟수, 토큰 블록 크기, 팀 조건) JSON을 읽는다."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def price_of(model, prices=None):
+    """모델 id로 가격표 항목을 찾는다. 없으면 KeyError."""
     prices = prices or load_prices()
     for m in prices["models"]:
         if m["model"] == model:
@@ -44,10 +48,12 @@ def price_of(model, prices=None):
 
 def weeks_per_month(w=None):
     w = w or load_workload()
+    # 52 / 12 = 13/3 주. 분수 그대로 두어 월 환산에서 오차가 안 생긴다.
     return F(w["weeks_per_year"], w["months_per_year"])
 
 
 def input_tokens_per_call(w=None, inquiry_weeks=1):
+    """한 번 호출의 입력 토큰 수. 문의 블록만 inquiry_weeks(몇 주치)에 비례해 늘어난다."""
     w = w or load_workload()
     b = w["blocks"]
     return b["rules"] + b["examples"] + b["inquiries"] * inquiry_weeks + b["question"]
@@ -56,27 +62,35 @@ def input_tokens_per_call(w=None, inquiry_weeks=1):
 def is_peak_kst(weekday_kst, hour_kst):
     """한국 시각(요일 0=월 ... 6=일, 시)이 DeepSeek 피크인지. KST = UTC + 9.
     피크 UTC 01-04, 06-10은 KST 10-13, 15-19이고 날짜가 바뀌지 않는다. 중국 공휴일은 무시(가정)."""
+    # KST는 UTC보다 9시간 빠르다.
     hour_utc = hour_kst - 9
     weekday_utc = weekday_kst
+    # KST 0~8시는 UTC로는 전날. 이 경우 요일도 하루 당겨야 한다(요일 경계 함정).
     if hour_utc < 0:
         hour_utc += 24
         weekday_utc = (weekday_kst - 1) % 7
     if weekday_utc >= 5:
         return False
+    # 반열린 구간 [a, b): 1시 정각~3시 59분, 6시~9시 59분이 피크.
     return any(a <= hour_utc < b for a, b in [(1, 4), (6, 10)])
 
 
 def unit_prices(m, prompt_tokens, peak=True):
     """이 요청에 적용될 (입력 단가, 출력 단가, 어느 규칙이 걸렸는지)."""
+    # 단가 단위: 달러 / 100만 토큰.
     i, o = frac(m["input"]), frac(m["output"])
     rule = "기본"
+    # 시간대 규칙(DeepSeek)이 있는 모델만. 비피크면 문서의 비피크 단가로 교체한다.
     if m.get("peak") and not peak:
         i, o = frac(m["peak"]["offpeak_input"]), frac(m["peak"]["offpeak_output"])
         rule = "비피크"
     elif m.get("peak"):
         rule = "피크"
+    # 긴 프롬프트 규칙은 시간대 조정 뒤에 적용한다. 절대 단가형은 앞선 값을 덮어쓰고, 배율형은 곱해진다.
     L = m.get("long")
+    # 경계 비교는 > 로 고정. xAI는 문서가 '이상'이라 가격표 쪽에서 over_tokens를 맞춘 것으로 보임(확인 필요).
     if L and prompt_tokens > L["over_tokens"]:
+        # 배율로 주는 회사(기본 단가 x 배수)와 절대 단가로 주는 회사가 있다. 요청 전체에 적용된다.
         if "input_mult" in L:
             i, o = i * frac(L["input_mult"]), o * frac(L["output_mult"])
         else:
@@ -86,12 +100,15 @@ def unit_prices(m, prompt_tokens, peak=True):
 
 
 def call_cost(m, in_tok, out_tok, peak=True):
+    """한 번 호출의 비용(달러). 입력 토큰 수로 단가가 정해진다."""
     i, o, _ = unit_prices(m, in_tok, peak)
+    # 단가가 100만 토큰당이므로 MTOK로 나눈다.
     return (in_tok * i + out_tok * o) / MTOK
 
 
 def fits(m, in_tok, out_tok):
     """문맥 창 안에 들어가는지. 최대 출력을 모르면 None."""
+    # 문맥 창은 입력과 출력을 합친 한도로 본다(모형의 단순화).
     if in_tok + out_tok > m["context"]:
         return False
     if m["max_output"] is None:
@@ -100,6 +117,7 @@ def fits(m, in_tok, out_tok):
 
 
 def week_cost(m, w=None, thinking=0, peak=True, inquiry_weeks=1):
+    """한 주 비용(달러). thinking은 호출당 추가 생각 토큰으로, 출력 단가로 센다."""
     w = w or load_workload()
     n = w["calls_per_week"]
     it = input_tokens_per_call(w, inquiry_weeks)
@@ -108,11 +126,13 @@ def week_cost(m, w=None, thinking=0, peak=True, inquiry_weeks=1):
 
 
 def month_cost(m, w=None, thinking=0, peak=True):
+    """한 달 비용(달러) = 한 주 비용 x 13/3."""
     w = w or load_workload()
     return week_cost(m, w, thinking, peak) * weeks_per_month(w)
 
 
 def sorted_models(prices=None):
+    """회사 고정 순서(ORDER)로 정렬한 모델 목록. 순위가 아니다."""
     prices = prices or load_prices()
     return sorted(prices["models"], key=lambda m: ORDER.index(m["provider"]))
 
@@ -122,6 +142,7 @@ def check_conditions(m, w=None, peak=True):
     w = w or load_workload()
     c = w["team_conditions"]
     t = m["data"]["trains_on_api"]
+    # 유료 API는 학습 안 함으로 문서화된 경우도 통과. unknown은 None(보류), 그 밖의 값은 False.
     doc = {"no": True, "paid_no_free_yes": True, "unknown": None}.get(t, False)
     return {
         "no_training_documented": doc,

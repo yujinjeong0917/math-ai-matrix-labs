@@ -18,6 +18,7 @@ import math
 
 import tools_ch06_chain as C
 
+# 시뮬레이션 시드 고정: 같은 결과가 나와야 테스트의 z 값 검사가 안정적이다.
 SEED = 6
 
 
@@ -27,9 +28,12 @@ class Week:
     def __init__(self, rows, per_page=100):
         self.rows = rows
         self.per_page = per_page
+        # 올림: 120행이면 2쪽, 230행이면 3쪽(이상한 주).
         self.pages = math.ceil(rows / per_page)
 
 
+# 난수 사용 순서(성공 판정, 그다음 확인 판정)가 닫힌 식의 사건 순서와 같아야 시뮬레이션이 닫힌 식과 맞는다.
+# 확인 지점은 틀린 결과를 d의 확률로 잡고, tries는 지금까지의 시도 수라 tries <= k이면 다시 한다(시도는 최대 k+1번).
 def attempt(rng, p_ok, d, k, checks):
     """단계 하나를 시도한다. ('ok' | 'missed' | 'stopped', 시도 횟수)."""
     tries = 0
@@ -66,6 +70,7 @@ def run_workflow(steps, week, rng, p, d=0, k=0, checks=False, human=False, h=0):
             log.update(outcome="stopped", stop_step=s["id"], cause="확인 지점에서 다시 해도 계속 틀림")
             return log
         wrong |= res == "missed"
+        # 워크플로는 순서가 고정이라 Notion을 2쪽까지만 읽는다. 3쪽짜리 주에는 확인 지점이 있어야만(next_cursor 확인) 멈출 수 있고, 없으면 일부 문의가 빠진 채 틀린 보고서가 된다.
         if s["id"] == "notion_2" and week.pages > 2:
             if checks:   # next_cursor가 남았는지 보는 확인. 결정적이라 늘 잡는다
                 log.update(outcome="stopped", stop_step="notion_2", cause="Notion에 읽지 않은 쪽이 남음")
@@ -83,6 +88,7 @@ class ScriptedAgent:
         self.rng = rng
         self.q = q
 
+    # 다음 행동 고르기: 커서가 남았으면 Notion을 한 쪽 더, 아니면 아직 안 한 단계를 정해진 순서대로.
     def next_needed(self, done, cursor_left):
         reads = [s for s in done if s.startswith("notion_")]
         if cursor_left:                                   # Notion이 다음 쪽이 있다고 했으면 더 읽는다
@@ -98,6 +104,7 @@ class ScriptedAgent:
         nxt = self.next_needed(done, cursor_left)
         if nxt is None:
             return {"stop_reason": "end_turn", "content": [{"type": "text", "text": "보고서를 다 만들었어요."}]}
+        # q의 확률로만 옳게 고른다. 틀리게 고르면 그 일을 건너뛴 것으로 처리된다(아래 run_agent에서 ok=False).
         right = self.rng.random() < self.q
         return {"stop_reason": "tool_use", "right_choice": right,
                 "undo": nxt.get("undo", "easy"),
@@ -112,9 +119,11 @@ def run_agent(steps, week, rng, p, q, d=0, k=0, checks=False, human=False, h=0, 
     done, wrong = [], False
     read_pages = 0
     while True:
+        # 다음 쪽이 남았는지는 읽은 쪽 수와 전체 쪽 수로 흉내 낸다.
         cursor_left = read_pages < week.pages      # 처음(0쪽)이거나 next_cursor가 남았으면 True
         resp = model.create(done, cursor_left)
         log["turns"] += 1
+        # max_turns: 가짜 모델이 끝나지 않을 때를 막는 안전 장치(이 시뮬레이션에서는 정상 경로에서 닿지 않는다).
         if resp["stop_reason"] == "end_turn" or log["turns"] > max_turns:
             break
         step_id = resp["content"][0]["input"]["step"]
@@ -130,6 +139,7 @@ def run_agent(steps, week, rng, p, q, d=0, k=0, checks=False, human=False, h=0, 
                 break
             if checks and rng.random() < d:
                 if tries <= k:
+                    # 다시 할 때는 고르기부터 다시 한다(모형의 선택).
                     resp = {"right_choice": rng.random() < q}
                     continue
                 res = "stopped"
@@ -143,6 +153,7 @@ def run_agent(steps, week, rng, p, q, d=0, k=0, checks=False, human=False, h=0, 
         wrong |= res == "missed"
         done.append(step_id)
         if step_id.startswith("notion_"):
+            # 함정: 건너뛴 읽기도 쪽 수는 늘린다. 안 그러면 cursor_left가 계속 True라 읽기 행동만 반복해 max_turns까지 간다.
             read_pages += 1        # 건너뛰었든 아니든 결과에 next_cursor가 보이면 다음 쪽으로 간다
     log["outcome"] = "wrong" if wrong else "correct"
     return log
@@ -157,6 +168,7 @@ def simulate(runner, n_weeks, seed=SEED, odd_share=None, rows_normal=120, rows_o
     tally = {"correct": 0, "wrong": 0, "stopped": 0}
     stop_steps, attempts, approvals = {}, 0, 0
     for _ in range(n_weeks):
+        # 이상한 주(문의 230행)가 될지 난수로 정한다. odd_share가 None이면 난수를 쓰지 않고, 아니면 매주 1번 쓴다(난수 소비량이 달라져 같은 시드라도 결과 열이 달라진다).
         odd = odd_share is not None and rng.random() < odd_share
         week = Week(rows_odd if odd else rows_normal)
         log = runner(steps, week, rng, **kw)

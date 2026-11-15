@@ -14,10 +14,12 @@ import torch.nn.functional as F
 class BigramLM(nn.Module):
     def __init__(self, V):
         super().__init__()
+        # (V, V) 표: 행 a가 앞 단어 a의 다음 단어 로짓(softmax 전 점수) 벡터.
         self.logits = nn.Embedding(V, V)
         nn.init.zeros_(self.logits.weight)  # 시작은 모든 다음 단어가 같은 확률
 
     def forward(self, prev):
+        # prev: (N,) 정수 -> (N, V) 로짓.
         return self.logits(prev)
 
     def table(self):
@@ -30,16 +32,21 @@ def fit_bigram(counts, steps=3000, lr=0.1, seed=0):
     토큰 하나하나를 넣는 대신 쌍마다 등장 횟수를 가중치로 곱한다. 손실은 같다:
     L = -(1/N) sum_{a,b} c(a,b) log softmax(z_a)_b
     """
+    # 초기값은 0이라 시드 영향이 없지만 재현성 습관으로 고정.
     torch.manual_seed(seed)
+    # float64: 3000 스텝 뒤 NumPy MLE와 1e-3 이내로 맞추려는 정밀도.
     c = torch.as_tensor(counts, dtype=torch.float64)
     V = c.shape[0]
     model = BigramLM(V).double()
     opt = torch.optim.Adam(model.parameters(), lr=lr)
+    # 행 a를 모두 한 배치로: 앞 단어 후보 V개 전부.
     prev = torch.arange(V)
     N = c.sum()
     losses = []
     for _ in range(steps):
+        # (V, V) 로그확률 log P[a, b]. softmax 후 log보다 수치적으로 안정.
         logp = F.log_softmax(model(prev), dim=-1)
+        # N = 전체 쌍 수 sum c. 각 쌍의 NLL을 등장 횟수로 가중한 평균.
         loss = -(c * logp).sum() / N
         opt.zero_grad()
         loss.backward()
@@ -51,8 +58,10 @@ def fit_bigram(counts, steps=3000, lr=0.1, seed=0):
 def perplexity_torch(P, sentences_ids):
     """같은 PPL을 F.nll_loss로 다시 계산한다(NumPy 구현과 대조용)."""
     P = torch.as_tensor(P, dtype=torch.float64)
+    # 문장 경계를 넘지 않도록 문장별로 (앞, 다음) 열을 만든 뒤 이어 붙인다.
     prev = torch.cat([torch.as_tensor(s[:-1]) for s in sentences_ids])
     nxt = torch.cat([torch.as_tensor(s[1:]) for s in sentences_ids])
     with torch.no_grad():
+        # P[prev]: (N, V) 확률의 log를 넣어 평균 NLL을 얻는다. 확률 0 쌍이 있으면 inf.
         nll = F.nll_loss(torch.log(P[prev]), nxt)
     return float(torch.exp(nll))

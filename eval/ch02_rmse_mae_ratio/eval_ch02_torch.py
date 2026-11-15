@@ -11,7 +11,9 @@ torch.set_num_threads(2)
 
 
 def rmse_mae_ratio(y, yhat):
+    # 분모 MAE (torch 텐서)
     m = F.l1_loss(yhat, y)
+    # NumPy판과 같은 0 나누기 처리
     if m.item() == 0.0:
         raise ValueError("MAE가 0이라 비율이 정의되지 않는다")
     return (torch.sqrt(F.mse_loss(yhat, y)) / m).item()

@@ -39,6 +39,7 @@ def q(a, p=(5, 50, 95)):
     return {"mean": float(a.mean()), **{f"p{k}": float(np.percentile(a, k)) for k in p}}
 
 
+# 정확도 세 종류(번호 그대로, 헝가리안, 군집별 최빈), RI, ARI, NMI, AMI를 한 번에
 def all_scores(y, c):
     return {"raw_acc": m.raw_accuracy(y, c), "matched_acc": m.matched_accuracy(y, c),
             "greedy_acc": m.greedy_majority_accuracy(y, c), "ri": m.rand_index(y, c), "ari": m.ari(y, c),
@@ -70,8 +71,10 @@ def e2_random_labels():
     out = {}
     for n in (100, 1000):
         for k in (2, 5, 10, 20, 50):
+            # 무작위 라벨은 정답과 무관하므로 좋은 지표는 평균 0 근처(NMI·RI·정확도는 k에 따라 편향)
             acc = {key: [] for key in ("nmi_max", "nmi_sum", "ami_max", "ami_sum", "ari", "ri", "matched_acc")}
             for s in range(SEEDS):
+                # 시드 = n=1000이면 +10000, k마다 100 간격, 반복 s. (n, k, s) 조합마다 서로 다른 시드
                 t, p = cases.case_random_labels(n=n, k=k, seed=10_000 * (n == 1000) + 100 * k + s)
                 acc["nmi_max"].append(m.nmi(t, p, "max")); acc["nmi_sum"].append(m.nmi(t, p, "arithmetic"))
                 acc["ami_max"].append(m.ami(t, p, "max")); acc["ami_sum"].append(m.ami(t, p, "arithmetic"))
@@ -83,6 +86,7 @@ def e2_random_labels():
 
 def _wrong_vs_true(X, y, seed):
     km = m.kmeans(X, 2, seed=seed)
+    # 거리 행렬을 한 번만 계산해 여러 실루엣 계산에 재사용
     D = m.pairwise_dist(X)
     return {"sil_true": m.silhouette(X, y, D), "sil_kmeans": m.silhouette(X, km, D), "ari_kmeans": m.ari(y, km),
             "matched_acc_kmeans": m.matched_accuracy(y, km)}
@@ -97,6 +101,7 @@ def e3_unlabeled_limit():
         for s in range(SEEDS):
             X, y = gen(seed=1000 + s)
             r = _wrong_vs_true(X, y, seed=s)
+            # k-평균의 (틀린) 분할이 정답 분할보다 실루엣이 높은 시드 수
             cnt += r["sil_kmeans"] > r["sil_true"]
             gaps.append(r["sil_kmeans"] - r["sil_true"])
         out[name] = {"seed0": one, "seeds": SEEDS, "kmeans_beats_truth_by_silhouette": int(cnt), "gap": q(gaps)}
@@ -116,6 +121,7 @@ def e4_choose_k(n_seeds=20, ks=range(2, 9)):
             for k in ks:
                 labs[k] = m.kmeans(X, k, seed=s)
                 sils[k] = m.silhouette(X, labs[k], D)
+            # 실루엣이 가장 큰 k를 고른다(동률이면 먼저 나온 작은 k)
             kbest = max(sils, key=sils.get)
             picks.append(int(kbest)); hits += kbest == true_k
             ari_at_pick.append(m.ari(y, labs[kbest]))
@@ -128,6 +134,7 @@ def e4_choose_k(n_seeds=20, ks=range(2, 9)):
 
 
 def e5_ari_vs_ami():
+    # A: 작은 모둠을 합침, B: 큰 모둠을 쪼갬. 어느 쪽을 더 낫다고 보는지가 지표마다 갈리는지 비교
     t, a, b = cases.case_merge_vs_split(seed=0)
     seed0 = {"A_merge_small": all_scores(t, a), "B_split_big": all_scores(t, b)}
     c = {"ari_prefers_A": 0, "ami_max_prefers_A": 0, "ami_sum_prefers_A": 0, "nmi_sum_prefers_A": 0,
@@ -135,6 +142,7 @@ def e5_ari_vs_ami():
     for s in range(SEEDS):
         t, a, b = cases.case_merge_vs_split(seed=100 + s)
         sa, sb = all_scores(t, a), all_scores(t, b)
+        # 지표마다 A가 B보다 높은지(모든 지표가 클수록 좋음)
         pa = {k: sa[k] > sb[k] for k in sa}
         c["ari_prefers_A"] += pa["ari"]; c["ami_max_prefers_A"] += pa["ami_max"]; c["ami_sum_prefers_A"] += pa["ami_sum"]
         c["nmi_sum_prefers_A"] += pa["nmi_sum"]; c["matched_prefers_A"] += pa["matched_acc"]
@@ -146,6 +154,7 @@ def e5_ari_vs_ami():
 
 def _perm_average(u, v, fn):
     """순열 모형의 기댓값을 전수로: v의 군집 크기는 그대로 두고 점 배치만 모든 순열로 바꾼다."""
+    # v의 점 배치를 모든 순열로 바꾼다(군집 크기 분포는 유지). 점 6개 = 720가지
     vals = [fn(u, np.asarray(v)[list(p)]) for p in permutations(range(len(v)))]
     return float(np.mean(vals))
 
@@ -158,6 +167,7 @@ def e6_checks():
     rng = np.random.default_rng(9)
     hung = []
     for _ in range(200):
+        # 행·열 수가 2~7인 무작위 정수 가중치(직사각형 포함)
         w = rng.integers(0, 30, (rng.integers(2, 8), rng.integers(2, 8)))
         r, cc = m.hungarian_max(w)
         hung.append(abs(float(w[r, cc].sum()) - m.brute_force_max(w)))
@@ -171,6 +181,7 @@ def e6_checks():
     for s in range(20):
         r2 = np.random.default_rng(100 + s)
         n = int(r2.integers(30, 200))
+        # 군집 수 2~8인 무작위 라벨 두 개
         x, y = r2.integers(0, r2.integers(2, 9), n), r2.integers(0, r2.integers(2, 9), n)
         P = r2.standard_normal((n, 3))
         if len(np.unique(x)) < 2 or len(np.unique(y)) < 2:
@@ -189,6 +200,7 @@ def e6_checks():
         "silhouette_card": {"split_good": m.silhouette_samples(X, [0, 0, 1, 1]).tolist(),
                             "split_bad": m.silhouette_samples(X, [0, 1, 1, 1]).tolist()},
         "vinh_emi": {"paper": 0.4618, "numpy": m.expected_mutual_info_sizes(a, b),
+                     # 크기 목록 a, b를 라벨 배열로 풀어 torch 구현(라벨 입력)에 넣는다. 합이 같아야 하는데 둘 다 100
                      "torch": tm.expected_mutual_info(np.repeat(np.arange(10), a), np.repeat(np.arange(10), b)),
                      "n1000_numpy": m.expected_mutual_info_sizes([100] * 10, [20, 40, 60, 80, 100, 100, 120, 140, 160, 180])},
         "hungarian_vs_bruteforce_max_abs_diff": max(hung), "hungarian_cases": len(hung),

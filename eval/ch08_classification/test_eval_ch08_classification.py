@@ -14,12 +14,14 @@ import eval_ch08_torch as tm
 def test_first_screen_hand_numbers():
     y, lazy, useful = cases.first_screen()
     cl, cu = m.confusion(y, lazy), m.confusion(y, useful)
+    # 게으른 모델은 [[TP 0, FN 1], [FP 0, TN 99]], 쓸 만한 모델은 [[1, 0], [4, 95]]
     assert cl.tolist() == [[0, 1], [0, 99]] and cu.tolist() == [[1, 0], [4, 95]]
     assert m.accuracy(cl) == 0.99 and m.accuracy(cu) == 0.96  # 정확도는 게으른 모델 편
     assert m.recall(cl) == 0.0 and math.isnan(m.precision(cl))  # 양성이라고 말한 적이 없어 정밀도는 0/0
     assert m.f1(cl) == 0.0
     assert Fraction(m.f1(cu)).limit_denominator(100) == Fraction(1, 3)  # 2*1 / (2*1 + 4 + 0)
     assert m.mcc(cu) == pytest.approx(95 / math.sqrt(5 * 1 * 99 * 95))
+    # (1*95 - 4*0) / sqrt(5*1*99*95) = 0.438
     assert round(m.mcc(cu), 3) == 0.438
     assert math.isnan(m.mcc(cl)) and m.mcc(cl, "chicco") == 0.0
 
@@ -27,6 +29,7 @@ def test_first_screen_hand_numbers():
 def test_chicco_use_case_a1():
     """Chicco·Jurman(2020) Use case A1: accuracy 0.90, F1 0.95, MCC -0.03."""
     a1 = cases.chicco_use_case_a1()
+    # 논문 표의 값(정확도 0.90, F1 0.95, MCC -0.03)을 소수 둘째 자리까지 재현. MCC = -9/sqrt(99*91*9*1) = -0.0316
     assert round(m.accuracy(a1), 2) == 0.90
     assert round(m.f1(a1), 2) == 0.95
     assert round(m.mcc(a1), 2) == -0.03
@@ -34,6 +37,7 @@ def test_chicco_use_case_a1():
 
 def test_mcc_undefined_policies():
     # 한 열이 0 (항상 양성), 한 행이 0 (실제 음성 없음) -> chicco 0
+    # 행이나 열 하나가 통째로 0인 네 경우: 기본 정책은 nan, chicco 정책은 0
     for cm in ([[900, 0], [100, 0]], [[0, 10], [0, 90]], [[5, 3], [0, 0]], [[0, 0], [4, 7]]):
         assert math.isnan(m.mcc(cm)) and m.mcc(cm, "chicco") == 0.0
     # 0이 아닌 칸이 하나뿐: 다 맞히면 +1, 다 틀리면 -1
@@ -45,6 +49,7 @@ def test_mcc_undefined_policies():
 
 def test_mcc_range_and_extremes():
     y = np.array([1, 1, 0, 0, 0])
+    # 완벽 예측은 +1, 전부 반대로 예측하면 -1. 무작위 칸 값(1~49)에서도 [-1, 1] 범위
     assert m.mcc(m.confusion(y, y)) == 1.0
     assert m.mcc(m.confusion(y, 1 - y)) == -1.0
     rng = np.random.default_rng(0)
@@ -58,6 +63,7 @@ def test_f_equals_one_minus_e():
     for p in (0.1, 0.4, 0.9):
         for r in (0.2, 0.7, 1.0):
             for beta in (0.5, 1.0, 2.0):
+                # P, R로 쓴 F_beta의 정의식. 코드의 van_rijsbergen_e가 1 - E로 같은 값을 내는지 대조
                 fb = (1 + beta ** 2) * p * r / (beta ** 2 * p + r)
                 assert 1 - m.van_rijsbergen_e(p, r, 1 / (beta ** 2 + 1)) == pytest.approx(fb, abs=1e-12)
 
@@ -68,6 +74,7 @@ def test_e_beta1_is_normalised_symmetric_difference():
     for _ in range(50):
         y, yhat = rng.integers(0, 2, 40), rng.integers(0, 2, 40)
         A, B = set(np.nonzero(y)[0]), set(np.nonzero(yhat)[0])  # A = 관련 문서, B = 검색된 문서
+        # 관련 문서나 검색 문서가 없거나 겹침이 없으면 정밀도·재현율이 0 또는 정의 불가라 건너뛴다
         if not A or not B or not (A & B):
             continue
         cm = m.confusion(y, yhat)
@@ -78,6 +85,7 @@ def test_e_beta1_is_normalised_symmetric_difference():
 
 def test_f1_ignores_tn():
     """TN만 바꾸면 F1은 그대로, MCC와 정확도는 바뀐다."""
+    # TN만 5에서 5000으로. F1은 TN을 쓰지 않아 그대로, MCC와 정확도는 변한다
     a, b = np.array([[50, 10], [20, 5]]), np.array([[50, 10], [20, 5000]])
     assert m.f1(a) == m.f1(b)
     assert m.mcc(a) != pytest.approx(m.mcc(b)) and m.accuracy(a) != m.accuracy(b)
@@ -86,12 +94,14 @@ def test_f1_ignores_tn():
 def test_majority_positive_case():
     y, yhat = cases.case_majority_positive()
     cm = m.confusion(y, yhat)
+    # 항상 양성(90% 양성): F1 = 1800/(1800+100) = 0.947로 높지만 MCC는 분모 0(예측 음성이 없음)
     assert round(m.f1(cm), 3) == 0.947 and math.isnan(m.mcc(cm)) and m.mcc(cm, "chicco") == 0.0
 
 
 def test_imbalanced_constant_case():
     y, yhat = cases.case_imbalanced_constant(0.01, 10_000, seed=0)
     cm = m.confusion(y, yhat)
+    # 양성 1%(100개), 항상 음성: 정확도 99%, 재현율 0, F1 0
     assert cm.tolist() == [[0, 100], [0, 9900]]
     assert m.accuracy(cm) == 0.99 and m.recall(cm) == 0.0 and m.f1(cm) == 0.0
 
@@ -100,12 +110,14 @@ def test_ap_matches_sklearn_doc_example():
     """scikit-learn average_precision_score 문서의 예: 0.83 (= 5/6). 사다리꼴 넓이는 다르다."""
     y, s = cases.sklearn_ap_doc_example()
     assert m.average_precision_np(y, s) == pytest.approx(5 / 6, abs=1e-12)
+    # torch 구현도 같은 값. 사다리꼴 PR 넓이는 다르다(같으면 우연)
     assert tm.average_precision(y, s) == pytest.approx(5 / 6, abs=1e-12)
     assert m.pr_auc_trapezoid(y, s) != pytest.approx(5 / 6)
 
 
 def test_ap_and_auc_with_ties():
     """동점 점수는 한 임계값으로 묶어야 한다. 모든 점수가 같으면 AP = 양성 비율, AUC = 0.5."""
+    # 점수가 모두 같으면 임계값이 하나뿐이라 정밀도 = 양성 비율 0.2, AP = 0.2, 곡선은 대각선이라 AUC = 0.5. 동점을 묶지 않으면 정렬 순서에 따라 값이 달라지는 함정
     y = np.array([1, 0, 0, 0, 1, 0, 0, 0, 0, 0])
     s = np.zeros(10)
     assert m.average_precision_np(y, s) == pytest.approx(0.2)
@@ -120,6 +132,7 @@ def test_roc_auc_equals_pairwise_count():
         y = (rng.random(n) < 0.3).astype(int)
         if y.sum() in (0, n):
             continue
+        # 소수 첫째 자리로 반올림해 동점을 일부러 만든다
         s = np.round(rng.standard_normal(n) + y, 1)
         assert m.roc_auc_np(y, s) == pytest.approx(m.auc_pairwise(y, s), abs=1e-12)
         assert m.roc_auc_np(y, s) == pytest.approx(tm.roc_auc_pairs(y, s), abs=1e-12)
@@ -130,6 +143,7 @@ def test_replicating_negatives_keeps_roc_auc_but_lowers_ap():
     y, s = cases.case_prevalence(0.5, 300, seed=4)
     neg = y == 0
     for k in (3, 20):
+        # 양성은 그대로, 음성을 k번 복제(복제본의 점수도 똑같이 tile). FPR은 변하지 않아 ROC-AUC는 같고 FP가 k배라 정밀도와 AP는 떨어진다
         y2 = np.r_[y[~neg], np.zeros(k * neg.sum(), dtype=int)]
         s2 = np.r_[s[~neg], np.tile(s[neg], k)]
         assert m.roc_auc_np(y2, s2) == pytest.approx(m.roc_auc_np(y, s), abs=1e-12)
@@ -138,6 +152,7 @@ def test_replicating_negatives_keeps_roc_auc_but_lowers_ap():
 
 def test_pair_has_equal_theoretical_auc():
     from math import erf, sqrt
+    # 표준정규 누적분포 Phi. 이론 AUC = Phi(mu / sqrt(1 + sd^2)) (음성 N(0,1), 양성 N(mu, sd^2)에서 점수 차의 분포로 유도)
     phi = lambda x: 0.5 * (1 + erf(x / sqrt(2)))  # noqa: E731
     (ma, sa), (mb, sb) = cases.PAIR["A"], cases.PAIR["B"]
     assert phi(ma / sqrt(1 + sa ** 2)) == pytest.approx(phi(mb / sqrt(1 + sb ** 2)), abs=1e-15)
@@ -157,20 +172,24 @@ def test_numpy_torch_agree():
         assert m.f_beta(cm, 2.0) == pytest.approx(tm.f_beta(cm, 2.0), abs=1e-12)
         assert m.mcc(cm) == pytest.approx(tm.mcc(cm), abs=1e-12)
         assert m.average_precision_np(y, s) == pytest.approx(tm.average_precision(y, s), abs=1e-12)
+        # 점수를 시그모이드로 (0, 1) 확률처럼 바꿔 브라이어 점수 입력으로 사용
         p = 1 / (1 + np.exp(-s))
         assert m.brier(y, p) == pytest.approx(tm.brier(y, p), abs=1e-12)
 
 
 def test_brier_honest_forecast_is_best():
     """사건 확률이 0.01이면 기대 브라이어 점수 0.01(1-q)^2 + 0.99 q^2는 q = 0.01에서 가장 작다."""
+    # 사건 확률 0.01일 때 예측 확률 q에 따른 기대 브라이어. 도함수 0에서 q = 0.01 최소(정직한 확률이 최적)
     qs = np.linspace(0, 0.1, 1001)
     exp = 0.01 * (1 - qs) ** 2 + 0.99 * qs ** 2
     assert qs[np.argmin(exp)] == pytest.approx(0.01)
+    # 손 계산: 오차 제곱이 0.25, 0.25, 0, 0
     assert m.brier([1, 0, 0, 0], [0.5, 0.5, 0.0, 0.0]) == pytest.approx((0.25 + 0.25) / 4)
 
 
 def test_exercise_answers():
     # 연습 1: 양성 20, 음성 980. TP 15, FP 45 -> 정밀도 0.25, 재현율 0.75, F1 = 30/(30+45+5) = 0.375
+    # 정밀도 15/60 = 0.25, 재현율 15/20 = 0.75, 정확도 950/1000 = 0.95
     cm = np.array([[15, 5], [45, 935]])
     assert (m.precision(cm), m.recall(cm), m.f1(cm)) == (0.25, 0.75, 0.375)
     assert m.accuracy(cm) == 0.95

@@ -38,8 +38,8 @@ torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch03.json"
 LOG = HERE / "logs" / "ch03_rollouts.jsonl"
-EPS = 1e-6
-GAMMA = 0.99
+EPS = 1e-6  # 수렴 허용오차: 반복 평가는 오차(또는 앞뒤 차이) < EPS 에서 멈춘다
+GAMMA = 0.99  # 할인율 gamma. 이 값에서 이론 스윕 수는 log(EPS/e0)/log(0.99)
 
 
 def timed(fn, reps):
@@ -58,10 +58,12 @@ def e0_corridor(gamma=0.9):
     rows, Vk = [], np.zeros(3)
     rows.append([float(x) for x in Vk])
     for _ in range(8):
+        # 식: V_{k+1} = r^pi + gamma P^pi V_k  (손계산 표의 한 스윕)
         Vk = r + gamma * P @ Vk
         rows.append([float(x) for x in Vk])
     _, sweeps, _ = ev.evaluate_iterative(P, r, gamma, EPS, V_true=V)
-    a = 0.5 * gamma  # A: 0.5 확률로 제자리, 0.5 확률로 B
+    a = 0.5 * gamma  # A: 0.5 확률로 제자리, 0.5 확률로 B. a = gamma * 0.5 = 0.45
+    # 식: V(A) = a V(A) + a V(B)  =>  V(A)/V(B) = a / (1 - a)
     return {
         "gamma": gamma,
         "equations": "V(A) = 0.45 V(A) + 0.45 V(B);  V(B) = 0.45 V(A) + 0.5",
@@ -90,6 +92,7 @@ def e1_sizes(sizes=(10, 20, 40, 60, 70)):
             "sparse_iter_seconds": t_sparse,
             "sweeps": kd,
             "sweeps_sparse": ks,
+            # 연산량 이론값: LU 분해 (2/3)S^3 + 풀이 2S^2, 조밀 스윕 2S^2 x 스윕 수, 희소 스윕 (이웃 4 x 곱·합 2) = 8S x 스윕 수
             "flops_direct_lu": 2 / 3 * S**3 + 2 * S**2,
             "flops_dense_iter": 2 * S * S * kd,
             "flops_sparse_iter": 8 * S * ks,
@@ -100,6 +103,7 @@ def e1_sizes(sizes=(10, 20, 40, 60, 70)):
         }
         print(f"n={n}: direct {t_direct:.4f}s, dense {t_dense:.4f}s, sparse {t_sparse:.4f}s, sweeps {kd}")
     a, b = out["40"], out["70"]
+    # 로그-로그 기울기: 시간 ~ S^p 라고 두고 p = log(시간비) / log(상태 수 비). LU의 이론값은 p = 3
     slope = np.log(b["direct_seconds"] / a["direct_seconds"]) / np.log(b["states"] / a["states"])
     rate = b["flops_direct_lu"] / b["direct_seconds"]
     return {"gamma": GAMMA, "eps": EPS, "goal": "오른쪽 아래 구석 +1", "by_n": out,
@@ -130,10 +134,10 @@ def e3_gamma(n=20, gammas=(0.9, 0.99, 0.999)):
     out = {}
     for gm in gammas:
         V = ev.evaluate_direct(P, r, gm)
-        e0 = float(np.max(np.abs(V)))
+        e0 = float(np.max(np.abs(V)))  # V_0 = 0 에서 시작하므로 초기 오차 ||V_0 - V^pi|| = ||V^pi||
         _, k_true, errs = ev.evaluate_iterative_sparse(m["nbr"], m["prob"], r, gm, EPS, V_true=V)
         V_diff, k_diff, _ = ev.evaluate_iterative_sparse(m["nbr"], m["prob"], r, gm, EPS, V_true=None)
-        # 마지막 몇십 스윕에서 본 실제 감소 비율
+        # 마지막 몇십 스윕에서 본 실제 감소 비율: 오차 로그의 평균 기울기를 지수로 되돌린 기하평균
         tail = np.array(errs[-50:])
         obs_rate = float(np.exp(np.mean(np.diff(np.log(tail))))) if len(tail) > 2 else None
         out[str(gm)] = {
@@ -146,6 +150,7 @@ def e3_gamma(n=20, gammas=(0.9, 0.99, 0.999)):
             "observed_rate_tail": obs_rate,
             "sweeps_diff_stop": k_diff,
             "true_error_at_diff_stop": float(np.max(np.abs(V_diff - V))),
+            # 식: 앞뒤 차이 < EPS 로 멈췄을 때 오차 <= gamma/(1-gamma) * EPS (최악 경우의 상한)
             "worst_case_error_bound_at_diff_stop": gm / (1 - gm) * EPS,
         }
         print(f"gamma={gm}: sweeps {k_true}, pred {out[str(gm)]['pred_with_e0']}, pred(gamma*rho) {out[str(gm)]['pred_with_gamma_rho']}")
@@ -199,6 +204,7 @@ def e6_frames():
     keep = (1, 2, 5, 10, 20, 50, 100, 300)
     frames, Vk = {}, np.zeros(100)
     for k in range(1, max(keep) + 1):
+        # 식: V_{k+1} = r^pi + gamma P^pi V_k. keep에 든 스윕 번호의 프레임만 저장
         Vk = r + GAMMA * P @ Vk
         if k in keep:
             frames[str(k)] = Vk.reshape(10, 10).round(4).tolist()
@@ -209,6 +215,7 @@ def e6_frames():
     pick = [1, 10, 50, 100, 200, 400, 600, 800, k20]
     return {"n": 10, "frames": frames, "true": V.reshape(10, 10).round(4).tolist(), "nonzero_cells": nonzero,
             "error_curve_20": {str(k): errs[k - 1] for k in pick}, "error_bound_20": {str(k): float(GAMMA**k * np.max(V20)) for k in pick}}
+    # 위 error_bound_20 식: gamma^k * e0 (e0 = max V20, V_0 = 0 이고 V^pi >= 0 이라 ||V^pi|| = max V20)
 
 
 def e7_singular():

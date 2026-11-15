@@ -12,6 +12,7 @@ import pytest
 import ft_ch06_quant as Q
 
 HERE = Path(__file__).parent
+# 손계산용 숫자 네 개. 절댓값 최대 2.0
 HAND = [0.8, -2.0, 0.1, 0.4]
 
 
@@ -32,11 +33,13 @@ def test_nf4_table_shape():
     t = Q.nf4_table()
     assert len(t) == 16 and t == sorted(t)
     assert t[0] == -1.0 and t[-1] == 1.0 and 0.0 in t
+    # 16칸 중 양수 8, 음수 7, 0 하나. 0을 정확히 표현하려고 한쪽이 더 많은 비대칭
     assert sum(v > 0 for v in t) == 8 and sum(v < 0 for v in t) == 7   # 비대칭: 양수 쪽이 하나 더 많다
 
 
 def test_nf4_table_matches_bnb_recipe():
     # bitsandbytes create_normal_map(0.9677083, use_extra_value=True)를 표준 라이브러리로 다시 만들면 표와 float32 반올림 안에서 같다
+    # float32 반올림 수준(1e-6)에서 같으면 사양표의 NF4 값과 다시 만든 표가 일치하는 것
     assert max(abs(a - b) for a, b in zip(Q.nf4_table(), Q.nf4_bnb_recipe())) < 1e-6
 
 
@@ -48,6 +51,7 @@ def test_paper_eq4_symmetric_has_infinite_end():
 
 def test_fp4_table_is_not_uniform_int4():
     fp = Q.fp4_table()
+    # 비트 순서 표 16개 중 0과 -0이 같은 값이라 서로 다른 값은 15개
     assert len(fp) == 15                                 # 0과 -0이 같은 값이라 서로 다른 값은 15개
     assert pytest.approx(min(v for v in fp if v > 0)) == 0.0625 / 12
     assert fp != Q.uniform_table(7)
@@ -57,6 +61,7 @@ def test_fp4_table_is_not_uniform_int4():
 
 def test_hand_int8():
     codes, scales = Q.quant_uniform(HAND, 127, 4)
+    # absmax 2.0. 0.8/2x127 = 50.8 -> 51, 0.1/2x127 = 6.35 -> 6, 0.4/2x127 = 25.4 -> 25
     assert scales == [2.0] and codes == [51, -127, 6, 25]   # 0.4×127=50.8, 0.05×127=6.35, 0.2×127=25.4
     back = Q.dequant_uniform(codes, scales, 127, 4)
     assert [round(v, 4) for v in back] == [0.8031, -2.0, 0.0945, 0.3937]
@@ -64,6 +69,7 @@ def test_hand_int8():
 
 def test_hand_int4_uniform():
     codes, _ = Q.quant_uniform(HAND, 7, 4)
+    # 0.8/2x7 = 2.8 -> 3, 0.1/2x7 = 0.35 -> 0, 0.4/2x7 = 1.4 -> 1
     assert codes == [3, -7, 0, 1]                            # 2.8, -7, 0.35, 1.4 를 반올림
     back = Q.roundtrip(HAND, "int4u", 4)
     assert [round(v, 4) for v in back] == [0.8571, -2.0, 0.0, 0.2857]
@@ -78,17 +84,20 @@ def test_hand_nf4():
     # 이 네 숫자에서는 NF4가 0.8을 균일 4bit보다 더 틀린다. 합으로는 NF4가 작다
     e_nf = [abs(a - b) for a, b in zip(HAND, back)]
     e_iu = [abs(a - b) for a, b in zip(HAND, Q.roundtrip(HAND, "int4u", 4))]
+    # 이 네 숫자에서는 0.8만 보면 NF4가 더 틀리지만 네 오차의 합은 NF4가 작다. 숫자 몇 개의 예일 뿐 일반 결론이 아니다
     assert e_nf[0] > e_iu[0] and sum(e_nf) < sum(e_iu)
 
 
 def test_round_half_to_even_rule():
     assert round(2.5) == 2 and round(3.5) == 4
+    # 2.5는 짝수 쪽(2)으로. 블록 absmax 7.0이라 코드 = x x 7/7 = x
     assert Q.quant_uniform([2.5, 7.0], 7, None)[0] == [2, 7]
 
 
 # ---------- 블록 ----------
 
 def test_outlier_only_hurts_its_block():
+    # 이상치 20.0 하나가 있는 여덟 개. 블록 하나로 양자화하면 20.0 때문에 대부분이 0으로 뭉개지고, 블록 4개씩이면 앞 블록은 영향이 없다
     xs = [0.8, -2.0, 0.1, 0.4, 0.3, -0.5, 20.0, 0.2]
     one = Q.roundtrip(xs, "int4u", None)
     two = Q.roundtrip(xs, "int4u", 4)
@@ -111,13 +120,16 @@ def test_nf4_beats_other_4bit_at_block64():
 # ---------- 비트와 크기 ----------
 
 def test_bits_per_param_matches_paper():
+    # 상수 32비트 / 블록 64 = 0.5비트
     assert Q.bits_per_param(4, 64) - 4 == 0.5                       # 32/64
     dq = Q.bits_per_param(4, 64, dq_blocksize2=256) - 4
     assert dq == 8 / 64 + 32 / (64 * 256)
+    # 두 번 양자화로 숫자당 0.127비트로 줄어 0.373비트를 아낀다. QLoRA 논문이 적은 반올림 값과 같다
     assert round(dq, 3) == 0.127 and round(0.5 - dq, 3) == 0.373   # 논문의 반올림 값
 
 
 def test_model_sizes_7b():
+    # 70억 개 x 16비트 = 14GB, 4비트 3.5GB, 4.5비트 3.9375GB
     assert Q.model_gb(7e9, 16) == 14.0
     assert Q.model_gb(7e9, 4) == 3.5
     assert Q.model_gb(7e9, 4.5) == pytest.approx(3.9375)
@@ -141,6 +153,7 @@ def test_uniform_error_within_half_step(qmax):
     ys = Q.dequant_uniform(*Q.quant_uniform(xs, qmax, 32), qmax, 32)
     for i, (x, y) in enumerate(zip(xs, ys)):
         a = Q.absmax(xs[(i // 32) * 32:(i // 32) * 32 + 32])
+        # 균일 양자화의 오차는 한 칸 폭(a/qmax)의 절반 이하. 1e-6은 부동소수점 허용
         assert abs(y - x) <= a / (2 * qmax) * (1 + 1e-6)
 
 
@@ -152,4 +165,5 @@ def test_results_file_matches_recomputation():
     w = Q.synthetic_weights()
     assert res["e2_gaussian"]["rows"]["nf4_b64"]["rmse"] == round(Q.errors(w, Q.roundtrip(w, "nf4", 64))["rmse"], 6)
     assert res["e8_crosscheck"]["bound_violations"] == 0 and res["e8_crosscheck"]["idempotence_failures"] == 0
+    # 결과 파일의 두 번 양자화 상수 비트(0.127). 6자리로 반올림한 값
     assert res["e6_double_quant"]["const_bits_after"] == 0.126953

@@ -28,6 +28,7 @@ import ft_ch04_formats as FM  # noqa: E402
 import ft_ch04_scaling as SC  # noqa: E402
 
 OUT = HERE / "results" / "ch04.json"
+# 가상 기울기를 뽑는 시드(ft_ch04_scaling.synthetic_grads 기본값과 같다)
 SEED = 4
 SOURCES = HERE / "data" / "sources_2026-10-11.json"
 

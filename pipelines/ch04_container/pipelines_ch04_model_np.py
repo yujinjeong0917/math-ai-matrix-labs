@@ -49,10 +49,12 @@ def train_and_eval(train, valid, lr, steps, l2, fit=fit_logistic):
 
 def serving_stats(table):
     """float()로 감싸지 않은 통계. table[k].mean()은 np.float64 스칼라를 돌려준다."""
+    # float()를 씌우지 않아 NumPy 스칼라(np.float64) 그대로 남는다. 이 타입이 NumPy 1.x/2.x 결과 타입 차이의 원인
     return {"mean": {k: table[k].mean() for k in NUMERIC}, "std": {k: table[k].std() for k in NUMERIC}}
 
 
 def transform_serving(table32, stats):
     """float32 입력 열에서 np.float64 스칼라를 빼고 나눈다. 결과 타입: 1.x는 float32, 2.x는 float64."""
+    # float32 배열 - np.float64 스칼라: NumPy 1.x는 값 기반 규칙으로 float32, 2.x(NEP 50)는 float64가 된다(docstring)
     cols = [(table32[k] - stats["mean"][k]) / stats["std"][k] for k in NUMERIC]
     return cols[0].dtype.name, np.column_stack(cols)

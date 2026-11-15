@@ -22,12 +22,14 @@ RETRY_STATUS = {408, 409, 429}
 
 
 def load_example(path=HERE / "data" / "request_example.json"):
+    """예시 요청 본문(JSON)을 읽는다."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def walk_blocks(req):
     """요청을 캐시 순서(system -> messages)대로 블록 목록으로 편다. (위치, 역할, 캐시 지점 여부, 글 앞부분)"""
     out = []
+    # system은 선택 칸이고 문자열 또는 블록 목록일 수 있다. 문자열은 블록 하나로 통일해 다룬다.
     sys_part = req.get("system", [])
     if isinstance(sys_part, str):
         sys_part = [{"type": "text", "text": sys_part}]
@@ -43,10 +45,12 @@ def walk_blocks(req):
 
 
 def breakpoints_of(req):
+    """cache_control이 붙은 블록의 위치(walk_blocks 목록의 인덱스)."""
     return [i for i, b in enumerate(walk_blocks(req)) if b[2]]
 
 
 def validate(params):
+    """필수 칸(model, max_tokens, messages)과 max_tokens 형식을 확인한다. 서버 검증의 일부만 흉내 낸 것이다."""
     missing = [k for k in REQUIRED if k not in params]
     if missing:
         raise ValueError(f"필수 칸이 빠졌어요: {', '.join(missing)}")
@@ -55,6 +59,7 @@ def validate(params):
 
 
 class APIError(Exception):
+    """재시도 후에도 실패했을 때 올리는 오류. status는 마지막 HTTP 상태, attempts는 시도 횟수."""
     def __init__(self, status, attempts):
         super().__init__(f"HTTP {status} after {attempts} attempts")
         self.status = status
@@ -75,6 +80,7 @@ class MiniClient:
         self.waits = []
 
     def headers(self):
+        """요청 머리글 3개. 키는 매 요청에 실어 보낸다."""
         return {"x-api-key": self.api_key, "anthropic-version": API_VERSION,
                 "content-type": "application/json"}
 
@@ -87,9 +93,12 @@ class MiniClient:
             status, data = self.transport(URL, self.headers(), body)
             if status == 200:
                 return {"attempts": attempt, **data}
+            # 문서가 밝힌 재시도 대상(408, 409, 429, 500 이상). 그 밖의 4xx(잘못된 요청, 인증 오류 등)는 다시 해도 같아서 바로 실패시킨다.
             retryable = status in RETRY_STATUS or status >= 500
+            # max_retries=2면 처음 1번 + 재시도 2번 = 최대 3번 시도(off-by-one 함정: attempt가 max_retries를 넘으면 중단).
             if not retryable or attempt > self.max_retries:
                 raise APIError(status, attempt)
+            # 지수 대기: 0.5초, 1초, 2초 ... (값은 이 모형의 가정). sleep은 기본이 아무것도 안 하는 함수라 테스트가 빠르다.
             wait = 0.5 * 2 ** (attempt - 1)
             self.waits.append(wait)
             self.sleep(wait)
@@ -105,7 +114,9 @@ class FakeTransport:
         self.calls = []
 
     def __call__(self, url, headers, body):
+        # 테스트에서 실제로 무엇이 전송됐는지 확인하려고 기록한다. headers는 복사해 이후 변경의 영향을 막는다.
         self.calls.append({"url": url, "headers": dict(headers), "body": json.loads(body)})
+        # 준비한 상태 코드를 다 쓰면 성공(200)으로 끝난다.
         status = self.statuses.pop(0) if self.statuses else 200
         if status == 200:
             return 200, {"type": "message", "role": "assistant", "usage": self.usage}

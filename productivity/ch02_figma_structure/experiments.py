@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
+# 같은 폴더의 모듈(productivity_chNN_*)을 어느 디렉터리에서 실행해도 찾도록 경로를 앞에 넣는다
 sys.path.insert(0, str(HERE))
 
 import productivity_ch02_layout as L  # noqa: E402
@@ -29,10 +30,13 @@ OUT = HERE / "results" / "ch02.json"
 
 
 def _edit(t, who, cell, v):
+    """편집 기록 한 건(시각 t, 사람, 칸, 값). sync 모듈의 make_edits가 만드는 것과 같은 꼴이다."""
     return {"t": t, "who": who, "cell": cell, "v": v}
 
 
 def e1_min_failure():
+    """E1: 같은 변경(A: 색, B: 문구와 여백)을 사본 7개에 파일째 저장할 때와 component 1개에 속성 단위로 합칠 때의 lost, silent를 센다.
+    시각 t는 0.01씩 늘리는 임의의 순서이고, 사본 방식의 lost 7이 results의 e1_min_failure.copy_file_save_B_last와 대응한다(test_results_file_matches_modules)."""
     pp = P.pingpong_file()
     buttons = []  # (화면, 버튼 번호, 라벨)
     for s in pp["screens"]:
@@ -89,10 +93,12 @@ def e1_min_failure():
 
 
 def e2_change_cost():
+    """E2: 버튼 스타일(채우기, 모서리) 변경과 문구 변경에 고쳐야 하는 곳의 수(사본 대 main component), 문구가 길어졌을 때의 넘침, override, detach가 남기는 어긋남."""
     pp, spec = P.pingpong_file(), P.spec_file()
     style = ["fill", "radius"]
     res = {
         "buttons_on_screens": P.buttons_in(spec),
+        # change_main은 "고친 위치 수 1"을 돌려주므로 x 속성 수(2)가 component 쪽 편집 횟수다
         "style_change_edit_locations": {"copies": P.edit_locations_copy(pp, style), "component": P.change_main(P.spec_file(), {"fill": "#000", "radius": 12}) * len(style)},
         "style_change_places_to_open": {"copies": P.buttons_in(pp), "component": 1},
     }
@@ -136,6 +142,7 @@ def e2_change_cost():
 
 
 def _width_breakdown(doc, w):
+    """문서의 모든 화면을 폭 w로 다시 배치해 넘침과 stretch 불일치를 센다. stretch_fail_names는 줄(Row1~Row4)을 "Row"로 묶어 센 이름별 개수."""
     out = {"overflow": 0, "stretch_fail": 0, "stretch_fail_names": {}}
     for s in P.resolved_screens(doc):
         r = L.check_layout(L.layout(L.resize_screen(s, w), 0, 0, w, P.SCREEN_H))
@@ -148,6 +155,7 @@ def _width_breakdown(doc, w):
 
 
 def e3_width():
+    """E3: 화면 폭 320, 375, 430에서 고정 좌표 판(fixed)과 auto layout 판(auto)의 넘침·stretch 불일치, 그리고 430px 상단바의 좌우 여백."""
     pp, spec = P.pingpong_file(), P.spec_file()
     stretch_targets = sum(1 for s in P.resolved_screens(spec) for n, _ in L.walk(s) if n.get("intent") == "stretch")
     res = {"stretch_intent_elements": stretch_targets}
@@ -166,6 +174,7 @@ def e3_width():
 
 
 def e4_lint():
+    """E4: 핑퐁 파일, 명세 파일, 어긋남(override, detach)을 넣은 명세 파일에 lint를 돌린 결과."""
     return {
         "pingpong": P.lint(P.pingpong_file()),
         "spec": P.lint(P.spec_file()),
@@ -174,6 +183,7 @@ def e4_lint():
 
 
 def e5_adoption():
+    """E5: 라이브러리 출신 레이어 비율(adoption_score)을 세 파일에 계산한다."""
     return {
         "pingpong": P.adoption_score(P.pingpong_file()),
         "spec": P.adoption_score(P.spec_file()),
@@ -182,6 +192,8 @@ def e5_adoption():
 
 
 def e6_sync(n_layers=40, n_props=6, ks=(5, 10, 20, 40, 80), trials=500):
+    """E6: 편집 횟수 k를 늘려 가며 합치는 방식별 lost, silent의 시뮬레이션 평균과 이론값(sync.expected)을 나란히 둔다.
+    시드는 1000 x k + 시행 번호로 정해 k마다 다른 난수열을 쓴다. 칸 수 N = 40 x 6 = 240."""
     res = {"n_layers": n_layers, "n_props": n_props, "trials": trials, "by_k": {}}
     for k in ks:
         acc = {m: {"lost": [], "silent": []} for m in ("file", "object", "prop", "baton")}
@@ -205,6 +217,7 @@ def e6_sync(n_layers=40, n_props=6, ks=(5, 10, 20, 40, 80), trials=500):
 
 
 def e7_cross_check(trials=2000):
+    """E7: (1) 속성 단위 병합의 두 구현(기록 순서 대 레지스터)이 2000가지 입력에서 어긋나는 횟수, (2) auto layout 엔진이 닫힌 식과 어긋나는 횟수. 둘 다 0이어야 한다."""
     rng = random.Random(7)
     mism = 0
     for i in range(trials):
@@ -214,7 +227,7 @@ def e7_cross_check(trials=2000):
     for i in range(trials):
         n = rng.randint(1, 6)
         kids = [P.text(f"t{j}", "가" * rng.randint(0, 6) + " " * rng.randint(0, 2)) for j in range(n)]
-        pl, pr, g = (rng.randrange(0, 33, 4) for _ in range(3))
+        pl, pr, g = (rng.randrange(0, 33, 4) for _ in range(3))  # 여백·간격은 0, 4, ..., 32 중에서 4의 배수로
         f = {"name": "F", "kind": "frame", "layout": "H", "pad": (pl, pr, 8, 8), "gap": g, "sx": "hug", "sy": "hug", "children": kids}
         closed = pl + sum(L.text_width(k["text"]) for k in kids) + g * (n - 1) + pr
         lay_mism += L.layout(f)["box"][2] != closed
@@ -229,6 +242,7 @@ def e7_cross_check(trials=2000):
 
 
 def main():
+    """모든 실험을 돌려 results/ch02.json과 data/*.json(두 파일의 구조)을 쓰고 화면에도 출력한다. 시드가 고정이라 결과는 매번 같다."""
     res = {
         "e1_min_failure": e1_min_failure(),
         "e2_change_cost": e2_change_cost(),
@@ -242,6 +256,7 @@ def main():
     OUT.parent.mkdir(exist_ok=True)
     data = HERE / "data"  # 두 파일의 구조를 JSON으로 남긴다(합성, 제3자 권리 없음)
     data.mkdir(exist_ok=True)
+    # default=list: JSON이 튜플은 리스트로 처리하지만 다른 비직렬화 객체가 있으면 list()로 바꿔 저장한다(여백 튜플 등)
     (data / "file_spec.json").write_text(json.dumps(P.spec_file(), ensure_ascii=False, indent=1, default=list))
     (data / "file_pingpong.json").write_text(json.dumps(P.pingpong_file(), ensure_ascii=False, indent=1, default=list))
     OUT.write_text(json.dumps(res, ensure_ascii=False, indent=1, default=list))

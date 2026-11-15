@@ -38,6 +38,7 @@ HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch05.json"
 INTERVALS = (1, 2, 5, 10)
 SEEDS = (0, 1, 2)
+# E5의 성능 하한(0.80). 프로젝트 테스트의 하한 0.75와 별개로, 흔들리는 테스트를 만들려고 높게 잡은 값
 FLOOR_FLAKY = 0.80
 N_FLAKY = 50
 
@@ -70,6 +71,7 @@ def e1_two_branches():
 
 def e2_history():
     rows = []
+    # T = 합치는 간격(일). 시드 3개로 각각 돌려 합계와 분산을 본다
     for T in INTERVALS:
         for s in SEEDS:
             with tempfile.TemporaryDirectory() as d:
@@ -142,11 +144,14 @@ def e4_timing(reps=3):
 def e5_flaky():
     with tempfile.TemporaryDirectory() as d:
         m = pr.load_modules(Path(d) / "p")
+        # 시드 고정: 매번 같은 값이라 통과·실패가 뒤바뀌지 않는다(flips 0)
         seeded = [m["train"].run()["val_acc"] for _ in range(N_FLAKY)]
+        # 시드를 0~49로 바꿔 가며 돌린 경우(실행마다 시드가 바뀌는 상황의 대용). 하한 근처면 통과·실패가 오간다
         seeds_varied = [m["train"].run(data_seed=s, split_seed=s + 1)["val_acc"] for s in range(N_FLAKY)]
 
     def summ(xs):
         passes = [x >= FLOOR_FLAKY for x in xs]
+        # 연속한 실행 사이에 통과 여부가 바뀐 횟수
         flips = sum(passes[i] != passes[i - 1] for i in range(1, len(passes)))
         return {"n": len(xs), "pass": sum(passes), "fail": len(xs) - sum(passes), "flips": flips,
                 "min": min(xs), "max": max(xs), "mean": round(statistics.mean(xs), 4), "std": round(statistics.pstdev(xs), 4),
@@ -164,6 +169,7 @@ def e6_np_vs_torch():
         tr, va = order[:800], order[800:]
         w_np, b_np = m["model"].fit_logistic(X[tr], y[tr])
         w_t, b_t = mtt.fit_logistic(X[tr], y[tr])
+        # 검증 분할(order[800:])에서의 정확도
         acc = lambda w, b: float(np.mean((m["model"].predict_proba(X[va], w, b) >= 0.5) == y[va]))  # noqa: E731
         return {"max_abs_w_diff": float(np.max(np.abs(w_np - w_t))), "b_diff": abs(b_np - b_t),
                 "acc_np": acc(w_np, b_np), "acc_torch": acc(w_t, b_t), "floor": 0.75,

@@ -22,7 +22,9 @@ import re
 import tools_ch05_data as D
 
 PROTOCOL = "2026-07-28"
+# 한 번에 돌려주는 최대 행 수. 호출 수 계산(120행 -> 2번)의 근거.
 MAX_ROWS = 100
+# 날짜 형식 검사. 형식이 맞아야 아래 문자열 대소 비교가 날짜 비교가 된다.
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 READ_TOOLS = [
@@ -58,6 +60,7 @@ def _ok(data):
             "structuredContent": data, "isError": False}
 
 
+# 도구 실행 오류는 JSON-RPC error가 아니라 isError: true인 정상 응답으로 돌려준다(위 docstring의 명세 모양). 모델이 오류 문구를 읽고 인자를 고칠 수 있게 하려는 설계.
 def _err(msg):
     return {"resultType": "complete", "content": [{"type": "text", "text": msg}], "isError": True}
 
@@ -71,9 +74,11 @@ class MiniServer:
     """Notion 쪽과 Figma 쪽 도구를 한 서버에 모은 흉내. 실제로는 서버가 둘(Notion MCP, Figma MCP)이다."""
 
     def __init__(self, allow_write=False, inquiries=None, figma=None):
+        # 깊은 복사: 쓰기 도구가 원본 데이터를 바꾸지 않게 서버마다 사본을 쓴다.
         self.db = copy.deepcopy(inquiries or D.load_inquiries())
         self.figma = copy.deepcopy(figma or D.load_figma())
         self.allow_write = allow_write
+        # 호출 기록은 테스트와 실험이 '몇 번 불렀나'를 세는 데 쓴다.
         self.log = []          # (도구 이름, 인자)
         self.writes = []       # 실제로 바뀐 것
 
@@ -104,6 +109,7 @@ class MiniServer:
         if method != "tools/call":
             return {"jsonrpc": "2.0", "id": rid, "error": {"code": -32601, "message": f"Method not found: {method}"}}
         name, args = params.get("name"), params.get("arguments", {})
+        # 도구 목록에 없는 이름(읽기 전용일 때의 쓰기 도구 포함)은 프로토콜 오류(-32602). 인자가 틀린 것과 구별된다.
         if name not in {t["name"] for t in self.tools()}:
             return {"jsonrpc": "2.0", "id": rid, "error": {"code": -32602, "message": f"Unknown tool: {name}"}}
         self.log.append((name, args))
@@ -111,6 +117,7 @@ class MiniServer:
         result = _err(bad) if bad else getattr(self, "_t_" + name)(**args)
         return {"jsonrpc": "2.0", "id": rid, "result": result}
 
+    # JSON Schema 전체 검증이 아니라 필수 칸, 모르는 칸, 날짜 형식만 보는 최소 검사(모형의 단순화).
     def _valid(self, name, args):
         schema = next(t for t in self.tools() if t["name"] == name)["inputSchema"]
         for k in schema.get("required", []):
@@ -126,10 +133,13 @@ class MiniServer:
 
     # ---- 도구 본체 ----
     def _t_query_inquiries(self, start, end, type=None, cursor=None):
+        # start <= 날짜 <= end: 양 끝 포함. 접수일은 'YYYY-MM-DDTHH:MM'이라 앞 10글자만 잘라 비교한다.
         hits = [r for r in self.rows if start <= r["properties"]["접수일"][:10] <= end
                 and (type is None or r["properties"]["유형"] == type)]
+        # 커서는 '다음 시작 위치'를 문자열로 담은 것(모형의 단순화). 실제 서버의 커서는 불투명한 값이다.
         off = int(cursor) if cursor else 0
         page = hits[off: off + MAX_ROWS]
+        # 남은 행이 있을 때만 커서를 준다. off + 100 == 전체 개수이면 None(off-by-one 주의).
         nxt = str(off + MAX_ROWS) if off + MAX_ROWS < len(hits) else None
         return _ok({"rows": page, "next_cursor": nxt})
 
@@ -142,6 +152,7 @@ class MiniServer:
     def _t_update_inquiry_status(self, id, status):
         for r in self.rows:
             if r["id"] == id:
+                # 이미 같은 상태면 쓰기로 세지 않는다. 그래서 주입 실험의 쓰기 건수가 120이 아니라 80이다.
                 if r["properties"]["상태"] != status:
                     self.writes.append(("notion", id, r["properties"]["상태"], status))
                     r["properties"]["상태"] = status

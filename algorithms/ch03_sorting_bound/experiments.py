@@ -57,6 +57,8 @@ E1_SORTS = ["insertion", "merge", "heap", "lomuto_first", "hoare_random", "media
 
 def e1_exhaustive(max_n=8):
     out = {}
+    # 모든 순열을 돌리므로 비용 n! (n=8 이면 40,320). 최악 비교 수가 ceil(log2 n!) 이상이고
+    # 평균 비교 수가 log2 n! 이상이라는 하한이 실제로 지켜지는지 센다. 일부 입력은 하한보다 적게 비교할 수 있다(inputs_below_bound).
     for n in range(1, max_n + 1):
         bound = s.ceil_log2_factorial(n)
         row = {"orders": math.factorial(n), "bound": bound, "log2_fact": s.log2_factorial(n), "algos": {}}
@@ -75,6 +77,7 @@ def e1_exhaustive(max_n=8):
 
 
 def _timeit(fn, repeats):
+    # 중앙값 초. 반복이 1이면 단발 측정이라 잡음이 크다
     ts = []
     for _ in range(repeats):
         t0 = time.perf_counter()
@@ -88,7 +91,7 @@ def e2_sorted_first_pivot():
     for n in (500, 1000, 2000, 4000, 8000):
         xs = list(range(n))
         t0 = time.perf_counter()
-        a, c = s.run_sort("lomuto_first", xs)
+        a, c = s.run_sort("lomuto_first", xs)  # 정렬된 입력 = 첫 원소 피벗의 최악(비교 n(n-1)/2)
         t_first = time.perf_counter() - t0
         hr = []
         for seed in range(10):
@@ -116,6 +119,7 @@ def e3_recursion_limit():
         except RecursionError:
             return True
 
+    # 재귀 한도에 처음 걸리는 n 을 이분 탐색으로 찾는다(걸리는지는 n 에 대해 단조라고 가정)
     lo, hi = 1, 4000
     assert fails(hi)
     while lo < hi:
@@ -164,6 +168,7 @@ def e5_grid(n=2000, seeds=10):
     for kind in INPUTS:
         out[kind] = {}
         for name in ALGOS:
+            # 난수를 안 쓰는 알고리즘에 정해진 입력(정렬·역순·killer)이면 시드를 바꿔도 같은 결과라 1번만 돈다
             deterministic = kind in ("sorted", "reversed", "killer") and name not in s.RANDOMIZED
             comps, depth, times = [], [], []
             for seed in range(1 if deterministic else seeds):
@@ -194,7 +199,7 @@ def e6_killer():
         _, cmr = s.run_sort("median3", rx)
         _, cir = s.run_sort("introsort", rx)
         _, chr_ = s.run_sort("heap", rx)
-        k = n // 4
+        k = n // 4  # Musser 정리 1: 처음 n/4 번의 분할은 (2, n-2j) 꼴로 쏠린다
         theorem = cm.partition_sizes[:k] == [(2, n - 2 * j) for j in range(1, k + 1)]
         rows.append({"n": n, "theorem1_first_n_over_4_partitions": theorem,
                      "median3_comparisons": cm.comparisons, "median3_max_depth": cm.max_depth, "median3_seconds": tm,
@@ -216,6 +221,8 @@ def e6_killer():
 def e7_topk(n=1_000_000, k=10, repeats=7, seed=0):
     rng = np.random.default_rng(seed)
     x = rng.standard_normal(n).astype(np.float32)
+    # 큰 값 k개: 전체 정렬 O(n log n) 대신 부분 선택 O(n)(평균). -x 로 부호를 뒤집어 오름차순 도구로 내림차순을 얻는다.
+    # argpartition 결과는 k개 안의 순서가 없어서 다시 정렬한 뒤 비교한다.
     full = np.argsort(-x, kind="stable")[:k]
     part = np.argpartition(-x, k - 1)[:k]
     part = part[np.argsort(-x[part], kind="stable")]

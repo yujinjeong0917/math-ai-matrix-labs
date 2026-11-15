@@ -21,19 +21,23 @@ HELD_OUT = [("강아지가", "잔다"), ("토끼가", "먹는다"), ("학생이"
 
 VOCAB = [BOS, EOS] + TIMES + ANIMALS + ANIMAL_VERBS + PEOPLE + PEOPLE_VERBS
 IDX = {w: i for i, w in enumerate(VOCAB)}
+# 문맥 길이 k = 2. 모델은 직전 두 단어로 다음 단어를 예측한다.
 CONTEXT = 2  # 앞 두 단어를 본다(트라이그램, Bengio 표기로 n = 3)
 
 
 def allowed_pairs():
+    """학습에 나오는 (주어, 동사) 쌍. 같은 부류끼리 4x4 = 16쌍씩 32쌍에서 HELD_OUT 4쌍을 뺀 28쌍."""
     pairs = [(s, v) for s in ANIMALS for v in ANIMAL_VERBS] + [(s, v) for s in PEOPLE for v in PEOPLE_VERBS]
     return [p for p in pairs if p not in HELD_OUT]
 
 
 def sentence(t, s, v):
+    """[<s>, <s>, 때, 주어, 동사, </s>]. 앞 <s> 2개는 CONTEXT = 2 만큼의 패딩."""
     return [BOS] * CONTEXT + [t, s, v, EOS]
 
 
 def sample_sentences(k, rng, pairs=None):
+    """허용된 쌍을 균등하게, 때도 균등하게 뽑아 문장 k개를 만든다."""
     pairs = allowed_pairs() if pairs is None else pairs
     out = []
     for _ in range(k):
@@ -53,12 +57,14 @@ def to_examples(sentences):
     for sent in sentences:
         ids = [IDX[w] for w in sent]
         for i in range(CONTEXT, len(ids)):
+            # 문장 앞의 <s> 2개는 문맥으로만 쓰고 예측 대상에서 뺀다. 문장당 예측 대상은 때, 주어, 동사, </s> 4개.
             ctx.append(ids[i - CONTEXT : i])
             tgt.append(ids[i])
     return np.array(ctx, dtype=np.int64), np.array(tgt, dtype=np.int64)
 
 
 def make_splits(seed=0, n_train=600, n_valid=150, n_test=300):
+    """학습/검증/seen 테스트는 같은 분포에서 뽑고, unseen은 빠진 쌍을 모은 고정 12문장."""
     rng = np.random.default_rng(seed)
     return {
         "train": sample_sentences(n_train, rng),
@@ -71,8 +77,11 @@ def make_splits(seed=0, n_train=600, n_valid=150, n_test=300):
 def true_ppl():
     """학습 분포(빠진 쌍 제외)를 정확히 아는 모델의 문장 위치당 PPL. 어떤 모델도 기대값으로는 이보다 낮을 수 없다."""
     pairs = allowed_pairs()
+    # 주어별로 학습에 허용된 동사 수 (4 또는 3).
     n_verbs = {s: sum(1 for p in pairs if p[0] == s) for s, _ in pairs}
+    # 엔트로피(nats)를 단계별로 합산: H = H(때) + H(주어) + H(동사 | 주어) + H(</s>) = 0.
     H = np.log(len(TIMES))  # 때
     H += -sum((c / len(pairs)) * np.log(c / len(pairs)) for c in n_verbs.values())  # 주어
     H += sum((c / len(pairs)) * np.log(c) for c in n_verbs.values())  # 주어가 정해지면 동사는 균등
+    # 문장당 엔트로피를 예측 위치 수 4로 나눠 위치당 PPL로 만든다.
     return float(np.exp(H / 4))  # 예측 4번(때, 주어, 동사, </s>) 평균. </s>는 확률 1

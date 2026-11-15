@@ -37,6 +37,7 @@ def load_table(path):
     return table, meta
 
 
+# 데이터 규칙을 정하는 우선순위: 파라미터 > 환경변수 > 이미지 기본값. 어디서 정해졌는지(decided_by)도 함께 돌려준다
 def resolve_source_version(data_version, ctx):
     if data_version:
         return data_version, "parameter"
@@ -49,12 +50,14 @@ def resolve_source_version(data_version, ctx):
 def prepare(seed, n_rows, shift, train_path, valid_path, data_version="", ctx=None):
     version, decided_by = resolve_source_version(data_version, ctx)
     t = D.make_table(seed, n_rows, shift=shift, source_version=version)
+    # source_version이 v2면 행 수가 n_rows보다 줄어든다. 분할 크기는 실제 행 수 기준 3/4
     n = len(t[D.LABEL])
     tr, va = D.split(t, n * 3 // 4, seed)
     meta = {"seed": seed, "shift": shift, "n_rows": n_rows, "source_version": version, "source_version_from": decided_by}
     _save_table(train_path, tr, dict(meta, part="train"))
     _save_table(valid_path, va, dict(meta, part="valid"))
     return {
+        # 각 결과 파일의 속성(메타데이터)에 데이터 지문 dataset_hash와 규칙 버전을 넣는다. runner가 저장소 artifact 속성으로 적는다
         "train_data": dict(meta, part="train", rows=len(tr[D.LABEL]), dataset_hash=D.dataset_hash(tr)),
         "valid_data": dict(meta, part="valid", rows=len(va[D.LABEL]), dataset_hash=D.dataset_hash(va)),
     }
@@ -70,6 +73,7 @@ def train(train_path, model_path, impl="numpy", steps=400, ctx=None):
     else:
         raise ValueError(impl)
     Path(model_path).parent.mkdir(parents=True, exist_ok=True)
+    # 모델 파일에는 학습 데이터 정보를 넣지 않는다(실패 예제 A: 배포된 모델 파일만으로는 출처를 알 수 없다)
     Path(model_path).write_text(json.dumps(model, sort_keys=True))
     return {"model": {"impl": impl, "steps": steps}}
 
@@ -80,6 +84,7 @@ def evaluate(model_path, valid_path, metrics_path, threshold=0.5, ctx=None):
     m = M.evaluate(model, table, threshold)
     Path(metrics_path).parent.mkdir(parents=True, exist_ok=True)
     Path(metrics_path).write_text(json.dumps(m, sort_keys=True))
+    # 저장소에 적는 지표는 소수 4자리로 반올림(파일 안의 값은 반올림하지 않음)
     return {"metrics": {k: round(float(v), 4) for k, v in m.items()}}
 
 

@@ -22,6 +22,7 @@ JENKINSFILE = (HERE / "Jenkinsfile").read_text()
 
 
 @pytest.fixture(scope="module")
+# 학습 3000행으로 v1(6열), v2(7열) 모델을 만든다. 모듈 안에서 한 번만 학습
 def models():
     t = D.make_table(0, 4000)
     tr, va = D.split(t, 3000, 0)
@@ -34,6 +35,7 @@ def traffic(models):
     tf = D.serve_view(D.make_table(1000, 10_000))
     bt = D.serve_view(D.make_table(5000, 2000))
     return {
+        # 서빙 쪽 요청(부산 앱 단위 어긋남 포함)에서 요청별 맞힘 배열과 지역, 사용자 id, 배포 전 v1 기준값
         "c1": M.correct(v1, tf), "c2": M.correct(v2, tf), "seg": tf["region"],
         "users": [f"s0-u{i}" for i in range(10_000)], "base": metrics_of(M.correct(v1, bt), bt["region"]),
     }
@@ -46,12 +48,15 @@ def test_route_is_deterministic_and_sticky_when_raising_p():
     assert [route(u, 0.05) for u in users] == [route(u, 0.05) for u in users]
     a = [route(u, 0.05) for u in users]
     b = [route(u, 0.2) for u in users]
+    # p를 0.05에서 0.2로 올려도 v2를 보던 사용자가 v1으로 돌아가지 않아야 한다
     assert not any(x == "v2" and y == "v1" for x, y in zip(a, b))  # 비율을 올려도 v2였던 사람은 v2로 남는다
     share = np.mean([y == "v2" for y in b])
+    # 3000명 중 약 20%여야 한다. 허용 폭 0.02는 표본 크기의 우연한 변동을 고려한 값(모형의 선택)
     assert 0.18 < share < 0.22
 
 
 def test_bucket_does_not_depend_on_python_hash_seed():
+    # 별도 프로세스에서 PYTHONHASHSEED를 바꿔 가며 같은 버킷 값이 나오는지 확인(내장 hash()였다면 달라진다)
     code = "import sys; sys.path.insert(0, %r); from pipelines_ch06_router import bucket; print(repr(bucket('user-7')))" % str(HERE)
     outs = set()
     for seed in ("0", "1", "12345"):
@@ -65,6 +70,7 @@ def test_bucket_does_not_depend_on_python_hash_seed():
 def test_gate_holds_below_min_n_and_rolls_back_when_guard_is_violated():
     v1 = {"n": 5000, "errors": 1000}
     assert decide(v1, {"n": 49, "errors": 49}, DEFAULT_GUARD) == "hold"
+    # v1 오류율 0.20 기준: v2 0.40이면 z가 문턱 3을 훨씬 넘어 rollback, 0.20이면 hold(올리기 기준 400건 미만)
     assert decide(v1, {"n": 200, "errors": 80}, DEFAULT_GUARD) == "rollback"  # 0.40 vs 0.20
     assert decide(v1, {"n": 200, "errors": 40}, DEFAULT_GUARD) == "hold"
     assert decide(v1, {"n": 400, "errors": 80}, DEFAULT_GUARD) == "promote"
@@ -72,6 +78,7 @@ def test_gate_holds_below_min_n_and_rolls_back_when_guard_is_violated():
 
 def test_segment_guard_catches_what_the_overall_rate_hides():
     seg1 = {0: {"n": 4000, "errors": 800}, 2: {"n": 1000, "errors": 200}}
+    # 구간 0은 오류율 0.15로 좋아지고 구간 2만 0.5로 나빠진다. 전체 오류율은 81/400 = 0.2025로 v1과 거의 같아 전체 지표로는 안 보인다
     seg2 = {0: {"n": 340, "errors": 51}, 2: {"n": 60, "errors": 30}}  # 구간 0은 더 좋고 구간 2만 크게 나쁘다
     m1 = {"n": 5000, "errors": 1000, "seg": seg1}
     m2 = {"n": 400, "errors": 81, "seg": seg2}
@@ -95,6 +102,7 @@ def test_v2_wins_offline_but_loses_busan_online(models):
     assert M.correct(v2, va).mean() > M.correct(v1, va).mean()
     tf = D.serve_view(D.make_table(1000, 10_000))
     m = tf["region"] == D.SKEW_REGION
+    # 부산에서 v2 정확도가 v1보다 0.2 넘게 낮다. 0.2는 관찰 결과에 여유를 둔 기준(다른 시드에서는 달라질 수 있음)
     assert M.correct(v2, tf)[m].mean() < M.correct(v1, tf)[m].mean() - 0.2
     assert M.correct(v2, tf)[~m].mean() > M.correct(v1, tf)[~m].mean()
 
@@ -105,6 +113,7 @@ def test_harm_is_exact_counterfactual(traffic):
     T = traffic
     r = simulate_traffic(T["c1"], T["c2"], T["users"], T["seg"], "full", DEFAULT_GUARD, baseline=T["base"])
     served = r["served_v2"]
+    # v2가 처음 served개 요청만 받았다면 그 구간의 (c1 - c2) 합이 피해와 정확히 같다(full 방식은 처음부터 v2)
     assert r["harm"] == int(np.sum(T["c1"][:served] - T["c2"][:served]))
     assert sum(r["harm_by_segment"].values()) == r["harm"]
 
@@ -119,6 +128,7 @@ def test_bluegreen_switch_back_serves_v1_from_the_next_request(traffic):
     T = traffic
     r = simulate_traffic(T["c1"], T["c2"], T["users"], T["seg"], "bluegreen", DEFAULT_GUARD, baseline=T["base"])
     assert r["decision"] == "rollback"
+    # 블루그린은 결정한 요청 번호까지만 v2가 받는다
     assert r["served_v2"] == r["decided_at"]  # 결정한 요청까지만 v2, 그다음부터 v1
 
 
@@ -128,6 +138,7 @@ def test_full_replacement_keeps_serving_v2_during_redeploy(traffic):
     full = simulate_traffic(T["c1"], T["c2"], T["users"], T["seg"], "full", DEFAULT_GUARD, baseline=T["base"],
                             rollback_delay=500)
     assert full["decided_at"] == bg["decided_at"]
+    # 전체 교체는 재배포 지연 500요청 동안 v2가 더 받는다
     assert full["served_v2"] == bg["served_v2"] + 500
 
 
@@ -136,6 +147,7 @@ def test_label_delay_postpones_the_decision(traffic):
     a = simulate_traffic(T["c1"], T["c2"], T["users"], T["seg"], "bluegreen", DEFAULT_GUARD, baseline=T["base"])
     b = simulate_traffic(T["c1"], T["c2"], T["users"], T["seg"], "bluegreen", DEFAULT_GUARD, baseline=T["base"],
                          label_delay=1000)
+    # 정답 지연 1000요청만큼 결정이 늦어진다(이 데이터에서 정확히 1000 늦어진다는 것을 확인하는 테스트)
     assert b["decided_at"] == a["decided_at"] + 1000
 
 
@@ -148,6 +160,7 @@ def test_in_place_migration_breaks_rollback_but_expand_does_not(models):
     good = SC.rollback_accuracy(v1, v2, shared, "expand")
     assert bad["v2_after_deploy"] == good["v2_after_deploy"]
     assert good["v1_after_rollback"] == good["v1_before"]
+    # 그 자리 덮어쓰기면 v1이 천 원 단위 값을 원 단위로 읽어 정확도가 크게 떨어진다. expand는 되돌려도 그대로
     assert bad["v1_after_rollback"] < bad["v1_before"] - 0.2
 
 

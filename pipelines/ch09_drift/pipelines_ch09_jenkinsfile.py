@@ -9,6 +9,7 @@
 
 import re
 
+# Jenkins 단계에서 학습을 직접 부르는 흔적(정규식). 학습은 KFP 재학습 run에서만 한다는 규칙 2의 검사 기준
 TRAIN_PATTERNS = [r"fit_logistic", r"\btrain\.py\b", r"steps\.py\s+train", r"M\.train\("]
 
 
@@ -28,6 +29,7 @@ def lint(text):
     cron = re.search(r"cron\('([^']+)'\)", text)
     if not cron:
         problems.append("예약 실행(cron) 트리거가 없다")
+    # cron 표현식의 첫 칸(분)이 H로 시작해야 한다. 규칙 1(작업이 정각에 몰리지 않게)을 이 문자열 검사로 대신한다
     elif not cron.group(1).split()[0].startswith("H"):
         problems.append(f"cron 분 자리에 H를 쓰지 않았다: {cron.group(1)}")
     st = stages(text)
@@ -52,6 +54,7 @@ def lint(text):
         body = dict(st)[rollback]
         if gate is None or names.index(rollback) < names.index(gate):
             problems.append("되돌리기가 판정보다 먼저 온다")
+        # 되돌리기 단계 본문에 @(다이제스트 참조 표시)가 없으면 태그로 되돌리는 것으로 본다
         if "@" not in body:
             problems.append("되돌리기가 다이제스트가 아니라 태그를 가리킨다")
         if re.search(r":latest\b", body):

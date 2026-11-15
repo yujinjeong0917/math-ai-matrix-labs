@@ -69,6 +69,7 @@ def e0_first_screen():
 
 
 def _time_build(keys, m, h):
+    # (표, 계수기, 걸린 밀리초). 비교 수는 결정적이고 밀리초는 기기마다 다르다
     t0 = time.perf_counter()
     t, c = hh.build(keys, m, h)
     return t, c, (time.perf_counter() - t0) * 1000
@@ -79,6 +80,7 @@ def e1_grid():
     for n in NS:
         row = {"n": n, "alpha": n / M, "n_n_minus_1_over_2": n * (n - 1) // 2,
                "uni_expected_bound_n_n_minus_1_over_2m": n * (n - 1) / (2 * M)}
+        # alpha = n/M 은 부하율. 기대 비교 수 상한 n(n-1)/(2M) 은 범용 해시 보장(충돌 확률 <= 1/m)에서 나온다.
         # 적대적 키 + mod: 입력도 해시도 무작위가 없어 한 번만
         adv = hh.adversarial_keys(M, n)
         t, c, ms = _time_build(adv, M, hh.mod_hash(M))
@@ -87,6 +89,7 @@ def e1_grid():
         for seed in range(SEEDS):
             rng = random.Random(seed)
             rk = hh.random_keys(n, rng)
+            # 해시 시드(1000+seed)를 키 시드와 분리해 입력과 해시가 서로 독립이 되게 한다
             hu = hh.universal_hash(hh.P31, M, random.Random(1000 + seed))
             for name, keys, h in (("adv_uni", adv, hu), ("rand_mod", rk, hh.mod_hash(M)), ("rand_uni", rk, hu)):
                 t, c, ms = _time_build(keys, M, h)
@@ -114,7 +117,7 @@ def e1b_many_seeds(n=8000, seeds=200):
         chains.append(t.max_chain())
         t2, c2 = hh.build(rand, M, h)
         rc.append(c2.comparisons)
-    bound = n * (n - 1) / (2 * M)
+    bound = n * (n - 1) / (2 * M)  # 삽입 비교 수 기대값의 이론 상한(평균에 대한 보장, 매 시드가 이 아래라는 뜻은 아니다)
     return {"n": n, "m": M, "seeds": seeds, "bound": bound, "adv_mean": statistics.mean(cs), "adv_median": statistics.median(cs),
             "adv_max": max(cs), "adv_over_2x_bound": sum(c > 2 * bound for c in cs), "adv_max_chain_max": max(chains),
             "adv_max_chain_median": statistics.median(chains), "rand_mean": statistics.mean(rc), "rand_max": max(rc),
@@ -128,6 +131,7 @@ def e2_load():
         succ, unsucc = [], []
         for seed in range(SEEDS):
             rng = random.Random(seed)
+            # 2n 개를 한 번에 뽑아 앞 n 개는 넣고 뒤 n 개는 "없는 키" 검색용으로 쓴다(서로 겹치지 않음)
             allk = hh.random_keys(2 * n, rng)
             keys, absent = allk[:n], allk[n:]
             h = hh.universal_hash(hh.P31, M, random.Random(2000 + seed))
@@ -135,12 +139,14 @@ def e2_load():
             succ.append(hh.successful_search_cost(t, keys))
             unsucc.append(hh.unsuccessful_search_cost(t, absent))
         rows.append({"alpha": alpha, "n": n, "success_mean": statistics.mean(succ), "success_sd": statistics.pstdev(succ),
+                     # 성공 검색 기대 비교 수 1 + (n-1)/(2m): 자기 자신 1번 + 앞서 같은 칸에 들어간 키의 평균
                      "exact_1_plus_n_minus_1_over_2m": 1 + (n - 1) / (2 * M), "approx_1_plus_alpha_over_2": 1 + alpha / 2,
                      "unsuccess_mean": statistics.mean(unsucc), "alpha_value": n / M})
     return {"m": M, "seeds": SEEDS, "rows": rows}
 
 
 def e3_resize(n=4000):
+    # m 을 키워도 mod 해시는 키가 m 의 배수이기만 하면 한 칸에 몰린다: 2^20 의 배수 키는 m 이 2^20 이하일 때 전부 0번 칸
     out = {"n": n, "start_m": 8, "max_load": 1.0}
     cases = {"mult_2_20": [i * 2 ** 20 for i in range(n)], "mult_1024": hh.adversarial_keys(1024, n),
              "random": hh.random_keys(n, random.Random(0), hi=2 ** 40)}
@@ -153,6 +159,7 @@ def e3_resize(n=4000):
 
 def e4_known_seed(n=2000):
     h = hh.universal_hash(hh.P31, M, random.Random(4))
+    # 공격 모델: a, b, p, m 을 아는 공격자. 키는 0 부터 하나씩 시험하므로 가장 큰 키가 시험 횟수 규모를 보여 준다
     t0 = time.perf_counter()
     keys, tries = hh.keys_for_known_seed(h, n, start=0)
     search_s = time.perf_counter() - t0
@@ -180,9 +187,10 @@ def e5_universality():
         for row in hv:
             coll += row[:, None] == row[None, :]
             funcs += 1
-    np.fill_diagonal(coll, 0)
+    np.fill_diagonal(coll, 0)  # x == y 는 항상 충돌이라 제외(아래 off 에서도 대각선을 뺀다)
     off = coll[~np.eye(p, dtype=bool)]
     sizes = [len(range(r, p, m)) for r in range(m)]
+    # 이론값(논문 Lemma 6 에 해당하는 센 값): 나머지가 같은 값들의 순서쌍 수. 위 전수 결과와 같아야 한다
     lemma6 = sum(s * (s - 1) for s in sizes)
     exhaustive = {"p": p, "m": m, "functions": funcs, "pairs": p * (p - 1) // 2, "min_collisions": int(off.min()),
                   "max_collisions": int(off.max()), "bound_p_p_minus_1_over_m": p * (p - 1) / m, "lemma6_count": lemma6,
@@ -191,7 +199,7 @@ def e5_universality():
     rng = random.Random(7)
     pairs = []
     while len(pairs) < 1000:
-        i, j = rng.sample(range(1, 2 ** 20), 2)
+        i, j = rng.sample(range(1, 2 ** 20), 2)  # 서로 다른 두 배수. 최대 키 약 2^30 이라 a*x 가 int64 안에 든다
         pairs.append((i * 1024, j * 1024))
     P = hh.P31
     X = np.array([q[0] for q in pairs], dtype=np.int64)
@@ -203,6 +211,8 @@ def e5_universality():
         hits += int(np.count_nonzero(((a * X + b) % P) % M == ((a * Y + b) % P) % M))
     trials = 1000 * 1000
     phat = hits / trials
+    # 충돌률이 1/M 이라 가정할 때 이항 분포의 표준편차. 3 sd 안에 들면 이론과 모순이 없다는 느슨한 점검
+    # (시행들이 독립은 아니라서 엄밀한 검정은 아님)
     sd = (1 / M * (1 - 1 / M) / trials) ** 0.5
     sampled = {"pairs": 1000, "seeds": 1000, "collisions": hits, "rate": phat, "one_over_m": 1 / M,
                "three_sd": 3 * sd, "within": phat <= 1 / M + 3 * sd, "mod_hash_rate": 1.0}
@@ -238,6 +248,7 @@ print(json.dumps(out))
 
 
 def e6_python_dict():
+    # int 의 hash 는 x mod (2^61 - 1) 이라 이 값의 배수 키는 전부 해시 0 이다. dict 삽입이 이차로 느려지는지 별도 프로세스로 잰다
     out = json.loads(subprocess.run([sys.executable, "-c", DICT_SNIPPET], capture_output=True, text=True, check=True).stdout)
     # str 은 실행마다 바뀌고 PYTHONHASHSEED 를 고정하면 같아진다. int 는 늘 같다
     def h(seed, expr):
@@ -261,6 +272,7 @@ def e7_traces():
     adv = [8, 16, 24, 32, 40, 48, 56, 64]
     mixed = [3, 12, 25, 30, 41, 52, 66, 79]
     tr = {"adv_mod": hh.trace_inserts(adv, hh.mod_hash(m)), "mixed_mod": hh.trace_inserts(mixed, hh.mod_hash(m))}
+    # 같은 키 집합을 범용 해시 3개(시드 30..32)에 넣어, 해시가 달라지면 몰리는 모양도 달라짐을 보인다
     seeds = []
     for s in range(3):
         u = hh.universal_hash(97, m, random.Random(30 + s))

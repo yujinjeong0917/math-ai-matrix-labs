@@ -15,7 +15,7 @@ HERE = Path(__file__).parent
 
 
 def test_first_screen_hand_numbers():
-    # 결정 가(취소 규정)에 할 일 3개, 그중 완료 1개 -> 미완료 3 - 1 = 2
+    # 결정 가(취소 규정)에 할 일 3개, 그중 완료 1개 -> 미완료 3 - 1 = 2. 결정 나는 할 일이 완료뿐이라 0이지만 키는 남는다
     db = {"decisions": {"가": {}, "나": {}, "다": {}},
           "tasks": {"1": {"status": "완료"}, "2": {"status": "진행"}, "3": {"status": "할 일"},
                     "4": {"status": "완료"}, "5": {"status": "진행"}},
@@ -26,11 +26,13 @@ def test_first_screen_hand_numbers():
 
 def test_data_sizes_match_design():
     assert (len(DATA.DECISIONS), len(DATA.TASKS), len(DATA.SPECS)) == (10, 20, 4)
+    # 잃을 수 있는 연결 44개 = 결정자 10 + 결정-화면 12 + 결정-할 일 22(근거 결정이 둘인 할 일 T13, T16이 2개씩)
     assert len(DATA.links()) == 10 + 12 + 22 == 44
 
 
 def test_truth_answers():
     a = R.answer_all(R.build())
+    # 손으로 따라가 확인한 정답: 취소 규정(D04)을 근거로 한 할 일 네 개
     assert a["Q1"] == ["T08", "T09", "T10", "T14"]
     assert a["Q2"] == ["D01", "D04", "D05", "D07", "D10"] and len(a["Q2"]) == 5
     assert a["Q3"] == ["D02", "D04", "D07", "D08", "D09", "D10"]
@@ -60,7 +62,7 @@ def test_check3_reversal_is_linked_both_ways():
     assert superseded_by == {"D07": "D10"}
     pages = P.build_pages()
     assert "번복: D07" in pages["decisions"]["D10"]
-    assert not any("번복" in ln for ln in pages["decisions"]["D07"])  # 페이지 방식은 옛 결정 쪽에 안 보인다
+    assert not any("번복" in ln for ln in pages["decisions"]["D07"])  # 페이지 방식은 옛 결정 쪽에 안 보인다(관계형은 양방향으로 보인다)
 
 
 def test_check4_no_task_without_relation():
@@ -74,10 +76,12 @@ def test_pages_cannot_answer_q5_but_answer_others_at_full_recording():
     for q in ("Q1", "Q2", "Q3", "Q4"):
         assert ans[q] == tru[q]
     assert ans["Q5"] == P.UNANSWERABLE
+    # 질문별 읽은 줄 수 합계: Q1 21 + Q2 76 + Q3 97 + Q4 76 + Q5 29 = 299 (results 파일의 pages_lines_read_total과 같다)
     assert sum(lines.values()) == 21 + 76 + 97 + 76 + 29
 
 
 def test_same_lost_links_same_answers_q1_to_q4():
+    # 같은 연결을 잃으면 두 방식의 답이 같아야 한다(차이는 읽는 양과 빈칸이 드러나느냐). Q1은 관계형이 빈 목록을 돌려줄 때 페이지는 "답할 수 없음"
     rng = random.Random(0)
     for _ in range(100):
         lost = frozenset(l for l in DATA.links() if rng.random() < 0.3)
@@ -88,6 +92,7 @@ def test_same_lost_links_same_answers_q1_to_q4():
 
 
 def test_empty_check_misses_second_link():
+    # T13은 근거 결정이 D07, D10 두 개라 하나를 잃어도 칸이 비지 않아 빈칸 검사가 못 잡는다. 근거가 D04뿐인 T10은 잡는다
     lost = frozenset([("task", "D10", "T13")])
     assert R.detected_links(R.build(lost), lost) == set()
     lost = frozenset([("task", "D04", "T10")])
@@ -96,11 +101,13 @@ def test_empty_check_misses_second_link():
 
 def test_connection_trap():
     db = R.build()
+    # 경로를 우회하면 달라진다: 할 일 경유에서만 보이는 결정(D09: 화면은 없지만 전 화면 QA가 걸림), 직접 연결에서만 보이는 결정(D04)
     assert set(R.q2_via_tasks(db)) - set(R.q2(db)) == {"D09"}
     assert set(R.q2(db)) - set(R.q2_via_tasks(db)) == {"D04"}
 
 
 def test_sqlite_matches_python_on_random_dbs():
+    # 무작위 작은 DB 100개에서 파이썬 구현과 SQL 구현이 같은 답을 내는지 대조한다(결정자는 None이라 Q4는 비교 대상이 아니다)
     rng = random.Random(1)
     for _ in range(100):
         nd, nt = rng.randint(2, 8), rng.randint(3, 15)
@@ -120,6 +127,7 @@ def test_sqlite_matches_python_on_random_dbs():
 
 
 def test_results_file_numbers():
+    # results/ch04.json(experiments.py가 만든다)이 있어야 하는 테스트. 비율 0.9, 0.8, 0.6 설정(results의 e2_rates 키)에서 평균 정답 수가 pages <= relational <= relational_fixed 순서인지 본다
     res = json.loads((HERE / "results" / "ch04.json").read_text())
     assert res["e1_min_failure"]["pages_lines_read_total"] == 299
     assert res["e7_cross"]["mismatches"] == {k: 0 for k in res["e7_cross"]["mismatches"]}

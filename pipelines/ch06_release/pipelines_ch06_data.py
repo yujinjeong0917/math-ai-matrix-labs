@@ -16,6 +16,7 @@ NUMERIC_V1 = ["tenure_months", "monthly_fee", "support_calls", "usage_hours", "a
 NUMERIC_V2 = NUMERIC_V1 + ["usage_drop"]
 CATEGORICAL = {"plan": 3, "region": 4}
 REGIONS = ["seoul", "gyeonggi", "busan", "etc"]
+# 서빙에서 단위가 어긋나는 지역 코드(REGIONS[2] = busan)
 SKEW_REGION = 2  # busan
 LABEL = "churned"
 
@@ -32,9 +33,11 @@ def make_table(data_seed, n_rows, shift=0.0):
     discount = rng.uniform(0.0, 0.3, n_rows)
     plan = rng.choice(3, n_rows, p=[0.5, 0.3, 0.2]).astype(np.int64)
     region = rng.choice(4, n_rows, p=[0.35, 0.30, 0.15, 0.20]).astype(np.int64)
+    # 베타(2, 5)는 0~1 사이 값. 평균 2/(2+5) = 약 0.286, 표준편차 약 0.16(아래 로짓의 0.29, 0.16 기준)
     usage_drop = rng.beta(2.0, 5.0, n_rows)  # 평균 약 0.29
     logit = (
         -0.3
+        # shift는 전체 이탈 확률을 올리는 상수 항. 배포와 무관하게 세상이 바뀐 날을 흉내 낸다
         + shift
         + 1.6 * (fee - 55_000) / 15_000
         - 1.3 * (tenure - 36) / 20
@@ -43,6 +46,7 @@ def make_table(data_seed, n_rows, shift=0.0):
         - 0.6 * (discount - 0.15) / 0.087
         + np.array([0.9, 0.0, -1.1])[plan]
         + np.array([0.0, 0.1, -0.1, 0.2])[region]
+        # 새 열 usage_drop의 효과(합성 가정): 표준화한 값 x 0.8
         + 0.8 * (usage_drop - 0.29) / 0.16
     )
     churned = (rng.uniform(size=n_rows) < 1.0 / (1.0 + np.exp(-logit))).astype(float)
@@ -65,6 +69,7 @@ def serve_view(table, skew=True):
     """운영 요청이 모델에 들어오는 모습. skew=True면 부산 앱이 usage_drop을 퍼센트로 보낸다."""
     out = {k: v.copy() for k, v in table.items()}
     if skew:
+        # 부산 앱 요청만 usage_drop을 x100(퍼센트)으로 바꾼다. 학습 때 평균 0.29, 표준편차 0.16이라 표준화하면 매우 큰 값이 들어간다
         m = out["region"] == SKEW_REGION
         out["usage_drop"][m] = out["usage_drop"][m] * 100.0
     return out

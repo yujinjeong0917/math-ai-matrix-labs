@@ -10,22 +10,28 @@ H와 W의 열 순서만 바뀔 뿐 모델은 같다.
 
 import numpy as np
 
+# 편향(hb, b)에는 감쇠를 주지 않는다.
 DECAYED = ("C", "H", "U", "W")  # 원 논문처럼 weight decay는 가중치와 C에만, 편향에는 주지 않는다
 
 
 def init_params(V, m, k, h, rng, direct=True):
     p = {
+        # C: (V, m) 단어 벡터. 작게 시작(표준편차 0.1).
         "C": rng.standard_normal((V, m)) * 0.1,
+        # H: (h, k*m). 1/sqrt(입력 수)로 스케일해 처음 pre-activation의 크기를 1 근처로(일반적 초기화 관례).
         "H": rng.standard_normal((h, k * m)) / np.sqrt(k * m),
         "hb": np.zeros(h),
+        # U: (V, h) 은닉 -> 출력.
         "U": rng.standard_normal((V, h)) / np.sqrt(h),
         "b": np.zeros(V),
     }
+    # W: (V, k*m) 입력에서 출력으로 가는 직접 연결(논문 식 1의 W). direct=False면 0으로 둬 끈다.
     p["W"] = rng.standard_normal((V, k * m)) / np.sqrt(k * m) if direct else np.zeros((V, k * m))
     return p
 
 
 def softmax(y):
+    # softmax(y) = softmax(y - max). 가장 큰 값을 빼면 exp 오버플로를 막고 결과는 같다.
     y = y - y.max(axis=-1, keepdims=True)  # 값은 그대로, 지수가 넘치는 것만 막는다
     e = np.exp(y)
     return e / e.sum(axis=-1, keepdims=True)
@@ -35,7 +41,9 @@ def forward(params, ctx_ids):
     """ctx_ids: (B, k) 정수. 반환: (확률 (B, |V|), 역전파용 cache)."""
     C = params["C"]
     x = C[ctx_ids].reshape(len(ctx_ids), -1)  # 같은 행 C[w]를 어느 문맥 자리에서든 재사용한다
+    # z = tanh(d + x H^T), 모양 (B, h).
     z = np.tanh(params["hb"] + x @ params["H"].T)
+    # 식 (1): y = b + xW^T + z U^T, 모양 (B, V).
     y = params["b"] + x @ params["W"].T + z @ params["U"].T
     P = softmax(y)
     return P, {"ctx": ctx_ids, "x": x, "z": z, "P": P}
@@ -44,6 +52,7 @@ def forward(params, ctx_ids):
 def loss(params, ctx_ids, targets):
     P, _ = forward(params, ctx_ids)
     with np.errstate(divide="ignore"):  # 확률이 정확히 0이면 inf를 그대로 돌려준다(발산 판정에 쓴다)
+        # 정답 단어의 확률만 골라 -log 평균 = 교차엔트로피(nats).
         return float(-np.mean(np.log(P[np.arange(len(targets)), targets])))
 
 
@@ -51,19 +60,24 @@ def backward(params, cache, targets, direct=True):
     """평균 교차엔트로피의 기울기. dl/dy = softmax(y) - onehot(target) 에서 시작해 연쇄법칙으로 C까지."""
     x, z, P, ctx = cache["x"], cache["z"], cache["P"], cache["ctx"]
     B = len(targets)
+    # softmax + 교차엔트로피의 합성 미분: dL/dy = P - onehot(target). 배치 평균이라 아래에서 B로 나눈다.
     dy = P.copy()
     dy[np.arange(B), targets] -= 1.0
     dy /= B
     g = {
         "b": dy.sum(0),
+        # dL/dU = dy^T z, 모양 (V, h).
         "U": dy.T @ z,
         "W": dy.T @ x if direct else np.zeros_like(params["W"]),
     }
     da = (dy @ params["U"]) * (1.0 - z**2)  # tanh'(a) = 1 - tanh(a)^2
     g["hb"] = da.sum(0)
+    # dL/dH = da^T x, 모양 (h, k*m).
     g["H"] = da.T @ x
+    # x로 가는 기울기는 은닉 경로(da H)와 직접 경로(dy W)의 합. 모양 (B, k*m).
     dx = da @ params["H"] + (dy @ params["W"] if direct else 0.0)  # (B, k*m)
     m = params["C"].shape[1]
+    # C의 행은 문맥 자리마다 쓰이므로 dx를 (B*k, m)로 펴서 해당 단어 행에 누적한다.
     gC = np.zeros_like(params["C"])
     np.add.at(gC, ctx.reshape(-1), dx.reshape(-1, m))  # 같은 단어가 여러 자리·여러 예제에 나오면 기울기가 더해진다
     g["C"] = gC
@@ -81,9 +95,12 @@ def train(params, ctx, tgt, lr, steps, batch, rng, wd=0.0, direct=True, log_ever
     """미니배치 SGD. 반환: 기록 리스트 [(step, train_loss_on_batch, valid_loss)]. 발산하면 일찍 멈춘다."""
     log = []
     for step in range(1, steps + 1):
+        # 복원추출 미니배치(같은 예제가 한 배치에 겹칠 수 있다).
         idx = rng.integers(0, len(tgt), size=batch)
         P, cache = forward(params, ctx[idx])
+        # +1e-300은 log(0) 방지용 바닥값(수치 안정화).
         batch_loss = float(-np.mean(np.log(P[np.arange(batch), tgt[idx]] + 1e-300)))
+        # 발산하면 nan을 기록하고 중단한다. 학습률이 너무 큰 설정의 결과를 "실패"로 남기려는 장치로 보인다(추정).
         if not np.isfinite(batch_loss) or batch_loss > 50.0:  # 처음 손실은 log|V| = 3.04 근처. 50을 넘으면 발산으로 본다
             log.append((step, float("nan"), float("nan")))
             break
@@ -103,7 +120,9 @@ def n_params(V, m, k, h):
 
 def step_flops(V, m, k, h, batch):
     """한 스텝의 행렬곱 FLOP(곱셈·덧셈 각각 1). 순전파 2(hkm + Vh + Vkm), 역전파는 그 두 배."""
+    # 순전파 행렬곱: H (h*k*m), U (V*h), W (V*k*m). 곱셈 1 + 덧셈 1 = 2 FLOP(부동소수점 연산).
     fwd = 2 * (h * k * m + V * h + V * k * m)
+    # 역전파를 순전파의 약 2배로 놓은 근사. 합 3배. 활성화·softmax 등 작은 항은 무시한 추정치다.
     return 3 * fwd * batch
 
 

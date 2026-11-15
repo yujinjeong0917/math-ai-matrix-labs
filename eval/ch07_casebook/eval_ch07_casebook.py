@@ -23,10 +23,12 @@ FLAGS = ("near_zero", "below_mean", "below_naive", "spiky", "bias", "indistinct"
 
 def metric_table(case):
     """{'A': {...}, 'B': {...}, 'objective': {...}, 'picks': {지표: 'A'|'B'}, 'objective_pick': 'A'|'B'}"""
+    # 모델 A, B 각각의 지표 행(dict). 지표 정의는 eval_ch07_metrics.py
     t = {w: m.metric_row(case["y_train"], case["y_test"], case[w]) for w in "AB"}
     obj = {w: cases.objective_loss(case, w) for w in "AB"}
     t["objective"] = obj
     t["objective_pick"] = "A" if obj["A"] < obj["B"] else "B"
+    # 지표마다 A와 B 중 누가 낫다고 하는지. r2는 클수록, nmbe는 절댓값이 작을수록 좋다고 본다
     t["picks"] = {k: m.better(k, t["A"][k], t["B"][k]) for k in m.METRICS}
     if "alt_objective" in case:
         alt = {w: cases.objective_loss(case, w, case["alt_objective"]) for w in "AB"}
@@ -35,6 +37,7 @@ def metric_table(case):
     return t
 
 
+# 평가 구간의 idx 위치만 골라 지표 하나를 계산(전체는 slice(None))
 def _metric_on_index(name, case, which, idx):
     y, p = case["y_test"][idx], case[which][idx]
     if name == "mase":
@@ -47,26 +50,32 @@ def paired_bootstrap(case, metrics=m.METRICS, n_boot=1000, seed=0):
     위치를 서로 독립으로 뽑으므로 시계열의 이웃끼리 닮은 성질은 무시한다(블록 부트스트랩은 범위 밖)."""
     n = len(case["y_test"])
     rng = np.random.default_rng(90_000 + seed)
+    # (n_boot, n) 복원추출 인덱스. 한 행이 한 번의 재표집이고, 같은 행을 A·B가 함께 쓴다(짝지음)
     idx_all = rng.integers(0, n, size=(n_boot, n))
+    # MASE 분모. 학습 구간만으로 정해져 재표집해도 변하지 않는다
     scale = m.naive_mae_in_sample(case["y_train"])
     diffs = {k: [] for k in metrics}
     for start in range(0, n_boot, 100):  # 메모리를 아끼려고 100개씩 나눠 계산한다(결과는 같다)
         idx = idx_all[start:start + 100]
+        # (100, n) 한 묶음의 재표집 결과(정답, A 예측, B 예측)
         y, a, b = case["y_test"][idx], case["A"][idx], case["B"][idx]
         ea, eb = y - a, y - b
         for k in metrics:
             if k == "mae":
+                # 축 1(관측 방향) 평균 -> (100,). 지표 차이 A - B
                 d = np.abs(ea).mean(1) - np.abs(eb).mean(1)
             elif k == "rmse":
                 d = np.sqrt((ea ** 2).mean(1)) - np.sqrt((eb ** 2).mean(1))
             elif k == "r2":
                 sst = ((y - y.mean(1, keepdims=True)) ** 2).sum(1)
+                # R^2_A - R^2_B = (SSE_B - SSE_A)/SST. SST는 재표집 표본의 것(두 모델 공통)
                 d = -((ea ** 2).sum(1) - (eb ** 2).sum(1)) / sst
             elif k == "mape":
                 d = 100 * (np.abs(ea) / np.abs(y)).mean(1) - 100 * (np.abs(eb) / np.abs(y)).mean(1)
             elif k == "mase":
                 d = (np.abs(ea).mean(1) - np.abs(eb).mean(1)) / scale
             elif k == "nmbe":
+                # NMBE는 |NMBE|끼리 뺀다(순위 기준과 같음). p=0이라 분모는 n * 평균
                 d = np.abs(100 * ea.sum(1) / (n * y.mean(1))) - np.abs(100 * eb.sum(1) / (n * y.mean(1)))
             else:
                 raise ValueError(k)
@@ -74,8 +83,10 @@ def paired_bootstrap(case, metrics=m.METRICS, n_boot=1000, seed=0):
     out = {}
     for k in metrics:
         d = np.concatenate(diffs[k])
+        # 95% 퍼센타일 구간. 0을 포함하면 두 모델의 차이를 이 표본으로는 구별할 수 없다
         lo, hi = np.percentile(d, [2.5, 97.5])
         va, vb = _metric_on_index(k, case, "A", slice(None)), _metric_on_index(k, case, "B", slice(None))
+        # 재표집이 아닌 전체 평가 구간에서의 차이(점추정)
         full = abs(va) - abs(vb) if k == "nmbe" else va - vb
         out[k] = {"diff": float(full), "lo": float(lo), "hi": float(hi), "contains_zero": bool(lo <= 0.0 <= hi)}
     return out
@@ -85,10 +96,12 @@ def read_table(table, boot=None):
     """지표 표(와 부트스트랩)만 보고 판독 깃발을 켠다. 목적 손실은 보지 않는다."""
     A, B = table["A"], table["B"]
     f = {
+        # mape_inflation: MAPE가 'MAE를 평균 |y|로 나눈 %'의 몇 배인가. 문턱 2는 설계 판단
         "near_zero": max(A["mape_inflation"], B["mape_inflation"]) > 2.0,
         "below_mean": min(A["r2"], B["r2"]) < 0.0,
         "below_naive": max(A["mase"], B["mase"]) > 1.0,
         "spiky": max(A["rmse_mae_ratio"], B["rmse_mae_ratio"]) > 1.5,
+        # NMBE 3%는 설계 판단. bias_share는 MSE 중 평균 오차 제곱의 몫
         "bias": any(abs(r["nmbe"]) > 3.0 and r["bias_share"] > 0.5 for r in (A, B)),
         "indistinct": bool(boot is not None and boot["mae"]["contains_zero"] and boot["rmse"]["contains_zero"]),
     }
@@ -101,8 +114,10 @@ def ranking_flip_rate(case_fn, metric, n_seeds=100, objective=None):
     for s in range(n_seeds):
         c = case_fn(s)
         t = metric_table(c)
+        # 기준이 되는 정답: 기본은 case의 목적, 인자로 주면 그 목적으로 다시 계산
         target = t["objective_pick"] if objective is None else (
             "A" if cases.objective_loss(c, "A", objective) < cases.objective_loss(c, "B", objective) else "B")
+        # 지표가 고른 모델이 기준과 다르면 1 더한다(동률 'tie'도 불일치로 센다)
         miss += t["picks"][metric] != target
     return miss / n_seeds
 
@@ -119,6 +134,7 @@ def _round(x, nd=6):
 
 def dumps(obj):
     """같은 입력이면 바이트 단위로 같은 문자열. 키 정렬, 소수 6자리."""
+    # 키 정렬과 소수 반올림으로 같은 입력이면 파일이 바이트 단위로 같다(테스트가 확인)
     return json.dumps(_round(obj), indent=2, ensure_ascii=False, sort_keys=True) + "\n"
 
 

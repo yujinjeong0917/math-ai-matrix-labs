@@ -9,6 +9,7 @@ import rnn_torch as T
 
 def _rnn_params(rng, d_in=3, H=4, k=2):
     return {
+        # 작은 스케일로 tanh 포화와 기울기 폭주를 피하고, 수치 미분과 비교하기 쉬운 영역에 둔다.
         "W": rng.standard_normal((H, H)) * 0.6,
         "U": rng.standard_normal((H, d_in)) * 0.6,
         "b": rng.standard_normal(H) * 0.1,
@@ -27,6 +28,7 @@ def _lstm_params(rng, d_in=3, H=4, k=2):
     }
 
 
+# 손 BPTT 기울기 vs 중앙 차분. 모든 파라미터 원소와 입력 x까지 흔들어 본다.
 def _check_grads(loss_fn, bptt_fn, params, x, y, tol=1e-6):
     _, g, dx = bptt_fn(params, x, y)
     eps = 1e-6
@@ -41,6 +43,7 @@ def _check_grads(loss_fn, bptt_fn, params, x, y, tol=1e-6):
             lm = loss_fn(params, x, y)
             P[idx] = old
             num[idx] = (lp - lm) / (2 * eps)
+        # 상대 오차 = 최대 절대 차이 / 수치 기울기의 최대 크기.
         rel = np.abs(num - G).max() / max(1e-12, np.abs(num).max())
         assert rel < tol, (name, rel)
 
@@ -55,6 +58,7 @@ def test_lstm_bptt_matches_central_difference():
     _check_grads(R.lstm_loss, R.lstm_bptt, _lstm_params(rng), rng.standard_normal((6, 3)), 0)
 
 
+# NumPy, 직접 구현 PyTorch, nn.RNN/nn.LSTM의 순전파가 float64에서 1e-10 이내로 같아야 한다.
 def test_numpy_matches_torch_manual_and_builtin():
     rng = np.random.default_rng(2)
     x = rng.standard_normal((9, 3))
@@ -85,6 +89,7 @@ def test_gate_order_matters():
         m.bias_ih_l0.copy_(torch.tensor(q["b"]))
         m.bias_hh_l0.zero_()
     wrong, _ = m(torch.tensor(x))
+    # 음성 대조: 순서 변환 없이 넣으면 일부러 달라져야 한다. 이게 같으면 위 테스트가 변환을 검증하지 못한 것.
     assert np.abs(wrong.detach().numpy() - ref).max() > 1e-3
 
 
@@ -94,6 +99,7 @@ def test_rnn_jacobian_matches_finite_difference():
     d, n = 4, 6
     x, W, U = rng.standard_normal((n, d)), rng.standard_normal((d, d)) * 0.5, rng.standard_normal((d, d)) * 0.5
     h0 = np.zeros(d)
+    # d x d 야코비안을 h0의 각 성분을 +-eps 흔들어 열 단위로 수치 계산한다.
     J_fd = np.empty((d, d))
     eps = 1e-6
     for j in range(d):
@@ -109,6 +115,7 @@ def test_lstm_state_jacobian_matches_finite_difference():
     x = rng.standard_normal((n, 2))
     Wx, Wh, b = rng.standard_normal((4 * H, 2)) * 0.5, rng.standard_normal((4 * H, H)) * 0.5, rng.standard_normal(4 * H) * 0.5
     eps = 1e-6
+    # 상태 (h, c)의 열 순서로 h0, c0를 흔든다. 해석적 야코비안의 스펙트럼 노름과 비교.
     J_fd = np.empty((2 * H, 2 * H))
     for j in range(2 * H):
         e = np.zeros(2 * H)
@@ -127,8 +134,10 @@ def test_constant_error_carousel():
     x = np.random.default_rng(5).standard_normal((n, 2))
     Wx, Wh = np.zeros((4 * H, 2)), np.zeros((4 * H, H))
     b = np.zeros(4 * H)
+    # forget 게이트 편향 40이면 sigmoid(40) = 1(float64 반올림). 나머지 가중치는 0이라 h를 통한 되돌아오는 경로가 없다.
     b[H : 2 * H] = 40.0  # f = sigmoid(40) = 1 (float64에서)
     cell, _, f_prod = R.lstm_state_jacobian_norms(x, Wx, Wh, b)
+    # 50 시점 뒤에도 dc_t/dc_0 의 노름이 1: 기울기가 소실도 폭주도 없이 보존된다.
     assert abs(cell[-1] - 1.0) < 1e-12 and np.allclose(f_prod, 1.0)
 
 
@@ -140,6 +149,7 @@ def test_clip_by_norm_keeps_direction():
     flat, flat_out = np.concatenate([a.ravel() for a in g]), np.concatenate([a.ravel() for a in out])
     cos = flat @ flat_out / (np.linalg.norm(flat) * np.linalg.norm(flat_out))
     assert abs(cos - 1.0) < 1e-12
+    # 문턱(1.0) 아래 기울기는 건드리지 않는다.
     small = [a * 1e-3 for a in g]
     assert all(np.array_equal(a, b) for a, b in zip(R.clip_by_norm(small, 1.0), small))  # 문턱 아래면 그대로
 
@@ -150,6 +160,7 @@ def test_elementwise_clip_can_turn_direction():
     out = R.clip_elementwise(g, 1.0)[0]
     np.testing.assert_allclose(out, [1.0, 0.1])
     cos = g[0] @ out / (np.linalg.norm(g[0]) * np.linalg.norm(out))
+    # (10, 0.1)->(1, 0.1)의 방향 차이는 atan(0.1) - atan(0.01) 약 5.1도.
     assert np.degrees(np.arccos(cos)) > 5.0
     norm_out = R.clip_by_norm(g, 1.0)[0]
     assert abs(norm_out @ g[0] / (np.linalg.norm(norm_out) * np.linalg.norm(g[0])) - 1.0) < 1e-12
@@ -169,6 +180,7 @@ def test_batched_forward_matches_one_sequence_at_a_time():
 
 def test_hand_example_numbers():
     """첫 화면에 쓴 손 계산 숫자: 0.8^10 = 0.107, 0.8^50 = 1.4e-5, sigmoid(3) = 0.953, 0.953^50 = 0.09."""
+    # 0.8^t는 시점마다 기울기가 0.8배로 줄 때의 소실 예, sigmoid(3)^50은 forget 게이트 0.953이 50번 곱해지는 예로 보인다(첫 화면 원문 확인 필요). 반올림 자릿수가 문자열과 어긋나지 않는지만 본다.
     assert round(0.8**10, 3) == 0.107
     assert f"{0.8**50:.1e}" == "1.4e-05"
     s3 = float(R.sigmoid(3.0))

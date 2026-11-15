@@ -15,8 +15,10 @@ from pathlib import Path
 HERE = Path(__file__).parent
 PROJECT = HERE / "project"
 PUBLIC_PREFIX = "VITE_"
+# import.meta.env.이름 형태의 참조만 찾는다. 이름은 영문자·_로 시작.
 REF = re.compile(r"import\.meta\.env\.([A-Za-z_][A-Za-z0-9_]*)")
 
+# 빌드 이름 -> (환경 파일, 소스, 출력 폴더). 둘 다 같은 흉내 빌더를 쓰고 입력만 다르다.
 BUILDS = {
     "good": ("env.good", "src/app.js", "dist_good"),
     "mistake": ("env.mistake", "src/app_mistake.js", "dist_mistake"),
@@ -28,8 +30,10 @@ def read_env(path):
     out = {}
     for line in Path(path).read_text(encoding="utf-8").splitlines():
         line = line.strip()
+        # 따옴표 처리, 변수 치환 같은 실제 .env 문법은 지원하지 않는다(단순화).
         if not line or line.startswith("#") or "=" not in line:
             continue
+        # 값 안에 =가 있어도 첫 = 에서만 자른다(JWT 끝의 == 보존).
         k, v = line.split("=", 1)
         out[k.strip()] = v.strip()
     return out
@@ -43,7 +47,9 @@ def inline_env(src, env):
         name = m.group(1)
         if name.startswith(PUBLIC_PREFIX) and name in env:
             inlined.append(name)
+            # json.dumps로 따옴표와 이스케이프를 붙여 JS 문자열 리터럴로 만든다. 이 값이 배포 파일에 그대로 남는 것이 이 장의 핵심.
             return json.dumps(env[name])
+        # VITE_가 아니거나 env에 없는 이름은 undefined. 실제 Vite도 접두사 없는 값은 클라이언트 코드에 넣지 않는다.
         hidden.append(name)
         return "undefined"
 
@@ -55,6 +61,7 @@ def build(which, write=True):
     env = read_env(PROJECT / env_name)
     src = (PROJECT / src_name).read_text(encoding="utf-8")
     out, inlined, hidden = inline_env(src, env)
+    # 지도 파일에 원본 소스가 통째로 들어가므로, 소스에 있는 값은 배포본뿐 아니라 지도 파일에서도 노출된다.
     out += "//# sourceMappingURL=app.js.map\n"
     smap = json.dumps({"version": 3, "file": "app.js", "sources": ["../" + src_name],
                        "sourcesContent": [src], "names": [], "mappings": ""},

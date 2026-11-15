@@ -23,6 +23,9 @@
 
 실제 Figma 서버는 이 모형보다 훨씬 많은 경우(삭제, 부모 바꾸기의 순환, 확인 전 값의 깜박임 등)를
 다룬다. 여기서는 '합치는 단위'의 차이만 떼어 본다.
+
+입력: 레이어 수, 속성 수, 한 사람당 편집 횟수 k, 시드. 출력: 합친 결과 {칸: 값}과 lost, silent 개수. 칸은 (레이어 번호, 속성 번호).
+시각 t는 [0, 1)의 무작위 값이고 값 문자열("A0", "B3" 등)은 누가 몇 번째로 고쳤는지만 표시한다(실제 속성 값이 아니다).
 """
 
 import random
@@ -34,8 +37,9 @@ def make_edits(n_layers, n_props, k, seed):
     edits = []
     for who in ("A", "B"):
         for i in range(k):
+            # 딕셔너리 안에서 난수를 뽑는 순서(t, 레이어, 속성)가 곧 난수열 소비 순서다. 순서를 바꾸면 같은 시드의 결과가 달라진다
             edits.append({"t": rng.random(), "who": who, "cell": (rng.randrange(n_layers), rng.randrange(n_props)), "v": f"{who}{i}"})
-    edits.sort(key=lambda e: e["t"])
+    edits.sort(key=lambda e: e["t"])  # 시간순. 이후 _local과 merge_prop_log가 이 순서에 의존한다
     return edits
 
 
@@ -44,17 +48,18 @@ def _local(edits, who):
     out = {}
     for e in edits:
         if e["who"] == who:
-            out[e["cell"]] = e["v"]
+            out[e["cell"]] = e["v"]  # 같은 칸을 여러 번 고쳤으면 시간순으로 마지막 값만 남는다
     return out
 
 
 def merge(edits, mode, save_order=("A", "B")):
     """합친 결과 {cell: value}. 원본 값은 None으로 친다. save_order의 뒤쪽이 나중에 저장한다."""
-    first, last = save_order
+    first, last = save_order  # 기본값 ("A", "B"): B가 나중에 저장
     a, b = _local(edits, first), _local(edits, last)
     if mode == "file":
         return dict(b)  # 나중 사람의 파일이 통째로 남는다
     if mode == "object":
+        # 레이어 단위 병합: B가 건드린 레이어는 A가 고친 칸까지 통째로 B 사본으로 바뀐다(A만 고친 칸이 같은 레이어에 있으면 사라진다)
         out = dict(a)
         b_layers = {c[0] for c in b}
         for c in list(out):
@@ -74,7 +79,7 @@ def merge(edits, mode, save_order=("A", "B")):
 def merge_prop_log(edits):
     """속성 단위 LWW, 연산 기록 방식: 서버가 받은 순서대로 칸에 값을 덮어쓴다."""
     out = {}
-    for e in sorted(edits, key=lambda e: e["t"]):
+    for e in sorted(edits, key=lambda e: e["t"]):  # 이미 정렬돼 있지만 다른 입력도 받도록 다시 정렬한다
         out[e["cell"]] = e["v"]
     return out
 
@@ -87,6 +92,7 @@ def merge_prop_state(edits):
     for who in ("A", "B"):
         mine = {}
         for e in edits:
+            # 칸마다 (시각, 값)을 하나만 들고, 더 늦은 시각의 편집으로 교체한다(레지스터)
             if e["who"] == who and (e["cell"] not in mine or e["t"] > mine[e["cell"]][0]):
                 mine[e["cell"]] = (e["t"], e["v"])
         for c, r in mine.items():
@@ -100,11 +106,11 @@ def score(edits, final, informed=False):
     informed=True(잠금 방식)면 같은 칸 덮어쓰기는 앞사람 결과를 보고 한 것이라 silent 대신 informed로 센다."""
     a, b = _local(edits, "A"), _local(edits, "B")
     lost = silent = 0
-    for mine, other in ((a, b), (b, a)):
+    for mine, other in ((a, b), (b, a)):  # 두 사람 각각에 대해, 자기 마지막 값이 최종 문서에 있는지 본다
         for c, v in mine.items():
             if final.get(c) == v:
-                continue
-            if c in other:
+                continue  # 최종 문서에 내 값이 남았으면 사라진 게 아니다
+            if c in other:  # 상대도 같은 칸을 고쳐서 덮인 경우 -> silent(말없이 덮임)
                 silent += 1
             else:
                 lost += 1
@@ -133,8 +139,9 @@ def expected(n_layers, n_props, k):
     - object lost   ≈ N q (r - q),  r = 1 - (1 - 1/L)^k  (B가 그 레이어를 건드렸지만 그 칸은 안 건드림)
     두 사람의 선택이 독립이라는 단순화다. 같은 칸을 두 사람이 서로 다른 값으로 고친 경우만 센다.
     """
+    # 식이 어떻게 나오나: 칸 하나가 k번 중 한 번이라도 뽑힐 확률이 q. 두 사람이 모두 뽑을 확률은 q^2, 한 사람만 뽑을 확률은 q(1-q)
     N = n_layers * n_props
-    q = 1 - (1 - 1 / N) ** k
+    q = 1 - (1 - 1 / N) ** k  # 칸 하나가 한 사람에게 한 번 이상 뽑힐 확률
     r = 1 - (1 - 1 / n_layers) ** k
     return {
         "touched_per_person": N * q,

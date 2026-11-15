@@ -12,6 +12,10 @@ E5 긴 구간: 10팔, 10,000번, 200 반복(시드 0~199), 후회와 Lai-Robbins
 E6 구현 대조: UCB1·Thompson 선택 열 NumPy vs PyTorch, 20 반복 x 1,000번
 
 결과는 results/ch01.json, 상호작용 로그 일부는 logs/ch01_two_arm.jsonl 에 저장한다.
+
+입력: 없음(성공확률, 시드, 횟수는 아래 상수). 출력: 위 두 파일과 표준출력 요약.
+탐험 파라미터: eps_greedy의 eps(0.1 기본, E3에서 0.01/0.1/0.3), UCB1은 계수 sqrt(2) 고정, Thompson은 Beta(1,1) 사전분포.
+1장은 상태 하나의 밴딧이라 할인율 gamma와 벨만 식은 쓰지 않는다. numpy와 torch가 필요하다.
 """
 
 import os
@@ -37,12 +41,16 @@ HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch01.json"
 LOG = HERE / "logs" / "ch01_two_arm.jsonl"
 
+# 10팔 성공확률. 최적은 마지막(0.55), 간격 Delta_j = 0.55 - p_j
 P10 = [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55]
 P2 = [0.45, 0.55]
 N_STEPS = 1000
+# 반복 s의 보상 표는 시드 s로 고정(공통 난수). 규칙끼리 같은 표를 보므로 후회 차이가 표 운 때문이 아니다
 SEEDS = list(range(2000))
+# 규칙 쪽 난수(동점, eps 탐험, 베타 표본)의 시드. 보상 표 시드와 분리
 POLICY_SEED = 12345
 CHECKPOINTS = [10, 20, 50, 100, 200, 500, 1000]
+# '갇힘' 기준(모형의 선택): 좋은 손잡이를 고른 비율이 10% 미만인 반복
 STUCK_SHARE = 0.10
 
 
@@ -54,8 +62,10 @@ def summarize(actions, env, checkpoints=CHECKPOINTS):
     n = actions.shape[1]
     reg = bd.pseudo_regret(actions, env.gaps)
     best = actions == env.best
+    # 모양 (S,). 반복마다 전체 n번 중 최적 손잡이를 고른 비율
     share_best = best.mean(axis=1)  # 처음부터 끝까지 좋은 손잡이를 고른 비율
     cp = [c for c in checkpoints if c <= n]
+    # 각 반복의 마지막 시점 누적 후회. reg 모양 (S, n)
     final = reg[:, -1]
     counts = bd.counts_over_time(actions, env.K)[:, -1, :]
     most = np.argmax(counts, axis=1)
@@ -86,7 +96,9 @@ def run_timed(policy, env, n_steps, seed=POLICY_SEED):
 
 def e0_hand():
     p_bad, p_good = P2
+    # 식: 좋은 쪽 첫 결과 0(확률 1-0.55)이면서 나쁜 쪽 첫 결과 1(확률 0.45)일 확률 = 0.45*0.45 = 0.2025. 이 경우 욕심쟁이는 평균 1 대 0이라 나쁜 쪽에 영영 머문다(좋은 쪽은 평균 0이라 다시 안 뽑힘)
     lock_min = (1 - p_good) * p_bad
+    # 식: 보너스 sqrt(2 ln n / n_j), n=10. 1번만 당긴 손잡이(성공 0)와 9번 당긴 손잡이(성공 4)의 지수 비교
     b1 = math.sqrt(2 * math.log(10) / 1)
     b9 = math.sqrt(2 * math.log(10) / 9)
     return {
@@ -108,6 +120,7 @@ def e1_two_arm():
     acts, rews, _ = run_timed(bd.greedy(), env, N_STEPS)
     s = summarize(acts, env)
     # 첫 두 번(손잡이 0, 1을 한 번씩)의 결과로 나눠 보기
+    # round_robin이라 t=0은 손잡이 0(나쁜 쪽 p=0.45), t=1은 손잡이 1(좋은 쪽 p=0.55)
     first_bad, first_good = rews[:, 0], rews[:, 1]
     pattern = {}
     share_best = (acts == env.best).mean(axis=1)
@@ -121,10 +134,12 @@ def e1_two_arm():
                 "mean_best_share": float(share_best[m].mean()) if m.any() else None,
             }
     # 로그: "좋은 쪽 첫 결과 0, 나쁜 쪽 첫 결과 1"인 첫 시드 하나, 처음 12번
+    # 로그용 시드: 위 갇힘 조건(나쁜 쪽 1, 좋은 쪽 0)을 만족하는 첫 반복. 시드가 아니라 반복 인덱스에서 SEEDS로 환산
     m = np.where((first_bad == 1) & (first_good == 0))[0]
     sidx = int(m[0])
     log = []
     for t in range(12):
+        # 상태 s는 하나뿐이라 0 고정(밴딧), 에피소드 한 개, done=False
         log.append({"seed": SEEDS[sidx], "episode": 0, "t": t, "s": 0, "a": int(acts[sidx, t]),
                     "r": float(rews[sidx, t]), "s_next": 0, "done": False,
                     "info": {"policy": "greedy", "p": P2}})
@@ -157,6 +172,7 @@ def e2_ten_arm():
         s["seconds"] = dt
         s["microseconds_per_step_per_run"] = dt / (N_STEPS * env.S) * 1e6
         out[pol.name] = s
+    # Lai-Robbins 곡선: C ln n (C는 lai_robbins_const), Auer 상한은 정리 1의 식
     lr, c = bd.lai_robbins_curve(P10, np.array(CHECKPOINTS))
     return {"p": P10, "n_steps": N_STEPS, "runs": len(SEEDS), "policy_seed": POLICY_SEED, "by_policy": out,
             "lai_robbins_const": c, "lai_robbins_at": {str(k): float(v) for k, v in zip(CHECKPOINTS, lr)},
@@ -184,6 +200,7 @@ def e3_eps():
 def e4_gap():
     out = {}
     for d in (0.02, 0.05, 0.1, 0.2):
+        # 간격 d만 바꾸는 2팔. round는 0.5+0.02 등의 부동소수 꼬리를 정리
         p = [0.5, round(0.5 + d, 2)]
         env = bd.BernoulliBandit(p, SEEDS, N_STEPS)
         row = {}
@@ -194,12 +211,14 @@ def e4_gap():
                              "best_share_mean": s["best_share_mean"],
                              "frac_runs_best_share_below_10pct": s["frac_runs_best_share_below_10pct"]}
         row["lai_robbins_at_1000"] = float(bd.lai_robbins_curve(p, N_STEPS)[0])
+        # 항상 나쁜 손잡이만 당길 때의 후회 = Delta * n (선형 성장 기준선)
         row["worst_case_linear_regret"] = d * N_STEPS
         out[str(d)] = row
     return out
 
 
 def e5_long():
+    # E5: 길게 돌려 로그 성장을 본다. 반복은 200(E2의 2,000보다 적음)
     n = 10_000
     seeds = list(range(200))
     env = bd.BernoulliBandit(P10, seeds, n)
@@ -210,6 +229,7 @@ def e5_long():
         reg = bd.pseudo_regret(acts, env.gaps)
         out[pol.name] = {"regret_mean_at": {str(c): float(reg[:, c - 1].mean()) for c in cps},
                          "regret_p95_at": {str(c): float(np.percentile(reg[:, c - 1], 95)) for c in cps},
+                         # 1,000번에서 10,000번 사이 후회 증가량. 로그 성장이면 C ln 10 정도로 작다
                          "growth_1000_to_10000": float(reg[:, -1].mean() - reg[:, 999].mean()),
                          "seconds": dt}
     lr, c = bd.lai_robbins_curve(P10, np.array(cps))
@@ -224,15 +244,18 @@ def e6_impl():
     env = bd.BernoulliBandit(P10, seeds, N_STEPS)
     res = {}
     for name, pol in (("ucb1", bd.ucb1()), ("thompson", bd.thompson_beta())):
+        # E6: 같은 rng 시드 7이면 NumPy와 PyTorch의 선택 열이 완전히 같아야 한다(mismatches = 0 기대)
         a_np, _ = bd.run(pol, env, N_STEPS, np.random.default_rng(7))
         a_t = bdt.run(name, env, N_STEPS, np.random.default_rng(7)).numpy()
         res[name] = {"steps_compared": int(a_np.size), "mismatches": int((a_np != a_t).sum())}
     rng = np.random.default_rng(3)
+    # N, X: 무작위 횟수와 성공 수(X <= N). N=0 칸은 지수가 inf라 유한한 칸만 차이를 잰다
     N = rng.integers(0, 50, size=(5, 10)).astype(float)
     X = np.floor(rng.random((5, 10)) * (N + 1))
     with np.errstate(invalid="ignore"):
         i_np = bd.ucb1_index(N, X, 200)
     i_t = bdt.ucb1_index(torch.from_numpy(N), torch.from_numpy(X), 200).numpy()
+    # 유한한 칸만 차이를 잰다. inf의 위치는 따로 일치 여부를 확인
     fin = np.isfinite(i_np)
     res["ucb1_index_max_abs_diff"] = float(np.max(np.abs(i_np[fin] - i_t[fin])))
     res["ucb1_inf_positions_match"] = bool(np.array_equal(~fin, ~np.isfinite(i_t)))

@@ -15,12 +15,15 @@ import json
 import re
 from pathlib import Path
 
+# 그룹 1: 변수 이름, 그룹 2: ':-' 뒤의 기본값(없으면 None). 기본값이 빈 문자열이면 빈 문자열로 바뀐다.
 VAR = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-([^}]*))?\}")
 
 
 def expand(s, env, warnings):
+    """문자열 안의 ${VAR}, ${VAR:-기본값}을 환경 변수로 바꾼다. 못 바꾸면 경고를 쌓고 원문을 둔다."""
     def rep(m):
         name, default = m.group(1), m.group(2)
+        # 환경 변수가 있으면 값이 기본값보다 우선한다.
         if name in env:
             return env[name]
         if default is not None:
@@ -45,10 +48,13 @@ def read_config(path_or_dict, client, env=None):
             typ = typ or "stdio"
             if typ == "streamable-http":
                 typ = "http"                  # 사양 이름도 별칭으로 받는다
+            # code 클라이언트만 변수 바꾸기를 한다(위 docstring의 근거).
             fix = (lambda s: expand(s, env, warnings))
         else:
             typ = "stdio"                     # Desktop 문서의 예는 로컬(stdio) 서버만 보여 준다
+            # desktop은 변수 바꾸기를 하지 않는다(문서에서 찾지 못해서, 문서 확인 필요).
             fix = (lambda s: s)
+        # stdio가 아닌 서버(http 등)는 실행 인자 대신 url만 해석한다.
         if typ != "stdio":
             out[name] = {"type": typ, "url": fix(entry.get("url", "")), "warnings": warnings}
             continue
@@ -56,6 +62,7 @@ def read_config(path_or_dict, client, env=None):
             out[name] = {"skipped": f'MCP server "{name}" has no "command"'}
             continue
         out[name] = {"type": "stdio",
+                     # argv[0]은 실행 파일, 나머지는 인자. env 값도 같은 규칙으로 바꾼다.
                      "argv": [fix(entry["command"])] + [fix(a) for a in entry.get("args", [])],
                      "env": {k: fix(v) for k, v in entry.get("env", {}).items()},
                      "warnings": warnings}

@@ -20,6 +20,7 @@ from pipelines_ch06_release_gate import decide
 from pipelines_ch06_router import route
 
 
+# 감시용 누적 숫자: 전체 요청 수와 오류 수, 구간별(지역) 요청 수와 오류 수
 def empty_metrics():
     return {"n": 0, "errors": 0, "seg": {}}
 
@@ -50,6 +51,7 @@ def simulate_traffic(c1, c2, user_ids, segments, kind, guard, p=1.0, baseline=No
     c2 = np.asarray(c2)
     segments = np.asarray(segments)
     if kind == "canary":
+        # 카나리면 해시 라우터로 사용자별 고정 배정. 전체 교체·블루그린은 처음부터 전원 v2
         in_canary = np.array([route(u, p) == "v2" for u in user_ids])
     else:
         in_canary = np.ones(n, dtype=bool)
@@ -57,6 +59,7 @@ def simulate_traffic(c1, c2, user_ids, segments, kind, guard, p=1.0, baseline=No
     watched = np.zeros(n, dtype=bool)  # 감시 단계(release)에서 받은 요청
     m1 = empty_metrics()
     m2 = empty_metrics()
+    # 상태 흐름: release -> promoted, 또는 release -> (rolling_back ->) rolled_back
     state = "release"  # release -> promoted | rolling_back -> rolled_back
     decided_at = promoted_at = None
     cut_at = None  # 이 요청부터 v1
@@ -68,6 +71,7 @@ def simulate_traffic(c1, c2, user_ids, segments, kind, guard, p=1.0, baseline=No
         elif state == "rolled_back":
             v2 = False
         elif state == "rolling_back":
+            # 되돌리기가 결정된 뒤에도 cut_at 요청까지는 v2가 계속 받는다(전체 교체의 재배포 지연)
             v2 = i < cut_at
             if not v2:
                 state = "rolled_back"
@@ -77,10 +81,12 @@ def simulate_traffic(c1, c2, user_ids, segments, kind, guard, p=1.0, baseline=No
         watched[i] = state == "release"
         if state != "release":
             continue
+        # 정답은 label_delay 요청 뒤에 도착한다. j는 정답이 도착해 센 마지막 요청 위치
         while j <= i - label_delay:
             if watched[j]:
                 if served_v2[j]:
                     add(m2, int(1 - c2[j]), segments[j])
+                # 카나리만 같은 시간대 v1 요청을 대조군으로 센다. 전체 교체·블루그린은 배포 전 기준값(baseline)과 비교한다
                 elif kind == "canary":
                     add(m1, int(1 - c1[j]), segments[j])
             j += 1
@@ -88,11 +94,13 @@ def simulate_traffic(c1, c2, user_ids, segments, kind, guard, p=1.0, baseline=No
             if looked or m2["n"] < single_look_at:
                 continue
             looked = True
+        # check_every 요청마다 한 번만 판정한다
         elif (i + 1) % check_every != 0:
             continue
         ref = m1 if kind == "canary" else baseline
         d = decide(ref, m2, guard)
         if single_look_at is not None and d == "hold":
+            # single_look_at 모드: 한 번 보는 시점에 hold면 올리는 쪽으로 처리해, 그 한 번의 판정이 오탐(rollback)인지만 비교한다
             d = "promote"
         if d == "rollback":
             decided_at = i + 1
@@ -102,6 +110,7 @@ def simulate_traffic(c1, c2, user_ids, segments, kind, guard, p=1.0, baseline=No
         elif d == "promote" and kind == "canary":
             promoted_at = i + 1
             state = "promoted"
+    # c = 맞힘(1)/틀림(0). v2가 받은 요청마다 (v1 맞힘 - v2 맞힘)을 더하면 늘어난 오류 수(같은 요청에서의 반사실 비교)
     harm = int(np.sum((c1 - c2)[served_v2]))
     return {
         "decision": "rollback" if decided_at is not None else ("promote" if promoted_at is not None else "none"),

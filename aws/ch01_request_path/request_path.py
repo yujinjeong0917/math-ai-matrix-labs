@@ -2,6 +2,11 @@
 
 AWS 호출 없음. 한도 값은 limits_2026-11-14.json(공식 문서 확인값)에서 읽고,
 단계별 시간(ms)은 모두 가상(예시용) 값이다.
+
+재는 것: 모델 계산 시간과 입력 크기가 경로의 가장 작은 한도 아래인지.
+입력: 모델 시간(초), 입력 크기(MiB), 경로 이름, 한도 JSON.
+출력: 단계 표와 경로별 통과/탈락(README 기대 출력과 대응: 30초 모델은 REST 29초,
+HTTP 30초 한도 모두 탈락, REST 28.75초가 경계, 7 MiB 입력은 Lambda 6 MiB 한도에서 탈락).
 """
 
 from __future__ import annotations
@@ -34,15 +39,18 @@ PATHS = {
 
 
 def load_limits(path: Path | None = None) -> dict[str, float]:
+    """한도 JSON에서 {키: 값}만 뽑는다. 키 접미사가 단위(_s 초, _mb MiB, _bytes 바이트)다."""
     data = json.loads((path or HERE / "limits_2026-11-14.json").read_text(encoding="utf-8"))
     return {k: v["value"] for k, v in data["limits"].items()}
 
 
 def to_bytes(key: str, value: float) -> int:
+    """단위가 섞인 크기 한도(MiB, 바이트)를 바이트로 통일해 서로 비교할 수 있게 한다."""
     return int(value) if key.endswith("_bytes") else int(value * MIB)
 
 
 def step_table(model_ms: int) -> list[dict]:
+    """앞 구간 3단계 + 모델 + 뒤 구간 덧붙는 시간으로 단계 표를 만든다(단위 ms)."""
     rows = [{"step": n, "ms": ms, "scope": s} for n, ms, s in COMMON_STEPS]
     rows.append({"step": "모델 계산", "ms": model_ms, "scope": "inside"})
     rows += [{"step": n, "ms": ms, "scope": "inside"} for n, ms in BACKEND_OVERHEAD]
@@ -52,16 +60,20 @@ def step_table(model_ms: int) -> list[dict]:
 def check(path_name: str, model_seconds: float, payload_mb: float, limits: dict[str, float],
           client_timeout_s: float | None = None) -> dict:
     time_keys, size_keys = PATHS[path_name]
-    model_ms = round(model_seconds * 1000)
+    model_ms = round(model_seconds * 1000)  # 초 -> 정수 ms. 부동소수점 오차를 줄이려 반올림
     rows = step_table(model_ms)
+    # 통합 제한 시간은 API 입구가 뒤쪽을 기다리는 inside 구간만 잰다. 30초 모델이면 30 + 0.25 = 30.25초
     backend_s = sum(r["ms"] for r in rows if r["scope"] == "inside") / 1000
     total_s = sum(r["ms"] for r in rows) / 1000
+    # 경로에 시간 한도가 여럿이면 가장 작은 것이 실제 천장
     tightest_key = min(time_keys, key=lambda k: limits[k])
     tightest_s = limits[tightest_key]
     payload_bytes = round(payload_mb * MIB)
+    # 크기 한도도 가장 작은 것이 천장(7 MiB 입력은 Lambda 6 MiB에 걸림). 단위가 달라 바이트로 환산해 비교
     size_key = min(size_keys, key=lambda k: to_bytes(k, limits[k]))
     size_limit = to_bytes(size_key, limits[size_key])
     problems = []
+    # 경계: 같으면 통과(>). 28.75 + 0.25 = 29.0은 통과, 28.8은 29.05라 탈락
     if backend_s > tightest_s:
         problems.append(f"API 입구 뒤 구간 {backend_s:.2f}초 > {tightest_key} {tightest_s}초")
     if payload_bytes > size_limit:
@@ -71,6 +83,7 @@ def check(path_name: str, model_seconds: float, payload_mb: float, limits: dict[
     return {
         "path": path_name, "backend_seconds": backend_s, "total_seconds": total_s,
         "tightest_time_key": tightest_key, "tightest_time_s": tightest_s,
+        # 한도에서 덧붙는 시간 0.25초를 뺀 값: REST 28.75초, HTTP 29.75초
         "max_model_seconds": tightest_s - sum(ms for _, ms in BACKEND_OVERHEAD) / 1000,
         "size_key": size_key, "size_limit_bytes": size_limit,
         "ok": not problems, "problems": problems,

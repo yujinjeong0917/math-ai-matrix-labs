@@ -19,6 +19,7 @@ def test_first_screen_hand_numbers():
     assert m.mae(y, a) == m.mae(y, b) == 2.0
     assert m.rmse(y, a) == m.rmse(y, b) == 2.0
     # 분모 n: NMBE는 0%와 20%, CV(RMSE)는 둘 다 20%
+    # MAE·RMSE·CV(RMSE)가 같아도 NMBE만 두 모델을 가른다(핵심 메시지)
     assert m.nmbe(y, a, p=0) == 0.0 and abs(m.nmbe(y, b, p=0) - 20.0) < 1e-12
     assert abs(m.cv_rmse(y, a, p=0) - 20.0) < 1e-12 and abs(m.cv_rmse(y, b, p=0) - 20.0) < 1e-12
     # B에 2를 더하면 오차가 모두 0, A는 평균 오차가 0이라 더할 것이 없다
@@ -31,6 +32,7 @@ def test_ashrae_fixture_exact():
     assert m.errors(y, p).tolist() == [1.0, 0.0, -1.0, 2.0, 0.0]
     assert abs(m.nmbe(y, p, p=1) - 5.0) < 1e-12  # 100*2/(4*10)
     assert abs(m.cv_rmse(y, p, p=1) - 10.0 * math.sqrt(1.5)) < 1e-12  # 100*sqrt(6/4)/10
+    # CV^2 = 100^2 (6/4) / 10^2 = 150. 제곱 값을 분수로 되돌려 정확 비교
     assert Fraction(m.cv_rmse(y, p, p=1) ** 2).limit_denominator(1000) == 150
 
 
@@ -46,10 +48,12 @@ def test_conventions_have_opposite_signs():
         a = m.nmbe(y, pred, p=0)
         f = m.nmbe(y, pred, convention="femp")
         s = m.nmbe(y, pred, convention="sfa", norm=float(np.max(y)))
+        # 같은 자료에서 ASHRAE(p=0)와 FEMP는 부호만 반대. SFA도 FEMP와 부호가 같다(분모만 다름)
         assert abs(a + f) < 1e-9  # FEMP = -ASHRAE(p=0) 정확히
         assert np.sign(a) == -np.sign(f) == -np.sign(s) != 0
 
 
+# MSE = bias^2 + var 항등식과 torch 내장 mse_loss 대조. 편향의 평균과 잡음 크기를 매 반복 무작위로 바꿔 시험
 def test_mse_decomposition_identity_and_builtin():
     rng = np.random.default_rng(0)
     for _ in range(20):
@@ -61,6 +65,7 @@ def test_mse_decomposition_identity_and_builtin():
         assert abs(builtin - d["mse"]) < 1e-12 * max(1.0, d["mse"])
 
 
+# 분모를 n으로 쓸 때만 CV^2 = NMBE^2 + (흔들림 %)^2 가 성립. p=1이면 분모가 달라 깨진다(12/11 확인)
 def test_cv_nmbe_pythagoras_only_with_n_denominator():
     y = cases.base_load(seed=2)
     p = cases.case_biased_steady(y, seed=2)
@@ -87,6 +92,7 @@ def test_offset_correction_zeroes_nmbe_and_lowers_cv():
     assert m.cv_rmse(y, pc) > 100 * 5.0 / y.mean()
 
 
+# 월 합계: 총합 보존, 경계가 달력 월(1~2월 = 59일), 길이가 다르면 오류. 잡음은 상쇄되고 편향은 남는다
 def test_monthly_aggregation():
     y = cases.base_load(seed=4)
     p = cases.case_unbiased_noisy(y, seed=4)
@@ -102,6 +108,7 @@ def test_monthly_aggregation():
     assert abs(m.nmbe(ym, bm, p=0) - m.nmbe(y, b, p=0)) < 1e-9
 
 
+# n=1, p=1이면 n-p=0이라 두 지표 모두 ValueError
 def test_dof_guard():
     with pytest.raises(ValueError):
         m.nmbe([100.0], [90.0], p=1)
@@ -111,12 +118,14 @@ def test_dof_guard():
 
 def test_ashrae_check_limits():
     y = np.full(12, 100.0)
+    # 12개월 모두 100, 예측이 4 모자라면 합 오차 48. p=1이라 분모가 11*100이어서 4%가 아니라 4.36%
     assert m.ashrae_check(y, y - 4.0, "monthly")["pass"]  # NMBE 100*48/(11*100)=4.36%
     assert not m.ashrae_check(y, y - 4.7, "monthly")["pass"]  # 5.13% > 5
     assert not m.ashrae_check(y, y + 4.7, "monthly")["pass"]  # 과대예측도 같은 크기면 떨어진다(|NMBE|, [해석])
     assert m.ASHRAE_2002_LIMITS["hourly"] == {"nmbe": 10.0, "cv_rmse": 30.0}
 
 
+# 같은 계열에서는 세 분모가 모두 양의 상수라 모델 순위가 같다. 순위가 달라지는 건 서로 다른 계열(분모가 다름)을 비교할 때
 def test_nmae_ranks_never_flip_on_same_series():
     for s in range(30):
         y = cases.base_load(seed=s)
@@ -128,6 +137,7 @@ def test_nmae_ranks_never_flip_on_same_series():
 
 def test_nmae_scale_invariance_and_norm_values():
     y, a, _ = cases.first_screen()
+    # 첫 화면 y=[8,12,10,10]: 최댓값 12, 평균 10, 범위 12-8 = 4. NMAE(A, 분모 10) = 100*2/10 = 20%
     assert m.norm_value(y, "capacity") == 12.0 and m.norm_value(y, "mean") == 10.0 and m.norm_value(y, "range") == 4.0
     assert m.nmae(y, a, 10.0) == 20.0
     assert abs(m.nmae(1000 * y, 1000 * a, m.norm_value(1000 * y, "range")) - m.nmae(y, a, 4.0)) < 1e-9
@@ -144,6 +154,7 @@ def test_numpy_torch_agree():
     assert abs(d["mse"] - dt["mse_builtin"]) < 1e-10 and abs(d["var"] - dt["var"]) < 1e-10
 
 
+# 웹 챕터 연습문제 답 확인
 def test_exercises():
     # 연습 1: 실제 20, 20, 20, 20, 예측 18, 23, 17, 22 -> 오차 2, -3, 3, -2
     y = np.array([20.0, 20, 20, 20]); p = np.array([18.0, 23, 17, 22])
@@ -151,4 +162,4 @@ def test_exercises():
     # 연습 2: 월별 NMBE(n 분모) 4.6%면 p=1에서 4.6*12/11
     assert abs(4.6 * 12 / 11 - 5.018) < 1e-3
     # 연습 3: NMBE 6, CV 10 (분모 n) -> 흔들림 조각 8
-    assert math.isclose(math.sqrt(10 ** 2 - 6 ** 2), 8.0)
+    assert math.isclose(math.sqrt(10 ** 2 - 6 ** 2), 8.0)  # 위 피타고라스 관계에서 흔들림 8

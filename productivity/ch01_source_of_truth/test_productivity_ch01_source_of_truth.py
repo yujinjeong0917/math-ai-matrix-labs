@@ -23,11 +23,13 @@ def test_first_screen_hand_numbers():
     assert round(0.81 ** 8, 4) == 0.1853
     # 손으로 옮기는 곳이 하나라면 0.9^8
     assert round(0.9 ** 8, 4) == 0.4305
+    # 같은 식을 두 방식으로 쓴 것이라 부동소수점 오차 없이 정확히 같다(곱셈 순서가 같아서)
     assert S.generic_exact(3, 0.9, 8)[0] == (0.9 ** 2) ** 8
 
 
 def test_min_failure_copy_mode():
     r = S.run_copy(P.CARDS)
+    # 카드를 하나씩 넣을 때마다 어긋난 칸 수(9칸 중). 카드 1~3이 서로 다른 값을 건드려 2씩 늘고, 같은 값을 다시 고치는 카드 4부터 증가가 둔해진다
     assert r["per_step"] == [2, 4, 6, 6, 7, 7, 7, 7]
     assert r["per_step"][-1] == 7                       # 9칸 중 7칸이 진짜 값과 다르다
     assert S.distinct_values(r["state"]) == {"price": 3, "hours": 3, "cancel": 3}
@@ -42,6 +44,7 @@ def test_min_failure_copy_mode():
 
 def test_judging_after_the_fact_fails():
     j = S.judge(S.run_copy(P.CARDS))
+    # 다수결은 세 자리가 모두 다르면 못 고른다(undecided). 최근 수정 파일은 3개 모두 틀린 값을 고른다
     assert j["majority"] == {"right": 0, "wrong": 0, "undecided": 3}
     assert j["latest_file"] == {"right": 0, "wrong": 3, "undecided": 0}
     assert j["rule_place_after_the_fact"]["right"] == 1
@@ -84,6 +87,7 @@ def test_montecarlo_copy_matches_formula():
     xs = [S.simulate("copy", 0.9, random.Random(s))["ever_clean"] for s in range(3000)]
     p = statistics.mean(xs)
     se = (0.1853 * (1 - 0.1853) / 3000) ** 0.5
+    # 이항분포의 표준오차 se = sqrt(p(1-p)/n), 허용 폭은 4 se(우연히 벗어날 확률 약 6/10만)
     assert abs(p - 0.81 ** 8) < 4 * se
 
 
@@ -100,7 +104,7 @@ def test_register_lint():
 
 def test_results_file_matches_code():
     path = HERE / "results" / "ch01.json"
-    if not path.exists():
+    if not path.exists():  # experiments.py를 아직 안 돌려 결과 파일이 없으면 이 테스트는 검사 없이 통과한다
         return
     res = json.loads(path.read_text())
     assert res["e1_copy"]["mismatch_cells"] == S.run_copy(P.CARDS)["per_step"][-1]
@@ -109,6 +113,7 @@ def test_results_file_matches_code():
 
 
 def test_exercise_c8_in_sheets():
+    # 연습 문제: 카드 C8(운영 시간 닫는 시각 24시)을 Notion이 아니라 Sheets에서 고치면 결과가 어떻게 달라지나
     cards = copy.deepcopy(P.CARDS)
     cards[7]["where"] = "sheets"
     r = S.run_copy(cards)
@@ -130,7 +135,8 @@ def test_each_card_leaves_one_right_cell_for_changed_value():
 
 
 def test_register_hand_formula_and_exercises():
+    # 손 옮김 확률의 값별 평균 ((0.9 + 0.81 + 0.9) / 3)^8 등 본문 연습문제의 손계산 값들
     assert round(((0.9 + 0.81 + 0.9) / 3) ** 8, 3) == 0.328
     assert round(0.729 ** 8, 4) == 0.0798
     assert round(0.64 ** 8, 3) == 0.028 and round(0.8 ** 8, 3) == 0.168
-    assert abs((3 - 1) * (1 - 0.8) - 0.4) < 1e-12
+    assert abs((3 - 1) * (1 - 0.8) - 0.4) < 1e-12  # 변경당 어긋난 자리 기댓값 (k-1)(1-q)

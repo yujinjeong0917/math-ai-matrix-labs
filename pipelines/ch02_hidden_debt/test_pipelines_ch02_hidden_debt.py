@@ -10,6 +10,7 @@ import pipelines_ch02_model_torch as mtt
 V2_CODEBOOK = dat.UPSTREAM[2]["plan_codebook"]
 
 
+# 학습은 시드 seed, 서빙은 1000+seed로 만든 서로 다른 고객 표. 반환: (세상 학습, 세상 서빙, 학습 표, 모델)
 def _setup(seed=0, plan_probs=(0.5, 0.3, 0.2), n_train=3000, n_serve=1500):
     tr = dat.make_customers(seed, n_train, plan_probs)
     sv = dat.make_customers(1000 + seed, n_serve, plan_probs)
@@ -52,6 +53,7 @@ def test_v2_fails_silently():
     p = mnp.predict_proba(mnp.transform(dat.emit_batch(sv, 2), prep), w, b)  # 예외가 나면 이 테스트가 실패한다
     v2 = float(np.mean((p >= 0.5) == sv["churned"]))
     assert not np.isnan(p).any()
+    # 0.78, 0.2는 합성 데이터에서 관찰한 값에 여유를 둔 임계값(이 시드 구성에서 확인한 값, 다른 데이터에서는 달라질 수 있음)
     assert v1 > 0.78 and v1 - v2 > 0.2
 
 
@@ -78,6 +80,7 @@ def test_uniform_code_reorder_slips_through_value_checks():
     assert chk.validate(serve) == []
     assert chk.drift_alerts(chk.profile(train_batch), serve) == {}
     clean = mnp.accuracy(dat.emit_batch(sv, 1), sv["churned"], model)
+    # 떨어지는 폭이 작아(0.03 기준) 비율 편향이 있는 경우보다 약한 신호
     assert clean - mnp.accuracy(serve, sv["churned"], model) > 0.03
 
 
@@ -98,6 +101,7 @@ def test_model_beats_baseline_overall_and_by_plan():
     _, sv, _, model = _setup()
     b, y = dat.emit_batch(sv, 1), sv["churned"]
     majority = max(y.mean(), 1 - y.mean())
+    # 전체: 다수 클래스 기준선 + 0.05 이상. 조각별: 0.75 이상(모두 모형의 선택)
     assert mnp.accuracy(b, y, model) >= majority + 0.05
     for code in range(3):
         m = b["plan"] == code
@@ -110,6 +114,7 @@ def test_consistent_unit_change_is_harmless():
     model_k = mnp.train(dat.emit_batch(tr, 1, fee_divisor=1000.0), tr["churned"])
     a = mnp.accuracy(dat.emit_batch(sv, 1), sv["churned"], model)
     k = mnp.accuracy(dat.emit_batch(sv, 1, fee_divisor=1000.0), sv["churned"], model_k)
+    # 표준화가 단위 배율을 지우므로 부동소수점 오차 수준(1e-9)만 허용
     assert abs(a - k) < 1e-9
 
 
@@ -117,8 +122,10 @@ def test_consistent_unit_change_is_harmless():
 def test_ml_test_score_rules():
     s = chk.ml_test_score([("data", "a", "automated"), ("data", "b", "manual"), ("model", "c", "automated"),
                            ("infra", "d", "automated"), ("infra", "e", "automated"), ("monitor", "f", "none")])
+    # data 1.5 = 1.0 + 0.5, infra 2.0, monitor 0.0. 최종은 최솟값 0.0
     assert s["by_section"] == {"data": 1.5, "model": 1.0, "infra": 2.0, "monitor": 0.0}
     assert s["final"] == 0.0
+    # THIS_CHAPTER는 영역마다 수동(0.5점) 항목만 있다: data 2, model 2, infra 3, monitor 2개라 합 1.0/1.0/1.5/1.0이고 최솟값은 1.0
     assert chk.ml_test_score(chk.THIS_CHAPTER)["final"] == 1.0
 
 
@@ -129,4 +136,5 @@ def test_training_time_upper_bound():
     tr = dat.make_customers(0, 4000)
     t0 = time.perf_counter()
     mnp.train(dat.emit_batch(tr, 1), tr["churned"])
+    # 시간 기준은 컴퓨터 속도에 의존한다. 느린 환경에서는 실패할 수 있음
     assert time.perf_counter() - t0 < 5.0

@@ -25,8 +25,10 @@ UPSTREAM = {
 
 def make_customers(seed, n_rows, plan_probs=(0.5, 0.3, 0.2)):
     """세상 쪽 고객 표. 금액은 원 단위, 범주는 글자 라벨, 사용 시간은 실제 값."""
+    # 같은 seed면 같은 고객 표가 나온다(1장 data와 같은 생성기)
     rng = np.random.default_rng(seed)
     tenure = rng.integers(1, 73, n_rows).astype(float)
+    # 월 요금(원). 15,000~120,000으로 자르고 100원 단위로 반올림
     fee = np.round(np.clip(rng.normal(55_000, 15_000, n_rows), 15_000, 120_000), -2)
     calls = rng.poisson(np.clip(3.0 - tenure / 30.0, 0.2, None)).astype(float)  # 오래 쓴 고객일수록 문의가 적다
     usage = np.clip(rng.normal(40, 12, n_rows), 0, 200)
@@ -37,6 +39,7 @@ def make_customers(seed, n_rows, plan_probs=(0.5, 0.3, 0.2)):
 
     plan_effect = np.array([0.9, 0.0, -1.1])[plan]
     region_effect = np.array([0.0, 0.1, -0.1, 0.2])[region]
+    # 이탈 로짓 = 절편 + 변수별 (값 - 기준)/척도 항 + 범주 효과. 계수는 합성용 가정이고 현실 추정치가 아니다
     logit = (
         -0.3
         + 1.6 * (fee - 55_000) / 15_000
@@ -47,6 +50,7 @@ def make_customers(seed, n_rows, plan_probs=(0.5, 0.3, 0.2)):
         + plan_effect
         + region_effect
     )
+    # 로지스틱 확률보다 uniform 난수가 작으면 이탈(1.0)
     churned = (rng.uniform(size=n_rows) < 1.0 / (1.0 + np.exp(-logit))).astype(float)
     return {
         "tenure_months": tenure,
@@ -66,6 +70,7 @@ def emit_batch(customers, version=1, fee_divisor=None, plan_codebook=None, usage
 
     인자를 직접 주면 그 버전 설정을 덮어쓴다(단위 배율 곡선 실험용).
     """
+    # UPSTREAM 원본을 건드리지 않도록 복사본에 덮어쓴다
     cfg = dict(UPSTREAM[version])
     if fee_divisor is not None:
         cfg["fee_divisor"] = fee_divisor
@@ -74,8 +79,10 @@ def emit_batch(customers, version=1, fee_divisor=None, plan_codebook=None, usage
     if usage_scale is not None:
         cfg["usage_scale"] = usage_scale
     out = {k: customers[k].astype(float).copy() for k in NUMERIC}
+    # 업스트림이 금액을 나누는 단위 변경(v2는 1000으로 나눠 천 원 단위)
     out["monthly_fee"] = out["monthly_fee"] / cfg["fee_divisor"]
     out["usage_hours"] = out["usage_hours"] * cfg["usage_scale"]
+    # 글자 라벨을 그 버전의 코드표 순서의 정수 코드로 바꾼다. 코드표 순서가 바뀌면 같은 요금제가 다른 숫자가 된다
     plan_index = {lab: i for i, lab in enumerate(cfg["plan_codebook"])}
     out["plan"] = np.array([plan_index[v] for v in customers["plan"]], dtype=np.int64)
     out["region"] = np.array([REGION_LABELS.index(v) for v in customers["region"]], dtype=np.int64)
@@ -85,6 +92,7 @@ def emit_batch(customers, version=1, fee_divisor=None, plan_codebook=None, usage
 def emit_labeled_batch(customers, fee_divisor=1.0, usage_scale=1.0):
     """'뜻이 담긴 계약' 설계: 범주는 글자 라벨 그대로, 금액 단위는 열 이름에 적어 보낸다."""
     out = {k: customers[k].astype(float).copy() for k in NUMERIC if k != "monthly_fee"}
+    # 단위를 열 이름(monthly_fee_krw 등)에 적어 보내면 받는 쪽이 이름으로 단위 변경을 알아챌 수 있다
     unit = "krw" if fee_divisor == 1.0 else ("krw_thousand" if fee_divisor == 1000.0 else f"krw_div{fee_divisor:g}")
     out[f"monthly_fee_{unit}"] = customers["monthly_fee"].astype(float) / fee_divisor
     out["usage_hours"] = out["usage_hours"] * usage_scale

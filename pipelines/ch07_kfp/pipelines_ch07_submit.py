@@ -9,6 +9,7 @@ import argparse
 import json
 
 
+# 의도적으로 비워 둔 함수: 호출하면 NotImplementedError. 이 저장소에서는 실행하지 않는다
 def fetch_metrics(client, run_id):  # pragma: no cover - 클러스터의 결과 파일 저장소에 따라 다르다
     raise NotImplementedError("evaluate task의 metrics 결과 파일을 pipeline_root에서 읽어 오는 부분")
 
@@ -28,9 +29,11 @@ def main():  # pragma: no cover
         arguments={"seed": 1, "n_rows": 4000, "shift": 1.0},
         run_name=a.run_name,
         experiment_name="churn-ch07",
+        # 캐시를 끄고 매번 전체를 실행한다
         enable_caching=False,
     )
     done = client.wait_for_run_completion(run_id=run.run_id, timeout=3600)
+    # run이 성공 상태가 아니면 종료 코드가 0이 아니게 끝나 Jenkins 단계가 실패한다
     if done.state != "SUCCEEDED":
         raise SystemExit(f"KFP run {run.run_id}: {done.state}")
     with open(a.out, "w") as f:

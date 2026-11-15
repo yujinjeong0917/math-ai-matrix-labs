@@ -30,6 +30,7 @@ torch.set_num_threads(2)
 OUT = Path(__file__).parent / "results" / "ch04.json"
 
 
+# 정의되지 않는 경우(ValueError)를 실패가 아니라 결과 문자열로 JSON에 남긴다
 def _try(f, *a, **k):
     try:
         return f(*a, **k)
@@ -59,6 +60,7 @@ def e1_failures():
         "eps_ratio_like_sklearn": m.mape(yz, pz, zero="eps") / 100.0,
         "one_over_2eps": 1.0 / (2.0 * m.EPS),
         "eps": m.EPS,
+        # 정답 0일 때 예측도 0이면 eps 정책 APE는 0/EPS = 0%
         "zero_forecast_on_zero_day_ape_eps": float(100.0 * abs(0.0 - 0.0) / max(0.0, m.EPS)),
     }
     yd, pd = cases.case_sklearn_doc_example()
@@ -86,13 +88,16 @@ def e2_intermittent(seeds=100, n=60, lam=4.0):
         undefined = 0
         zeros_per_series = []
         mae_B_wins = 0
+        # 정책별 집계(raise는 0이 있는 시리즈에서 정의되지 않아 따로 undefined로만 센다). B_wins는 B(A의 60%)가 A보다 나은 시리즈 수
         pol = {"drop": {"B_wins": 0, "disagree_with_mae": 0, "Z_best_of_3": 0, "mape_A": [], "mape_B": [], "mape_Z": []},
                "eps": {"B_wins": 0, "disagree_with_mae": 0, "Z_best_of_3": 0, "mape_A": [], "mape_B": [], "mape_Z": []}}
         mae_vals = {"A": [], "B": [], "Z": []}
         for s in range(seeds):
+            # 시드를 10000대로 고정해 시리즈 100개를 재현
             y = cases.case_intermittent_demand(pz, n, lam, seed=10_000 + s)
             nz = int(np.sum(y == 0))
             zeros_per_series.append(nz)
+            # 0이 하나라도 있으면 원래 정의의 MAPE는 계산 불가
             undefined += nz > 0
             preds = {k: np.full(n, v) for k, v in models.items()}
             maes = {k: m.mae(y, p) for k, p in preds.items()}
@@ -128,17 +133,20 @@ def e3_level_and_units():
     y, p = cases.case_level_shift()
     shift = {}
     for c in (0.0, 10.0, 100.0, 1000.0):
+        # c가 커질수록 MAE는 그대로, MAPE만 줄어든다
         shift[str(c)] = {"mean_y": float((y + c).mean()), "mae": m.mae(y + c, p + c), "mape": m.mape(y + c, p + c)}
     tc, fc = cases.case_temperature()
     units = {}
     for name, f in (("celsius", lambda v: np.asarray(v, float)), ("fahrenheit", cases.to_fahrenheit), ("kelvin", cases.to_kelvin)):
         a, b = f(tc), f(fc)
+        # 표시용으로만 소수 둘째 자리 반올림(계산은 원값)
         units[name] = {"y": [round(v, 2) for v in a.tolist()], "pred": [round(v, 2) for v in b.tolist()],
                        "ape": m.ape(a, b).tolist(), "mape": m.mape(a, b), "mae": m.mae(a, b)}
     return {"level_shift": {"n": len(y), "seed": 0, "by_c": shift}, "temperature": units}
 
 
 def e4_best_constant():
+    # 두 점이면 가중 중앙값이 50(가중치 1/50이 더 큼). MAPE 최적은 50, MAE는 50과 150 사이 어디든 같다
     card = np.array([50.0, 150.0])
     out = {"card_50_150": {"best": m.best_constant_mape(card),
                            "mape_at": {str(c): m.mape(card, np.full(2, c)) for c in (50.0, 100.0, 150.0)},
@@ -153,6 +161,7 @@ def e4_best_constant():
             "constants": cands,
             "mape": {k: m.mape(y, np.full(len(y), c)) for k, c in cands.items()},
             "mae": {k: m.mae(y, np.full(len(y), c)) for k, c in cands.items()},
+            # 평균 (정답 - 예측). 양수면 예측이 평균적으로 낮다. MAPE 최적 상수가 체계적으로 낮게 예측함을 보인다
             "bias_mean_y_minus_c": {k: float(np.mean(y - c)) for k, c in cands.items()},
         }
     out["by_series"] = rows

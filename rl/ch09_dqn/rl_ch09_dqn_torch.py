@@ -32,13 +32,17 @@ class TorchMLP(torch.nn.Module):
 
 
 def td_target(net, tgt, R, S2, F, gamma, double):
+    # no_grad 안에서 만들어 y를 상수로 고정한다(NumPy 쪽에서 y에 기울기가 안 흐르는 것과 같은 효과)
     with torch.no_grad():
         q2 = tgt(S2 / SCALE)
         if double:
+            # 식 (Double): a* = argmax_a' Q_net(s', a'),  다음 점수 = Q_tgt(s', a*)
             a_star = net(S2 / SCALE).argmax(dim=1)
             nxt = q2.gather(1, a_star[:, None]).squeeze(1)
         else:
+            # 식 (DQN): 다음 점수 = max_a' Q_tgt(s', a')
             nxt = q2.max(dim=1).values
+        # 식: y = r + γ (1 - done) · 다음 점수 (done = 쓰러짐 F)
         return R + gamma * (1.0 - F) * nxt
 
 
@@ -51,6 +55,7 @@ def loss_and_grads(np_net, np_tgt, batch, gamma=0.99, double=False):
     net = TorchMLP(np_net.W, np_net.b)
     tgt = TorchMLP(np_tgt.W, np_tgt.b)
     y = td_target(net, tgt, R, S2, F, gamma, double)
+    # 식: Q(s_j, a_j) = 고른 행동 칸만 뽑은 예측. 식: L = mean_j 1/2 (y_j - Q(s_j, a_j))²
     q = net(S / SCALE).gather(1, A[:, None]).squeeze(1)
     loss = 0.5 * ((y - q) ** 2).mean()
     loss.backward()

@@ -10,6 +10,7 @@ MANIFEST = json.loads((Path(__file__).parent / "release_manifest.json").read_tex
 
 
 def good():
+    """모든 규칙을 통과하도록 표본 기록을 고친 사본(원본 표본은 R3~R7 위반)."""
     m = copy.deepcopy(MANIFEST)
     m["image"]["reference"] = m["image"]["repository"] + "@sha256:" + "ab" * 32
     m["code_commit"] = "3d8cd4c"
@@ -19,6 +20,7 @@ def good():
 
 
 class ReleaseTest(unittest.TestCase):
+    # 표본은 R3,R4,R6,R7이 FAIL(4개), R5가 WARN(1개). 이름의 숫자는 README 기대 출력과 다르게 읽히니 주의
     def test_sample_is_blocked_with_five_fails_one_warn(self):
         f = check_release(MANIFEST)
         self.assertEqual([x["rule"] for x in f], ["R3", "R4", "R5", "R6", "R7"])
@@ -42,10 +44,12 @@ class ReleaseTest(unittest.TestCase):
 
 
 class StorageTest(unittest.TestCase):
+    # 4,683,000,000 x 10 = 46,830,000,000 (README의 46.83GB)
     def test_versions_store_whole_objects(self):
         self.assertEqual(stored_bytes(4_683_000_000, 10), 46_830_000_000)
         self.assertEqual(stored_bytes(4_683_000_000, 1), 4_683_000_000)
 
+    # ceil(4.683e9 / 104,857,600) = 45, 5 MiB 파트는 ceil(4.683e9 / 5,242,880) = 894
     def test_multipart(self):
         self.assertEqual(multipart_plan(4_683_000_000, 100 * MIB), {"parts": 45, "fits": True})
         self.assertEqual(min_part_bytes(4_683_000_000), 5 * MIB)

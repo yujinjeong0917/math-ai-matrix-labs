@@ -30,6 +30,7 @@ def test_every_fact_has_url_and_date():
         assert f["claim"], f["id"]
 
 
+# 코드와 데이터에 쓰인 모든 근거 id가 sources 파일에 있는지. 조건 조합을 전수로 돌려 모든 분기의 id를 모은다
 def test_every_source_id_used_in_code_and_data_exists():
     used = set()
     for ch in FEES["channels"]:
@@ -54,6 +55,7 @@ def test_share_files_are_twelve_full_months_that_add_up():
         assert [r["month"] for r in rows][0] == "2025-10" and rows[-1]["month"] == "2026-09"
         assert len(rows) == 12
         for r in rows:
+            # 안드로이드+iOS 합이 100%에 못 미치는 달은 기타 OS 몫. 0.01은 반올림 허용 오차
             assert 99.0 <= float(r["android"]) + float(r["ios"]) <= 100.01
 
 
@@ -63,6 +65,7 @@ def test_one_payment_hand_calculation():
     """월 4,900원 한 건: 부가세 445원(4,900 ÷ 11), 남은 4,455원에 스토어 수수료, PG는 4,900원 전체에."""
     rows = {r["id"]: r for r in F.channel_table(4900, FEES)}
     assert rows["web_pg"]["vat"] == 445 and rows["web_pg"]["base"] == 4455
+    # round()는 반올림. 166.6 -> 167, 668.2 -> 668, 1336.4 -> 1336
     assert rows["web_pg"]["pg_fee"] == 167 and rows["web_pg"]["net"] == 4288      # 4,900 × 0.034 = 166.6
     assert rows["gp_15_tier"]["store_fee"] == 668 and rows["gp_15_tier"]["net"] == 3786   # 4,455 × 0.15 = 668.2
     assert rows["apple_standard_sub"]["store_fee"] == 1336                            # 4,455 × 0.30 = 1,336.4
@@ -74,9 +77,11 @@ def test_alternative_billing_pays_both_fees():
     rows = {r["id"]: r for r in F.channel_table(4900, FEES)}
     alt = rows["gp_alt_billing_kr"]
     assert alt["store_fee"] > 0 and alt["pg_fee"] > 0
+    # 허용 오차 50원: 4%p 감면(약 178원)과 PG 3.4%(167원)의 차이가 작다는 것을 확인하는 느슨한 경계
     assert abs(alt["net"] - rows["gp_15_tier"]["net"]) < 50
 
 
+# 율을 모르면 0원 수수료로 착각하지 않고 net이 None으로 남아야 한다
 def test_unverified_rate_stays_unknown_not_zero():
     for ch in FEES["channels"]:
         r = F.split(10000, ch["store_rate"], 0.0)
@@ -87,6 +92,7 @@ def test_unverified_rate_stays_unknown_not_zero():
 def test_subscription_blend_is_per_subscriber_share():
     assert F.blended_store_rate(0.30, 0.15, 0.0) == pytest.approx(0.30)
     assert F.blended_store_rate(0.30, 0.15, 1.0) == pytest.approx(0.15)
+    # 0.6*0.30 + 0.4*0.15 = 0.24
     assert F.blended_store_rate(0.30, 0.15, 0.4) == pytest.approx(0.24)
     with pytest.raises(ValueError):
         F.blended_store_rate(0.30, 0.15, 1.2)
@@ -97,11 +103,13 @@ def test_fixed_costs_and_threshold():
     assert fc["first_year_cash"] == 99 * FEES["assumptions"]["krw_per_usd"] + FEES["mac"]["krw"]
     assert F.fixed_costs(FEES, ["android"], need_new_mac=True)["first_year_cash"] == 25 * FEES["assumptions"]["krw_per_usd"]
     assert F.threshold_in_krw(FEES)["krw"] == 1_000_000 * FEES["assumptions"]["krw_per_usd"]
+    # 올림 경계: 100/10 = 10건이면 딱 맞고, 101이면 11건
     assert F.subscribers_to_cover(100, 10, 1.0) == 10 and F.subscribers_to_cover(101, 10, 1.0) == 11
 
 
 # ---------- 선택 도구 ----------
 
+# 순서 고정, 점수·순위 필드 없음, 상태값이 세 가지 안에만 있음을 조합별로 확인
 def test_order_never_changes():
     for mac, pay, feats in itertools.product((False, True), ("none", "digital", "physical"),
                                              ((), ("bluetooth",), ("push", "camera"))):

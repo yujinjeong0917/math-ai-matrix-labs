@@ -5,6 +5,9 @@
 - train_run: AdamW + 선형 warmup(12스텝 고정) + 코사인 감쇠(최대 학습률의 1/10까지). 코사인 길이는 인자로 받아서,
   '데이터 양에 맞춘 스케줄'과 '가장 긴 스케줄 하나를 중간에서 읽기'를 같은 코드로 비교한다.
 - fit_chinchilla_torch: Hoffmann 등(2022) 식 (3)·(11)처럼 log 손실의 Huber 손실을 L-BFGS로 최소화한다.
+
+텐서 모양: 토큰 id (B, n) -> 로짓 (B, n, V). B = 배치, n = 시퀀스 길이(= N_CTX), V = 어휘 크기, d = 모델 차원.
+손실은 합성 말뭉치의 '값 자리'에서만 센다(ch13_data.scored_positions). 값 단위: nat.
 """
 
 import math
@@ -89,12 +92,14 @@ class TinyLM(nn.Module):
 
 def build(cfg, seed):
     torch.manual_seed(seed)
+    # 시드로 가중치 초기화를 고정. 같은 cfg·시드면 같은 모델
     return TinyLM(cd.V, cd.N_CTX, cfg["d"], cfg["L"], cfg["h"])
 
 
 def torch_param_counts(model):
     """(임베딩 제외 N, 전체). Kaplan 등 Table 1처럼 토큰·위치 임베딩을 N에서 뺀다."""
     total = sum(p.numel() for p in model.parameters())
+    # 토큰 임베딩 (V, d) + 위치 임베딩 (n_ctx, d)
     emb = model.tok.weight.numel() + model.pos.numel()
     return total - emb, total
 
@@ -102,25 +107,32 @@ def torch_param_counts(model):
 # ---------------------------------------------------------------- 학습
 
 
+# 값 자리를 맞히는 입력 위치 (11,)
 SCORED = torch.tensor(cd.scored_positions())
 
 
 def lm_loss(model, X):
     """값 자리만 센다. 열쇠 토큰은 지프 분포에서 무작위로 뽑혀서 맞힐 구조가 없다."""
+    # model(...): (B, 32, V) -> [:, SCORED]: (B, 11, V). 값 자리 로짓만
     logits = model(X[:, :-1])[:, SCORED]
+    # 정답은 한 칸 민 X[:, 1:]의 같은 위치들 (B, 11). 평균 교차 엔트로피(nat)
     return F.cross_entropy(logits.reshape(-1, cd.V), X[:, 1:][:, SCORED].reshape(-1))
 
 
 def lr_at(step, peak, warmup, schedule_steps):
     """선형 warmup 뒤 코사인으로 peak/10까지 내린다(Hoffmann 등의 10배 감쇠). schedule_steps 이후는 바닥 유지."""
+    # 선형 warmup: 첫 warmup 스텝 동안 peak * (step+1)/warmup
     if step < warmup:
         return peak * (step + 1) / warmup
+    # 코사인 진행도 0..1, 1에서 멈춘다(그 뒤는 바닥 peak/10 유지)
     prog = min(1.0, (step - warmup) / max(1, schedule_steps - warmup))
+    # 식: peak * (0.1 + 0.9 * (1 + cos(pi * prog)) / 2): prog = 0에서 peak, 1에서 peak/10
     return peak * (0.1 + 0.9 * 0.5 * (1 + math.cos(math.pi * prog)))
 
 
 WARMUP_STEPS = 12  # 가장 짧은 학습(256스텝)의 약 5%
 
+# 고정 검증 시퀀스 2048개. 학습 시드 영역(10000 + seed 계열)과 다른 시드 424242
 VAL = torch.tensor(cd.sample_sequences(2048, seed=424242))
 
 
@@ -139,14 +151,18 @@ def train_run(cfg, tokens, seed, lr, batch=8, schedule_tokens=None, eval_at_toke
     (기본은 tokens와 같다). eval_at_tokens의 지점마다 중간 검증 손실도 기록한다.
     warmup_frac을 주면 warmup을 스케줄 길이의 비율로 잡는다(7절 '흔한 실패' 재현용).
     """
+    # 한 스텝이 보는 입력 토큰 = 배치 8 * 32
     per_step = batch * cd.N_CTX
     steps = tokens // per_step
     sched_steps = (schedule_tokens or tokens) // per_step
     # 기본은 모든 학습에서 같은 절대 길이. 그래야 두 프로토콜의 차이가 코사인 길이 하나로 좁혀진다
+    # warmup_frac이 없으면 모든 학습이 같은 절대 길이 12스텝(코사인 길이만 달라지도록)
     warmup = WARMUP_STEPS if warmup_frac is None else max(1, int(sched_steps * warmup_frac))
+    # 같은 seed면 모델 크기와 무관하게 같은 토큰열. 각 토큰을 한 번씩만 본다(1 에폭)
     data = torch.tensor(cd.training_stream(steps * batch, seed=10_000 + seed))  # 모델 크기와 무관하게 같은 토큰열
     model = build(cfg, seed)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.0)
+    # 중간 평가 지점: {스텝: 토큰 수}
     checkpoints = {int(t) // per_step: int(t) for t in eval_at_tokens}
     mid, nan = {}, False
     t0 = time.perf_counter()
@@ -154,12 +170,14 @@ def train_run(cfg, tokens, seed, lr, batch=8, schedule_tokens=None, eval_at_toke
         for g in opt.param_groups:
             g["lr"] = lr_at(step, lr, warmup, sched_steps)
         loss = lm_loss(model, data[step * batch : (step + 1) * batch])
+        # NaN·inf면 중단하고 val_loss를 nan으로 기록
         if not torch.isfinite(loss):
             nan = True
             break
         opt.zero_grad()
         loss.backward()
         opt.step()
+        # step + 1 = 지금까지 끝낸 스텝 수
         if step + 1 in checkpoints:
             mid[str(checkpoints[step + 1])] = eval_loss(model)
     sec = time.perf_counter() - t0
@@ -168,6 +186,7 @@ def train_run(cfg, tokens, seed, lr, batch=8, schedule_tokens=None, eval_at_toke
         "val_loss": float("nan") if nan else eval_loss(model),
         "nan": nan,
         "intermediate_val_loss": mid,
+        # N은 임베딩 제외 파라미터 수, D는 실제 학습한 입력 토큰 수(tokens를 스텝 단위로 내림)
         "N": n_ne,
         "N_total": n_tot,
         "D": steps * per_step,
@@ -178,6 +197,7 @@ def train_run(cfg, tokens, seed, lr, batch=8, schedule_tokens=None, eval_at_toke
 # ---------------------------------------------------------------- 피팅 (Hoffmann 등 식 (11)의 LSE 꼴)
 
 
+# Huber: 작은 잔차는 0.5 r^2, 큰 잔차는 선형. 이상치에 덜 민감
 def huber(r, delta):
     a = r.abs()
     return torch.where(a <= delta, 0.5 * r**2, delta * (a - 0.5 * delta))
@@ -190,8 +210,10 @@ def fit_chinchilla_torch(N, D, L, delta=1e-3, inits=None, E_fixed=None):
     E_fixed를 주면 e = log E_fixed로 고정한다.
     """
     N, D, L = (torch.tensor(np.asarray(v, dtype=np.float64)) for v in (N, D, L))
+    # 모든 값을 로그로 변환(아래 식이 로그 공간)
     lN, lD, lL = N.log(), D.log(), L.log()
     if inits is None:
+        # 초기값 격자(국소해를 피하려고 여러 곳에서 시작): (log A, log B, log E, alpha, beta) 조합 3*3*3*2*2 = 108개
         inits = [(a, b, e, al, be) for a in (0.0, 5.0, 10.0) for b in (0.0, 5.0, 10.0)
                  for e in (-1.0, 0.0, 1.0) for al in (0.2, 0.5) for be in (0.2, 0.5)]
     best = None
@@ -199,6 +221,7 @@ def fit_chinchilla_torch(N, D, L, delta=1e-3, inits=None, E_fixed=None):
         if E_fixed is not None:
             init = (init[0], init[1], math.log(E_fixed), init[3], init[4])
         th = torch.tensor(init, dtype=torch.float64, requires_grad=True)
+        # 고정할 성분(E_fixed일 때 E 성분)의 기울기를 0으로 만드는 마스크
         fix = torch.tensor([1.0, 1.0, 0.0 if E_fixed is not None else 1.0, 1.0, 1.0], dtype=torch.float64)
         th.register_hook(lambda g: g * fix)  # 고정한 성분은 기울기를 0으로
         opt = torch.optim.LBFGS([th], lr=1.0, max_iter=500, tolerance_grad=1e-12, tolerance_change=1e-14,
@@ -207,13 +230,16 @@ def fit_chinchilla_torch(N, D, L, delta=1e-3, inits=None, E_fixed=None):
         def closure():
             opt.zero_grad()
             a, b, e, al, be = th
+            # 식: log L_hat = log(exp(a - alpha log N) + exp(b - beta log D) + exp(e)) = log(A/N^alpha + B/D^beta + E)
             pred = torch.logsumexp(torch.stack([a - al * lN, b - be * lD, e.expand_as(lN)]), dim=0)
+            # 목적: sum Huber_delta(log L_hat - log L)
             obj = huber(pred - lL, delta).sum()
             obj.backward()
             return obj
 
         try:
             opt.step(closure)
+        # L-BFGS가 수치 오류를 내면 그 초기값은 건너뛴다
         except RuntimeError:
             continue
         with torch.no_grad():
@@ -222,5 +248,6 @@ def fit_chinchilla_torch(N, D, L, delta=1e-3, inits=None, E_fixed=None):
             obj = float(huber(pred - lL, delta).sum())
         if np.isfinite(obj) and (best is None or obj < best[0]):
             best = (obj, [float(v) for v in th.detach()])
+    # 모든 초기값이 실패하면 best가 None이라 여기서 오류(함정)
     obj, (a, b, e, al, be) = best
     return {"A": math.exp(a), "B": math.exp(b), "E": math.exp(e), "alpha": al, "beta": be, "objective": obj}

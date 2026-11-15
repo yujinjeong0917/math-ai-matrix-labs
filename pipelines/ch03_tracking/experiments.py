@@ -33,9 +33,11 @@ import pipelines_ch03_tracking as trk  # noqa: E402
 torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch03.json"
+# 하이퍼파라미터 격자: lr 2 x steps 2 x l2 3 = 12조합
 GRID = [{"lr": lr, "steps": st, "l2": l2} for lr in (0.05, 0.5) for st in (50, 400) for l2 in (0.0, 0.01, 0.1)]
 N_ROWS, N_TRAIN, SPLIT_SEED = 3000, 2000, 7
 OUTER = range(20)
+# 6번째 이후 실행은 동료가 새로 뽑은 데이터(data_seed 변경)로 돌아간 것으로 가정한 시나리오
 SWITCH_AT = 6  # 이 번호의 실행부터 데이터가 바뀌어 있다
 
 
@@ -70,8 +72,10 @@ def e1_hand_log():
         ps = sweep_params(o)
         accs = [run(p)[1]["val_acc"] for p in ps]
         csv_rows = [{"lr": p["lr"], "steps": p["steps"], "l2": p["l2"], "val_acc": acc} for p, acc in zip(ps, accs)]
+        # 검증 점수 최고 조합의 번호. 동점이면 앞 번호
         best = int(np.argmax(accs))  # 동점이면 먼저 적힌 행
         # 손 기록으로 '최고 행'을 다시 돌린다: 지금 디스크에 있는 데이터(b)로
+        # 손 기록(CSV)에는 데이터 시드가 없어서, 다시 돌릴 때는 디스크에 남은 최신 데이터(b)로 돌릴 수밖에 없다는 가정
         rerun = run({**GRID[best], "data_seed": b, "split_seed": SPLIT_SEED})[1]["val_acc"]
         # 모든 조합을 같은 데이터로 돌렸다면 누가 1등이었나
         acc_a = [run({**g, "data_seed": a, "split_seed": SPLIT_SEED})[1]["val_acc"] for g in GRID]
@@ -80,6 +84,7 @@ def e1_hand_log():
         per_outer.append({
             "outer": o, "csv_val_acc": accs, "acc_all_on_a": acc_a, "acc_all_on_b": acc_b, "best_row": best, "best_from_first_half": best < SWITCH_AT,
             "recorded": accs[best], "rerun": rerun, "gap": accs[best] - rerun,
+            # 같은 설정·같은 데이터면 비트까지 같으므로 1e-12는 사실상 일치 판정
             "reproduced": abs(accs[best] - rerun) < 1e-12,
             "winner_on_a": int(np.argmax(acc_a)), "winner_on_b": int(np.argmax(acc_b)),
             "csv_winner_is_winner_on_a_or_b": best in (int(np.argmax(acc_a)), int(np.argmax(acc_b))),
@@ -117,6 +122,7 @@ def e2_tracked():
             runs = trk.load_runs(d)
             groups = trk.comparable_groups(runs)
             best = max(runs, key=lambda r: r["metrics"]["val_acc"])
+            # 기록의 설정·데이터 시드로 다시 돌린 지표가 기록과 완전히 같은 실행 수
             exact = sum(trk.rerun_from_record(r, make_data, train_fn)["val_acc"] == r["metrics"]["val_acc"] for r in runs)
             # 기록대로가 아니라 '지금 디스크의 데이터(b)'로 다시 돌리려 하면: 해시가 다른 기록은 학습 전에 멈춘다
             _, b = data_seeds(o)
@@ -152,6 +158,7 @@ def e3_hash_props():
     t_b = dat.make_table(b, N_ROWS)
     h = hsh.dataset_hash(t)
     one = {k: v.copy() for k, v in t.items()}
+    # nextafter: float64로 표현 가능한 바로 다음 값. 가장 작은 변화도 해시가 바뀌는지 본다
     one["usage_hours"][123] = np.nextafter(one["usage_hours"][123], np.inf)  # 표현 가능한 가장 작은 변화
     reordered = {k: t[k] for k in reversed(list(t))}
     f32 = {k: (v.astype(np.float32) if v.dtype == np.float64 else v) for k, v in t.items()}
@@ -179,6 +186,7 @@ def e3_hash_props():
     }
 
 
+# 시간은 중앙값으로 잰다. 컴퓨터마다 값이 다르다
 def _median_time(fn, reps):
     ts = []
     for _ in range(reps):
@@ -211,6 +219,7 @@ def e5_storage():
         "record_only": {},
         "plus_weights": {"model": {"w": model["w"], "b": np.array(model["b"])}},
         "plus_val_predictions": {"model": {"w": model["w"], "b": np.array(model["b"])}, "val_pred": {"p": proba}},
+        # 데이터 사본까지 저장하면 기록 용량이 어떻게 달라지는지 비교
         "plus_data_copy": {"model": {"w": model["w"], "b": np.array(model["b"])}, "val_pred": {"p": proba}, "data": table},
     }
     out = {}
@@ -228,6 +237,7 @@ def e6_selection_bias():
         a, _ = data_seeds(o)
         table = dat.make_table(a, N_ROWS)
         tr, va = dat.split(table, N_TRAIN, SPLIT_SEED)
+        # 선택 편향 실험용 새 데이터(시드 900+o). 학습·검증과 다른 표
         test = dat.make_table(900 + o, 2000)
         vals, tests = [], []
         for g in GRID:
@@ -238,6 +248,7 @@ def e6_selection_bias():
         best = int(np.argmax(vals))
         rows.append({"outer": o, "best": best, "val_best": vals[best], "test_of_best": tests[best],
                      "best_test_any": max(tests), "val_mean": float(np.mean(vals)), "test_mean": float(np.mean(tests))})
+    # 낙관 = 검증 최고 점수 - 같은 모델의 새 데이터 점수. 12개 중 최고를 고르면 검증 점수가 평균적으로 부풀 수 있다(값은 결과 JSON)
     opt = [r["val_best"] - r["test_of_best"] for r in rows]
     return {"per_outer": rows, "mean_val_best": float(np.mean([r["val_best"] for r in rows])),
             "mean_test_of_best": float(np.mean([r["test_of_best"] for r in rows])),
@@ -250,6 +261,7 @@ def e6_selection_bias():
 def e7_torch():
     a, _ = data_seeds(0)
     p = {"lr": 0.5, "steps": 400, "l2": 0.01, "data_seed": a, "split_seed": SPLIT_SEED}
+    # 같은 기록으로 NumPy와 PyTorch 구현을 돌려 지표·가중치 차이를 잰다
     m_np, met_np = run(p)
     m_t, met_t = run(p, fit=mtt.fit_logistic)
     return {"params": p, "max_abs_w_diff": float(np.max(np.abs(m_np["w"] - m_t["w"]))),

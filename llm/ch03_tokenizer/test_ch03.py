@@ -15,6 +15,7 @@ def _small_corpus(lang="en_like"):
 
 def test_figure1_lower_is_low_er():
     """Sennrich 등 Figure 1: 사전 {low, lowest, newer, wider}에서 배운 병합으로 'lower' → 'low er·'."""
+    # Figure 1 사전: 병합 4번으로 low가 하나의 기호가 되고, lower는 "low" + "er</w>"로 쪼개진다는 예.
     fig1 = {"low": 1, "lowest": 1, "newer": 1, "wider": 1}
     tok = B.BPETokenizer(fig1, B.learn_bpe(fig1, 4))
     assert tok.apply_bpe("lower") == ["low", "er" + B.EOW]
@@ -22,6 +23,7 @@ def test_figure1_lower_is_low_er():
 
 def test_matches_paper_algorithm1_when_tie_rule_matches():
     """논문 Algorithm 1 원문 코드와, 동률 규칙만 맞춘 우리 구현의 병합 목록이 같다."""
+    # tie="first"로 맞추면 논문 원문 코드와 병합 순서가 정확히 같아야 한다(구현 검증).
     toy = {"low": 5, "lower": 2, "newest": 6, "widest": 3}
     alg1 = algorithm1_verbatim({"l o w </w>": 5, "l o w e r </w>": 2, "n e w e s t </w>": 6, "w i d e s t </w>": 3}, 10)
     assert B.learn_bpe_naive(toy, 10, tie="first") == alg1
@@ -31,6 +33,7 @@ def test_fast_equals_naive_and_is_deterministic():
     tr, _, _ = _small_corpus()
     f = B.word_freqs(tr)
     naive = B.learn_bpe_naive(f, 120)
+    # 빠른 구현(힙)과 느린 구현(전수 재계산)이 같은 병합 목록을 낸다.
     assert B.learn_bpe(f, 120) == naive
     assert B.learn_bpe(f, 120) == B.learn_bpe(f, 120)
 
@@ -42,6 +45,7 @@ def test_vocab_size_is_alphabet_plus_merges():
         tk = B.BPETokenizer(f, B.learn_bpe(f, M))
         n_new = len({a + b for a, b in tk.merges} - set(tk.alphabet) - {B.EOW})
         assert tk.vocab_size == len(tk.alphabet) + 1 + n_new + 1  # 글자 + </w> + 병합 + <unk>
+        # M번 병합하면 새 기호가 M개. 병합 결과가 기존 기호와 겹치지 않는다는 가정(이 말뭉치에서 확인).
         assert n_new == M  # 이 말뭉치에서는 병합마다 새 기호가 하나씩 생긴다
 
 
@@ -50,6 +54,7 @@ def test_roundtrip_and_no_unk_on_seen_alphabet():
         tr, _, te = _small_corpus(lang)
         f = B.word_freqs(tr)
         tk = B.BPETokenizer(f, B.learn_bpe(f, 300))
+        # 디코드(인코드(s)) == s. 학습 문장은 모든 글자가 알파벳에 있어 <unk> 없이 복원된다.
         for s in tr[:50]:
             assert tk.decode(tk.encode(s)) == s
         if lang == "en_like":  # 알파벳 26자가 모두 학습에 있으므로 테스트에도 <unk>가 없다
@@ -57,6 +62,7 @@ def test_roundtrip_and_no_unk_on_seen_alphabet():
 
 
 def test_unseen_character_becomes_unk():
+    # 학습에 "힣"이 없으니 알파벳에 없는 글자는 <unk> 하나가 된다(병합 대상이 아님).
     f = {"가나": 3, "나다": 2}
     tk = B.BPETokenizer(f, B.learn_bpe(f, 2))
     assert tk.tokenize("가힣") == ["가", B.UNK, B.EOW]
@@ -66,6 +72,7 @@ def test_word_vocab_unk_rate_shrinks_with_V():
     tr, _, te = _small_corpus()
     f = B.word_freqs(tr)
     rates = [B.unk_rate(te, B.word_vocab(f, V)) for V in (50, 200, 1000)]
+    # 어휘 V를 키울수록 <unk> 비율이 줄어야 한다.
     assert rates[0] > rates[1] > rates[2] >= 0
 
 
@@ -75,9 +82,11 @@ def test_interpolated_trigram_is_a_distribution():
     vocab = sorted({w for s in seqs for w in s})
     lm = InterpTrigram(seqs, vocab)
     for u, v in [("<s>", "<s>"), ("<s>", seqs[0][0]), (seqs[0][0], seqs[0][1]), ("없는말", "없는말")]:
+        # 어떤 문맥에서도 어휘 전체 확률 합이 1. 마지막 문맥은 학습에 없는 단어 문맥이라 낮은 차수로 후퇴하는 경우.
         total = sum(lm.prob(u, v, w, (0.99, 0.5, 0.7)) for w in lm.vocab)
         assert abs(total - 1) < 1e-9
     comps = lm.components(seqs[:5])
+    # 벡터 계산 probs와 한 칸씩 계산하는 prob이 rtol 1e-12로 일치하는지 본다.
     direct = [lm.prob(*(["<s>", "<s>"] + s + ["</s>"])[i - 2:i + 1], (0.99, 0.5, 0.7))
               for s in seqs[:5] for i in range(2, len(s) + 3)]
     np.testing.assert_allclose(lm.probs(comps, (0.99, 0.5, 0.7)), direct, rtol=1e-12)
@@ -95,11 +104,14 @@ def test_op_screen_hand_example():
         return c
 
     c1 = counts(words)
+    # 웹 챕터 첫 화면의 손 계산. 학교에 4번, 학교는 3번, 학생은 2번 -> 쌍 (학,교) = 4 + 3 = 7.
     assert c1 == {("학", "교"): 7, ("교", "에"): 4, ("교", "는"): 3, ("학", "생"): 2, ("생", "은"): 2}
     words = {tuple(B._merge_word(list(w), ("학", "교"))): f for w, f in words.items()}
     c2 = counts(words)
+    # (학, 교)를 합친 뒤 최다 쌍은 (학교, 에)=4 하나뿐이어야 한다(4가 유일한 최댓값).
     assert max(c2.values()) == 4 and c2[("학교", "에")] == 4 and list(c2.values()).count(4) == 1
     alphabet = {"학", "교", "에", "는", "생", "은"}
+    # 어휘 크기 = 처음 글자 6 + 병합 2 = 8.
     assert len(alphabet) + 2 == 8
     # 새 단어 '학생에': 두 병합 모두 해당 없음 → 세 조각
     w = ["학", "생", "에"]

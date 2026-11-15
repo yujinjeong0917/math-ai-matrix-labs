@@ -26,6 +26,7 @@ def test_first_screen_numbers():
     # 카드 8장: 40,320가지, 2^15 = 32,768 < 40,320 <= 65,536 = 2^16
     assert math.factorial(8) == 40320 and 2 ** 15 < 40320 <= 2 ** 16 and s.ceil_log2_factorial(8) == 16
     # 정렬된 8장에 첫 원소 피벗: 7 + 6 + ... + 1 = 28
+    # 구간 크기 m 마다 m-1 번이므로 정렬된 8장은 7+6+...+1 = 28
     _, c = s.run_sort("lomuto_first", list(range(1, 9)))
     assert c.comparisons == 28 == sum(range(8))
     _, c = s.run_sort("lomuto_first", [5, 2, 7, 1, 8, 3, 6, 4])
@@ -37,6 +38,7 @@ def test_ceil_log2_factorial_is_exact():
         k = s.ceil_log2_factorial(n)
         f = math.factorial(n)
         assert 2 ** k >= f and (k == 0 or 2 ** (k - 1) < f)
+        # 부동소수점 비교라 허용 오차 1e-6 (우선순위상 조건식은 앞의 뺄셈 전체에 걸린다)
         assert abs(s.log2_factorial(n) - math.log2(f) if f > 0 else 0) < 1e-6
     for n in (100, 1000, 2000):
         assert abs(s.stirling_log2_factorial(n) - s.log2_factorial(n)) < 0.01
@@ -46,6 +48,7 @@ def test_all_sorts_match_sorted_numpy_torch():
     rng = random.Random(0)
     for t in range(400):
         n = rng.randint(0, 80)
+        # 값 범위를 2, 9, 1000 으로 바꿔 같은 키가 많은 경우와 거의 없는 경우를 모두 만든다
         xs = [rng.randint(0, rng.choice([2, 9, 1000])) for _ in range(n)]
         ref = sorted(xs)
         for name in s.SORTS:
@@ -68,6 +71,7 @@ def test_exhaustive_lower_bound_small_n():
                 assert a == list(range(n))
                 worst = max(worst, c.comparisons)
                 total += c.comparisons
+            # 하한은 최악 비교 수와 평균 비교 수 두 가지 모두에 적용된다
             assert worst >= bound, (name, n)
             assert total / math.factorial(n) >= lf - 1e-12, (name, n)
     # 합병 정렬의 최악: n = 4 에서 하한 5와 같고, n = 5 에서는 8로 하한 7보다 하나 많다
@@ -82,7 +86,7 @@ def test_first_pivot_sorted_is_quadratic():
         assert c.max_depth == max(0, n - 2)  # 크기 2 구간까지 분할하고 끝(깊이 0부터 셈)
         _, c = s.run_sort("lomuto_first", list(range(n, 0, -1)))
         assert c.comparisons == n * (n - 1) // 2
-        _, c = s.run_sort("lomuto_first", [7] * n)
+        _, c = s.run_sort("lomuto_first", [7] * n)  # 같은 키만 있어도 같은 최악
         assert c.comparisons == n * (n - 1) // 2
 
 
@@ -102,6 +106,7 @@ def test_lomuto_average_equals_closed_form():
 
 def test_recursion_limit_hits_recursive_version():
     import sys
+    # 파이썬 기본 재귀 한도(보통 1000)에 걸리는 것이 재귀판의 함정. 한도는 환경마다 다를 수 있어 값은 읽어서 쓴다
     assert sys.getrecursionlimit() >= 500
     s.lomuto_first_recursive(list(range(300)))
     try:
@@ -120,6 +125,7 @@ def test_hoare_random_pending_and_equal_keys():
             a, c = s.run_sort("hoare_random", xs, 3)
             assert a == sorted(xs)
             assert c.max_pending <= math.floor(math.log2(n)) + 1  # Hoare(1962): 큰 쪽을 미루면 log2 N 이하
+    # 키가 모두 같은 1024개: Lomuto 는 매번 한쪽이 비어 n(n-1)/2, Hoare 식은 반씩 나뉘어 약 n log2 n
     eq = [5] * 1024
     _, ch = s.run_sort("hoare_random", eq, 0)
     _, cl = s.run_sort("lomuto_random", eq, 0)
@@ -139,6 +145,7 @@ def test_median3_killer_theorem_and_introsort():
         _, ci = s.run_sort("introsort", xs)
         limit = 2 * int(math.floor(math.log2(n)))
         assert ci.partitions == limit and ci.heapsort_sizes == [n - 2 * limit]
+    # n 을 두 배로 하면 비교 수가 약 4배면 이차 증가(정확히 4는 아니라서 범위로 확인)
     c1 = s.run_sort("median3", s.median3_killer(1000))[1].comparisons
     c2 = s.run_sort("median3", s.median3_killer(2000))[1].comparisons
     assert 3.5 < c2 / c1 < 4.5  # n 이 두 배면 약 네 배: 제곱으로 는다
@@ -160,6 +167,7 @@ def test_widget_traces_keep_invariants():
 
 
 def test_topk_partition_matches_full_sort():
+    # 값이 모두 다르다고 볼 수 있는 정규 난수(float32)라 동점 처리 차이를 신경 쓰지 않는다
     rng = np.random.default_rng(1)
     x = rng.standard_normal(5000).astype(np.float32)
     k = 7

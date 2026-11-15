@@ -17,11 +17,15 @@ def epoch_step(w, Phi, next_state, R, alpha, gamma, detach_target=True):
     """한 스윕(epoch-wise). w: (d,) 텐서. 새 w를 돌려준다(그래프 없이)."""
     w = w.detach().clone().requires_grad_(True)
     v = Phi @ w
+    # 식: target_s = R_s + γ V(s')  (V(s') = φ(s')ᵀ w 도 w의 함수)
     target = R + gamma * v[next_state]
     if detach_target:
+        # 식: detach로 target을 상수로 만든다 -> ∂L/∂w = -Σ δ_s φ(s), 반경사 TD(0)
         target = target.detach()
+    # 식: L = 1/2 Σ_s (target_s - V(s))²,  δ_s = target_s - V(s)
     loss = 0.5 * ((target - v) ** 2).sum()
     (g,) = torch.autograd.grad(loss, w)
+    # 식: w <- w - α ∂L/∂w.  detach 없으면 g = -Σ δ_s (φ(s) - γ φ(s')), 잔차 경사
     return (w - alpha * g).detach()
 
 

@@ -35,6 +35,7 @@ def test_spec_file_dated_and_sourced():
     walk(s)
     assert "[확인 필요]" in s["colab"]["free_gpu_type"]
     # 회사 주장 표시
+    # Unsloth 쪽 기능 설명은 회사 주장이라고 사양표에 표시했는지 확인(검증한 사실이 아니다)
     for k in ("kernels", "gradient_checkpointing", "grad_accum_fix", "prequantized"):
         assert s["mechanisms"][k]["claim"] is True
     assert s["requirements"]["claim"] is True
@@ -42,6 +43,7 @@ def test_spec_file_dated_and_sourced():
 
 def test_t4_capability_below_bf16_threshold():
     s = M.load_specs()
+    # T4의 CUDA 연산 능력이 7.5로 8 미만임을 확인한다(함수 이름의 bf16 문턱 8은 사양표의 설명을 따른 것으로 확인 필요)
     assert s["gpu_t4"]["cuda_capability"] == 7.5 < 8
     assert s["requirements"]["core_min_cuda_capability"] <= s["gpu_t4"]["cuda_capability"]
 
@@ -52,6 +54,7 @@ def test_param_counts_match_hub_for_three_models():
     s = M.load_specs()
     for key, m in s["models"].items():
         cfg = M.load_config(key, s)
+        # config로 센 파라미터 수가 Hub에 적힌 값과 세 모델 모두 같다
         assert M.count_params(cfg) == m["safetensors_total"], key
 
 
@@ -62,6 +65,7 @@ def test_kept_16bit_equals_hub_bf16_count():
         cfg = M.load_config(key, s)
         assert M.count_params(cfg) - M.count_quantized_linear(cfg) == m["bnb_hub_bf16_params"], key
     cfg7 = M.load_config("qwen2.5-7b-instruct", s)
+    # 층 하나의 선형층 가중치 합 233,046,016 x 28층 = 6,525,288,448
     assert M.count_quantized_linear(cfg7) == 28 * 233_046_016 == 6_525_288_448
 
 
@@ -70,12 +74,14 @@ def test_bnb_file_size_within_0_05_percent():
     for key, m in s["models"].items():
         b = M.bnb4_bytes(M.load_config(key, s))
         diff = m["bnb_file_bytes"] - b["total"]
+        # 계산이 실제 파일보다 조금 작고(헤더와 작은 상태값 때문) 차이는 0.05% 미만
         assert 0 < diff < 0.0005 * m["bnb_file_bytes"], (key, diff)  # 남는 건 헤더와 작은 상태값
     b7 = M.bnb4_bytes(M.load_config("qwen2.5-7b-instruct", s))
     assert b7["total"] == 5_546_851_072
 
 
 def test_bits_per_param_matches_ch06():
+    # 4 + 8/64 + 32/16384 = 2113/512 = 4.126953...
     assert M.bits_per_param_double_quant() == F(2113, 512)
     assert round(float(M.bits_per_param_double_quant()), 6) == 4.126953
 
@@ -84,6 +90,7 @@ def test_hub_u8_count_is_not_bytes():
     """Hub API의 U8 '파라미터' 수(6,729,271,260)는 파일 바이트가 아니다. 그대로 더하면 파일보다 커진다."""
     s = M.load_specs()
     m = s["models"]["qwen2.5-7b-instruct"]
+    # Hub API의 U8 수(6,729,271,260)는 파일 바이트와 같지 않다. 바이트처럼 그대로 더하면 파일 크기의 1.5배를 넘는다는 점만 확인한다
     as_if_bytes = 6_729_271_260 + 2 * m["bnb_hub_bf16_params"] + 4 * m["bnb_hub_f32_params"]
     assert as_if_bytes > m["bnb_file_bytes"] * 1.5
 
@@ -103,6 +110,7 @@ def test_lora_closed_form_equals_tensor_sum():
 def test_lora_hand_numbers():
     # q_proj: 3584 -> 3584, 랭크 16이면 16 × (3584 + 3584) = 114,688
     cfg = M.load_config("qwen2.5-7b-instruct")
+    # q_proj만: 28층 x 16 x (3584 + 3584)
     assert M.lora_params_closed(cfg, 16, ("q_proj",)) == 28 * 16 * 7168
     assert 16 * (3584 + 3584) == 114_688
 
@@ -117,6 +125,7 @@ def test_main_config_memory():
     assert round(p["lora"] / 1e9, 3) == 0.404
     assert round(p["activations"] / 1e9, 3) == 0.954
     assert round(p["logits"] / 1e9, 3) == 1.246
+    # 시나리오 기준(길이 1024, 묶음 2, r 16) 합계 약 8.15GB. 가중치 5.547 + LoRA 0.404 + 활성값 0.954 + 출력 칸 1.246 (어림이며 실측이 아니다)
     assert round(p["total"] / 1e9, 2) == 8.15
 
 
@@ -127,6 +136,7 @@ def test_activation_matches_ch05_at_b1():
 
 def test_lora16_7b_does_not_fit_t4_but_qlora_does():
     cfg = M.load_config("qwen2.5-7b-instruct")
+    # 16비트 가중치(약 15.2GB)만으로도 T4 16GB를 넘는다. 4비트는 1GB 이상 여유
     assert M.memory_parts(cfg, 1024, 2, 16, method="lora16")["total"] > 16e9
     assert M.memory_parts(cfg, 1024, 2, 16, method="qlora")["total"] < 16e9 - 1e9
 
@@ -136,28 +146,33 @@ def test_gc_claim_only_touches_activations():
     a = M.memory_parts(cfg, 1024, 2, 16)
     b = M.memory_parts(cfg, 1024, 2, 16, gc_claim=0.30)
     assert a["weights"] == b["weights"] and a["logits"] == b["logits"]
+    # 주장 30% 절감을 적용하면 활성값이 70%. 가중치와 출력 칸은 그대로
     assert b["activations"] == a["activations"] * F(7, 10)
 
 
 # ---------- 스텝·채우기·시간 ----------
 
 def test_steps_hand_example():
+    # 540쌍 / (묶음 x 누적 = 16) = 33.75 -> 올림 34스텝. 묶음과 누적을 달리해도 곱이 16이면 34
     assert F(540, 16) == F(135, 4)  # 33.75
     assert M.steps_per_epoch(540, 2, 8) == 34
     for b, g in [(1, 16), (4, 4), (8, 2), (16, 1)]:
         assert M.steps_per_epoch(540, b, g) == 34
+    # 공식 노트북 60스텝은 480개를 보므로 한 에폭(540)에 못 미친다
     assert M.examples_seen(60, 2, 4) == 480 < 540
 
 
 def test_padding_hand_example_and_unsloth_formula():
     assert M.unsloth_packing_speedup(1024, 256) == F(8, 5)
     # 1024토큰 하나와 256토큰 하나를 1024칸 두 줄에 채우면 2048칸 중 1280칸만 진짜
+    # 두 줄 x 1024 = 2048칸에 진짜 토큰 1024 + 256 = 1280개, 낭비 768칸 = 3/8
     assert F(2048 - 1280, 2048) == F(3, 8)
 
 
 def test_expected_batch_max_exact():
     h = {"100": 1, "300": 1}
     # 두 개를 뽑으면 (100,100)만 최댓값 100, 나머지 셋은 300: (100 + 3·300)/4 = 250
+    # (100, 100) 한 경우만 최댓값 100, 나머지 세 경우는 300: (100 + 3 x 300) / 4 = 250
     assert M.expected_batch_max(h, 2) == 250
     assert M.expected_batch_max(h, 1) == 200
 
@@ -167,12 +182,14 @@ def test_bfd_packing_never_overflows():
     bins = M.pack_bfd(M.expand_hist(sc["length_histogram"]), sc["max_seq_length"])
     assert all(x <= sc["max_seq_length"] for x in bins)
     assert sum(bins) == M.tokens_real(sc["length_histogram"]) == 212_544
+    # 한 칸 1024에 꽉 채워도 필요한 최소 칸 수 아래로는 못 간다
     assert len(bins) >= math.ceil(212_544 / 1024)
 
 
 def test_epoch_time_formula():
     n = 7_615_616_512
     sec = M.epoch_seconds(552_960, n, 65, 0.2)
+    # 552,960토큰 x 6 x 파라미터 / (65 TFLOPS x 0.2) = 약 32.4분(가정한 활용률 0.2 기준의 어림)
     assert round(float(sec) / 60, 1) == 32.4
     assert M.mfu_from_runtime(552_960, n, 65, sec) == F(1, 5)
 
@@ -198,6 +215,7 @@ def _nb():
     return json.loads(NB.read_text(encoding="utf-8"))
 
 
+# 노트북 코드 셀에 저장된 출력과 실행 횟수가 없어야 한다
 def test_notebook_outputs_empty():
     nb = _nb()
     for c in nb["cells"]:
@@ -205,6 +223,7 @@ def test_notebook_outputs_empty():
             assert c["outputs"] == [] and c["execution_count"] is None
 
 
+# 노트북의 설정 셀에서 대입문만 AST로 읽어 값을 꺼낸다. 노트북 코드를 실행하지 않는다
 def _settings():
     nb = _nb()
     for c in nb["cells"]:
@@ -252,6 +271,7 @@ def test_notebook_dataset_builder_makes_600_pairs():
             keep = [n for n in tree.body if (isinstance(n, ast.Assign) and isinstance(n.targets[0], ast.Name) and n.targets[0].id in ("DOCS", "ASK", "ITEMS", "SYSTEM"))
                     or (isinstance(n, ast.FunctionDef) and n.name == "make_pairs")]
             ns = {}
+            # 데이터 칸에서 순수 파이썬 정의만 골라 실행한다. torch, unsloth는 불러오지 않는다
             exec(compile(ast.Module(body=keep, type_ignores=[]), "nb", "exec"), ns)
             pairs = ns["make_pairs"]()
             assert len(pairs) == 600 and len({p[1]["content"] for p in pairs}) == 600
@@ -262,6 +282,7 @@ def test_notebook_dataset_builder_makes_600_pairs():
 
 def test_checks_csv_columns_match_notebook_row():
     rows = list(csv.reader((HERE / "checks" / "ch08.csv").open(encoding="utf-8")))
+    # 체크 CSV의 열 수(17)가 노트북이 기록하는 row 목록의 길이와 같아야 한다
     assert len(rows[0]) == 17 and all(len(r) == 17 for r in rows)
     src = "".join("".join(c["source"]) for c in _nb()["cells"] if "row = [" in "".join(c["source"]))
     row = [n for n in ast.parse(src).body if isinstance(n, ast.Assign) and n.targets[0].id == "row"][0]

@@ -28,6 +28,7 @@ import numpy as np
 
 def _codes(labels):
     """라벨 값이 무엇이든 0..k-1 정수로 바꾼다. 번호는 이름표라 값 자체는 쓰지 않는다."""
+    # np.unique의 역인덱스 = 값을 0..k-1로 다시 매긴 번호
     _, inv = np.unique(np.asarray(labels), return_inverse=True)
     return inv.ravel()
 
@@ -37,7 +38,9 @@ def contingency(u, v):
     a, b = _codes(u), _codes(v)
     if len(a) != len(b):
         raise ValueError("두 라벨의 길이가 달라요")
+    # (행 = U 군집 수, 열 = V 군집 수)
     t = np.zeros((a.max() + 1, b.max() + 1), dtype=np.int64)
+    # 같은 (i, j)가 여러 번 나와도 모두 더해지는 비버퍼 덧셈(t[a, b] += 1은 중복을 한 번만 셈)
     np.add.at(t, (a, b), 1)
     return t
 
@@ -56,6 +59,7 @@ def hungarian_max(w):
     n = max(r, c)
     cost = np.zeros((n, n))
     cost[:r, :c] = -w  # 최대화 = 부호를 바꾼 최소화
+    # 아래는 퍼텐셜 방식 헝가리안(1-인덱스 배열). u, v는 행·열 퍼텐셜, p[j]는 열 j에 짝지어진 행, way는 증가 경로를 거슬러 가는 용도
     INF = float("inf")
     u = np.zeros(n + 1)
     v = np.zeros(n + 1)
@@ -95,6 +99,7 @@ def hungarian_max(w):
     rows, cols = [], []
     for j in range(1, n + 1):
         i = p[j] - 1
+        # 채워 넣은 가짜 행·열과 짝지어진 것은 결과에서 제외
         if i < r and j - 1 < c:
             rows.append(i)
             cols.append(j - 1)
@@ -109,6 +114,7 @@ def brute_force_max(w):
     n = max(r, c)
     sq = np.zeros((n, n))
     sq[:r, :c] = w
+    # 8! = 40320 순열이라 8 x 8까지만 허용(전수 대조용)
     if n > 8:
         raise ValueError("전수 순열은 8 x 8까지만 해요")
     return max(sum(sq[i, perm[i]] for i in range(n)) for perm in permutations(range(n)))
@@ -118,8 +124,10 @@ def match_labels_hungarian(y_true, y_pred):
     """군집 번호 -> 정답 번호 짝(dict)과 맞힌 점 수. 짝이 없는 군집은 어느 정답과도 맞지 않은 것으로 센다."""
     t_vals = np.unique(np.asarray(y_true))
     p_vals = np.unique(np.asarray(y_pred))
+    # 정답 i번 모둠 안에 군집 j번 점이 몇 개인지. 짝지을 때 이 개수를 최대로 한다
     table = contingency(y_true, y_pred)  # 행 = 정답, 열 = 군집
     rows, cols = hungarian_max(table)
+    # contingency의 행·열 번호(0..)를 원래 라벨 값으로 되돌린다. 짝이 없는 군집은 dict에 없다
     mapping = {p_vals[j].item(): t_vals[i].item() for i, j in zip(rows, cols)}
     return mapping, int(table[rows, cols].sum())
 
@@ -138,6 +146,7 @@ def matched_accuracy(y_true, y_pred):
 def greedy_majority_accuracy(y_true, y_pred):
     """흔한 실수: 군집마다 따로 가장 많은 정답으로 읽기(일대일이 아님). 잘게 쪼갤수록 높아진다."""
     t = contingency(y_true, y_pred)
+    # 군집(열)마다 최댓값만 취하는 일대일이 아닌 읽기. 군집을 점 하나씩으로 쪼개면 1.0이 된다
     return float(t.max(axis=0).sum() / t.sum())
 
 
@@ -149,9 +158,11 @@ def pair_counts(u, v):
     t = contingency(u, v)
     n = int(t.sum())
     total = comb(n, 2)
+    # 같은 U 군집이면서 같은 V 군집인 점 쌍의 수 = 칸마다 C(n_ij, 2)의 합
     same_both = sum(comb(int(x), 2) for x in t.ravel())
     same_u = sum(comb(int(x), 2) for x in t.sum(axis=1))
     same_v = sum(comb(int(x), 2) for x in t.sum(axis=0))
+    # (n11, n10, n01, n00). n00은 포함-배제: 전체 - U에서 같은 쌍 - V에서 같은 쌍 + 둘 다 같은 쌍
     return same_both, same_u - same_both, same_v - same_both, total - same_u - same_v + same_both
 
 
@@ -164,8 +175,10 @@ def expected_rand_index(u, v):
     """순열 모형에서 RI의 기댓값. 한 쌍이 V에서 같이 묶일 확률은 same_v / total(군집 크기 고정)."""
     t = contingency(u, v)
     total = comb(int(t.sum()), 2)
+    # 한 쌍이 U에서 같이 묶일 확률. 순열 모형에서 V의 배치만 섞이므로 V에서 같이 묶일 확률은 pv
     pu = sum(comb(int(x), 2) for x in t.sum(axis=1)) / total
     pv = sum(comb(int(x), 2) for x in t.sum(axis=0)) / total
+    # 한 쌍이 두 분할에서 일치(둘 다 같이 또는 둘 다 따로)할 확률 = E[RI]
     return pu * pv + (1 - pu) * (1 - pv)
 
 
@@ -175,6 +188,7 @@ def ari(u, v):
     두 분할 모두 군집이 하나뿐이거나 모두 한 점씩이면 분모가 0이라, 그때는 두 분할이 같으면 1로 둔다.
     """
     ri, eri = rand_index(u, v), expected_rand_index(u, v)
+    # E[RI] = 1이면 분모 0(두 분할 모두 군집 1개이거나 모두 점 하나씩). 같은 분할이면 1, 아니면 0으로 둔다(모형의 선택)
     if abs(1.0 - eri) < 1e-15:
         return 1.0 if ri == 1.0 else 0.0
     return (ri - eri) / (1.0 - eri)
@@ -184,6 +198,7 @@ def ari(u, v):
 
 
 def entropy(labels):
+    # 군집별 점 수. 엔트로피 H = -sum p log p (자연로그)
     c = np.bincount(_codes(labels)).astype(float)
     p = c / c.sum()
     return float(-np.sum(p * np.log(p)))
@@ -195,7 +210,9 @@ def mutual_info(u, v):
     n = t.sum()
     a = t.sum(axis=1, keepdims=True)
     b = t.sum(axis=0, keepdims=True)
+    # n_ij = 0인 칸은 0 log 0 = 0으로 보고 건너뛴다(log 0 방지)
     nz = t > 0
+    # a @ b는 (R, C) 외적 a_i b_j. I = sum n_ij/N log(N n_ij / (a_i b_j))
     return float(np.sum(t[nz] / n * np.log(n * t[nz] / (a @ b)[nz])))
 
 
@@ -213,6 +230,7 @@ def _norm(hu, hv, average):
 
 def nmi(u, v, average="max"):
     hu, hv = entropy(u), entropy(v)
+    # 둘 다 군집이 하나뿐이면 H = 0이라 분모가 0. 같은 분할이므로 1로 둔다
     if hu == 0.0 and hv == 0.0:
         return 1.0  # 둘 다 군집 하나: 같은 분할
     d = _norm(hu, hv, average)
@@ -220,6 +238,7 @@ def nmi(u, v, average="max"):
 
 
 def _log_fact_table(n):
+    # lf[k] = log(k!). 팩토리얼을 직접 계산하면 넘치므로 로그로 쌓는다
     return np.concatenate([[0.0], np.cumsum(np.log(np.arange(1, n + 1)))])
 
 
@@ -231,6 +250,7 @@ def expected_mutual_info_sizes(a, b):
     if n != int(b.sum()):
         raise ValueError("두 분할의 점 수가 달라요")
     lf = _log_fact_table(n)
+    # E{I} = sum_i sum_j sum_{n_ij} (n_ij/N) log(N n_ij/(a_i b_j)) * P(n_ij). P는 초기하분포(순열 모형)
     emi = 0.0
     for ai in a:
         for bj in b:
@@ -240,6 +260,7 @@ def expected_mutual_info_sizes(a, b):
                 continue
             nij = np.arange(lo, hi + 1)
             term1 = nij / n * np.log(n * nij / (ai * bj))
+            # 로그 초기하확률 P(n_ij) = a! b! (N-a)! (N-b)! / (N! n! (a-n)! (b-n)! (N-a-b+n)!). nij는 벡터라 한 번에 모든 값
             logp = (lf[ai] + lf[bj] + lf[n - ai] + lf[n - bj] - lf[n]
                     - lf[nij] - lf[ai - nij] - lf[bj - nij] - lf[n - ai - bj + nij])
             emi += float(np.sum(term1 * np.exp(logp)))
@@ -257,7 +278,9 @@ def ami(u, v, average="max"):
     if hu == 0.0 and hv == 0.0:
         return 1.0
     i, e = mutual_info(u, v), expected_mutual_info(u, v)
+    # AMI = (I - E{I}) / (정규화값 - E{I})
     d = _norm(hu, hv, average) - e
+    # 분모가 0이면 I = E{I}일 때만 1, 아니면 0(퇴화한 경우)
     if abs(d) < 1e-15:
         return 1.0 if abs(i - e) < 1e-15 else 0.0
     return (i - e) / d
@@ -269,6 +292,7 @@ def ami(u, v, average="max"):
 def pairwise_dist(X):
     """유클리드 거리 행렬. 행렬곱 꼴(|x|^2 + |y|^2 - 2xy)은 반올림 오차가 커서 차이를 직접 제곱한다."""
     X = np.asarray(X, dtype=float)
+    # (n, 1, d) - (1, n, d) = (n, n, d) -> 제곱합 (n, n). 메모리 n^2 d라 작은 데이터용
     return np.sqrt(((X[:, None, :] - X[None, :, :]) ** 2).sum(-1))
 
 
@@ -280,16 +304,21 @@ def silhouette_samples(X, labels, D=None):
     """
     lab = _codes(labels)
     k = lab.max() + 1
+    # 실루엣은 군집이 2개 이상, 점 수 - 1개 이하일 때만 정의(군집이 하나면 b가 없고, 모두 한 점씩이면 a가 없다)
     if not 2 <= k <= len(lab) - 1:
         raise ValueError("실루엣은 군집 수가 2 이상, 점 수 - 1 이하일 때만 정의돼요")
     D = pairwise_dist(X) if D is None else D
+    # sums[i, c] = 점 i에서 군집 c의 모든 점까지 거리의 합
     sums = np.stack([D[:, lab == c].sum(axis=1) for c in range(k)], axis=1)  # (n, k)
     size = np.bincount(lab, minlength=k).astype(float)
     own = size[lab]
+    # a(i): 자기 군집 합을 (크기 - 1)로 나눈 평균(자기 자신 거리 0은 합에 들어 있지만 개수에서 뺀다)
     a = np.where(own > 1, sums[np.arange(len(lab)), lab] / np.maximum(own - 1, 1), 0.0)
     mean_other = sums / size[None, :]
+    # 자기 군집은 b 후보에서 제외
     mean_other[np.arange(len(lab)), lab] = np.inf
     b = mean_other.min(axis=1)
+    # s = (b - a)/max(a, b). 1e-300은 a = b = 0(중복점)일 때 0 나누기 방지. 한 점짜리 군집은 0
     s = np.where(own > 1, (b - a) / np.maximum(np.maximum(a, b), 1e-300), 0.0)
     return s
 
@@ -307,8 +336,10 @@ def kmeans(X, k, seed=0, n_init=5, max_iter=300):
     rng = np.random.default_rng(seed)
     best = None
     for _ in range(n_init):
+        # k-means++: 첫 중심은 점 하나를 균등하게 뽑는다
         cent = [X[rng.integers(len(X))]]
         for _ in range(1, k):
+            # 각 점에서 가장 가까운 기존 중심까지의 제곱거리. 이 값에 비례하는 확률로 다음 중심을 뽑는다
             d2 = np.min(((X[:, None, :] - np.array(cent)[None]) ** 2).sum(-1), axis=1)
             cent.append(X[rng.choice(len(X), p=d2 / d2.sum())])
         cent = np.array(cent)
@@ -316,12 +347,15 @@ def kmeans(X, k, seed=0, n_init=5, max_iter=300):
         for _ in range(max_iter):
             d2 = ((X[:, None, :] - cent[None]) ** 2).sum(-1)
             new = d2.argmin(axis=1)
+            # 배정이 바뀌지 않으면 수렴
             if lab is not None and np.array_equal(new, lab):
                 break
             lab = new
             for c in range(k):
+                # 빈 군집은 중심을 그대로 둔다(재초기화하지 않는 단순화)
                 if np.any(lab == c):
                     cent[c] = X[lab == c].mean(axis=0)
+        # 군집 내 제곱거리 합. n_init번 중 가장 작은 결과를 채택
         inertia = float(((X - cent[lab]) ** 2).sum())
         if best is None or inertia < best[0]:
             best = (inertia, lab.copy())

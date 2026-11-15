@@ -15,6 +15,7 @@ import numpy as np
 from pipelines_ch06_model_np import correct
 
 
+# 공유 특성 테이블에 v2 배포의 스키마 변경을 적용한다. in_place는 옛 열을 덮어쓰고, expand는 새 열만 추가
 def migrate(shared, mode):
     out = {k: v.copy() for k, v in shared.items()}
     if mode == "in_place":
@@ -30,6 +31,7 @@ def v2_view(shared, mode):
     """v2 코드는 천 원 단위 요금을 기대하므로, 자기 학습 때의 원 단위로 바꿔 읽는다."""
     view = dict(shared)
     fee_k = shared["monthly_fee"] if mode == "in_place" else shared["monthly_fee_k"]
+    # v2는 천 원 단위 요금(monthly_fee 또는 monthly_fee_k)을 받아 학습 때의 원 단위로 되돌려 모델에 넣는다
     view["monthly_fee"] = fee_k * 1000.0
     return view
 
@@ -39,5 +41,6 @@ def rollback_accuracy(v1, v2, shared, mode):
     before = float(np.mean(correct(v1, shared)))
     migrated = migrate(shared, mode)
     after_v2 = float(np.mean(correct(v2, v2_view(migrated, mode))))
+    # v1은 코드를 바꾸지 않았으니 여전히 monthly_fee 열을 원 단위로 읽는다. in_place면 그 열이 이미 천 원 단위로 바뀌어 있다
     after_rollback = float(np.mean(correct(v1, migrated)))  # v1은 옛 코드 그대로 monthly_fee를 읽는다
     return {"v1_before": before, "v2_after_deploy": after_v2, "v1_after_rollback": after_rollback}

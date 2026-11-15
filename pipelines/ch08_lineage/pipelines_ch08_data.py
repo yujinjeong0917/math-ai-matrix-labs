@@ -19,6 +19,7 @@ LABEL = "churned"
 SOURCE_VERSIONS = ("v1", "v2")
 
 
+# source_version으로 원천 테이블 추출 규칙 변경을 흉내 낸다. 시드·shift는 7장과 같은 의미
 def make_table(data_seed, n_rows, shift=0.0, source_version="v1"):
     if source_version not in SOURCE_VERSIONS:
         raise ValueError(f"모르는 source_version: {source_version!r}")
@@ -31,6 +32,7 @@ def make_table(data_seed, n_rows, shift=0.0, source_version="v1"):
     discount = rng.uniform(0.0, 0.3, n_rows)
     plan = rng.choice(3, n_rows, p=[0.5, 0.3, 0.2]).astype(np.int64)
     region = rng.choice(4, n_rows, p=[0.35, 0.30, 0.15, 0.20]).astype(np.int64)
+    # 난수를 뽑는 순서를 7장과 같게 유지해야 v1이 7장과 같은 표가 된다. 이 열은 로짓에는 쓰이지만 최종 표(table)에는 담기지 않는다
     usage_drop = rng.beta(2.0, 5.0, n_rows)
     logit = (
         -0.3
@@ -50,6 +52,7 @@ def make_table(data_seed, n_rows, shift=0.0, source_version="v1"):
         "age": age, "discount_rate": discount, "plan": plan, "region": region, LABEL: churned,
     }
     if source_version == "v2":
+        # v2: 가입 3개월 미만 고객을 제외. 같은 시드라도 행 수가 줄고 이후 분할 결과도 달라진다
         keep = tenure >= 3
         table = {k: v[keep] for k, v in table.items()}
     return table

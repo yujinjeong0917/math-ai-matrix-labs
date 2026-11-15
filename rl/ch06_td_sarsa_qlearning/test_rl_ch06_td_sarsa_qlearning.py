@@ -22,6 +22,8 @@ def test_hand_corridor_first_four():
         for s, r, s2, d in E.corridor_transitions(path):
             T.td0_update(V, s, r, s2, d, 0.5, 0.9)
         after.append((V[0], V[1]))
+    # (V_A, V_B)의 판마다 값. 1판은 마지막 B -> 도착에서만 V_B = 0 + 0.5 (1 - 0) = 0.5
+    # 2판의 A -> B는 목표 0.9 x 0.5 = 0.45라 V_A = 0.5 x 0.45 = 0.225. 이후 V_A는 0.9 V_B를 향해 절반씩 다가간다
     np.testing.assert_allclose(after, [(0.0, 0.5), (0.225, 0.75), (0.45, 0.875), (0.61875, 0.9375)], atol=1e-15)
 
 
@@ -36,6 +38,7 @@ def test_td0_update_sets_exact_target_when_alpha_one():
 def test_chain_td_needs_n_episodes_mc_needs_one():
     # 앞에서부터 고치면 TD(0)는 한 판에 한 칸씩만 정답이 퍼진다(alpha 1, 결정적 사슬)
     n, gamma = 10, 0.9
+    # chain_step은 (s_next, r, done)을 돌려주므로 위 줄은 (s, s_next, r, done) 순이다. 바로 아래 줄에서 (s, r, s_next, done)으로 순서를 바꾼다
     tr = [(s, *E.chain_step(s, 1, n)) for s in range(n - 1)]
     tr = [(s, r, s2, d) for s, s2, r, d in tr]
     truth = np.array([gamma ** (n - 2 - s) for s in range(n - 1)] + [0.0])
@@ -43,19 +46,23 @@ def test_chain_td_needs_n_episodes_mc_needs_one():
         V = T.td0([tr] * k, n, 1.0, gamma)
         assert np.sum(np.abs(V - truth) < 1e-12) == k + 1  # 맞은 칸 k개 + 종료 칸
     np.testing.assert_allclose(T.td0([tr] * (n - 1), n, 1.0, gamma), truth, atol=1e-15)
+    # MC(alpha = 1)는 G_t = gamma^(n-2-s)를 그대로 받아 한 판이면 모든 칸이 정확하다
     np.testing.assert_allclose(T.mc_constant_alpha([tr], n, 1.0, gamma), truth, atol=1e-15)
 
 
 def test_q_learning_fixed_point_is_q_star():
+    # 사슬 6칸, gamma 0.9, alpha 0.5, 2,000판, epsilon 0.3으로 모든 (s,a)를 방문한다. 종료 칸(행 5)은 갱신되지 않아 [:5]만 비교하고 허용 오차는 1e-9
     Q = T.q_learning_chain(6, 0.9, 0.5, 2000, 0.3, 0)
     np.testing.assert_allclose(Q[:5], E.chain_q_star(6, 0.9)[:5], atol=1e-9)
 
 
 def test_walk_true_values_and_td_close_after_many_episodes():
     truth = E.walk_true_values(5)
+    # 식: V(i) = i / 6 (n = 5). 종료 칸 0과 6은 제외
     np.testing.assert_allclose(truth[1:6], [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6])
     uni = E.Uniforms(np.random.default_rng(0))
     eps = [E.walk_episode(uni) for _ in range(20_000)]
+    # 상수 alpha 0.01의 TD는 참값 주변에서 흔들려 허용 오차 0.05. 5장식 1/N 평균은 표본이 많아 0.01
     V = T.td0(eps, 7, 0.01, 1.0, v0=0.5)
     assert np.max(np.abs(V[1:6] - truth[1:6])) < 0.05
     V = T.mc_sample_average(eps, 7, 1.0)
@@ -74,6 +81,7 @@ def test_td_changes_one_state_after_first_walk_mc_changes_all_visited():
 
 def test_cliff_env():
     env = E.Cliff()
+    # 4x10 격자: 칸 번호 = 줄 x 10 + 열. 출발 (3,0) = 30, 도착 (3,9) = 39
     assert (env.S, env.start, env.goal) == (40, 30, 39)
     assert env.step(30, 1) == (30, -50.0, False, True)  # 출발 칸 오른쪽은 절벽
     assert env.step(29, 2) == (39, -1.0, True, False)   # 도착 칸 바로 위에서 아래로
@@ -82,10 +90,13 @@ def test_cliff_env():
 
 def test_stuck_greedy_mc_learns_nothing_td_escapes_only_with_step_cost():
     env = E.Cliff()
+    # alpha 0.5, gamma 1, epsilon 0, 시드 0. MC 제어는 판이 끝나지 않아 갱신이 0번이다
     mc = T.control(env, "mc", 1, 0.5, 1.0, 0.0, 0, max_steps=2000, tie="first")
     assert mc["truncated"] == 1 and mc["updates"] == 0 and np.all(mc["Q"] == 0)
+    # 걸음 보상 -1이면 걸음마다 Q가 내려가 동률이 깨지므로 2000걸음 안에 판이 끝난다(truncated 0)
     q = T.control(env, "q", 1, 0.5, 1.0, 0.0, 0, max_steps=2000, tie="first")
     assert q["truncated"] == 0
+    # 걸음 보상 0이면 목표 = 0 + 0 = 0이라 갱신해도 Q가 그대로 0이다: 갱신 2000번 모두 0 -> 0
     env0 = E.Cliff(step=0.0)
     q0 = T.control(env0, "q", 1, 0.5, 1.0, 0.0, 0, max_steps=2000, tie="first")
     assert q0["truncated"] == 1 and q0["updates"] == 2000 and np.all(q0["Q"] == 0)  # 고쳐도 0 -> 0
@@ -97,6 +108,7 @@ def test_replay_reproduces_run_and_torch_matches():
         log = []
         o = T.control(env, m, 30, 0.5, 1.0, 0.1, 3, log=log)
         Qn = T.replay(log, env.S, env.A, m, 0.5, 1.0, 0.1)
+        # 같은 연산을 같은 순서로 하므로 NumPy 재생 결과는 학습 Q와 완전히 같아야 한다(assert_array_equal)
         np.testing.assert_array_equal(Qn, o["Q"])
         Qt = TT.replay_t(log, env.S, env.A, m, 0.5, 1.0, 0.1).numpy()
         np.testing.assert_allclose(Qt, Qn, atol=1e-12, rtol=0)
@@ -107,6 +119,7 @@ def test_batched_walk_matches_numpy():
     for sd in range(8):
         uni = E.Uniforms(np.random.default_rng(sd))
         runs.append([E.walk_episode(uni) for _ in range(20)])
+    # 시드 8개를 한꺼번에(torch) 돌린 것과 시드별로 따로(NumPy) 돌린 것의 비교. Ht의 축은 [판, 시드, 칸]이라 Ht[:, b, :]가 시드 b
     for fn, fb in ((T.td0, TT.td0_batch), (T.mc_constant_alpha, TT.mc_batch)):
         Ht = fb(runs, 7, 0.1, 1.0, v0=0.5).numpy()
         for b in range(8):
@@ -116,6 +129,7 @@ def test_batched_walk_matches_numpy():
 
 
 def test_eps_greedy_probs_sum_and_ties():
+    # 행동 4개, eps 0.1: 모두 0.1/4 = 0.025를 깔고, 최댓값 3.0이 둘이라 (1 - 0.1)/2 = 0.45씩 더해 0.475. 합은 1
     p = T.eps_greedy_probs([1.0, 3.0, 3.0, 0.0], 0.1)
     np.testing.assert_allclose(p, [0.025, 0.475, 0.475, 0.025])
     pt = TT.eps_greedy_probs_t(torch.tensor([1.0, 3.0, 3.0, 0.0], dtype=torch.float64), 0.1).numpy()
@@ -124,8 +138,10 @@ def test_eps_greedy_probs_sum_and_ties():
 
 def test_q_learning_learns_edge_path_sarsa_does_not():
     env = E.Cliff()
+    # 500판, alpha 0.5, gamma 1, epsilon 0.1, 시드 1
     q = T.control(env, "q", 500, 0.5, 1.0, 0.1, 1)
     s = T.control(env, "sarsa", 500, 0.5, 1.0, 0.1, 1)
     gq = T.greedy_rollout(env, q["Q"])
     assert gq[2] and gq[1] == env.w + 1  # 절벽 바로 위 줄: 위 1, 오른쪽 w-1, 아래 1
+    # Q-러닝이 절벽 가장자리 경로를 배우면 탐험(epsilon 0.1) 중 더 자주 떨어진다. Sarsa가 더 안전한 길을 택해서라는 해석은 교재 설명이고, 이 테스트는 시드 1에서 추락 횟수만 비교한다
     assert sum(q["falls"]) > sum(s["falls"])

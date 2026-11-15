@@ -24,6 +24,7 @@ import tools_ch08_cost as C  # noqa: E402
 import tools_ch08_data as D  # noqa: E402
 import tools_ch08_injection as I  # noqa: E402
 
+# 결과 JSON 저장 위치.
 OUT = HERE / "results" / "ch08.json"
 
 
@@ -31,6 +32,7 @@ def e2_privacy():
     pol = D.load_policies()
     rows = [{k: r[k] for k in ("provider", "product", "tier", "trains_default", "retention", "region", "url", "checked")}
             for r in pol["rows"]]
+    # 메모에 '[확인 필요]'가 적힌 행만 모은다. 약관 사실 중 확인이 덜 된 항목을 드러내는 용도.
     need_check = [r["provider"] + " " + r["product"] for r in pol["rows"] if "[확인 필요]" in (r["note"] or "")]
     by = {}
     for r in pol["rows"]:
@@ -47,6 +49,7 @@ def e3_injection():
             "scenarios": sc}
 
 
+# 확인 문 질문 수: 호출마다 묻는 방식(D)은 주 22번, 종류마다 한 번 묻는 방식(E)은 주 1번. 연간은 x 52.
 def e4_yearly():
     y = I.yearly()
     d = next(s for s in I.all_scenarios() if s["key"] == "D")
@@ -59,10 +62,12 @@ def e4_yearly():
 
 
 def e6_determinism():
+    # 재현 확인: 생성기 출력이 저장된 JSON과 같은지.
     inbox_same = D.make_inbox() == D.load_inbox()
     upstream_same = D.build_upstream()["values"] == json.loads(D.UPSTREAM_FILE.read_text(encoding="utf-8"))["values"]
     twice = I.all_scenarios() == I.all_scenarios()
     rows = D.load_inbox()["rows"]
+    # 장난감과 독립으로 문의 표에서 직접 센 값. 아래 agree가 장난감 결과(A 시나리오)와 일치하는지 대조한다.
     direct = {"rows_not_done": sum(1 for r in rows if r["status"] != "답변 완료"),
               "emails": len({r["email"] for r in rows}),
               "marked_injections": sorted(r["id"] for r in rows if r["_mark"] and r["_mark"].startswith("I")),

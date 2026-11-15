@@ -65,12 +65,16 @@ def to_ids(corpus, stoi):
 
 def count_ngrams(sents, N, bos):
     """counts[m][h][w] (m = 1..N)를 dict로 센다. 본 칸만 저장하는 희소 표다."""
+    # m마다 카운트 표를 따로 둔다. 낮은 차수(보간·KN용)도 같은 위치에서 함께 센다. 구조: counts[m][문맥 튜플][다음 단어] = 횟수.
     counts = {m: defaultdict(lambda: defaultdict(int)) for m in range(1, N + 1)}
     for ids in sents:
         seq = [bos] * (N - 1) + ids
         for i in range(N - 1, len(seq)):
+            # <s>를 N-1개 붙였으니 i = N-1부터가 실제 첫 토큰.
+            # 모든 차수가 같은 위치(= 같은 토큰 수)를 예측한다.
             w = seq[i]
             for m in range(1, N + 1):
+                # m-gram의 문맥은 직전 m-1개 토큰. m = 1이면 빈 튜플 ()이 되어 유니그램 카운트.
                 counts[m][tuple(seq[i - m + 1 : i])][w] += 1
     return {m: {h: dict(t) for h, t in c.items()} for m, c in counts.items()}
 
@@ -85,8 +89,10 @@ def continuation_counts(counts, N):
     for m in range(1, N):
         c = defaultdict(lambda: defaultdict(int))
         for h_long, table in counts[m + 1].items():
+            # (m+1)-gram의 문맥에서 맨 앞 단어 v를 떼면 m-gram 문맥 h. v가 서로 다르면 v마다 한 번씩 센다.
             h = h_long[1:]
             for w in table:
+                # 횟수가 아니라 "앞에 온 서로 다른 단어 종류"를 센다(+1). 같은 (v, h, w)가 여러 번 나와도 1.
                 c[h][w] += 1
         cont[m] = {h: dict(t) for h, t in c.items()}
     return cont
@@ -112,17 +118,22 @@ class NGramModel:
     def __init__(self, counts, n, V, method="mle", delta=1.0, lam=0.5, D=0.75, cont=None):
         self.n, self.V, self.method = n, V, method
         self.delta, self.lam, self.D = delta, lam, D
+        # raw[m][h] = (c(h) 합, 다음 단어 종류 수, {w: c(h,w)}). 종류 수는 KN의 N1+(h·).
         self.raw = {m: _with_totals(counts[m]) for m in range(1, n + 1)}
         if method == "kn":
             assert cont is not None
             self.kn = {m: _with_totals(cont[m]) for m in range(1, n)}
+            # 최고 차수는 실제 카운트, 그보다 낮은 차수는 continuation 카운트(식은 _kn 참고).
             self.kn[n] = self.raw[n]  # 가장 높은 차수만 실제 카운트를 쓴다
 
     def _ml(self, m, h, w):
+        # h의 뒤쪽 m-1개만 문맥으로 쓴다(h는 모델 차수 n-1 길이). m = 1이면 ().
+        # 함정: h[-(m-1):]로 쓰면 m = 1에서 h[-0:] = 전체가 되어 버리므로 시작 위치를 길이로 계산한다.
         e = self.raw[m].get(h[len(h) - (m - 1):] if m > 1 else ())
         if e is None:
             return None  # 문맥을 본 적이 없다: MLE는 정의되지 않는다(0/0)
         total, _, t = e
+        # MLE: P(w | h) = c(h, w) / c(h).
         return t.get(w, 0) / total
 
     def prob(self, h, w):
@@ -130,9 +141,11 @@ class NGramModel:
         if self.method == "mle":
             p = self._ml(n, h, w)
             return 0.0 if p is None else p
+        # 덧셈 평활(라플라스형): P = (c(h,w) + delta) / (c(h) + delta * V). 본 적 없는 문맥은 c = 0이라 균등 1/V.
         if self.method == "add":
             e = self.raw[n].get(h[len(h) - (n - 1):] if n > 1 else ())
             total, c = (0, 0) if e is None else (e[0], e[2].get(w, 0))
+            # 분모에 delta * V를 더해야 V개 단어 확률의 합이 1이 된다.
             return (c + self.delta) / (total + self.delta * self.V)
         if self.method == "interp":
             return self._interp(n, h, w)
@@ -144,10 +157,12 @@ class NGramModel:
         """Jelinek-Mercer식 보간: P_m = λ P_ML,m + (1-λ) P_{m-1}, P_0 = 1/V."""
         if m == 0:
             return 1.0 / self.V
+        # 재귀: 낮은 차수 확률을 먼저 구한다. 바닥은 m = 0의 균등분포 1/V라 확률 0이 생기지 않는다.
         lower = self._interp(m - 1, h, w)
         p = self._ml(m, h, w)
         if p is None:
             return lower  # 본 적 없는 문맥은 낮은 차수에 전부 맡긴다
+        # lam = λ(고정 가중치, 모형의 선택). 보간은 높은 차수 MLE와 낮은 차수 확률의 가중 평균.
         return self.lam * p + (1 - self.lam) * lower
 
     def _kn(self, m, h, w):
@@ -163,10 +178,12 @@ class NGramModel:
         if e is None:
             return lower
         total, types, t = e
+        # 첫 항: 할인한 카운트 max(c - D, 0)/c(h). 둘째 항: 할인으로 떼어 낸 질량 D*N1+(h·)/c(h)를 낮은 차수 분포에 나눠 준다. 합은 1.
         return max(t.get(w, 0) - self.D, 0.0) / total + self.D * types / total * lower
 
     def dist(self, h):
         """문맥 h 뒤의 전체 분포 (V,). 정규화 검사와 PyTorch 대조에 쓴다."""
+        # V개 단어 전부에 대해 호출하므로 느리다(검증용, V에 비례).
         return np.array([self.prob(h, w) for w in range(self.V)])
 
 
@@ -185,6 +202,7 @@ def perplexity(model, sents, bos):
         p = model.prob(h, w)
         if p <= 0.0:
             return float("inf")
+        # 로그 확률 합을 모아 마지막에 한 번만 exp. 곱을 직접 하면 언더플로가 난다.
         logs += np.log(p)
         T += 1
     return float(np.exp(-logs / T))
@@ -192,6 +210,7 @@ def perplexity(model, sents, bos):
 
 def sparsity_stats(counts, n, sents, bos):
     """처음 보는 (n-1)-문맥 비율, 처음 보는 n-gram 비율, 확률 0 토큰이 있는 문장 비율(MLE)."""
+    # counts[n][h]에 있으면 문맥을 본 것, 그 안에 w가 있으면 n-gram을 본 것.
     ctx_tab = counts[n]
     T = unseen_ctx = unseen_gram = 0
     zero_sent = 0
@@ -209,6 +228,7 @@ def sparsity_stats(counts, n, sents, bos):
             elif w not in t:
                 unseen_gram += 1
                 bad = True
+        # bad는 bool이라 0/1로 더해진다. MLE라면 이런 문장의 확률이 0이 된다.
         zero_sent += bad
     return {"unseen_context_rate": unseen_ctx / T, "unseen_ngram_rate": unseen_gram / T,
             "zero_prob_sentence_rate": zero_sent / len(sents), "tokens": T}
@@ -226,5 +246,6 @@ def agreement_accuracy(model, corpus, stoi, bos):
         h = tuple(seq[len(seq) - (n - 1):]) if n > 1 else ()
         right = model.prob(h, stoi[VERBS[vi][plural]])
         wrong = model.prob(h, stoi[VERBS[vi][1 - plural]])
+        # vpos = 2 + k (the, 명사 다음부터 부사 k개)이므로 vpos - 2 = k. 분포는 k별 정확도로 모은다.
         by_k[vpos - 2].append(1.0 if right > wrong else (0.5 if right == wrong else 0.0))
     return {k: float(np.mean(v)) for k, v in sorted(by_k.items())}

@@ -5,6 +5,11 @@
   손으로 옮기는 자리는 담당이 원본을 보고 값 전체를 옮겨 적는다(확률 q로 성공, 기본 결정 실행에서는 하지 않음).
 
 표준 라이브러리만 쓴다. NumPy 대응 구현은 productivity_ch01_np.py.
+
+무엇을 재는가: 어긋난 칸 수(자리 x 값, 최대 9칸), 진짜 값이 어느 자리에도 안 남은 값의 수, 한 번도 진짜였던 적 없는 값이 든 칸 수,
+변경 1건당 고칠 자리 수. 입력은 productivity_ch01_project의 카드·원본 등록부, 출력은 dict 또는 정수.
+테스트가 확인하는 숫자(어긋난 칸 7/9, 등록부 방식 4칸, 편집 24회 대 19회, 0.81^8 = 0.1853)이다(장 본문 숫자와의 대응은 README로 확인 필요).
+모형의 단순화: 사람은 카드에 적힌 칸 하나만 고치고(칸 단위), 손으로 옮기는 자리는 확률 q로 옮긴다. 현실의 부분 복사·문구 변형은 다루지 않는다.
 """
 
 import copy
@@ -17,8 +22,8 @@ import productivity_ch01_project as P
 
 def _truth_history(cards, initial=None):
     """카드를 순서대로 넣었을 때 값마다 '진짜 값'이 거쳐 간 모든 상태."""
-    truth = copy.deepcopy(P.INITIAL if initial is None else initial)
-    hist = {v: [dict(truth[v])] for v in truth}
+    truth = copy.deepcopy(P.INITIAL if initial is None else initial)  # 깊은 복사: 원본 INITIAL을 바꾸지 않는다
+    hist = {v: [dict(truth[v])] for v in truth}  # 값마다 [초기값, 변경 1 뒤, 변경 2 뒤, ...]
     for c in cards:
         truth[c["value"]][c["field"]] = c["new"]
         hist[c["value"]].append(dict(truth[c["value"]]))
@@ -36,10 +41,10 @@ def run_copy(cards, propagate=None, initial=None):
     per_step, last_edit = [], {p: -1 for p in P.PLACES}
     for i, c in enumerate(cards):
         v, f, new = c["value"], c["field"], c["new"]
-        truth[v][f] = new
+        truth[v][f] = new  # 진짜 값은 카드가 바꾸는 즉시 갱신된다
         for p in P.PLACES:
             if p == c["where"] or (propagate is not None and propagate(c, p)):
-                if state[p][v][f] != new:
+                if state[p][v][f] != new:  # 값이 실제로 바뀐 경우만 "마지막 수정"으로 친다(같은 값을 덮어쓴 것은 제외)
                     last_edit[p] = i
                 state[p][v][f] = new
         per_step.append(mismatched(state, truth))
@@ -62,7 +67,7 @@ def run_register(cards, hand_ok=None, initial=None, source=None, links=None):
         v, f, new = c["value"], c["field"], c["new"]
         truth[v][f] = new
         src = source[v]
-        state[src][v][f] = new
+        state[src][v][f] = new  # 카드를 받은 자리가 어디든 원본 자리의 칸을 고친다
         for p, how in links[v].items():
             if how == "ref":
                 state[p][v] = dict(state[src][v])            # 링크·임베드: 원본을 그대로 보여 준다
@@ -89,6 +94,7 @@ def truth_anywhere(state, truth):
 
 
 def distinct_values(state):
+    """값마다 세 자리에 서로 다른 값이 몇 종류 있는지(3이면 셋 다 다름). dict를 정렬된 튜플로 바꿔 집합에 넣는다."""
     return {v: len({tuple(sorted(state[p][v].items())) for p in state}) for v in P.VALUES}
 
 
@@ -96,7 +102,7 @@ def distinct_values(state):
 
 def pick_majority(state, v):
     """두 자리 이상이 같은 값이면 그 값, 아니면 None(못 고름)."""
-    vals = [state[p][v] for p in P.PLACES]
+    vals = [state[p][v] for p in P.PLACES]  # 값은 dict라 list.count가 동등 비교로 센다
     for x in vals:
         if vals.count(x) >= 2:
             return x
@@ -105,6 +111,7 @@ def pick_majority(state, v):
 
 def pick_latest_file(state, last_edit, v):
     """파일 수정 시각으로 고르기: 가장 최근에 수정된 파일의 값을 믿는다. 칸마다 시각이 없으니 파일 단위다."""
+    # 동점이면 PLACES 순서(notion, figma, sheets)의 앞쪽이 뽑힌다. 아무것도 안 고친 자리는 -1이다
     p = max(P.PLACES, key=lambda x: last_edit[x])
     return state[p][v]
 
@@ -115,6 +122,8 @@ def pick_rule_place(state, v):
 
 
 def judge(run):
+    """세 가지 사후 선택 규칙(다수결, 최근 수정 파일, 뒤늦게 정한 규칙 자리)이 값 3개 중 몇 개를 맞히는지 센다.
+    right 맞힘, wrong 틀린 값을 골랐음, undecided 고르지 못함."""
     s, t = run["state"], run["truth"]
     out = {}
     for name, f in (("majority", lambda v: pick_majority(s, v)),
@@ -133,6 +142,7 @@ def edits_per_card(card, mode):
     """변경 1건을 끝까지 맞추려면 고쳐야 하는 자리 수."""
     if mode == "copy":
         return len(P.PLACES)                               # 세 자리 모두 손으로
+    # ref(링크·임베드)는 편집이 필요 없고, hand만 사람이 옮겨 적어야 한다
     hand = sum(how == "hand" for how in P.LINKS[card["value"]].values())
     return 1 + hand                                        # 원본 1곳 + 손으로 옮기는 자리
 
@@ -149,7 +159,7 @@ def random_cards(rng, m=8):
     for i in range(m):
         v = rng.choice(P.VALUES)
         f = rng.choice(FIELDS[v])
-        new = truth[v][f] + rng.choice([-2, -1, 1, 2])
+        new = truth[v][f] + rng.choice([-2, -1, 1, 2])  # 0을 뺀 증감이라 새 값은 항상 현재 값과 다르다
         truth[v][f] = new
         out.append({"id": f"R{i+1}", "value": v, "field": f, "new": new, "where": rng.choice(P.PLACES)})
     return out
@@ -160,6 +170,7 @@ def simulate(mode, q, rng, m=8, correlated=False):
     cards = random_cards(rng, m)
     if mode == "copy":
         if correlated:
+            # 카드 하나에 대해 판정을 한 번만 뽑아 두 자리에 같이 적용한다(함께 맞추거나 함께 놓친다)
             memo = {}
 
             def prop(c, p):
@@ -173,14 +184,14 @@ def simulate(mode, q, rng, m=8, correlated=False):
     elif mode == "register":
         r = run_register(cards, lambda c, p: rng.random() < q)
     elif mode == "register_ideal":
-        links = {v: {p: "ref" for p in P.LINKS[v]} for v in P.LINKS}
+        links = {v: {p: "ref" for p in P.LINKS[v]} for v in P.LINKS}  # 이상적 경우: 모든 연결이 링크라 손 옮김이 필요 없다
         r = run_register(cards, None, links=links)
     else:
         raise ValueError(mode)
     anywhere = truth_anywhere(r["state"], r["truth"])
     return {
         "final_mismatch": r["per_step"][-1],
-        "ever_clean": all(x == 0 for x in r["per_step"]),
+        "ever_clean": all(x == 0 for x in r["per_step"]),  # 한 번도 어긋난 적이 없나(매 단계 어긋난 칸 0)
         "final_clean": r["per_step"][-1] == 0,
         "exposure": sum(r["per_step"]),
         "never_true": never_true_cells(r["state"], cards),
@@ -196,7 +207,7 @@ def generic_python(k, q, m, n, seed, correlated=False):
     """값 하나를 k곳에 둔다. 변경마다 고친 사람의 자리는 맞고, 나머지 k-1곳은 각각 확률 q로 맞춘다.
     새 값은 이전 값을 통째로 바꾼다. 돌려주는 값: (한 번도 안 어긋날 비율, 끝에 다 맞을 비율, 변경당 평균 어긋난 자리)."""
     rng = random.Random(seed)
-    ever, final, wrong = 0, 0, 0
+    ever, final, wrong = 0, 0, 0  # 집계: 한 번도 안 어긋난 횟수, 마지막 변경에 다 맞은 횟수, 놓친 자리 총합
     for _ in range(n):
         ok_all = True
         for _ in range(m):
@@ -208,6 +219,7 @@ def generic_python(k, q, m, n, seed, correlated=False):
             wrong += miss
             ok_all = ok_all and miss == 0
         ever += ok_all
+        # 주의: 여기서 miss는 안쪽 반복의 마지막 변경(m번째) 값이다(파이썬 변수가 반복문 밖에서도 남는 것을 이용)
         final += miss == 0
     return ever / n, final / n, wrong / (n * m)
 
@@ -217,7 +229,7 @@ def generic_exact(k, q, m, correlated=False):
     변경당 어긋난 자리 기댓값 (k-1)(1-q). 함께 놓치는 경우(correlated)는 q^m, q, (k-1)(1-q)."""
     if k == 1:
         return 1.0, 1.0, 0.0
-    if correlated:
+    if correlated:  # 변경마다 "전부 맞추기 / 전부 놓치기" 한 번의 동전이라 확률이 q ** (k - 1)이 아니라 q
         return q ** m, q, (k - 1) * (1 - q)
     return (q ** (k - 1)) ** m, q ** (k - 1), (k - 1) * (1 - q)
 
@@ -227,13 +239,14 @@ def generic_exact(k, q, m, correlated=False):
 def lint_register(reg):
     """점검표. 문제 목록 [(항목 id, 문제)]을 돌려준다. 빈 목록이면 통과."""
     problems = []
-    names = {}
+    names = {}  # 항목 이름 -> 등록된 id 목록(같은 이름이 둘이면 원본이 둘이라는 뜻)
     for it in reg:
         names.setdefault(it["name"], []).append(it["id"])
         if it["tool"] != P.DECISION_RULE.get(it["kind"]):
             problems.append((it["id"], f"결정 규칙 위반: {it['kind']}인데 원본이 {it['tool']}"))
         if it["owner"] not in P.OWNERS:
             problems.append((it["id"], "담당 없음"))
+        # 원본 수: 항목 자체의 도구 1곳 + 참조 목록에서 how가 "source"로 표시된 곳. 정확히 1이어야 한다
         srcs = [it["tool"]] + [t for t, _, how in it["refs"] if how == "source"]
         if len(srcs) != 1:
             problems.append((it["id"], f"원본이 {len(srcs)}곳"))
@@ -251,6 +264,7 @@ def lint_register(reg):
 
 
 def count_refs(reg):
+    """등록부 전체에서 참조 방식별 개수(ref 링크·임베드 / hand 손 옮김)."""
     out = {"ref": 0, "hand": 0}
     for it in reg:
         for _, _, how in it["refs"]:

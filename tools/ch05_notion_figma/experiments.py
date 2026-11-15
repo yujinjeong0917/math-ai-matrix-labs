@@ -25,9 +25,11 @@ import tools_ch05_data as D  # noqa: E402
 import tools_ch05_mcp as M  # noqa: E402
 import tools_ch05_roundtrip as R  # noqa: E402
 
+# 결과 JSON 저장 위치. 같은 입력이면 같은 파일이 나온다.
 OUT = HERE / "results" / "ch05.json"
 
 
+# 손계산 값을 코드로 다시 쓴 것: 120행 / 100 올림 = 2번, 인용 문구가 걸린 프레임 3개 + 전체 1번 = 4번.
 def e0_hand():
     rows = sum(D.TYPE_COUNTS.values())
     return {"week_rows": rows, "max_rows_per_call": M.MAX_ROWS, "notion_calls": math.ceil(rows / M.MAX_ROWS),
@@ -43,6 +45,7 @@ def e1_messages():
                       "arguments": {"start": D.WEEK_START, "end": D.WEEK_END, "type": "환불"}}}
     resp = s.handle(req)
     sc = resp["result"]["structuredContent"]
+    # 날짜를 '10/05'로 주면 isError 결과, 쓰기 도구를 읽기 전용 서버에 부르면 JSON-RPC 오류. 두 실패의 모양이 다르다.
     bad = s.handle({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
                     "params": {"name": "query_inquiries", "arguments": {"start": "10/05", "end": D.WEEK_END}}})
     unknown = s.handle({"jsonrpc": "2.0", "id": 4, "method": "tools/call",
@@ -65,6 +68,7 @@ def e2_roundtrip():
     return r
 
 
+# 2(쓰기 도구 유무) x 2(순진/구별) = 4개 시나리오.
 def e4_injection():
     out = []
     for aw in (False, True):
@@ -80,7 +84,9 @@ def e4_injection():
 
 def e5_rate(e0):
     acc = D.load_access()
+    # 한도 값은 data/mcp_access 파일의 사실 항목에서 읽는다(확인일 2026-10-10). 정책은 바뀔 수 있어 확인 필요.
     limit = next(f["per_month"] for f in acc["figma"]["facts"] if f["key"] == "rate_view_collab")
+    # 한 달 = 52/12 주(약 4.33주), 주 1회 실행이라고 가정한 단순화. Fraction으로 계산해 반올림 오차를 늦춘다.
     runs_per_month = F(52, 12)
     per = F(e0["figma_calls_per_screen"]) * runs_per_month
     once = F(e0["figma_calls_all_once"]) * runs_per_month

@@ -26,6 +26,7 @@ import ft_ch08_unsloth as M  # noqa: E402
 OUT = HERE / "results" / "ch08.json"
 
 
+# Fraction을 float로 바꿔 소수 nd자리로 반올림(결과 JSON용)
 def r(x, nd=3):
     return round(float(x), nd)
 
@@ -38,6 +39,7 @@ def e0_hand(sc, specs):
     n, b, g = sc["train_pairs"], sc["micro_batch"], sc["grad_accum"]
     nb = specs["official_notebook"]
     seen = M.examples_seen(nb["max_steps"], nb["per_device_train_batch_size"], nb["gradient_accumulation_steps"])
+    # 채우기 손 예시: 1024토큰 하나와 256토큰 하나
     L, S = 1024, 256
     return {"train_pairs": n, "micro_batch": b, "grad_accum": g, "effective_batch": b * g,
             "raw_division": r(F(n, b * g), 4), "steps_per_epoch": M.steps_per_epoch(n, b, g),

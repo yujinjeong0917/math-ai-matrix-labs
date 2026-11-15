@@ -18,11 +18,13 @@ def load_paths():
 def choose(needs, data=None):
     """needs: 조건 id 목록. 돌려주는 값: {"fits": [이름...], "out": {이름: [못 맞춘 조건...]}, "notes": {...}}"""
     data = data or load_paths()
+    # 오타 난 조건은 조용히 무시하지 않고 KeyError로 알린다(test가 확인).
     unknown = [n for n in needs if n not in data["conditions"]]
     if unknown:
         raise KeyError(f"모르는 조건: {unknown}")
     fits, out, notes = [], {}, {}
     for p in data["paths"]:
+        # 모든 조건을 만족해야 "맞는 길"(AND). 하나라도 못 하면 어떤 조건에서 빠졌는지 목록에 남긴다.
         missing = [n for n in needs if not p["can"][n]]
         if missing:
             out[p["name"]] = missing
@@ -36,6 +38,7 @@ def choose(needs, data=None):
 
 # 카드뉴스 편집기에서 나올 법한 조건 묶음(실습에서 정한 예)
 CASES = {
+    # 조건 묶음의 이름과 조건 id. 기대 결과는 test_cases에서 표로 고정한다.
     "A 링크로 퍼뜨리고, 새 템플릿 알림은 iOS에도": ["reuse_web_code", "ios_push"],
     "B 앱스토어 검색에 나오되 웹 코드는 그대로": ["reuse_web_code", "ios_app_store"],
     "C 행사장 블루투스 프린터에 카드 출력(iOS 포함)": ["ios_bluetooth"],

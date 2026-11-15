@@ -13,6 +13,7 @@ LABEL = "churned"
 
 
 def make_table(data_seed, n_rows):
+    # data_seed가 같으면 같은 표(3장과 같은 생성기). 환경이 달라져도 같은 표가 나오는지가 이 장의 관심사
     rng = np.random.default_rng(data_seed)
     tenure = rng.integers(1, 73, n_rows).astype(float)
     fee = np.round(np.clip(rng.normal(55_000, 15_000, n_rows), 15_000, 120_000), -2)
@@ -22,6 +23,7 @@ def make_table(data_seed, n_rows):
     discount = rng.uniform(0.0, 0.3, n_rows)
     plan = rng.choice(3, n_rows, p=[0.5, 0.3, 0.2]).astype(np.int64)
     region = rng.choice(4, n_rows, p=[0.35, 0.30, 0.15, 0.20]).astype(np.int64)
+    # 이탈 로짓(합성용 가정). 로지스틱 확률로 라벨을 표본추출한다
     logit = (
         -0.3
         + 1.6 * (fee - 55_000) / 15_000
@@ -42,6 +44,7 @@ def make_table(data_seed, n_rows):
 def split(table, n_train, split_seed):
     """행을 섞어 앞 n_train행은 학습, 나머지는 검증."""
     n = len(table[LABEL])
+    # 행을 섞어 앞 n_train행은 학습, 나머지는 검증. 반환 순서: (학습, 검증)
     order = np.random.default_rng(split_seed).permutation(n)
     tr, va = order[:n_train], order[n_train:]
     return {k: v[tr] for k, v in table.items()}, {k: v[va] for k, v in table.items()}

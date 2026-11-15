@@ -19,8 +19,11 @@ def n_step_return(ep, V, tau, n, gamma):
     T = len(ep)
     end = T if n is None else min(tau + n, T)
     G = 0.0
+    # 식: G_{τ:τ+n} = Σ_{i=τ}^{end-1} γ^(i-τ) R_{i+1} + γ^n V(S_{τ+n})  (이 반복문이 합, 아래 if가 부트스트랩 항)
+    # 함정: ep[i][1]이 R_{i+1}이라 보상 색인이 상태 색인보다 한 칸 앞선다(off-by-one 주의)
     for i in range(tau, end):                 # 실제 보상 R_{tau+1} ... R_end
         G += gamma ** (i - tau) * ep[i][1]
+    # 식: + γ^n V(S_{τ+n}). tau+n >= T이면 판이 이미 끝났으므로 이 항이 없다(종료 상태의 값은 0)
     if n is not None and tau + n < T:         # 판이 안 끝났으면 n걸음 뒤 상태의 지금 값으로 메운다
         G += gamma ** n * V[ep[tau + n][0]]
     return G
@@ -36,6 +39,8 @@ def n_step_td(episodes, n_states, n, alpha, gamma=1.0, v0=0.0, record=None):
     for ep in episodes:
         for tau in range(len(ep)):
             s = ep[tau][0]
+            # 식: V(S_τ) <- V(S_τ) + α [G_{τ:τ+n} - V(S_τ)]  (n스텝 TD 갱신)
+            # G 안의 V는 같은 판에서 앞서 고친 현재 값이다(판 동안 V를 고정하지 않는다)
             V[s] += alpha * (n_step_return(ep, V, tau, n, gamma) - V[s])
         if record is not None:
             record.append(np.array(V))
@@ -47,6 +52,7 @@ def td0(episodes, n_states, alpha, gamma=1.0, v0=0.0):
     V = [v0] * n_states
     for ep in episodes:
         for s, r, s2, done in ep:
+            # 식: 목표 = R_{t+1} + γ V(S_{t+1}), 종료로 들어가면 R_{t+1}만 (n=1 TD의 목표)
             target = r if done else r + gamma * V[s2]
             V[s] += alpha * (target - V[s])
     return np.array(V)
@@ -58,6 +64,7 @@ def mc_constant_alpha_every_visit(episodes, n_states, alpha, gamma=1.0, v0=0.0):
     for ep in episodes:
         G, Gs = 0.0, []
         for s, r, s2, done in reversed(ep):
+            # 식: G_t = R_{t+1} + γ G_{t+1}  (뒤에서부터 누적한 몬테카를로 반환)
             G = r + gamma * G
             Gs.append(G)
         Gs.reverse()
@@ -77,9 +84,12 @@ def lambda_returns(ep, V, lam, gamma):
     nxt = 0.0
     for t in range(T - 1, -1, -1):
         s, r, s2, done = ep[t]
+        # nxt = G^λ_{t+1}(바로 뒤 걸음의 값, 판 끝에서는 0). 종료로 들어가는 걸음은 V 항이 없어 G^λ_t = R_{t+1}
         if done:
             G[t] = r
         else:
+            # 식: G^λ_t = R_{t+1} + γ [ (1-λ) V(S_{t+1}) + λ G^λ_{t+1} ]
+            # λ=0이면 1스텝 TD 목표, λ=1이면 끝까지의 반환 G_t가 된다
             G[t] = r + gamma * ((1.0 - lam) * V[s2] + lam * nxt)
         nxt = G[t]
     return G
@@ -92,7 +102,9 @@ def lambda_return_by_definition(ep, V, lam, gamma):
     for t in range(T):
         acc = 0.0
         for n in range(1, T - t):
+            # 식: (1-λ) λ^(n-1) G_{t:t+n}  (n스텝 반환마다 가중치 (1-λ)λ^(n-1))
             acc += (1.0 - lam) * lam ** (n - 1) * n_step_return(ep, V, t, n, gamma)
+        # 식: 남은 가중치 λ^(T-t-1)은 판 끝까지의 반환 G_t(n=None)에 준다
         acc += lam ** (T - t - 1) * n_step_return(ep, V, t, None, gamma)
         out[t] = acc
     return out
@@ -109,8 +121,9 @@ def lambda_return_summed(episodes, n_states, lam, alpha, gamma=1.0, v0=0.0, reco
         G = lambda_returns(ep, V, lam, gamma)
         dV = np.zeros(n_states)
         for (s, *_), g in zip(ep, G):
+            # 식: ΔV(S_t) += α [G^λ_t - V(S_t)]. V는 판 동안 고정이라 같은 칸을 k번 지나면 k번 더해진다
             dV[s] += alpha * (g - V[s])
-        V += dV
+        V += dV                                   # 판이 끝난 뒤 한꺼번에 적용
         if record is not None:
             record.append(V.copy())
     return V
@@ -127,6 +140,8 @@ def offline_lambda_return(episodes, n_states, lam, alpha, gamma=1.0, v0=0.0, rec
     for ep in episodes:
         G = lambda_returns(ep, V, lam, gamma)
         for (s, *_), g in zip(ep, G):
+            # 식: V(S_t) <- V(S_t) + α [G^λ_t - V(S_t)]. G^λ는 판 시작의 V로 계산해 둔 고정값이고,
+            # 괄호 안 V(S_t)는 같은 판에서 방금 고친 현재 값이다(합산 판과 다른 점)
             V[s] += alpha * (g - V[s])
         if record is not None:
             record.append(V.copy())
@@ -147,6 +162,8 @@ def td_lambda(episodes, n_states, lam, alpha, gamma=1.0, trace="accumulating", o
         e = np.zeros(n_states)
         dV = np.zeros(n_states)
         for t, (s, r, s2, done) in enumerate(ep):
+            # 식: e_t = γλ e_{t-1} + 1(S_t = s). 모든 칸의 흔적을 먼저 γλ배로 줄이고(아래 줄),
+            # 방금 지나는 칸에 누적(accumulating: +1) 또는 대체(replacing: 1로 덮어쓰기)를 한다
             e *= gamma * lam
             if trace == "accumulating":
                 e[s] += 1.0
@@ -154,15 +171,18 @@ def td_lambda(episodes, n_states, lam, alpha, gamma=1.0, trace="accumulating", o
                 e[s] = 1.0
             else:
                 raise ValueError(trace)
+            # 식: δ_t = R_{t+1} + γ V(S_{t+1}) - V(S_t), 종료로 들어가면 V(S_{t+1}) = 0
             delta = r + (0.0 if done else gamma * V[s2]) - V[s]
             if online:
+                # 식: V <- V + α δ_t e_t  (흔적이 남은 모든 칸에 TD 오차를 나눠 준다). 걸음마다 바로 적용
                 V += alpha * delta * e
             else:
+                # 오프라인: 판 동안 V를 고정하고 고칠 양만 dV에 모은다
                 dV += alpha * delta * e
             if trace_log is not None:
                 trace_log.append((t, s, r, s2, done, e.copy()))
         if not online:
-            V += dV
+            V += dV                               # 판 끝에 모아 둔 ΔV를 한 번에 적용
         if record is not None:
             record.append(V.copy())
         if not np.all(np.isfinite(V)) or np.abs(V).max() > blowup:
@@ -206,12 +226,15 @@ def n_step_td_batch(episodes_by_seed, n_states, n, alphas, gamma=1.0, v0=0.0):
             if not valid.any():
                 break
             end = T if n is None else np.minimum(tau + n, T)
+            # 식: Σ_{j=τ}^{end-1} γ^(j-τ) R_{j+1} = (P[end] - P[τ]) / γ^τ  (누적합 뺄셈으로 n개 보상의 할인 합)
             G = (P[rows, end] - P[:, tau]) / gamma ** tau
             if n is not None:
                 boot = (tau + n) < T
                 idx = np.minimum(tau + n, Tm)
+                # 식: + γ^n V(S_{τ+n}). 판이 이미 끝난 행(boot=False)은 0
                 G = G + np.where(boot, gamma ** n * V[rows, S[rows, idx]], 0.0)
             s = S[:, tau]
+            # 식: α [G_{τ:τ+n} - V(S_τ)]. 기준 구현 n_step_td와 같은 tau 순서, 행마다 독립
             upd = alpha * (G - V[rows, s])
             V[rows, s] += np.where(valid, upd, 0.0)
         hist[k] = V
@@ -239,13 +262,16 @@ def td_lambda_batch(episodes_by_seed, n_states, lam, alphas, gamma=1.0, trace="a
         for t in range(R.shape[1]):
             act = M[:, t] & alive
             s, s2 = S[:, t], S[:, t + 1]
+            # 식: e_t = γλ e_{t-1} + 1(S_t = s). act는 아직 판이 안 끝났고 발산하지 않은 행만 1
             e *= gamma * lam
             if trace == "accumulating":
                 e[rows, s] += act
             else:
                 e[rows, s] = np.where(act, 1.0, e[rows, s])
             with np.errstate(over="ignore", invalid="ignore"):
+                # 식: δ_t = R_{t+1} + γ V(S_{t+1}) - V(S_t), 종료로 들어가면 V 항 0
                 delta = R[:, t] + np.where(D[:, t], 0.0, gamma * V[rows, s2]) - V[rows, s]
+                # 식: α δ_t e_t  (행 x 상태). online이면 V에 바로, 아니면 dV에 모았다가 판 끝에
                 step = np.where(act, alpha * delta, 0.0)[:, None] * e
                 if online:
                     V += step
@@ -276,6 +302,7 @@ def offline_lambda_return_batch(episodes_by_seed, n_states, lam, alphas, gamma=1
         G = np.zeros((B * A, Tm))
         nxt = np.zeros(B * A)
         for t in range(Tm - 1, -1, -1):                      # 판 시작의 V로 λ-리턴을 뒤에서부터
+            # 식: G^λ_t = R_{t+1} + γ [ (1-λ) V(S_{t+1}) + λ G^λ_{t+1} ], 종료로 들어가면 R_{t+1}
             g = np.where(D[:, t], R[:, t], R[:, t] + gamma * ((1.0 - lam) * V[rows, S[:, t + 1]] + lam * nxt))
             G[:, t] = np.where(M[:, t], g, 0.0)
             nxt = G[:, t]

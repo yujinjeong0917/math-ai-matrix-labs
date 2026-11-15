@@ -20,6 +20,7 @@ import pipelines_ch01_repro as rp  # noqa: E402
 torch.set_num_threads(2)
 
 
+# 같은 시드면 정확도와 가중치·확률 지문이 비트 단위로 같다
 def test_same_seed_same_metrics():
     a, b = mnp.train({"seed": 7}), mnp.train({"seed": 7})
     assert a["accuracy"] == b["accuracy"]
@@ -45,6 +46,7 @@ def test_recorded_entropy_replays_unseeded_run():
     assert again["weights_fp"] == first["weights_fp"]
 
 
+# 2000행 x 0.2 = 시험 400, 학습 1600. 겹침 없고 합치면 전체
 def test_split_is_disjoint_and_complete():
     tr, te = mnp.split(2000, 0.2, np.random.default_rng(0))
     assert len(te) == 400 and len(tr) == 1600
@@ -57,6 +59,7 @@ def test_dataset_is_fixed_and_schema_v2_changes_fee_only():
     X2, y2 = dat.make_dataset(schema_version=2)
     assert np.array_equal(X1, X1b) and np.array_equal(y1, y1b)
     fee = dat.NUMERIC.index("monthly_fee")
+    # v2는 요금 열만 1/1000 스케일. 나머지 열과 라벨은 그대로
     np.testing.assert_allclose(X2[:, fee] * 1000.0, X1[:, fee])
     others = [j for j in range(X1.shape[1]) if j != fee]
     assert np.array_equal(X1[:, others], X2[:, others]) and np.array_equal(y1, y2)
@@ -67,6 +70,7 @@ def test_numpy_matches_torch_float64():
     c = s["cfg"]
     w1, b1 = mnp.fit_sgd(s["X_tr"], s["y_tr"], s["w0"], s["b0"], s["orders"], c["batch"], c["lr"])
     w2, b2 = mtt.fit_sgd(s["X_tr"], s["y_tr"], s["w0"], s["b0"], s["orders"], c["batch"], c["lr"])
+    # float64 연산 순서 차이로 생기는 반올림 오차만 허용(1e-12). 완전 일치까지는 요구하지 않는다
     np.testing.assert_allclose(w1, w2, atol=1e-12)
     assert abs(b1 - b2) < 1e-12
 
@@ -96,6 +100,7 @@ def test_env_diff_reports_only_changes():
 
 def test_float_addition_is_not_associative():
     a, b, c = np.float32(1e8), np.float32(-1e8), np.float32(1.0)
+    # (1e8 - 1e8) + 1 = 1 이지만 1e8 + (-1e8 + 1)에서는 -1e8 + 1이 float32로 -1e8이 되어 0이 된다
     assert (a + b) + c == np.float32(1.0)
     assert a + (b + c) == np.float32(0.0)
     assert (0.1 + 0.2) + 0.3 != 0.1 + (0.2 + 0.3)
@@ -104,6 +109,7 @@ def test_float_addition_is_not_associative():
 def test_sequential_float32_sum_depends_on_order():
     x = np.random.default_rng(0).uniform(0.0, 1.0, 200_000).astype(np.float32)
     xs = x[np.random.default_rng(1).permutation(len(x))]
+    # 같은 값 20만 개를 섞어서 더하면 float32 한 개씩 합이 달라진다(순서 의존)
     assert rp.sequential_sum(x) != rp.sequential_sum(xs)
     exact = rp.exact_sum(x)
     # NumPy의 부분 쌍 합(pairwise)은 한 개씩 더하기보다 정확한 값에 가깝다

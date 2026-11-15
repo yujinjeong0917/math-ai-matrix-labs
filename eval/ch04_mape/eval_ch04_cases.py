@@ -1,10 +1,16 @@
-"""모델 평가 4장의 데이터. 모두 손으로 고른 작은 표이거나 고정 시드의 합성 데이터다."""
+"""모델 평가 4장의 데이터. 모두 손으로 고른 작은 표이거나 고정 시드의 합성 데이터다.
+
+case_* 와 first_screen은 (정답 y, 예측 yhat) 두 배열을 돌려준다(예외: case_intermittent_demand,
+case_skewed_sales는 정답 배열 하나). MAPE가 흔들리는 상황(정답이 0 근처, 0 포함, 단위 변경,
+간헐 수요)을 하나씩 만든다.
+"""
 
 import numpy as np
 
 
 def first_screen():
     """첫 화면 손 계산 예. 세 가게의 하루 판매량과, 세 가게 모두 2개씩 틀린 예측."""
+    # 세 가게 모두 절대오차 2지만 백분율 오차는 2%, 20%, 200%
     y = np.array([100.0, 10.0, 1.0])
     return y, y + 2.0
 
@@ -27,26 +33,31 @@ def case_sklearn_doc_example():
 
 def case_asymmetry_fixed_actual(y=100.0, err=50.0):
     """(c-1) 정답을 고정하고 같은 크기만큼 모자라게/넘치게."""
+    # 정답이 분모라 모자란 쪽과 넘친 쪽의 APE가 같다(둘 다 50%)
     return np.array([y, y]), np.array([y - err, y + err])
 
 
 def case_asymmetry_fixed_forecast(f=100.0, err=50.0):
     """(c-2) 예측을 고정하고 정답이 같은 크기만큼 위/아래. (Makridakis 1993의 150/100 예는 정답과 예측을 맞바꾼 비교라 구조는 다르고, 정답이 작은 쪽이 더 큰 %를 받는 방향만 같다)"""
+    # 정답 150, 50에 예측 100: APE는 100/150 = 33.3%와 50/50 = 100%. 정답이 작은 쪽이 크게 벌점을 받는다
     return np.array([f + err, f - err]), np.array([f, f])
 
 
 def case_temperature():
     """기온 5일(섭씨). 예측은 날마다 1~2도 틀린다. 단위만 바꿔 MAPE를 다시 잰다."""
+    # 섭씨 정답에 0 가까운 값(0.5)과 음수가 섞여 있어 단위에 따라 분모가 크게 달라진다
     c = np.array([3.0, -1.0, 0.5, 6.0, 2.0])
     fc = np.array([2.0, 1.0, 1.5, 5.0, 3.0])
     return c, fc
 
 
 def to_fahrenheit(c):
+    # F = 1.8 C + 32. 오차는 1.8배, 분모는 평행이동까지 되므로 MAPE가 바뀐다
     return np.asarray(c, float) * 9.0 / 5.0 + 32.0
 
 
 def to_kelvin(c):
+    # K = C + 273.15. 분모가 모두 크게 올라가 MAPE가 급감한다(영점이 임의라는 뜻)
     return np.asarray(c, float) + 273.15
 
 
@@ -56,7 +67,9 @@ def case_intermittent_demand(p_zero, n=60, lam=4.0, seed=0):
     p_zero = 0이면 0이 한 번도 나오지 않는다(1 + Poisson은 늘 1 이상).
     """
     rng = np.random.default_rng(seed)
+    # 판매가 있는 날은 최소 1개(1 + Poisson). 0은 아래에서 일부러 끼워 넣는다
     y = 1.0 + rng.poisson(lam, n)
+    # 각 날이 독립적으로 확률 p_zero로 판매 없음(0)
     y[rng.random(n) < p_zero] = 0.0
     return y
 
@@ -68,6 +81,7 @@ def intermittent_models(p_zero, lam=4.0):
     B: A의 60% (일부러 낮게 잡은 예측)
     Z: 늘 0 (아무것도 안 팔린다고 찍기)
     """
+    # E[y] = (1 - p)(1 + lam). 평균 판매량이 이 값이라 MSE 관점의 최적 상수
     a = (1.0 - p_zero) * (1.0 + lam)
     return {"A": a, "B": 0.6 * a, "Z": 0.0}
 
@@ -75,6 +89,7 @@ def intermittent_models(p_zero, lam=4.0):
 def case_level_shift(seed=0, n=50):
     """정답 ~ 10 + N(0, 3^2)을 1 아래로는 자르고, 예측 = 정답 + N(0, 1). 둘에 같은 c를 더해 수준만 옮긴다."""
     rng = np.random.default_rng(seed)
+    # 정답이 0 이하로 내려가 MAPE가 깨지지 않도록 1에서 자른다
     y = np.maximum(10.0 + rng.normal(0.0, 3.0, n), 1.0)
     return y, y + rng.normal(0.0, 1.0, n)
 

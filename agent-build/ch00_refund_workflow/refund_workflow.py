@@ -2,6 +2,10 @@
 
 가짜 모델도 가짜 서버도 쓰지 않는 단순 집계예요. 문의 20건(가상)마다 필요한 도구 호출 순서를
 inquiries.json에 고정해 두었고, 이 파일은 그 목록을 세기만 해요. 난수가 없어서 몇 번을 돌려도 같아요.
+
+입력: inquiries.json (문의 id, 종류, 도구 호출 순서). 출력: 집계 딕셔너리와 문의별 행.
+README 기대 출력과의 대응: cases 20, total_calls 96, total_writes 53, total_irreversible 30,
+total_money_out 10, 환불 문의만의 평균 호출 수 61/12(약 5.083). 모두 이 파일이 세는 값이다.
 """
 import json
 from pathlib import Path
@@ -26,9 +30,13 @@ def load_inquiries():
 
 
 def profile(inquiry):
+    """문의 한 건의 호출 수, 읽기/쓰기 수, 되돌릴 수 없는 호출 수, 처음 되돌릴 수 없는 호출의 순번을 센다."""
     calls = inquiry["calls"]
     kinds = [TOOLS[c]["kind"] for c in calls]
+    # i는 1부터 시작하는 호출 순번. 순번 값이 곧 "그 호출 직전까지 몇 번 호출했나 + 1"이 된다.
+    # 쓰기이면서 되돌릴 수 없는 호출만 센다(읽기는 reversible이 True라 조건과 무관하게 제외).
     irreversible = [i for i, c in enumerate(calls, start=1) if TOOLS[c]["kind"] == "write" and not TOOLS[c]["reversible"]]
+    # 접수 단계는 도구 호출 없이 항상 거치므로 집합에 미리 넣는다(모형의 선택).
     stages = {"접수"} | {TOOLS[c]["stage"] for c in calls}
     return {
         "id": inquiry["id"],
@@ -39,6 +47,7 @@ def profile(inquiry):
         "irreversible": len(irreversible),
         "first_irreversible_at": irreversible[0] if irreversible else None,
         "stages": len(stages),
+        # 돈이 실제로 나간 횟수 = issue_refund 호출 수
         "money_out": calls.count("issue_refund"),
     }
 
@@ -50,7 +59,9 @@ def mean(values):
 
 def summarize(inquiries=None):
     rows = [profile(q) for q in (inquiries or load_inquiries())]
+    # 평균은 분모를 무엇으로 잡느냐에 따라 달라진다. 환불 문의(12건)와 전체(20건)를 구분해 둔다.
     refunds = [r for r in rows if r["kind"] == "환불"]
+    # 환불 문의 중 실제로 돈이 나간 건(9건). 첫 되돌릴 수 없는 호출 순번의 평균을 낼 때 None을 피하려고 따로 거른다.
     paid = [r for r in refunds if r["money_out"] > 0]
     return {
         "cases": len(rows),
@@ -68,6 +79,7 @@ def summarize(inquiries=None):
         "paid_refund_cases": len(paid),
         "paid_first_irreversible_at": [r["first_irreversible_at"] for r in paid],
         "paid_mean_calls": mean(r["calls"] for r in paid),
+        # 순번 - 1 = 첫 되돌릴 수 없는 호출 앞에 놓인 호출 수. 테스트의 기대값 21/9와 대응(순번 3,3,4,3,4,3,4,3,3).
         "paid_mean_reads_before_first_irreversible": mean(r["first_irreversible_at"] - 1 for r in paid),
         "mean_stages_refund": mean(r["stages"] for r in refunds),
         "rows": rows,

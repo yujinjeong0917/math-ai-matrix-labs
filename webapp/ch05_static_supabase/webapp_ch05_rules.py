@@ -20,6 +20,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 POLICIES_SQL = HERE / "data" / "policies.sql"
 
+# templates는 공개 버킷(주소만 알면 읽기), card-images는 비공개.
 BUCKETS = {"templates": {"public": True}, "card-images": {"public": False}}
 IMAGE_EXT = ("png", "jpg", "jpeg", "webp")
 
@@ -30,6 +31,7 @@ USERS = {"alice": "u-alice", "bob": "u-bob"}
 
 def foldername(name):
     """'public/subfolder/avatar.png' -> ['public', 'subfolder'] (문서 예시와 같아요)."""
+    # 마지막 조각(파일 이름)을 뺀 폴더 목록. 파이썬은 0번부터라 SQL의 [1]이 여기서는 [0].
     return name.split("/")[:-1]
 
 
@@ -46,9 +48,11 @@ def extension(name):
 
 def _own_folder(obj, uid):
     folders = foldername(obj["name"])
+    # "내 폴더" 조건: 버킷이 card-images이고 첫 폴더가 내 user id.
     return obj["bucket_id"] == "card-images" and uid is not None and len(folders) >= 1 and folders[0] == uid
 
 
+# 명령(cmd)별 정책 4개. insert는 WITH CHECK(check)로 "내 폴더 + 그림 확장자"를 요구한다.
 STORAGE_POLICIES = [
     {"name": "그림: 내 폴더 파일을 받는다", "cmd": "select", "to": {"authenticated"},
      "using": _own_folder, "check": None},
@@ -62,6 +66,7 @@ STORAGE_POLICIES = [
 
 # 같은 select·insert 규칙을 sqlite WHERE 절로 적은 것(대조용). sqlite에는 배열이 없어서
 # 첫 폴더를 꺼내는 함수 folder1(name)과 ext(name)을 등록해 써요.
+# sqlite에 배열이 없어 folder1, ext 함수를 등록해 쓴다. 파이썬 정책과 같은 행을 고르는지 대조한다.
 SQL_SELECT = "bucket_id = 'card-images' AND :uid IS NOT NULL AND folder1(name) = :uid"
 SQL_INSERT_CHECK = SQL_SELECT + " AND ext(name) IN ('png', 'jpg', 'jpeg', 'webp')"
 
@@ -79,6 +84,7 @@ def role_of(key, uid):
 class Storage:
     def __init__(self, policies=STORAGE_POLICIES):
         self.policies = policies
+        # 키가 (버킷, 이름) 쌍이라 같은 이름도 버킷이 다르면 다른 파일.
         self.objects = {}  # (bucket, name) -> {"bucket_id", "name", "owner", "data"}
         self.signed = {}   # token -> (bucket, name, expires_at)
 
@@ -91,6 +97,7 @@ class Storage:
     def _check(self, cmd, role, obj, uid):
         return any((p["check"] or p["using"])(obj, uid) for p in self._ps(cmd, role))
 
+    # upsert: 먼저 insert 검사, 같은 이름이 있으면 select와 update 검사까지 통과해야 덮어쓴다(문서 규칙).
     # 올리기. upsert=True면 같은 이름이 있을 때 덮어써요.
     def upload(self, key, uid, bucket, name, data, upsert=False):
         role = role_of(key, uid)
@@ -103,6 +110,7 @@ class Storage:
                 if not upsert:
                     raise Denied("exists")
                 # 덮어쓰기: 있는 파일이 보이고(select), 고칠 수 있어야(update) 해요
+                # 덮어쓰기에는 INSERT 정책만으로는 부족하고 SELECT + UPDATE 정책도 필요하다.
                 if not (self._using("select", role, old, uid) and self._using("update", role, old, uid)
                         and self._check("update", role, obj, uid)):
                     raise Denied("upsert")
@@ -116,6 +124,7 @@ class Storage:
         obj = self.objects.get((bucket, name))
         role = role_of(key, uid)
         if obj is None or (role != "service_role" and not self._using("select", role, obj, uid)):
+            # 없는 파일과 못 보는 파일을 같은 오류로 돌려줘 존재 여부가 새지 않게 한다.
             raise Denied("select")  # 없는 것과 못 보는 것을 구분하지 않아요
         return obj["data"]
 
@@ -138,12 +147,14 @@ class Storage:
 
     def create_signed_url(self, key, uid, bucket, name, expires_in, now):
         self.download(key, uid, bucket, name)  # 받을 수 있는 사람만 만들 수 있다고 둬요
+        # 서명 주소 모형: 실제 서명이 아니라 순번 토큰 + 만료 시각 표.
         token = f"signed-{len(self.signed) + 1:04d}"
         self.signed[token] = (bucket, name, now + expires_in)
         return token
 
     def signed_get(self, token, now):
         bucket, name, exp = self.signed[token]
+        # 만료 경계: now가 exp와 같으면 이미 만료(now = 600이면 만료, 599면 유효).
         if now >= exp:
             raise Denied("expired")
         return self.objects[(bucket, name)]["data"]
@@ -153,10 +164,12 @@ class Storage:
 
 def sqlite_select_names(objects, uid, where):
     db = sqlite3.connect(":memory:")
+    # sqlite 사용자 함수 등록. 첫 폴더가 없으면 None.
     db.create_function("folder1", 1, lambda n: (foldername(n) or [None])[0], deterministic=True)
     db.create_function("ext", 1, extension, deterministic=True)
     db.execute("create table objects (bucket_id text, name text)")
     db.executemany("insert into objects values (?, ?)", [(o["bucket_id"], o["name"]) for o in objects])
+    # where는 이 모듈의 상수만 들어가므로 f-string이어도 주입 위험이 없다. 사용자 값은 :uid 바인딩.
     rows = db.execute(f"select name from objects where {where} order by name", {"uid": uid}).fetchall()
     return [r[0] for r in rows]
 
@@ -228,6 +241,7 @@ def run_upsert_needs_select_update():
     a = USERS["alice"]
     only_insert = [p for p in STORAGE_POLICIES if p["cmd"] == "insert"]
     res = {}
+    # INSERT만 있으면 덮어쓰기는 거부되고, insert + select + update가 있으면 덮어쓴다(문서 규칙 재현).
     for label, pol in (("insert만", only_insert), ("insert+select+update", [p for p in STORAGE_POLICIES if p["cmd"] != "delete"])):
         st = Storage(pol)
         st.upload("publishable", a, "card-images", f"{a}/upload/cover.png", b"v1")
@@ -245,6 +259,7 @@ def run_signed_url():
     st.upload("secret", None, "card-images", f"{a}/ai/bg-001.png", b"png")
     tok = st.create_signed_url("publishable", a, "card-images", f"{a}/ai/bg-001.png", expires_in=600, now=0)
     out = {}
+    # 600초 유효 주소의 경계: 0, 599초는 받고 600초부터 만료.
     for t in (0, 599, 600):
         try:
             st.signed_get(tok, now=t)
@@ -283,6 +298,7 @@ def crosscheck_sqlite():
 # 카드 읽기 정책은 3장과 달리 하나로 합쳤어요: to anon, authenticated / is_public or auth.uid() = owner_id.
 # 로그인하지 않으면 auth.uid()가 null이라 뒤쪽 비교는 참이 될 수 없어요.
 
+# 시작 카드 5건: alice 3건(공개 1), bob 2건(공개 1).
 SEED_CARDS = [
     (1, "u-alice", "가을 신메뉴 안내", 1),
     (2, "u-alice", "임시 저장: 할인 문구 초안", 0),
@@ -291,6 +307,7 @@ SEED_CARDS = [
     (5, "u-bob", "초안", 0),
 ]
 
+# 3장과 달리 읽기 정책을 하나로 합쳤다: 공개이거나 내 카드. 로그인 안 하면 uid가 None이라 뒤쪽 조건은 거짓.
 CARD_SELECT = lambda row, uid: row["is_public"] == 1 or (uid is not None and row["owner_id"] == uid)  # noqa: E731
 CARD_INSERT_CHECK = lambda row, uid: uid is not None and row["owner_id"] == uid  # noqa: E731
 SQL_CARD_SELECT = "(is_public = 1) OR (:uid IS NOT NULL AND owner_id = :uid)"
@@ -332,6 +349,7 @@ class Tables:
         if role == "service_role":
             return rows
         if role == "anon":
+            # ai_usage에는 anon용 select 정책이 없어 빈 결과(default deny).
             return []  # anon에게 걸린 select 정책이 없어요
         return [r for r in rows if r["user_id"] == uid]
 
@@ -364,6 +382,7 @@ def run_table_scenarios():
         except Denied:
             writes[name] = "거부"
     t2 = Tables()
+    # 파이썬 필터와 sqlite WHERE 결과가 세 사용자 모두 같은지 대조.
     sql_agree = all([r["id"] for r in t2.cards("publishable", uid)] == [r["id"] for r in t2.cards_sql(uid)]
                     for uid in (None, a, b))
     return {"reads": out, "writes": writes, "sql_agree": sql_agree}

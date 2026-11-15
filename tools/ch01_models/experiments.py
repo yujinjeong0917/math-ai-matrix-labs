@@ -35,6 +35,7 @@ def f(x, nd=6):
 
 
 def e0_hand(w):
+    """첫 화면 손계산. 입력 비용과 출력 비용을 따로 구해 합친다."""
     m = C.price_of("claude-sonnet-5-5")
     it = C.input_tokens_per_call(w)
     ot = w["output_tokens_per_call"]
@@ -62,6 +63,7 @@ def e1_table(prices):
 
 
 def e2_month(prices, w):
+    """모델별 한 주·한 달·한 해 비용. DeepSeek은 비피크도 같이 낸다."""
     rows = []
     for m in C.sorted_models(prices):
         row = {"model": m["model"], "week": f(C.week_cost(m, w)), "month": f(C.month_cost(m, w), 4),
@@ -77,6 +79,7 @@ def e3_thinking(prices, w):
     t = w["thinking_tokens_assumed"]
     rows = []
     for m in C.sorted_models(prices):
+        # a: 생각 토큰 없음, b: 호출마다 t개 추가. 보이지 않아도 출력 단가로 청구된다고 가정.
         a, b = C.month_cost(m, w), C.month_cost(m, w, thinking=t)
         rows.append({"model": m["model"], "month": f(a, 4), "month_thinking": f(b, 4), "ratio": f(b / a, 4),
                      "documented": m["thinking_billed_as_output"]})
@@ -84,6 +87,7 @@ def e3_thinking(prices, w):
 
 
 def e4_quarter(prices, w):
+    """분기 보고서 한 번에 문의 13주치를 넣는다. 입력이 커서 긴 프롬프트 규칙이 걸리는 모델이 생긴다."""
     q = w["quarter_weeks"]
     it = C.input_tokens_per_call(w, q)
     ot = w["output_tokens_per_call"]
@@ -92,6 +96,7 @@ def e4_quarter(prices, w):
     for m in C.sorted_models(prices):
         i, o, rule = C.unit_prices(m, it)
         run = n * C.call_cost(m, it, ot)
+        # 긴 프롬프트 규칙이 없었다면 나왔을 값. run/base가 규칙의 영향이다.
         base = n * (F(it) * C.frac(m["input"]) + F(ot) * C.frac(m["output"])) / C.MTOK
         rows.append({"model": m["model"], "rule": rule, "unit_in": f(i, 4), "unit_out": f(o, 4),
                      "run": f(run, 4), "if_base_rate": f(base, 4), "ratio": f(run / base, 4),
@@ -100,6 +105,7 @@ def e4_quarter(prices, w):
 
 
 def e5_peak(prices, w):
+    """DeepSeek 피크 시간을 한국 시각으로 옮기고, 월요일 10시(피크)와 20시(비피크) 실행 비용을 비교한다."""
     days = ["월", "화", "수", "목", "금", "토", "일"]
     peak_hours = {d: [h for h in range(24) if C.is_peak_kst(i, h)] for i, d in enumerate(days)}
     out = {"peak_hours_kst": peak_hours}
@@ -114,6 +120,7 @@ def e6_choose(prices, w):
     rows = []
     for m in C.sorted_models(prices):
         c = C.check_conditions(m, w)
+        # 셋 다 True면 통과, 하나라도 False면 탈락, False 없이 None만 섞이면 보류(문서로 확인 못 함).
         status = "통과" if all(v is True for v in c.values()) else ("보류" if None in c.values() and False not in c.values() else "탈락")
         rows.append({"model": m["model"], **c, "status": status})
     return rows
@@ -138,6 +145,7 @@ def e7_answers():
 def independent_cost(m, it, ot, peak):
     """계산기와 따로 짠 계산: 회사별 규칙을 if 문으로 직접 쓴다."""
     p = m["provider"]
+    # 교차 검증: 계산기 코드를 재사용하지 않고 문서의 규칙을 직접 옮겨 두 구현이 일치하는지 본다. Fraction이라 == 비교가 정확하다.
     i, o = F(str(m["input"])), F(str(m["output"]))
     if p == "DeepSeek" and not peak:
         i, o = i / 2, o / 2                          # 문서: 비피크는 피크의 절반
@@ -154,6 +162,7 @@ def independent_cost(m, it, ot, peak):
 
 
 def e8_crosscheck(prices):
+    # 무작위 500경우를 고정 시드로 만들어 재현 가능하게 한다.
     rng = random.Random(SEED)
     bad = 0
     for _ in range(500):

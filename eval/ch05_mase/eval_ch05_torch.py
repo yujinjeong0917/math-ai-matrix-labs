@@ -7,6 +7,7 @@ torch.set_num_threads(2)
 
 
 def naive_mae_in_sample(y_train, lag=1):
+    # NumPy판과 같은 분모(텐서). 반환값도 텐서로 두어 mase에서 바로 나눈다
     d = (y_train[lag:] - y_train[:-lag]).abs().mean()
     if d.item() == 0.0:
         raise ValueError("학습 구간의 naive 오차가 0이다")
@@ -14,4 +15,5 @@ def naive_mae_in_sample(y_train, lag=1):
 
 
 def mase(y_train, y_test, yhat, lag=1):
+    # MASE = mean(|e| / 분모)
     return ((y_test - yhat).abs() / naive_mae_in_sample(y_train, lag)).mean().item()

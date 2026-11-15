@@ -8,6 +8,7 @@ import torch
 
 import rl_chbridge_rlhf_dpo_np as m
 
+# 기본 정밀도를 float64로: NumPy 구현과 1e-9 수준으로 맞춰 비교하기 위해(float32면 일치 허용 오차가 커진다)
 torch.set_default_dtype(torch.float64)
 
 
@@ -41,6 +42,7 @@ def dpo_loss_theta(theta, Yw, Yl, beta):
 def train_dpo(Yw, Yl, beta, steps=300, lr=0.05):
     """NumPy `train_dpo`와 같은 순서(전체 묶음, Adam)로 학습한 theta를 돌려준다."""
     theta = torch.zeros((m.L, m.V + 1, m.V), requires_grad=True)
+    # NumPy Adam과 같은 하이퍼파라미터. 단, torch Adam은 손실을 내리는 방향이므로 별도 부호 처리 없이 loss.backward() 그대로 쓴다
     opt = torch.optim.Adam([theta], lr=lr, betas=(0.9, 0.999), eps=1e-8)
     for _ in range(steps):
         opt.zero_grad()
@@ -56,6 +58,7 @@ def kl_regularized_objective(theta, u, beta):
     lp = torch.log_softmax(theta, dim=-1).reshape(-1)[torch.as_tensor(tab["flat"], dtype=torch.long)].sum(dim=1)
     p = torch.exp(lp)
     rhat = torch.as_tensor(tab["counts"]) @ torch.as_tensor(u)
+    # 식: E_pi[r_hat] - beta KL(pi || pi_ref). KL = sum p (lp + L log V)(기준이 균등)
     return p @ rhat - beta * (p @ (lp + m.L * math.log(m.V)))
 
 

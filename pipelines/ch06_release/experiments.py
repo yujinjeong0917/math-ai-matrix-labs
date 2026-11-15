@@ -38,8 +38,10 @@ from pipelines_ch06_simulate import metrics_of, simulate_traffic  # noqa: E402
 torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch06.json"
+# 시드 하나당 서빙 요청 10,000건
 N_REQ = 10_000
 SEEDS = range(10)
+# (이름, 배포 방식, 카나리 비율 p, 되돌리기 지연 요청 수). full은 v1 재배포 동안 계속 v2가 받는다
 STRATS = [
     ("full_R500", "full", 1.0, 500),
     ("full_R2000", "full", 1.0, 2000),
@@ -48,6 +50,7 @@ STRATS = [
     ("canary_0.05", "canary", 0.05, 0),
     ("canary_0.2", "canary", 0.2, 0),
 ]
+# 정답이 도착하는 지연(요청 수). 이탈 정답은 현실에서 늦게 오는 점을 흉내 낸다
 DELAYS = (0, 1000, 3000)
 
 
@@ -61,6 +64,7 @@ def train_models(fit=M.fit_logistic):
     return tr, va, M.train(tr, D.NUMERIC_V1, fit=fit), M.train(tr, D.NUMERIC_V2, fit=fit)
 
 
+# 서빙 요청 흐름과 배포 전 v1 기준 구간을 만든다. 시드가 다르면 서빙 데이터도 다르다
 def traffic(seed, v1, v2, shift=0.0, skew=True):
     tf = D.serve_view(D.make_table(1000 + seed, N_REQ, shift=shift), skew=skew)
     bt = D.serve_view(D.make_table(5000 + seed, 2000), skew=skew)  # 배포 전 v1 구간(전후 비교의 기준)
@@ -133,6 +137,7 @@ def e2(trafs):
                 r["delta_e"] = float(np.mean(T["c1"] - T["c2"]))
                 rows.append(r)
             sm = summarize(rows)
+            # 검산: 피해 = (v2가 받은 요청 수) x (전체 평균 오류 차이 delta_e)와 같은 규모인지 비교
             sm["harm_formula_mean"] = r4(np.mean([r["served_v2"] * r["delta_e"] for r in rows]))
             out[f"L{L}/{name}"] = sm
     return out
@@ -151,6 +156,7 @@ def e3(trafs):
 
 
 def e4(v1, v2):
+    # 오탐은 드문 사건이라 시드를 200개로 늘려 비율을 잰다
     n_seeds = 200
     configs = {
         "z3_overall_repeated": (dict(OVERALL_ONLY, z=3.0), None),
@@ -167,6 +173,7 @@ def e4(v1, v2):
     for s in range(n_seeds):
         T = traffic(100 + s, v1, v2)
         for k, (g, single) in configs.items():
+            # v2 = v1(똑같은 모델)인데 rollback이면 오탐. r1은 진짜 나쁜 v2를 잡는 비율(탐지)
             r0 = simulate_traffic(T["c1"], T["c1"], T["users"], T["seg"], "canary", g, p=0.2, single_look_at=single)
             same[k] += r0["decision"] == "rollback"
             r1 = simulate_traffic(T["c1"], T["c2"], T["users"], T["seg"], "canary", g, p=0.2, single_look_at=single)
@@ -222,6 +229,7 @@ def e6(tr, v1, v2):
 
 
 def e7():
+    # 사용자 2000명이 각각 5번 요청하는 상황
     n_users, per_user = 2000, 5
     users = [f"user-{i}" for i in range(n_users)]
     a = [route(u, 0.05) for u in users]
@@ -241,6 +249,7 @@ def e7():
         "users_seeing_both_random": both, "users_seeing_both_random_rate": r4(both / n_users),
         "users_seeing_both_hash": hash_both,
         "hash_share_at_0.2_of_100k": r4(share),
+        # 이론값: 5번 중 두 버전을 모두 볼 확률 = 1 - 0.8^5 - 0.2^5 (p = 0.2)
         "random_expected_rate": r4(1 - 0.8**per_user - 0.2**per_user),
     }
 

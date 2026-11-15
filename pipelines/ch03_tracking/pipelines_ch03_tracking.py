@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).parent
+# 소스 해시에 포함할 파일 목록. 목록에 없는 파일을 고치면 해시가 변하지 않는다
 SOURCE_FILES = [
     "pipelines_ch03_data.py",
     "pipelines_ch03_model_np.py",
@@ -33,7 +34,9 @@ def code_identity():
         h.update(name.encode() + b"\x00" + (HERE / name).read_bytes())
     commit, dirty = None, None
     try:
+        # git이 없거나 저장소가 아니면 commit, dirty를 None으로 둔다
         commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=HERE, capture_output=True, text=True, check=True).stdout.strip()
+        # 이 폴더(.)에 커밋되지 않은 변경이 있으면 dirty=True
         status = subprocess.run(["git", "status", "--porcelain", "--", "."], cwd=HERE, capture_output=True, text=True, check=True).stdout
         dirty = bool(status.strip())
     except (OSError, subprocess.CalledProcessError):
@@ -54,6 +57,7 @@ def env_snapshot():
 
 
 def _canonical(obj):
+    # 키 정렬과 공백 제거로 같은 내용이 항상 같은 문자열이 되게 한다(해시 입력과 jsonl 한 줄 양쪽에 쓴다)
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
@@ -67,16 +71,20 @@ def log_run(store, params, metrics, artifacts=None, data=None, code=None, env=No
     store = Path(store)
     store.mkdir(parents=True, exist_ok=True)
     log = store / "runs.jsonl"
+    # run_id 앞 번호 = 지금까지 기록된 줄 수. 동시에 두 프로세스가 쓰면 번호가 겹칠 수 있다(동시 실행은 고려하지 않은 단순화)
     index = sum(1 for _ in log.open()) if log.exists() else 0
     body = {"params": params, "data": data or {}, "code": code or {}, "env": env or {}}
+    # run_id = 순번 4자리 + 설정·데이터·코드·환경 내용 해시 앞 8자리
     run_id = f"{index:04d}-{hashlib.sha256(_canonical(body).encode()).hexdigest()[:8]}"
     uris = {}
     for name, arrays in (artifacts or {}).items():
         path = store / "artifacts" / run_id / f"{name}.npz"
         path.parent.mkdir(parents=True, exist_ok=True)
+        # 결과 파일(가중치 등)은 jsonl에 넣지 않고 .npz로 따로 저장하고 상대 경로만 기록한다
         np.savez(path, **arrays)
         uris[name] = str(path.relative_to(store))
     record = {"run_id": run_id, **body, "metrics": metrics, "artifact_uri": uris}
+    # append 모드: 앞 줄은 수정하지 않고 한 줄만 덧붙인다
     with log.open("a") as f:
         f.write(_canonical(record) + "\n")
     return run_id
@@ -89,6 +97,7 @@ def load_runs(store):
     return [json.loads(line) for line in log.open()]
 
 
+# keys 인자는 함수 안에서 쓰이지 않는다. 실제 묶음 기준은 (데이터 해시, 소스 해시)로 고정
 def comparable_groups(runs, keys=("data", "code")):
     """같은 데이터 해시와 같은 코드 해시를 가진 기록끼리만 묶는다. 묶음 밖끼리 점수를 비교하지 않는다."""
     groups = {}
@@ -109,5 +118,6 @@ def rerun_from_record(record, make_data, train_fn):
     """
     train, valid, h = make_data(record["params"])
     if h != record["data"].get("train_valid"):
+        # 데이터가 기록과 다르면 학습 전에 중단한다. 다른 데이터에서 나온 점수를 같은 실행으로 착각하지 않게 하는 장치
         raise RecordMismatch(f"데이터 해시가 다르다: 기록 {record['data'].get('train_valid', '')[:12]}, 지금 {h[:12]}")
     return train_fn(train, valid, record["params"])

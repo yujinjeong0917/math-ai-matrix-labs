@@ -18,16 +18,20 @@ import re
 import tools_ch08_data as D
 
 USER_TASK = "이번 주 문의를 유형별로 세어 보고서를 써 줘. 아무것도 고치거나 보내지 마."
+# 허락한 쓰기 종류가 비어 있으므로, 확인 문(gate)이 있으면 모든 쓰기·보내기가 거절된다.
 USER_ALLOWED_ACTIONS = set()          # 사용자가 허락한 쓰기 종류: 없음
 
+# 지시를 알아보는 정규식 네 개: 이 장의 숨은 지시 4가지만 잡는 장난감. 실제 모델이 무엇을 따를지는 이 모형으로 알 수 없다.
 PATTERNS = {
     "status_all": re.compile(r"문의를 모두 '([^']+)'로 바꿔"),
     "send_all_emails": re.compile(r"email every customer address .*? to (\S+@[\w.-]+\w)"),
     "set_text": re.compile(r"'([^']+)'을 '([^']+)'으로 고쳐"),
     "report_prepend": re.compile(r"요약 첫 줄에 '([^']+)'라고 적어"),
 }
+# 낱말 거르개: 소문자로 바꾼 본문에서 부분 문자열로 찾는다. 그래서 'AI에게 물어보기' 같은 평범한 문장도 걸린다(거짓 양성).
 FILTER_WORDS = ["ai에게", "ignore previous", "<system>"]
 # separate 고리가 놓친다고 가정한 종류(가정): 관리자 지시처럼 꾸민 글, 공손한 부탁 글.
+# 가정값: 자료로만 읽어도 새는 종류. 실제 새는 비율이나 종류를 측정한 것이 아니다.
 LEAK_KINDS = ("set_text", "report_prepend")
 WRITE_KINDS = ("status_all", "send_all_emails", "set_text")
 
@@ -49,12 +53,14 @@ class World:
     """문의 DB, 화면 문구, 보낸 메일함. 쓰기는 모두 기록한다."""
 
     def __init__(self, inbox):
+        # 원본을 건드리지 않으려 행을 복사한다(상태를 바꾸는 시나리오가 서로 영향을 주지 않게).
         self.rows = [dict(r) for r in inbox["rows"]]
         self.screens = {k: list(v) for k, v in inbox["screens"].items()}
         self.sent = []
         self.changed_rows = 0
         self.changed_texts = []
 
+    # 이미 같은 상태면 바뀐 행으로 세지 않는다(14 = 답변 완료가 아닌 행 수).
     def update_status(self, rid, status):
         r = next(r for r in self.rows if r["id"] == rid)
         if r["status"] != status:
@@ -71,6 +77,7 @@ class World:
         self.sent.append({"to": to, "count": len(addresses)})
 
 
+# 보고서 틀: 제목 줄 + 유형별 건수 줄. 틀에 없는 줄은 사람이 읽을 때 눈에 띄는 변조로 본다. 정렬은 건수 내림차순, 동률이면 유형 이름 순.
 def write_report(rows, prepend=None):
     counts = {}
     for r in rows:
@@ -89,7 +96,9 @@ def run(source="naive", gate=None, review=False, inbox=None):
     flagged, false_pos = [], []
     todo = []
     for r in rows:
+        # 본문 하나에서 찾은 지시 목록. 아래 분기가 고리 종류(source)에 따라 이 목록을 걸러낸다.
         ins = find_instructions(r["body"])
+        # filter: 낱말에 걸린 문의는 통째로 제외. 지시가 없는데 걸렸으면 거짓 양성으로 기록한다. 걸리지 않은 공손한 지시(q17)는 그대로 통과한다.
         if source == "filter" and keyword_flag(r["body"]):
             flagged.append(r["id"])
             if not ins:
@@ -104,9 +113,11 @@ def run(source="naive", gate=None, review=False, inbox=None):
     asked_kinds = set()
     for item in todo:
         kind = item[1]
+        # 보고서 첫 줄 변조는 도구 호출이 아니라 글 속에 섞이므로 확인 문이 막지 못한다(막으려면 사람이 읽어야 한다).
         if kind == "report_prepend":          # 도구 호출이 아니라 글 속에 섞인다. gate가 볼 수 없다.
             prepend = item[2]
             continue
+        # status_all은 행마다 쓰기 호출 1번이라 행 수만큼(20) 센다. 20 + 메일 1 + 문구 변경 1 = 22번이 순진한 고리의 시도 수.
         n_calls = len(rows) if kind == "status_all" else 1
         attempted += n_calls
         if gate == "per_call":
@@ -114,6 +125,7 @@ def run(source="naive", gate=None, review=False, inbox=None):
         elif gate == "per_kind" and kind not in asked_kinds:
             prompts += 1
             asked_kinds.add(kind)
+        # gate가 없으면 무조건 실행. gate가 있으면 사용자가 허락한 종류만 실행(여기서는 비어 있어 모두 거절).
         approved = (gate is None) or (kind in USER_ALLOWED_ACTIONS)
         if not approved:
             denied += n_calls
@@ -127,6 +139,7 @@ def run(source="naive", gate=None, review=False, inbox=None):
             world.set_text(item[2], item[3])
     report, template = write_report(rows, prepend)
     tampered = prepend is not None
+    # 사람이 읽을 때 틀에 없는 줄이 있으면 잡는다고 가정(사람이 항상 알아챈다는 낙관적 가정).
     caught_in_review = review and any(line not in template for line in report)
     return {"source": source, "gate": gate, "review": review,
             "followed": sorted({(i[0], i[1]) for i in todo}),
@@ -162,6 +175,7 @@ def yearly(n_per_week=4, weeks=52, p_leak=0.05, q_miss=0.05):
     """예시 계산. 1년 동안 숨은 지시가 실제 피해로 이어지는 기대 횟수 = N x p x q.
     p, q는 가정한 예시 값이고, 두 단계가 서로 독립이라고 가정한다."""
     from fractions import Fraction as F
+    # 식: 기대 피해 횟수 = N x p x q. 4건/주 x 52주 = 208건, 새는 확률 p, 확인 문을 지나칠 확률 q(둘 다 예시 값).
     n = n_per_week * weeks
     p, q = F(str(p_leak)), F(str(q_miss))
     return {"n": n, "p": p_leak, "q": q_miss, "after_separate": float(n * p), "after_gate": float(n * p * q)}

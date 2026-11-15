@@ -29,12 +29,14 @@ import webapp_ch05_edge as E  # noqa: E402
 import webapp_ch05_rules as R  # noqa: E402
 
 OUT = HERE / "results" / "ch05.json"
+# 결과 파일에 넣을 값은 분수를 float로 반올림해 저장한다.
 f = C.to_float
 
 
 def e0_layout():
     pub = HERE / "site" / "public"
     files = sorted(p.relative_to(pub).as_posix() for p in pub.rglob("*") if p.is_file())
+    # 정적 사이트 파일 전체를 이어 붙여 비밀 키가 한 군데도 없는지 검사하는 용도.
     bundle = "".join((pub / x).read_text(encoding="utf-8") for x in files)
     fn = (HERE / "supabase" / "functions" / "generate-background" / "index.ts").read_text(encoding="utf-8")
     env = (HERE / "supabase" / "env.example").read_text(encoding="utf-8")
@@ -54,6 +56,7 @@ def e6_costs():
     pu = C.per_user()
     walls = C.free_walls()
     grid = []
+    # MAU 6단계: 무료 한도 안(100)에서 Pro 초과 구간(120000)까지.
     for mau in (100, 250, 600, 2000, 20000, 120000):
         row = {"mau": mau}
         for month in (1, 6, 12):
@@ -92,7 +95,9 @@ def e9_exercises():
     ai_mb = u["ai_backgrounds"] * u["ai_png_kb"] / kb
     cap = C.PRICING["supabase"]["free"]["storage_gb"] * C.USAGE["mb_per_gb"]
     m = 100
+    # 연습 2: AI 그림은 최근 한 달 치만 남긴다고 가정해 고정분으로 두고, 올린 그림만 쌓인다.
     fixed = m * ai_mb                         # AI 그림은 최근 한 달 치만 남김
+    # 남은 용량을 매달 쌓이는 양으로 나눈다. 딱 나누어떨어지면 그 달 끝에는 한도와 같을 뿐이라 다음 달이 첫 초과(int(months) + 1).
     months = (cap - fixed) / (m * upload_mb)  # 올린 그림만 쌓임
     ex1 = {"mau": 400, "egress_mb": f(400 * pu["egress_mb"]), "storage_m1_mb": f(400 * pu["storage_mb"]),
            "storage_m2_mb": f(400 * pu["storage_mb"] * 2), "storage_full_month": C.first_month_over(500, 400),
@@ -116,6 +121,7 @@ def e9_exercises():
     o = C.PRICING["supabase"]["pro"]["overage"]
     docs = {  # 공식 문서의 계산 예제를 같은 단가로 다시 계산
         "mau_160k_overage_usd": f((160000 - 100000) * C.Fraction(str(o["mau_usd_each"])), 2),
+        # 올림 나눗셈 관용구: -(-a // b) = ceil(a / b). 문서 예시 1,000,001회 = 2묶음.
         "edge_1000001_packs": -(-1_000_001 // 1_000_000),
         "storage_188gb_overage_usd": f(188 * C.Fraction(str(o["storage_usd_per_gb_month"])), 2),
     }
@@ -125,6 +131,7 @@ def e9_exercises():
 def e7_lockin():
     text = R.POLICIES_SQL.read_text(encoding="utf-8")
     blocks = re.findall(r'create policy "[^"]+".*?;', text, flags=re.S)
+    # 정책 중 Supabase 전용 함수(auth.uid, storage.foldername 등)를 쓰는 것의 수. 이식성(벤더 종속)의 지표.
     special = [b for b in blocks if re.search(r"\bauth\.(uid|jwt)\(|\bstorage\.(foldername|filename|extension)\(", b)]
     on_storage = [b for b in blocks if "storage.objects" in b]
     app = (HERE / "site" / "public" / "app.js").read_text(encoding="utf-8")
@@ -141,6 +148,7 @@ def e7_lockin():
 
 
 def e8_pause():
+    # 요청 수는 가상 값이다. 7일 규칙 자체는 모형의 가정으로 실제 일시 정지 조건은 공식 문서 확인이 필요하다.
     # 30일 동안 하루 DB 요청 수(가상). 모형 규칙: 최근 7일이 모두 0이면 "정지 위험"
     daily = {
         "매일 쓰는 편집기": [12] * 30,
@@ -152,6 +160,7 @@ def e8_pause():
         flag = None
         run = 0
         for d, x in enumerate(xs, start=1):
+            # 연속으로 요청이 없는 날 수. 요청이 있으면 0으로 되돌린다.
             run = run + 1 if x == 0 else 0
             if run >= 7 and flag is None:
                 flag = d

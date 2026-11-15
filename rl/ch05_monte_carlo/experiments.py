@@ -39,6 +39,7 @@ HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch05.json"
 LOG = HERE / "logs" / "ch05_episodes.jsonl"
 SEEDS = list(range(10))
+# 한 판의 최대 걸음 수. 넘으면 끝나지 않은 판으로 보고 MC가 쓰지 않는다(시드 10개: 실험별로 default_rng(시드)로 재현)
 CAP = 10_000
 
 
@@ -91,6 +92,7 @@ def e0_corridor(logf):
     for i in range(4):
         ep = m.generate_episode(env, pi, 0, rng)
         G0 = float(m.returns(ep.rewards, gamma)[0])
+        # 식: G_0 = gamma^(걸음 수 - 1). 보상 1이 마지막 걸음에만 있고 거기까지 걸음 수 - 1번 할인된다
         first.append({"path": path_letters(ep), "steps": len(ep.states), "G0": r6(G0),
                       "G0_formula": f"0.9^{len(ep.states) - 1}"})
         log_episode(logf, ep, 0, i, "corridor", gamma)
@@ -106,6 +108,7 @@ def e0_corridor(logf):
             tot = 0.0
             for _ in range(N):
                 ep = m.generate_episode(env, pi, 0, rng, uni=uni, pcdf=pc)
+                # 복도는 보상이 도착 때 한 번뿐이라 G_0 = gamma^(걸음 - 1)을 바로 쓴다(returns()와 같은 값). tot / N이 시작 칸 A의 MC 평균
                 tot += gamma ** (len(ep.states) - 1)
             ests.append(tot / N)
         a = np.array(ests)
@@ -121,6 +124,7 @@ def e0_corridor(logf):
         "first_episodes_seed0": first, "hand_average_4": r6(hand_avg),
         "average_over_N": per_N,
         "single_return_sd_100k": r6(gs.std(ddof=1)), "single_return_mean_100k": r6(gs.mean()),
+        # G_0 = gamma^(걸음 - 1)을 거꾸로 풀어 평균 걸음 수를 복원: 걸음 = log G / log gamma + 1
         "steps_mean_100k": r6(np.mean(np.log(gs) / np.log(gamma) + 1)),
     }
 
@@ -150,6 +154,7 @@ def e1_waiting(logf):
     # b) 무작위 결정론적 정책 1,000개
     rng = np.random.default_rng(0)
     n_pol = 1000
+    # 결정론적 정책 1,000개: 칸마다 행동 하나를 무작위로 정한다(pi[s, 그 행동] = 1)
     acts = rng.integers(0, 4, size=(n_pol, S))
     stuck, done_lens, logged = 0, [], False
     t0 = time.perf_counter()
@@ -157,6 +162,7 @@ def e1_waiting(logf):
     for i in range(n_pol):
         pi = np.zeros((S, 4))
         pi[np.arange(S), acts[i]] = 1.0
+        # done=False면 CAP걸음 안에 종료 칸에 못 간 판. 첫 방문 MC는 이 판으로 아무 칸도 고칠 수 없다
         ep = m.generate_episode(env, pi, g.CH02_START, rng, CAP)
         if ep.done:
             done_lens.append(len(ep.states))
@@ -193,6 +199,7 @@ def e1_waiting(logf):
     lens_d, trunc_d = [], 0
     lens_d_stuck = []
     for i in range(n_pol):
+        # eps_greedy와 같은 꼴로 섞는다: pi(a|s) = eps/|A| + (1-eps) 1[a = 결정론적 행동], eps = 0.1. 갇혔던 정책이 풀리는지 본다(d)
         pi = np.full((S, 4), 0.1 / 4)
         pi[np.arange(S), acts[i]] += 0.9
         ep = m.generate_episode(env, pi, g.CH02_START, rng, CAP, uni=uni)
@@ -213,6 +220,7 @@ def e1_waiting(logf):
     L, alive = np.concatenate(L), np.concatenate(alive)
     # 정확한 기대 걸음 수: 걸음마다 1을 더하는 보상, gamma=1
     steps_R = np.where(P20 > 0, 1.0, 0.0)
+    # 걸음마다 보상 1, gamma = 1이면 V(s)는 종료까지의 기대 걸음 수. 3장의 연립방정식 풀이로 정확값을 얻는다
     exp_steps = g.exact_v(P20, steps_R, g.uniform_policy(400), 1.0, term20)[0]
     out["e_uniform_20x20"] = {"episodes": int(L.size), **stats(L), "truncated": int(alive.sum()),
                               "share_truncated": r6(alive.mean()), "expected_steps_exact": r6(exp_steps)}
@@ -231,6 +239,7 @@ def e2_first_vs_every():
     gamma = 0.9
     pi = g.uniform_policy(S)
     V = g.exact_v(P, R, pi, gamma, term)
+    # 걸음마다 보상 1, gamma = 1로 풀면 시작 칸에서의 기대 판 길이
     steps_R = np.where(P > 0, 1.0, 0.0)
     exp_len = g.exact_v(P, steps_R, pi, 1.0, term)[0]
     nonterm = ~term
@@ -258,6 +267,7 @@ def e2_first_vs_every():
                 t_fv += t1 - t
                 t_ev += t2 - t1
             d = res[str(N)]
+            # 식: RMSE = sqrt(mean_s (V_hat(s) - V(s))^2), 종료 칸을 뺀 15칸. 방문 못 한 칸은 V = 0으로 남아 오차에 들어간다
             d["fv"].append(float(np.sqrt(np.mean((Vf[nonterm] - V[nonterm]) ** 2))))
             d["ev"].append(float(np.sqrt(np.mean((Ve[nonterm] - V[nonterm]) ** 2))))
             d["fv_unvisited"].append(int(np.sum(Nf[nonterm] == 0)))
@@ -276,6 +286,8 @@ def e2_first_vs_every():
     bias = {}
     for N in (1, 10):
         fs, es = [], []
+        # 반복 측정: N판으로 낸 시작 칸 추정값을 2,000번 모아 (평균 - 참값)을 본다. 이론상 첫 방문은 불편이고
+        # 모든 방문은 N이 작을 때 편향이 있을 수 있다. 실제 크기는 results/ch05.json 확인 필요
         rng = np.random.default_rng(1000 + N)
         uni = m._Uniforms(rng)
         pc = m.policy_cdf(pi)
@@ -306,8 +318,10 @@ def greedy_return(P, R, term, Q, s0, gamma, max_steps=100):
     for _ in range(max_steps):
         if term[s]:
             return G, len(path), True
+        # epsilon = 0 탐욕 행동(동률이면 번호가 가장 작은 쪽). 미끄러짐 없는 격자라 다음 칸은 P[s,a]의 argmax
         a = int(Q[s].argmax())
         s2 = int(P[s, a].argmax())
+        # 식: G = sum_t gamma^t r_{t+1}. disc가 gamma^t
         G += disc * R[s, a, s2]
         disc *= gamma
         path.append(s)
@@ -320,12 +334,14 @@ def e3_control():
     P, R, term = g.ch02_grid()
     env = m.make_env(P, R, term)
     gamma, n_ep = 0.9, 2000
+    # 시작 (0,0)에서 (2,4)까지 6걸음. +10은 마지막 걸음에만 있고 할인은 5번이라 10 x 0.9^5 = 5.9049
     opt = 10 * 0.9 ** 5
     configs = [("fixed_start_eps0.1", False, 0.1), ("fixed_start_eps0.5", False, 0.5),
                ("exploring_starts_eps0", True, 0.0), ("exploring_starts_eps0.1", True, 0.1),
                ("fixed_start_eps0.1_10000ep", False, 0.1)]
     out = {"grid": "2장 5x5", "gamma": gamma, "episodes": n_ep, "optimal_start_value": r6(opt), "configs": {}}
     for name, es, eps in configs:
+        # 마지막 설정만 판 수를 5배로 둔다. 바깥의 n_ep = 2000은 설정마다 덮어쓰인다
         n_ep = 10_000 if name.endswith("10000ep") else 2000
         rows = []
         t = time.perf_counter()
@@ -337,6 +353,7 @@ def e3_control():
                          "total_steps": int(sum(lens))})
         out["configs"][name] = {
             "exploring_starts": es, "epsilon": eps,
+            # 탐욕 경로의 리턴이 opt(+10 도착)인 시드 수. 1.0이면 가까운 +1 칸에 만족한 시드. 1e-9는 부동소수 비교 허용 오차
             "seeds_reaching_10": int(sum(abs(r["greedy_return"] - opt) < 1e-9 for r in rows)),
             "seeds_settling_1": int(sum(abs(r["greedy_return"] - 1.0) < 1e-9 for r in rows)),
             "seeds_greedy_not_terminating": int(sum(not r["greedy_terminates"] for r in rows)),
@@ -358,6 +375,7 @@ def e4_importance():
         max_rho = 0.0
         pooled = []
         for sd in range(100):
+            # 시드마다 10만 판을 뽑고, 앞 100/1,000/10,000/100,000판의 추정값을 같은 묶음에서 읽는다(is_estimates_prefix)
             k = m.sample_more_counts(Ns[-1], np.random.default_rng(10_000 + sd))
             o, w = m.is_estimates_prefix(k, p, Ns)
             o_all.append(o)
@@ -377,6 +395,7 @@ def e4_importance():
                 "weighted_mean": r6(w.mean()), "weighted_sd": r6(w.std(ddof=1)), "weighted_median": r6(np.median(w)),
                 "weighted_within10": int(np.sum(np.abs(w - truth) <= 0.1 * truth)),
             }
+        # 일반 IS의 분산 = E_b[(rho G)^2] - v_pi^2. x = p^2/b >= 1이면 무한대(b = 0.5에서 p >= 0.7071)
         sm = m.is_second_moment(p)
         out["cases"][str(p)] = {
             "truth": r6(truth), "x_ratio_sq_over_b": r6(p * p / 0.5),
@@ -397,6 +416,7 @@ def e4_importance():
     out["no_correction_mean_1e5"] = r6(k.mean())
     # 복도에서의 오프폴리시: b = 반반, pi = 오른쪽 0.8, A에서 출발, gamma 0.9
     P, R, term, b = g.corridor()
+    # 목표 정책: 세 칸 모두 오른쪽 0.8, 왼쪽 0.2(열 순서 위, 오른쪽, 아래, 왼쪽). 행동 정책 b는 corridor()의 반반
     pi = np.tile([0.0, 0.8, 0.0, 0.2], (3, 1))
     env = m.make_env(P, R, term)
     Vpi = g.exact_v(P, R, pi, 0.9, term)
@@ -408,6 +428,7 @@ def e4_importance():
             uni = m._Uniforms(rng)
             pc = m.policy_cdf(b)
             eps = [m.generate_episode(env, b, 0, rng, CAP, uni=uni, pcdf=pc) for _ in range(N)]
+            # 같은 판 묶음 eps로 일반 IS와 가중 IS를 모두 계산한다(공정한 비교)
             o.append(m.off_policy_is(eps, pi, b, 0.9, False))
             w.append(m.off_policy_is(eps, pi, b, 0.9, True))
         corr[str(N)] = {"ordinary_mean": r6(np.mean(o)), "ordinary_sd": r6(np.std(o, ddof=1)),
@@ -436,6 +457,7 @@ def e5_torch():
     epc = [m.generate_episode(envc, b, 0, rng, CAP) for _ in range(2000)]
     on, wn = m.off_policy_is(epc, pic, b, 0.9, False), m.off_policy_is(epc, pic, b, 0.9, True)
     ot, wt = mt.off_policy_is(epc, torch.tensor(pic), torch.tensor(b), 0.9)
+    # 비교 허용 오차: 리턴·MC 평균은 절대 오차 atol 1e-12, 곱 순서가 다른 중요도 비율은 상대 오차 rtol 1e-12
     rho_n = np.array([m.importance_ratio(e, pic, b) for e in epc if e.done])
     rho_t = mt.importance_ratios(epc, torch.tensor(pic), torch.tensor(b)).numpy()
     out["is_corridor_2000ep"] = {"ordinary_rel_diff": float(abs(on - ot.item()) / abs(on)),

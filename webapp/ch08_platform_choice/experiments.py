@@ -24,6 +24,7 @@ import webapp_ch08_fees as F  # noqa: E402
 import webapp_ch08_select as S  # noqa: E402
 
 OUT = HERE / "results" / "ch08.json"
+# 가정값(실측 아님). 가격은 부가세 포함 원 단위
 PRICE = 4900          # 프로 구독 월 가격(부가세 포함, 이 장의 가정)
 SUBSCRIBERS = 200     # 유료 구독자 수(가정)
 SCENARIOS = {
@@ -55,7 +56,9 @@ def e2_monthly(fees):
 
 
 def e3_fixed(fees, e1):
+    # 경로별 "고객 결제액 대비 개발자 몫"을 E1에서 가져와 고정비를 메울 결제 건수를 구한다
     net = {r["id"]: r["net_share_of_gross"] for r in e1}
+    # 이름이 no_mac으로 끝나는 조합만 맥을 새로 산다고 본다(아래 need_new_mac). 키 이름 규칙에 기대는 코드라 이름을 바꾸면 결과가 달라진다
     combos = {"web_only": [], "android": ["android"], "ios_no_mac": ["ios"], "ios_with_mac": ["ios"],
               "android_and_ios_no_mac": ["android", "ios"]}
     out = {}
@@ -65,10 +68,12 @@ def e3_fixed(fees, e1):
             pg = fees["pg"]["toss_card_general"]
             fc["items"].append({"item": "PG 가입비 + 연관리비", "krw": pg["signup_krw"] + pg["yearly_krw"], "sources": pg["sources"]})
             fc["first_year_cash"] = sum(i["krw"] for i in fc["items"])
+            # 웹만 쓰는 경우 PG 가입비·연관리비를 고정비에 더한다
             share = net["web_pg"]
         elif name == "android":
             share = net["gp_15_tier"]
         else:
+            # iOS 포함 조합은 애플 소규모 사업자 프로그램 몫으로 계산(안드로이드+iOS 조합도 iOS 몫만 사용하는 단순화)
             share = net["apple_sbp"]
         fc["net_share_used"] = share
         fc["payments_to_cover"] = F.subscribers_to_cover(fc["first_year_cash"], PRICE, share) if fc["first_year_cash"] else 0
@@ -87,6 +92,7 @@ def e5_select():
 
 
 def e6_order():
+    # 조건 조합 64가지를 모두 돌려, 플랫폼 순서가 항상 같은지(순위를 매기지 않는지) 확인한다
     orders = set()
     n = 0
     for mac, iphone, pay, feats in itertools.product((False, True), (False, True),

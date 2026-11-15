@@ -38,6 +38,10 @@ class _Counted:
 
 
 def has_dup_pairs(xs, counter=None):
+    """모든 쌍 비교. 시간 O(n^2)(중복 없을 때 정확히 n(n-1)/2번 비교), 추가 공간 O(1).
+
+    불변식: 바깥 반복 i 시작 시점에 xs[0..i-1] 의 어느 원소도 뒤쪽 원소와 같지 않다.
+    """
     n = len(xs)
     if counter is None:
         for i in range(n):
@@ -56,12 +60,18 @@ def has_dup_pairs(xs, counter=None):
 
 
 def has_dup_sorted(xs, counter=None):
+    """정렬 후 이웃 비교. 시간 O(n log n), 공간 O(n)(정렬 사본).
+
+    같은 값은 정렬하면 반드시 이웃이 되므로 이웃만 보면 충분하다.
+    불변식: 반복 i 시작 시점에 s[0..i-1] 안에는 이웃한 같은 쌍이 없다.
+    """
     if counter is None:
         s = sorted(xs)
         for i in range(1, len(s)):
             if s[i - 1] == s[i]:
                 return True
         return False
+    # 계수 경로: 비교 횟수를 세려고 원소를 _Counted 로 감싸 정렬하고 다시 값만 꺼낸다.
     s = [w.v for w in sorted(_Counted(v, counter) for v in xs)]
     for i in range(1, len(s)):
         counter.comparisons += 1
@@ -73,6 +83,8 @@ def has_dup_sorted(xs, counter=None):
 def _merge_sort(a, counter):
     """파이썬으로 짠 합병 정렬. 내장 sorted(C 구현)와 달리 모든 줄이 파이썬이라
     모든 쌍 비교와 '한 줄의 값'이 비슷하다. counter 가 있으면 원소 비교를 센다."""
+    # 시간 O(n log n): 재귀 깊이 log2 n 단계마다 병합 비용이 합쳐서 O(n). 공간 O(n).
+    # 불변식: 병합 중 out 은 left[:i] 와 right[:j] 의 원소를 정렬된 순서로 모두 담고 있다.
     n = len(a)
     if n <= 1:
         return a
@@ -84,7 +96,7 @@ def _merge_sort(a, counter):
     while i < nl and j < nr:
         if counter is not None:
             counter.comparisons += 1
-        if right[j] < left[i]:
+        if right[j] < left[i]:  # 엄격한 < 라서 같으면 left 를 먼저 내보낸다(안정 정렬)
             out.append(right[j])
             j += 1
         else:
@@ -106,6 +118,10 @@ def has_dup_msort(xs, counter=None):
 
 
 def has_dup_set(xs, counter=None):
+    """해시 집합 확인. 시간 평균 O(n)(해시 충돌이 적다는 가정), 공간 O(n).
+
+    불변식: 반복 시작 시점에 seen 은 지금까지 본 값 전체이며, 그 안에는 중복이 없다.
+    """
     seen = set()
     if counter is None:
         for x in xs:
@@ -125,6 +141,7 @@ METHODS = {"pairs": has_dup_pairs, "sorted": has_dup_sorted, "msort": has_dup_ms
 
 
 def count_ops(method, xs):
+    # 방법 이름에 해당하는 함수를 계수기와 함께 한 번 돌려 기본 연산 수(비교+집합 확인)를 돌려준다.
     c = Counter()
     METHODS[method](xs, c)
     return c.total

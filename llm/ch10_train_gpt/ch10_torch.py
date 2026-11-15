@@ -8,6 +8,9 @@
   g ← g + λθ로 기울기에 더해진다. AdamW는 θ ← θ − γλθ로 따로 줄인다.
 - 감쇠는 2차원 이상 텐서(행렬·임베딩)에만 건다. LN의 γ·β와 편향은 감쇠하지 않는다.
 - 체크포인트 형식(11~13장이 같은 모델을 불러 쓴다): {"format": "ch10-tinygpt-v1", "config", "vocab", "state_dict"}
+
+텐서 모양: TinyGPT는 토큰 id (B, n) -> 로짓 (B, n, vocab). MLPLM은 문맥 id (N, k) -> 로짓 (N, vocab).
+B = 배치 크기, n = 시퀀스 길이, d = 모델 차원, L = 블록 수, h = 헤드 수.
 """
 
 import math
@@ -21,9 +24,11 @@ import torch.nn as nn
 class MLPLM(nn.Module):
     def __init__(self, params_np):
         super().__init__()
+        # NumPy 파라미터를 float64로 받아 같은 값에서 시작(옵티마이저 궤적 대조용)
         self.E, self.W1, self.b1, self.W2, self.b2 = (nn.Parameter(torch.tensor(p, dtype=torch.float64)) for p in params_np)
 
     def forward(self, ctx):
+        # (N, k, emb) -> (N, k*emb): ch10_np.mlp_forward와 같은 식
         e = self.E[ctx].reshape(len(ctx), -1)
         return torch.tanh(e @ self.W1 + self.b1) @ self.W2 + self.b2
 
@@ -77,6 +82,7 @@ class Block(nn.Module):
         self.ln1, self.ln2 = nn.LayerNorm(d), nn.LayerNorm(d)
 
     def forward(self, x):
+        # Pre-LN: x + Attn(LN(x)), 잔차 경로는 정규화를 지나지 않는다
         x = x + self.attn(self.ln1(x))
         return x + self.mlp(self.ln2(x))
 
@@ -95,9 +101,11 @@ class TinyGPT(nn.Module):
             self.head.bias.zero_()
 
     def forward(self, x):
+        # 토큰 임베딩 + 학습되는 위치 임베딩: (B, n, d). pos[:n]이 (n, d)라 배치 축으로 브로드캐스트
         h = self.tok(x) + self.pos[: x.shape[1]]
         for b in self.blocks:
             h = b(h)
+        # Pre-LN 구조라 마지막에 LN을 하나 더 두고 출력층. 로짓 (B, n, vocab)
         return self.head(self.final_ln(h))
 
 
@@ -105,6 +113,7 @@ class TinyGPT(nn.Module):
 
 
 def param_groups(model, wd):
+    # 2차원 이상(행렬·임베딩)만 감쇠. LN의 gamma·beta와 편향은 1차원이라 제외
     decay = [p for p in model.parameters() if p.dim() >= 2]
     no_decay = [p for p in model.parameters() if p.dim() < 2]
     return [{"params": decay, "weight_decay": wd}, {"params": no_decay, "weight_decay": 0.0}]
@@ -117,6 +126,7 @@ def make_optimizer(kind, model, lr, wd, foreach=None):
     if kind == "adamw":
         return torch.optim.AdamW(groups, lr=lr, foreach=foreach)
     if kind == "sgd":  # 비교용: 모멘텀 없는 SGD, 모든 숫자에 같은 학습률
+        # 여기서 weight_decay는 SGD에서 기울기에 더해지는 L2 방식(PyTorch 정의, 확인 필요)
         return torch.optim.SGD(groups, lr=lr, foreach=foreach)
     raise ValueError(kind)
 
@@ -132,6 +142,7 @@ def save_checkpoint(path, model, vocab, train_config):
 
 
 def load_checkpoint(path):
+    # weights_only=False: state_dict 외에 dict 메타데이터도 읽는다. 신뢰할 수 있는 체크포인트에만 쓸 것
     ck = torch.load(path, map_location="cpu", weights_only=False)
     assert ck["format"] == CKPT_FORMAT
     c = ck["config"]

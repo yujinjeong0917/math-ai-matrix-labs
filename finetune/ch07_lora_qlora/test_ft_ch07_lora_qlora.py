@@ -41,10 +41,12 @@ def test_config_is_same_as_ch05():
 # ---------- 첫 화면 손계산 ----------
 
 def test_hand_rank1():
+    # 랭크 1 변화량 dW(4x4 = 16개)를 B(4x1)와 A(1x4), 숫자 8개로 나타내는 손계산
     B, A, x = [2, 1, 0, -1], [1, 2, 3, 4], [1, 0, 0, 1]
     dW = M.outer(B, A)
     assert len([v for row in dW for v in row]) == 16 and len(B) + len(A) == 8
     ax = sum(a * b for a, b in zip(A, x))
+    # A x = 1 + 4 = 5. dW x = B x 5 = [10, 5, 0, -5]. 같은 결과를 Ax를 먼저 구해 계산량을 줄인다
     assert ax == 5 and M.matvec(dW, x) == [10, 5, 0, -5] == [b * ax for b in B]
 
 
@@ -56,6 +58,7 @@ def test_linear_shapes():
     assert s["o_proj"] == (3584, 3584) and s["gate_proj"] == (3584, 18944) and s["down_proj"] == (18944, 3584)
 
 
+# r의 계수: qv는 q (3584 + 3584) + v (3584 + 512) = 11264. 파라미터 수 = 계수 x r x 28층
 @pytest.mark.parametrize("t,coef", [("qv", 11264), ("qkvo", 22528), ("mlp", 67584), ("all_linear", 90112)])
 def test_per_layer_coeff(t, coef):
     assert M.lora_per_layer_coeff(CFG, M.TARGETS[t]) == coef
@@ -64,10 +67,12 @@ def test_per_layer_coeff(t, coef):
 
 
 def test_named_counts():
+    # 11264 x 8 x 28 = 2,523,136. all_linear r=16이면 90112 x 16 x 28 = 40,370,176
     assert M.lora_params(CFG, M.TARGETS["qv"], 8) == 2_523_136
     assert M.lora_params(CFG, M.TARGETS["all_linear"], 16) == 40_370_176
     assert M.lora_params(CFG, M.TARGETS["all_linear"], 64) == 161_480_704
     assert M.lora_params(CFG, M.TARGETS["all_linear"], 1) == M.lora_params(CFG, M.TARGETS["qv"], 8)
+    # all-linear r=16 어댑터는 전체 파라미터의 약 0.53%
     assert round(100 * 40_370_176 / 7_615_616_512, 2) == 0.53
 
 
@@ -81,6 +86,7 @@ def test_lora_module_count_is_r_times_sum():
 
 def test_base_split():
     sp = M.base_split(CFG)
+    # 층 안 선형층 가중치 합. 이 숫자가 4비트가 되고 나머지(약 10.9억)는 원래 형식으로 남는다
     assert sp["linear_4bit"] == 6_525_288_448 and sp["kept"] == 1_090_328_064
     assert sp["linear_4bit"] + sp["kept"] == 7_615_616_512
     assert sp["embed"] == sp["lm_head"] == 544_997_376
@@ -88,6 +94,7 @@ def test_base_split():
 
 
 def test_nf4_bits_from_ch06():
+    # 4비트 + 32/64 = 4.5비트
     assert M.nf4_bits() == F(9, 2)
     assert M.nf4_bits(double_quant=True) == F(8, 64) + F(32, 64 * 256) + 4
     assert float(F(7 * 10**9) * M.nf4_bits() / 8 / M.GB) == 3.9375
@@ -97,6 +104,7 @@ def test_nf4_bits_from_ch06():
 
 def test_lora_bf16_totals():
     x = M.lora_bf16_total(CFG, 8, "qv")
+    # 5장의 15.71GB(가중치 + 활성값)에 LoRA 몫을 더하면 15.75GB로 16GB 안, all-linear면 넘친다
     assert round((x["base"] + x["act"]) / M.GB, 2) == 15.71  # 5장 미리 보기
     assert round(x["total"] / M.GB, 2) == 15.75 and x["total"] <= 16 * M.GB
     y = M.lora_bf16_total(CFG, 8, "all_linear")
@@ -106,6 +114,7 @@ def test_lora_bf16_totals():
 def test_qlora_ladder_bridges_ch05():
     L = M.qlora_ladder(CFG)
     steps = dict(L["steps"])
+    # 5장 미리 보기 3.81GB에서 출발해 합계 6.67GB까지 단계별로 오른다. alpha_part = 합계 - 미리 보기 - 활성값
     assert round(float(steps["5장 미리 보기: 모든 숫자 0.5바이트"]) / M.GB, 2) == 3.81
     pre_act = steps["5장 미리 보기: 모든 숫자 0.5바이트"] + steps["5장 활성값 추정(체크포인팅)"]
     assert round(float(pre_act) / M.GB, 2) == 4.28
@@ -125,6 +134,7 @@ def test_activation_same_as_ch05():
 
 def test_scaling():
     assert M.scaling(8, 8) == 1 and M.scaling(16, 64) == F(1, 4) and M.scaling(16, 8) == 2
+    # rsLoRA: 16 / sqrt(64) = 2. 일반 LoRA는 16/64 = 1/4
     assert M.scaling(16, 64, rslora=True) == 2.0
     assert M.scaling(16, 32) == M.scaling(16, 16) / 2
 
@@ -132,6 +142,7 @@ def test_scaling():
 def test_random_sign_growth_is_sqrt():
     g = M.random_sign_growth()
     for r in (4, 16, 64):
+        # 크기가 sqrt(r d)에 5% 안으로 맞는다(d = 256, 200번 평균이라 무작위 오차가 있다)
         assert abs(g[r] / math.sqrt(r * 256) - 1) < 0.05
 
 
@@ -140,8 +151,10 @@ def test_random_sign_growth_is_sqrt():
 def test_toy_matrix_eckart_young():
     sig = (F(3), F(1), F(1, 10))
     Mx = M.toy_matrix(sig)
+    # 특이값 제곱합 = 9 + 1 + 0.01 = 10.01 = 행렬 원소 제곱합
     assert M.frob2(Mx) == sum(s * s for s in sig) == F(1001, 100)
     for k in (1, 2, 3):
+        # 에카트-영 정리: 랭크 k 근사의 최소 오차는 버린 특이값의 제곱합과 같다
         assert M.frob2(M.add(Mx, M.truncated(sig, k), -1)) == sum(s * s for s in sig[k:])
 
 
@@ -155,6 +168,7 @@ def test_power_iteration_finds_sigma1():
     assert abs(s1 - 3) < 1e-9
 
 
+# 랭크 1이면 최소 오차 1 + 0.01, 랭크 2면 0.01(버린 특이값 제곱). 기울기 하강이 그 최적값에 도달해야 한다(허용 1e-6)
 @pytest.mark.parametrize("r,best", [(1, 1.01), (2, 0.01)])
 def test_gd_reaches_svd_optimum(r, best):
     out = M.train_lora_toy(M.toy_matrix(), r)
@@ -169,6 +183,7 @@ def test_merge_equals_separate_and_zero_init():
     merged, sep = M.merged_equals_separate(W0, [[F(1)], [F(2)]], A, x, F(2))
     assert merged == sep == [F(12), F(21)]
     m0, _ = M.merged_equals_separate(W0, [[F(0)], [F(0)]], A, x, F(2))
+    # B = 0이면 LoRA 항이 0이라 W0 = 단위행렬 x = x. 시작 시점에서 기본 모델과 같다
     assert m0 == x
 
 
@@ -182,6 +197,7 @@ def test_bytes_per_number():
 
 
 def test_paging_overhead_doc_example():
+    # 1GB / (16GB/s x 0.5) = 0.125초 = 125ms
     assert M.paging_overhead_ms(1.0) == 125.0
 
 
@@ -189,6 +205,7 @@ def test_paged_window():
     L = M.qlora_ladder(CFG)
     fixed = L["total"] - M.activation_ckpt_bytes(1024, 1, 3584, 28, 28)
     w = M.paged_window(fixed, L["lora_params"] * 8, 16 * M.GB, 3584, 28, 28)
+    # 길이 256 간격으로 센 값. 옵티마이저 상태를 내보내면 한 단계(256) 더 긴 길이까지 들어간다(단순 모형)
     assert w["max_len_no_paging"] == 7168 and w["max_len_paged"] == 7424
 
 

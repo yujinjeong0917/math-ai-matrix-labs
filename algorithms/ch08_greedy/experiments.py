@@ -27,6 +27,7 @@ from pathlib import Path
 
 os.environ.setdefault("OMP_NUM_THREADS", "2")
 
+# (NumPy 는 환경 버전 기록과 백분위 계산에만 쓴다.)
 import numpy as np  # noqa: E402  (버전 기록용)
 
 HERE = Path(__file__).parent
@@ -90,9 +91,11 @@ def e1_coins(max_amount=200):
     for name, cs in SYSTEMS:
         fails = A.coin_failures(cs, max_amount)
         cs_sorted = sorted(cs)
+        # Kozen-Zaks 범위 (lo, hi) 의 열린 구간. 체계가 3종류 이상 필요해서 [2] 를 쓴다.
         lo, hi = cs_sorted[2] + 1, cs_sorted[-1] + cs_sorted[-2]
         smallest = fails[0][0] if fails else None
         # Kozen-Zaks 범위 끝(cm + c(m-1))까지만 봐도 반례가 있는지 여부가 같은지
+        # 반례 탐색을 hi 까지만 했을 때도 '반례 있음/없음' 이 200 까지 본 결과와 같은지 비교.
         fails_kz = A.coin_failures(cs, hi)
         excess = [g - m for _, g, m in fails]
         rows.append({
@@ -107,6 +110,7 @@ def e1_coins(max_amount=200):
             "mean_excess_coins": r4(statistics.mean(excess)) if excess else 0,
             "first_fails": [f[0] for f in fails[:8]],
         })
+    # 정규 체계 세 가지는 1000 까지도 반례가 0 개여야 한다.
     big = {}
     for name, cs in SYSTEMS[:3]:
         big[name] = len(A.coin_failures(cs, 1000))
@@ -117,6 +121,7 @@ def e1_coins(max_amount=200):
 def e2_coverage():
     # (a) 전수: 원소 {1,2,3,4}, 집합 4개(빈 집합 포함 16가지씩) -> 16^4 = 65,536 사례
     U = [1, 2, 3, 4]
+    # 원소 4개의 모든 부분집합 2^4 = 16 개(빈 집합 포함). 집합 4개를 고르는 모든 경우 16^4 = 65,536.
     subsets = [frozenset(c) for r in range(5) for c in itertools.combinations(U, r)]
     exhaustive = {}
     for k in (2, 3):
@@ -126,6 +131,7 @@ def e2_coverage():
         for combo in itertools.product(subsets, repeat=4):
             sets = list(combo)
             ov, _ = A.brute_force_coverage(sets, k)
+            # 모든 집합이 비면 비율 0/0 이라 건너뜀.
             if ov == 0:
                 continue
             n_cases += 1
@@ -144,6 +150,7 @@ def e2_coverage():
         ratios = []
         worse = 0
         for seed in range(1000):
+            # k 가 달라도 같은 시드 1000 개를 써서 k 만 바뀐 비교가 되게 한다.
             rng = A.seeded(80000 + seed)
             sets = A.random_sets(8, 12, 0.3, rng)
             ov, _ = A.brute_force_coverage(sets, k)
@@ -156,6 +163,7 @@ def e2_coverage():
         rand[str(k)] = {"instances": 1000, "greedy_worse": worse, "min_ratio": frac(mn), "mean_ratio": r4(statistics.mean(fl)),
                         "p05_ratio": r4(np.percentile(fl, 5)), "bound": frac(A.coverage_bound(k)),
                         "all_ge_bound": all(r >= A.coverage_bound(k) for r in ratios)}
+    # 동률 없이도 탐욕이 최적을 놓치는 예: 처음엔 크기 4 인 겹침 집합이 이득이 가장 크다.
     strict = [frozenset({1, 2, 3}), frozenset({4, 5, 6}), frozenset({1, 2, 4, 5})]
     sg, si = A.greedy_max_coverage(strict, 2)
     so, soi = A.brute_force_coverage(strict, 2)
@@ -167,9 +175,11 @@ def e2_coverage():
 # ---------------------------------------------------------------- E3
 def e3_matroid_contrast(trials=1000):
     res = {}
+    # [탐욕이 최적보다 나쁜 횟수, 지금까지의 최소 탐욕/최적 비율].
     stats = {"forest": [0, Fraction(1)], "matching": [0, Fraction(1)]}
     n_used = 0
     for seed in range(trials):
+        # 시드 30000 + seed 로 고정.
         rng = A.seeded(30000 + seed)
         edges = A.random_small_graph(5, 0.6, rng)
         if not edges:
@@ -205,18 +215,21 @@ def e4_mst(sizes=(100, 1000, 10000), seeds=10):
         agree = 0
         reps = 5 if n <= 1000 else 3
         for seed in range(seeds):
+            # 크기 n 마다 다른 시드 묶음(같은 시드로 크기만 바꾸지 않음).
             rng = A.seeded(n * 100 + seed)
             edges = A.random_connected_graph(n, m, rng)
             adj = A.adjacency(n, edges)
             ck, cp = A.Counter(), A.Counter()
             kw, kc = A.kruskal(n, edges, counter=ck)
             pw, pc = A.prim(n, edges, counter=cp, adj=adj)
+            # 두 알고리즘의 총무게 일치와 둘 다 신장 트리인지. 같은 무게 간선이 있으면 간선 집합은 다를 수 있다.
             agree += (kw == pw) and A.is_spanning_tree(n, kc) and A.is_spanning_tree(n, pc)
             _, kms = _ms(lambda: A.kruskal(n, edges), reps)
             _, pms = _ms(lambda: A.prim(n, edges, adj=adj), reps)
             agg["k_scan"].append(ck.edge_scan); agg["k_find"].append(ck.find_calls); agg["k_steps"].append(ck.find_steps)
             agg["p_scan"].append(cp.edge_scan); agg["p_push"].append(cp.push); agg["p_pop"].append(cp.pop)
             agg["k_ms"].append(kms); agg["p_ms"].append(pms)
+            # UnionFind 최적화 단계별 find 포인터 걸음 수: 아무것도 없음 / 랭크만 / 압축+랭크. 압축만 켠 조합은 측정하지 않는다.
             for key, comp, rank in (("naive_steps", False, False), ("rank_steps", False, True), ("comp_steps", True, True)):
                 cc = A.Counter()
                 A.kruskal(n, edges, counter=cc, compress=comp, by_rank=rank)
@@ -231,6 +244,7 @@ def e4_mst(sizes=(100, 1000, 10000), seeds=10):
 
 # ---------------------------------------------------------------- E5
 def e5_common_failures():
+    # 흔한 실패 (i): 이득 대신 크기로 집합을 고르는 경우.
     # (i) 크기 순으로 고르기
     by = {}
     for k in (2, 3, 4):
@@ -249,10 +263,12 @@ def e5_common_failures():
         by[str(k)] = {"instances": 1000, "gain_worse_than_opt": worse_gain, "size_worse_than_opt": worse_size,
                       "size_worse_than_gain": size_lt_gain, "size_min_ratio": frac(min_size),
                       "size_below_bound": min_size < A.coverage_bound(k)}
+    # (크기순이면 앞의 두 집합을 골라 5개, 이득순이면 7개.)
     # 크기 순이 무너지는 손 사례: 같은 원소를 거의 공유하는 큰 집합 두 개
     hand = [frozenset({1, 2, 3, 4}), frozenset({1, 2, 3, 5}), frozenset({6, 7, 8})]
     hs, _ = A.greedy_max_coverage(hand, 2, by="size")
     hg, _ = A.greedy_max_coverage(hand, 2)
+    # 흔한 실패 (ii): 키를 d(u)+w 로 바꾼 Prim. 결과도 신장 트리이긴 해서 assert 는 통과하지만 총무게가 더 무겁다.
     # (ii) Prim 에 다익스트라 키
     wrong = 0
     excess = []
@@ -275,6 +291,7 @@ def e5_common_failures():
 # ---------------------------------------------------------------- E6
 def e6_widget():
     names = "ABCDEF"
+    # 화면 좌표(픽셀). 알고리즘과 무관.
     pos = [[70, 70], [250, 40], [430, 70], [90, 230], [290, 220], [520, 220]]
     edges = [(4, 0, 1), (2, 0, 3), (5, 1, 2), (3, 1, 3), (6, 1, 4), (1, 3, 4), (7, 2, 4), (8, 2, 5), (4, 4, 5)]
     tr = []
@@ -282,11 +299,13 @@ def e6_widget():
     steps = []
     acc = []
     for (w, u, v), ok, comp in tr:
+        # (이 side 는 아래에서 쓰이지 않는다. 실제 절단 계산은 뒤의 prev 기반 반복이 한다.)
         side = {i for i in range(6) if comp[i] == comp[u]} if not ok else None
         # 받은 간선이면, 받기 직전 u 의 조각을 절단 한쪽으로 본다
         steps.append({"edge": [w, u, v], "ok": ok, "comp": comp})
         if ok:
             acc.append([w, u, v])
+    # 위젯용: 단계마다 절단 한쪽 점 집합과 그 절단의 최소 무게를 JSON 에 싣는다(거부된 간선은 is_lightest 가 None).
     # 절단 불변식: 받기 직전 조각(u 쪽)을 한쪽으로 두면 받은 간선이 그 절단에서 가장 가벼운가
     prev = list(range(6))
     for st in steps:

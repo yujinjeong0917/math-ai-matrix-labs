@@ -36,6 +36,7 @@ def nf4_table():
 
 def fp4_table():
     """bitsandbytes fp4 표를 값 순서로 정렬하고 최댓값 12로 나눈 것. 0과 -0은 하나로 친다."""
+    # 원본 표는 비트 순서로 적혀 있어 값 순서로 정렬하고 최댓값 12로 나눠 [-1, 1] 범위로 맞춘다. set으로 0과 -0을 하나로 합쳐 15개가 된다
     raw = load_specs()["bitsandbytes"]["fp4_raw_bit_order"]
     vals = sorted({v / 12.0 for v in raw})
     return vals
@@ -43,6 +44,7 @@ def fp4_table():
 
 def uniform_table(qmax):
     """가르치기용 균일 표: -qmax..qmax를 qmax로 나눈 값. int4라면 qmax=7로 15칸을 쓴다."""
+    # 균일 표: 코드 k를 qmax로 나눈 값. qmax=7이면 -7..7의 15칸이라 16칸 중 한 칸을 쓰지 않는다(대칭을 위해)
     return [k / qmax for k in range(-qmax, qmax + 1)]
 
 
@@ -54,12 +56,16 @@ def nf4_bnb_recipe(offset=0.9677083):
     """
     nd = NormalDist()
 
+    # torch.linspace와 같은 간격을 만든 뒤 float32로 한 번 반올림한다(원본이 float32 텐서이므로)
     def linspace(a, b, n):
         return [f32(a + (b - a) * i / (n - 1)) for i in range(n)]
 
+    # 표준정규분포의 분위수 함수(inv_cdf)로 양수 쪽 8개. 마지막(0.5)은 0이라 뺀다
     pos = [nd.inv_cdf(p) for p in linspace(offset, 0.5, 9)[:-1]]
     neg = [-nd.inv_cdf(p) for p in linspace(offset, 0.5, 8)[:-1]]
+    # 양수 8 + 음수 7 + 0 하나 = 16칸. 양수 쪽이 하나 더 많은 비대칭 표
     vals = sorted([f32(v) for v in pos + neg] + [0.0])
+    # 최댓값으로 나눠 표를 [-1, 1] 범위로 정규화
     m = max(vals)
     return [f32(v / m) for v in vals]
 
@@ -75,6 +81,7 @@ def nf4_paper_eq4(k=4):
     out = []
     for i in range(2 ** k):
         a, b = i / n, (i + 1) / n
+        # 분위수 0 또는 1은 무한대라 계산할 수 없다. 이 칸은 None으로 표시
         if a <= 0 or b >= 1:
             out.append(None)
         else:
@@ -88,6 +95,7 @@ def nearest_index(v, table):
     best, bi = None, 0
     for i, t in enumerate(table):
         d = abs(v - t)
+        # 거리가 같으면 앞(작은 값)을 고른다. 부등호가 엄격(<)이라 뒤의 같은 거리는 갈아타지 않는다
         if best is None or d < best:
             best, bi = d, i
     return bi
@@ -107,10 +115,13 @@ def quant_uniform(xs, qmax, blocksize=None):
     """absmax 균일 양자화. 블록마다 a = max|x|, 코드 = round(x / a * qmax). 돌려주는 것: (코드 목록, absmax 목록)."""
     codes, scales = [], []
     for b in blocks_of(xs, blocksize):
+        # 블록의 절댓값 최대 a를 fp32로 저장. 블록 안 값은 이 a로 [-1, 1]에 맞춘다
         a = absmax(b)
         scales.append(a)
         for x in b:
+            # x / a x qmax를 정수로 반올림. a가 0이면(블록이 전부 0) 0으로 나누지 않도록 0 코드
             c = 0 if a == 0 else round(x / a * qmax)
+            # 반올림 오차로 범위를 넘는 경우에 대비해 -qmax..qmax로 자른다
             codes.append(max(-qmax, min(qmax, c)))
     return codes, scales
 
@@ -118,6 +129,7 @@ def quant_uniform(xs, qmax, blocksize=None):
 def dequant_uniform(codes, scales, qmax, blocksize=None):
     n = len(codes)
     bs = n if blocksize is None else blocksize
+    # 코드 / qmax x 그 블록의 absmax. i // bs가 블록 번호(blocksize가 None이면 전체가 한 블록)
     return [codes[i] / qmax * scales[i // bs] for i in range(n)]
 
 
@@ -128,6 +140,7 @@ def quant_table(xs, table, blocksize=None):
         a = absmax(b)
         scales.append(a)
         for x in b:
+            # x / a를 [-1, 1]로 정규화한 뒤 표에서 가장 가까운 칸 번호(0..15)
             codes.append(nearest_index(0.0 if a == 0 else x / a, table))
     return codes, scales
 
@@ -158,6 +171,7 @@ def double_quant_scales(scales, blocksize2=256):
 
     bitsandbytes는 이 단계에서 균일 int8이 아니라 8비트 동적 표(quantize_blockwise)를 쓴다. 여기서는 원리만 본다.
     """
+    # 두 번 양자화: absmax들의 평균을 먼저 빼 값이 0 주변에 모이게 한 뒤 다시 양자화한다
     m = f32(sum(scales) / len(scales))
     d = [s - m for s in scales]
     c, s2 = quant_uniform(d, 127, blocksize2)
@@ -179,12 +193,15 @@ def bits_per_param(code_bits, blocksize, const_bits=32, dq_blocksize2=None, dq_c
     if blocksize is None:
         return code_bits
     if dq_blocksize2 is None:
+        # 숫자 하나당 비트 = 코드 비트 + 블록 상수 몫(32비트 / 블록 크기). 4비트, 블록 64면 4.5비트
         return code_bits + const_bits / blocksize
+    # 두 번 양자화: 상수가 8비트로 줄고, 256블록마다 fp32 2단계 상수가 하나 붙는다. 4 + 8/64 + 32/(64 x 256) = 약 4.127
     return code_bits + dq_const_bits / blocksize + 32 / (blocksize * dq_blocksize2)
 
 
 def model_gb(n_params, bpp):
     """1GB = 10^9바이트."""
+    # 비트 -> 바이트(/8) -> GB(/1e9)
     return n_params * bpp / 8 / 1e9
 
 
@@ -195,12 +212,14 @@ def errors(xs, ys):
     diffs = [y - x for x, y in zip(xs, ys)]
     mse = sum(d * d for d in diffs) / n
     mean = sum(xs) / n
+    # 원래 값의 표준편차(모집단). rel_rmse = RMSE / 표준편차로 값의 크기에 상관없이 비교
     sd = math.sqrt(sum((x - mean) ** 2 for x in xs) / n)
     nz = [(x, y) for x, y in zip(xs, ys) if x != 0]
     return {
         "rmse": math.sqrt(mse),
         "rel_rmse": math.sqrt(mse) / sd if sd else 0.0,
         "max_abs": max(abs(d) for d in diffs),
+        # 원래 0이 아니었는데 되돌린 값이 0이 된 비율(작은 값이 0으로 뭉개지는 정도)
         "zero_crush": sum(1 for x, y in nz if y == 0) / len(nz) if nz else 0.0,
     }
 
@@ -215,6 +234,7 @@ def inject_outliers(xs, every=1000, size=0.5, seed=7):
     """스트레스 시험용: 대략 every개마다 하나를 ±size로 바꾼다(정한 값)."""
     rng = random.Random(seed)
     ys = list(xs)
+    # 대략 every개에 하나꼴로 이상치 위치를 시드 고정으로 뽑는다(정확히 간격 every가 아니라 무작위 위치)
     idx = sorted(rng.sample(range(len(xs)), len(xs) // every))
     for i in idx:
         ys[i] = size if rng.random() < 0.5 else -size

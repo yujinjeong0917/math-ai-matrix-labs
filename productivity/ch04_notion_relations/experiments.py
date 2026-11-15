@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
+# 같은 폴더의 모듈(productivity_chNN_*)을 어느 디렉터리에서 실행해도 찾도록 경로를 앞에 넣는다
 sys.path.insert(0, str(HERE))
 
 import productivity_ch04_data as DATA  # noqa: E402
@@ -27,16 +28,18 @@ import productivity_ch04_relational as R  # noqa: E402
 
 OUT = HERE / "results" / "ch04.json"
 SEED = 4
-N_SEEDS = 200
-RATES = [1.0, 0.9, 0.8, 0.6]
+N_SEEDS = 200  # E2, E6에서 반복하는 무작위 표본 수
+RATES = [1.0, 0.9, 0.8, 0.6]  # 기록률 r: 연결 하나가 글로(또는 relation으로) 적힐 확률. 1.0이면 모든 연결을 적은 경우
 QS = ["Q1", "Q2", "Q3", "Q4", "Q5"]
 
 
 def truth():
+    """연결을 하나도 잃지 않은 관계형 DB의 답(질문 5개의 정답 기준)."""
     return R.answer_all(R.build())
 
 
 def grade(ans, tru):
+    """답을 정답과 비교해 "unanswerable"(답할 수 없음), "correct", "wrong" 중 하나로 채점한다."""
     if ans == P.UNANSWERABLE:
         return "unanswerable"
     return "correct" if ans == tru else "wrong"
@@ -53,6 +56,7 @@ def as_graded(a):
 
 
 def lose(rng, r):
+    """기록률 r로 연결을 적고 못 적은 것(난수 >= r)을 잃은 연결 집합으로 돌려준다."""
     return frozenset(l for l in DATA.links() if rng.random() >= r)
 
 
@@ -64,6 +68,7 @@ HAND = {
 
 
 def e0_hand():
+    """E0: 첫 화면 손계산 표(결정 3개 x 할 일 5개)에서 결정마다 연결된 할 일, 완료, 미완료 수(예: 가는 3, 1, 2)."""
     out = {}
     for d in HAND["decisions"]:
         key = d.split()[0]
@@ -75,6 +80,7 @@ def e0_hand():
 
 # ---------------------------------------------------------------- E1
 def e1_min_failure():
+    """E1: 모든 연결을 적은 경우(r = 1.0) 페이지 방식과 관계형 방식의 답, 채점, 읽은 줄 수. 페이지 방식은 Q5를 답할 수 없다."""
     tru = truth()
     pages = P.build_pages()
     ans, lines = P.answer_all(pages)
@@ -95,6 +101,8 @@ def e1_min_failure():
 
 # ---------------------------------------------------------------- E2, E3
 def e2_rates():
+    """E2, E3: 기록률마다 N_SEEDS번 연결을 무작위로 잃게 해 세 방식(pages, relational, 빈칸 검사로 다시 채운 relational_fixed)의 정답 수와 검출률을 센다.
+    반환: (기록률별 집계, 기록률별 잃은 연결 종류 단위 검출률). 같은 시드(SEED)에서 기록률마다 난수열을 새로 시작한다."""
     tru = truth()
     out = {}
     det_by_kind = {}
@@ -110,8 +118,9 @@ def e2_rates():
             pa, _ = P.answer_all(P.build_pages(lost))
             db = R.build(lost)
             ra = R.answer_all(db)
-            ra = as_graded(ra)
+            ra = as_graded(ra)  # 페이지 방식과 같은 채점 규칙으로 맞춰 공정하게 비교한다
             found = R.detected_links(db, lost)
+            # 빈칸 검사에 걸린 연결은 사람이 모두 다시 채운다고 가정한다(detected_links의 가정): 그 연결을 잃은 집합에서 뺀다
             fa = R.answer_all(R.build(lost - found))
             fa = as_graded(fa)
             for m, a in (("pages", pa), ("relational", ra), ("relational_fixed", fa)):
@@ -158,6 +167,7 @@ def e3_example():
 
 # ---------------------------------------------------------------- E4
 def e4_connection_trap():
+    """E4: 화면 S03에 영향을 준 결정을 직접 relation으로 고를 때와 할 일 경로로 고를 때의 차이(false_positive, missed)."""
     db = R.build()
     direct = R.q2(db)
     path = R.q2_via_tasks(db)
@@ -170,6 +180,7 @@ def e4_connection_trap():
 
 # ---------------------------------------------------------------- E5
 def e5_reversal():
+    """E5: 결정 D07이 D10으로 번복될 때 영향받는 할 일(진행 중인 것과 이미 완료돼 재작업이 필요한 것)과 페이지·relation에서 번복이 보이는지."""
     db = R.build()
     old, new = "D07", "D10"
     affected = sorted(t for t, d in db["task_dec"] if d == old)
@@ -183,6 +194,7 @@ def e5_reversal():
         "affected_done_needs_rework": [t for t in affected if db["tasks"][t]["status"] == R.DONE],
         "pages_old_page_shows_reversal": old_page_mentions,
         "pages_new_page_shows_reversal": new_page_mentions,
+        # 아래 두 값은 계산이 아니라 설계상 정해 둔 값이다(양방향 relation이면 옛 결정에서도 번복이 보이고, 한 방향이면 안 보인다)
         "two_way_relation_old_shows_reversal": True,
         "one_way_relation_old_shows_reversal": False,
     }
@@ -191,6 +203,7 @@ def e5_reversal():
 # ---------------------------------------------------------------- E6
 def e6_drift(n_events=60, rates=(1.0, 0.95, 0.9, 0.8), seeds=N_SEEDS):
     """할 일 행·결정 행을 실제로 바꾸고, rollup은 매번 행에서 다시 센다. 손으로 적은 개수는 확률 p로만 고친다."""
+    # p: 사람이 손으로 적은 개수를 제때 고칠 확률. 이벤트 60번 동안 "손으로 적은 값"과 "행에서 다시 센 rollup"이 어긋나는 비율을 센다
     out = {}
     for p in rates:
         rng = random.Random(SEED + 60)
@@ -242,6 +255,7 @@ def e6_drift(n_events=60, rates=(1.0, 0.95, 0.9, 0.8), seeds=N_SEEDS):
 
 # ---------------------------------------------------------------- E7
 def random_db(rng):
+    """E7용 무작위 DB와 질문에 쓸 결정(첫째), 스펙(첫째)을 만든다. 결정자는 일부러 None도 섞어 빈칸 처리 경로를 시험한다."""
     nd, nt, ns = rng.randint(3, 12), rng.randint(5, 30), rng.randint(2, 5)
     dates = [f"2026-09-{d:02d}" for d in range(1, 31)]
     db = {"decisions": {}, "tasks": {}, "specs": {}, "task_dec": set(), "dec_spec": set(), "task_spec": set()}
@@ -265,6 +279,7 @@ def random_db(rng):
 
 
 def e7_cross(n=500):
+    """E7: 무작위 DB n개에서 파이썬 구현과 SQL 구현의 질문별 불일치 횟수(모두 0이어야 한다)와, 연결 함정 경로가 직접 연결과 달라지는 횟수."""
     rng = random.Random(SEED + 7)
     mism = {"Q1": 0, "Q2": 0, "Q3": 0, "Q4": 0, "Q5": 0, "rollup_sql": 0, "rollup_formula": 0, "q2_via_tasks": 0}
     trap_differs = 0
@@ -283,6 +298,7 @@ def e7_cross(n=500):
 
 
 def main():
+    """모든 실험을 돌려 results/ch04.json, data/project.json, data/pages_r1.md를 쓰고 요약을 출력한다. 시드는 모두 SEED에서 파생돼 결과가 매번 같다."""
     e2, e3k = e2_rates()
     res = {
         "meta": {"python": platform.python_version(), "platform": f"{platform.system()} {platform.machine()}",
@@ -314,6 +330,7 @@ def main():
 
 
 def _pages_md(pages):
+    """페이지 묶음을 사람이 읽는 마크다운 글자로 합친다(data/pages_r1.md용, 모든 연결을 적은 경우)."""
     out = []
     for d, lines in pages["decisions"].items():
         out += lines + [""]

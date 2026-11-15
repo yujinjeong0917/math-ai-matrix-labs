@@ -40,10 +40,12 @@ def f(x, nd=6):
 
 
 def server(*extra):
+    """서버를 진짜 자식 프로세스로 띄운다. sys.executable을 써서 지금 돌리는 파이썬과 같은 인터프리터를 쓴다."""
     return CL.StdioClient([sys.executable, SERVER, *extra])
 
 
 def e0_hand():
+    """첫 화면 손계산: 앱 n개 x 도구 m개의 연결 수. 도구 2개를 더 붙였을 때의 증가도 본다."""
     a = LP.load_json(LP.ASSUME_FILE)
     n, m = len(a["apps"]), len(a["tools"])
     return {"apps": a["apps"], "tools": a["tools"], "n": n, "m": m,
@@ -63,6 +65,7 @@ def e1_tool_call():
 
 
 def e2_modern():
+    """현재 세대 연결: discover 후 tools/list를 두 번(같은 결과인지)과 tools/call을 보낸다."""
     with server() as c:
         era, ver, info = c.connect()
         tools = c.list_tools()
@@ -81,6 +84,7 @@ def e2_modern():
 
 
 def e3_legacy():
+    """(가) 옛 클라이언트가 두 세대 서버에 initialize로 붙기, (나) 두 세대 클라이언트가 옛 서버를 만나 되돌아가기."""
     # (가) 옛 세대 클라이언트가 두 세대를 다 받는 서버에 initialize로 붙는다
     with server() as c:
         c.era = "legacy"
@@ -97,6 +101,7 @@ def e3_legacy():
         era, ver, _ = c2.connect()
         n = c2.call_tool("list_inquiries", {"week": D.WEEK, "category": "환불"})["structuredContent"]["count"]
         c2.close()
+        # transcript[0]은 보낸 discover, [1]은 서버가 돌려준 오류 응답이다(되돌아가기의 근거).
         probe = json.loads(c2.transcript[1][1])
         methods_b = [json.loads(l)["method"] for d, l in c2.transcript if d == "→"]
     return {"legacy_client": {"version": init["protocolVersion"], "methods": methods_a,
@@ -108,6 +113,7 @@ def e3_legacy():
 
 
 def e4_errors():
+    """일부러 잘못된 메시지를 보내 서버의 오류 응답을 모은다. raw()는 응답 한 줄을 그대로 읽는다."""
     out = {}
     with server() as c:
         c.era = "modern"
@@ -135,6 +141,7 @@ def e4_errors():
         out["not_found"] = {"isError": r["isError"], "text": r["content"][0]["text"]}
         out["unknown_method"] = raw({"jsonrpc": "2.0", "id": 7, "method": "sampling/createMessage",
                                      "params": {"_meta": meta}})["error"]
+        # 클라이언트를 거치지 않고 stdin에 직접 써서 깨진 JSON을 보낸다(parse error -32700 확인).
         c.proc.stdin.write("{이건 JSON이 아니에요\n")
         c.proc.stdin.flush()
         out["parse_error"] = c._read(5)
@@ -150,6 +157,7 @@ def e4_errors():
 
 
 def e5_config():
+    """설정 JSON을 읽은 결과를 바탕으로 서버를 실제로 띄운다. 설정에 적힌 자리표시 경로(/Users/you/...)는 이 저장소 경로로 치환한다."""
     desk = HERE / "data" / "claude_desktop_config.example.json"
     code = HERE / "data" / "mcp.example.json"
     d = CF.read_config(desk, "desktop")
@@ -176,6 +184,7 @@ def e5_config():
 
 
 def e6_connections():
+    """연결 수 표와 바뀜이 번지는 범위. gap이 0인 짝(동률)과 표준이 더 많은 짝을 찾는다."""
     t = CN.table()
     return {"table": t, "ripple_3x4": CN.ripple(3, 4),
             "ties": [[r["n"], r["m"]] for r in t if r["gap"] == 0],
@@ -186,12 +195,14 @@ def e6_connections():
 
 
 def e7_project():
+    """보고서 절 12개를 모델 대본 + 진짜 MCP 서버로 쓰고, 요청 수·토큰·금액을 2장 방식(붙여 넣기)과 비교한다."""
     a = LP.load_json(LP.ASSUME_FILE)
     price = LP.load_json(LP.PRICE_FILE)
     logs = []
     with server() as c:
         c.connect()
         api_tools = LP.mcp_tools_to_api(c.list_tools())
+        # 환불 절에서 일부러 한 번 틀린 유형 이름을 대 오류 복구 경로를 넣는다(요청이 한 번 늘어난다).
         model = LP.ScriptedModel(wrong_first=["환불"])
         for s in a["sections"]:
             logs.append(LP.run_section(c, model, api_tools, s))
@@ -222,6 +233,7 @@ def e7_project():
 
 
 def e8_crosscheck():
+    """연결 수 공식을 하나씩 세기와 대조하고, 서버 도구가 센 건수를 파일 직접 집계와 대조한다."""
     bad = 0
     for n in range(1, 11):
         for m in range(1, 11):
@@ -233,6 +245,7 @@ def e8_crosscheck():
             if CN.pairwise(n, m) - CN.standard(n, m) != CN.gap(n, m):
                 bad += 1
     data = D.load()
+    # 도구를 거치지 않고 파일에서 직접 센 값(기준).
     direct = Counter(i["category"] for i in data["items"])
     with server() as c:
         c.connect()

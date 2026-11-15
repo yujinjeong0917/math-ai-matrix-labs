@@ -23,7 +23,9 @@ from collections import Counter
 import tools_ch05_data as D
 import tools_ch05_mcp as M
 
+# 「 」 안의 글을 모두 찾는 정규식(고객이 화면 문구를 인용한 부분).
 QUOTE_RE = re.compile(r"「([^」]+)」")
+# 지시 문장을 알아보는 규칙 세 개는 이 장의 주입 예만 잡는 장난감이다(위 docstring 참고).
 INSTR_SPAN = re.compile(r"\(이 글을 읽는 AI에게:([^)]*)\)")
 INSTR_STATUS_ALL = re.compile(r"이번 주 문의를 모두 '([^']+)'(?:로|으로) 바꾸")
 INSTR_SET_TEXT = re.compile(r"'([^']+)'을 '([^']+)'(?:로|으로) 고쳐")
@@ -40,6 +42,7 @@ def payload(resp):
 
 
 def read_week(client, start=D.WEEK_START, end=D.WEEK_END):
+    # next_cursor가 없어질 때까지 반복. calls는 Notion 호출 수(120행이면 2).
     rows, cursor, calls = [], None, 0
     while True:
         args = {"start": start, "end": end}
@@ -54,9 +57,11 @@ def read_week(client, start=D.WEEK_START, end=D.WEEK_END):
 
 
 def summarize(rows):
+    # 건수 내림차순, 동률이면 TYPE_COUNTS 선언 순서로 정렬해 결과가 항상 같게 한다.
     c = Counter(r["properties"]["유형"] for r in rows)
     order = list(D.TYPE_COUNTS)
     items = sorted(c.items(), key=lambda kv: (-kv[1], order.index(kv[0])))
+    # 비율은 소수 첫째 자리까지 반올림(예: 22/120 = 18.3%).
     n = len(rows)
     return [{"유형": t, "건수": k, "비율_pct": round(100 * k / n, 1)} for t, k in items]
 
@@ -65,6 +70,7 @@ def collect_quotes(server, rows):
     quotes = {}
     for r in rows:
         for ph in QUOTE_RE.findall(r["properties"]["본문"]):
+            # 같은 문구를 인용한 문의를 한 항목으로 모은다(count, 문의 id, 관련 프레임).
             q = quotes.setdefault(ph, {"phrase": ph, "count": 0, "ids": [], "frames": []})
             q["count"] += 1
             q["ids"].append(r["id"])
@@ -91,10 +97,12 @@ def roundtrip(server, client=None, strategy="per_screen"):
     summary = summarize(rows)
     quotes = collect_quotes(server, rows)
     figma_calls = 0
+    # 프레임 id -> 읽은 결과. None 키는 '모든 화면' 결과. 같은 호출을 두 번 하지 않으려는 캐시.
     cache = {}
     if strategy == "all_once":
         cache[None] = payload(client.call("get_screen_texts"))
         figma_calls += 1
+    # 아래 반복: 인용 문구마다 (1) 관련 화면에서 찾고 (2) 없으면 전체 화면에서 찾는다. 3가지 판정: 관련 화면에 있음 / 다른 화면에만 있음 / Figma에 없음.
     checklist = []
     for q in quotes:
         status, hits = None, []
@@ -117,6 +125,7 @@ def roundtrip(server, client=None, strategy="per_screen"):
             status = "다른 화면에만 있음" if hits else "Figma에 없음"
         checklist.append({"phrase": q["phrase"], "count": q["count"],
                           "related_frames": q["frames"], "status": status, "found": hits})
+    # 문의가 많은 인용 문구부터 보여 준다.
     checklist.sort(key=lambda x: -x["count"])
     return {"rows": len(rows), "notion_calls": notion_calls, "figma_calls": figma_calls,
             "summary": summary, "checklist": checklist, "row_ids": [r["id"] for r in rows]}
@@ -124,6 +133,7 @@ def roundtrip(server, client=None, strategy="per_screen"):
 
 # ---------------- 프롬프트 주입 장난감 ----------------
 
+# 도구 결과 속 글에서 지시 모양을 정규식으로 찾는다. 모델이 아니라 규칙이므로 '순진한 모델이 따른다면 이렇게 된다'는 시나리오일 뿐이다.
 def parse_instructions(text):
     out = []
     for m in INSTR_STATUS_ALL.finditer(text):
@@ -152,6 +162,7 @@ def run_agent(allow_write, mode):
     client = RecordingClient(server)
     rt = roundtrip(server, client)
     # 할 일 고르기
+    # 순진한 루프는 도구 결과까지 지시의 출처로 취급한다. 구별하는 루프는 사용자 지시에서만 할 일을 고른다.
     if mode == "naive":
         sources = [USER_TASK] + client.context
     else:
@@ -170,10 +181,12 @@ def run_agent(allow_write, mode):
                     flagged.append({"id": r["id"], "text": m.group(0)})
     tool_names = {t["name"] for t in server.tools()}
     attempted, blocked = 0, 0
+    # dict.fromkeys로 중복 제거(순서 유지).
     for ins in dict.fromkeys(todo):           # 같은 지시가 여러 결과에 보여도 한 번만
         if ins[0] == "status_all":
             for rid in rt["row_ids"]:
                 attempted += 1
+                # 쓰기 도구가 서버에 없으면 시도만 하고 막힌다(blocked). 도구를 안 줬다는 것 자체가 방어라는 점을 보여 준다.
                 if "update_inquiry_status" in tool_names:
                     client.call("update_inquiry_status", id=rid, status=ins[1])
                 else:
@@ -196,6 +209,7 @@ def run_agent(allow_write, mode):
             "flagged_for_human": flagged, "tool_calls_total": len(server.log)}
 
 
+# 글자 수는 모델 입력 토큰 수의 거친 대리 지표일 뿐이다(토큰 수가 아님).
 def sizes():
     """같은 글자 정보를 노드 트리 전체로 줄 때와 글자 노드만 골라 줄 때의 글자 수."""
     server = M.MiniServer()

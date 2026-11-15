@@ -31,12 +31,19 @@ def test_walk_true_values_solve_bellman():
 def test_hand_episode_first_screen():
     ep = W.hand_episode()
     z = np.zeros(7)
+    # 경로 C B C D E -> 끝(+1), 처음 V = 0, α = 0.5, γ = 1. 보상은 마지막 걸음 +1뿐이라 목표 G가 1이거나 0이다
+    # 1스텝: 마지막 걸음(E)만 목표 1 -> V(E) = 0.5
+    # 2스텝: E와 그 앞 D의 목표가 1 -> V(D) = V(E) = 0.5
+    # 끝까지: 모든 방문의 목표가 1. C는 두 번 지나 0.5 -> 0.5 + 0.5(1 - 0.5) = 0.75
     V1 = T.n_step_td([ep], 7, 1, 0.5, v0=0.0)
     V2 = T.n_step_td([ep], 7, 2, 0.5, v0=0.0)
     Vinf = T.n_step_td([ep], 7, None, 0.5, v0=0.0)
     np.testing.assert_allclose(V1[1:6], [0, 0, 0, 0, 0.5])
     np.testing.assert_allclose(V2[1:6], [0, 0, 0, 0.5, 0.5])
     np.testing.assert_allclose(Vinf[1:6], [0, 0.5, 0.75, 0.5, 0.5])
+    # TD(λ), γλ = 0.5: 마지막 걸음의 δ = 1이고 그 앞 δ는 모두 0. 마지막 걸음 직후 흔적 e를 α δ에 곱한 것이 V
+    # 누적 흔적의 C: 0 걸음 1 -> 1/2 -> 1/4 + 1 = 1.25 -> 0.625 -> 0.3125, V(C) = 0.5 * 0.3125 = 0.15625
+    # 대체 흔적의 C: 두 번째 방문에서 1로 덮어써 1 -> 0.5 -> 0.25, V(C) = 0.5 * 0.25 = 0.125
     Va, _ = T.td_lambda([ep], 7, 0.5, 0.5, trace="accumulating")
     Vr, _ = T.td_lambda([ep], 7, 0.5, 0.5, trace="replacing")
     np.testing.assert_allclose(Va[1:6], [0, 0.0625, 0.15625, 0.25, 0.5])
@@ -45,6 +52,7 @@ def test_hand_episode_first_screen():
 
 
 def test_n1_and_lambda0_equal_td0():
+    # n=1이면 G_{τ:τ+1} = R + γ V(S'), λ=0이면 흔적이 방문한 칸 하나만 남아 V(S) += α δ. 둘 다 TD(0)와 같은 갱신
     eps = _eps(1)
     ref = T.td0(eps, NS, 0.3)
     np.testing.assert_allclose(T.n_step_td(eps, NS, 1, 0.3), ref, atol=1e-14)
@@ -55,6 +63,7 @@ def test_n1_and_lambda0_equal_td0():
 
 
 def test_n_infinity_equals_constant_alpha_mc():
+    # n=None(끝까지)이거나 n이 판 길이보다 훨씬 크면 부트스트랩 항 γ^n V가 사라져 목표가 몬테카를로 반환 G_t가 된다
     eps = _eps(2)
     ref = T.mc_constant_alpha_every_visit(eps, NS, 0.2)
     np.testing.assert_allclose(T.n_step_td(eps, NS, None, 0.2), ref, atol=1e-14)
@@ -62,6 +71,8 @@ def test_n_infinity_equals_constant_alpha_mc():
 
 
 def test_lambda_return_recursion_matches_definition():
+    # 재귀식 G^λ_t = R + γ[(1-λ)V(S') + λ G^λ_{t+1}] 이 정의 (1-λ)Σ λ^(n-1) G_{t:t+n} + λ^(T-t-1) G_t 와 같은지 확인
+    # 무작위 V(종료 칸은 0)로 λ 끝점(0, 1)과 γ < 1까지 본다
     rng = np.random.default_rng(0)
     V = rng.normal(size=NS)
     V[0] = V[-1] = 0.0
@@ -161,6 +172,7 @@ def test_torch_matches_numpy():
 
 def test_chain_n_step_needs_ceil_episodes():
     # 외길 10칸(결정 칸 9개), alpha 1, gamma 0.9: n스텝은 ceil(9/n)판, 끝까지(MC)는 1판
+    # 한 판에 정답이 아래로 n칸씩만 전파된다(식 G_{τ:τ+n}의 부트스트랩이 n걸음 앞까지만 본다). 9/1=9, 9/2->5, 9/4->3, 9/8->2
     ep = W.chain_episode(10)
     truth = W.chain_true_values(10, 0.9)
     for n, need in ((1, 9), (2, 5), (4, 3), (8, 2), (None, 1)):

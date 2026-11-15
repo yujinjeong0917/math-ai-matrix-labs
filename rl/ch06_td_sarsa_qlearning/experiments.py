@@ -38,6 +38,7 @@ torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch06.json"
 LOG = HERE / "logs" / "ch06_transitions.jsonl"
+# E1에서 비교할 학습률 alpha
 ALPHAS = (0.01, 0.05, 0.1, 0.2)
 
 
@@ -48,6 +49,7 @@ def r6(x):
 def ci(a):
     a = np.asarray(a, dtype=float)
     m, sd = a.mean(), a.std(ddof=1) if len(a) > 1 else 0.0
+    # 식: 95% 신뢰구간 반폭 = 1.96 x sd / sqrt(n)(정규 근사). sd는 표본표준편차(ddof = 1)
     h = 1.96 * sd / np.sqrt(len(a))
     return {"mean": r6(m), "lo": r6(m - h), "hi": r6(m + h), "sd": r6(sd), "median": r6(np.median(a)),
             "min": r6(a.min()), "max": r6(a.max())}
@@ -64,14 +66,18 @@ def e0_hand():
         n_changed = 0
         for t, (s, r, s2, done) in enumerate(tr):
             old = V[s]
+            # 갱신 전에 읽어 둔 다음 가치(표에 적기 위한 값). td0_update 안의 목표와 같은 값이다
             nxt = 0.0 if done else V[s2]
+            # 식: V(s) <- V(s) + 0.5 [r + 0.9 V(s') - V(s)] (alpha 0.5, gamma 0.9)
             new = T.td0_update(V, s, r, s2, done, alpha, gamma)
+            # 값이 실제로 바뀐 갱신만 표에 적는다(목표 = 현재 값이면 TD 오차가 0)
             if new != old:
                 n_changed += 1
                 rows.append({"episode": k + 1, "t": t + 1, "state": "AB"[s], "old": r6(old), "r": r,
                              "next_value": r6(nxt), "target": r6(r + gamma * nxt), "new": r6(new)})
         per_ep.append({"episode": k + 1, "path": path, "updates": len(tr), "changed": n_changed,
                        "V_A": r6(V[0]), "V_B": r6(V[1])})
+    # 같은 네 판에 5장의 첫 방문 MC(1/N 평균)를 걸어 비교한다
     mc = T.mc_sample_average([E.corridor_transitions(p) for p in E.CH05_FIRST_FOUR], 3, gamma)
     return {"alpha": alpha, "gamma": gamma, "V_exact": {"A": 0.647482, "B": 0.791367},
             "changed_updates": rows, "after_each_episode": per_ep,
@@ -83,6 +89,7 @@ def e0_hand():
 
 def rmse(Vhist, truth, keep):
     H = np.asarray(Vhist)
+    # 식: RMSE_k = sqrt(mean_{s in keep} (V_k(s) - V*(s))^2). Vhist[k]는 k+1번째 판 뒤의 V, keep은 종료 칸을 뺀 5칸. 반환 길이 K
     return np.sqrt(np.mean((H[:, keep] - truth[keep]) ** 2, axis=1))
 
 
@@ -95,12 +102,14 @@ def e1_walk(seeds=range(100), K=1000, n=5):
     lengths = []
     t0 = time.perf_counter()
     for sd in seeds:
+        # 시드 sd마다 판 K개를 한 번 만들어 모든 방법에 똑같이 넣는다(공정한 비교)
         uni = E.Uniforms(np.random.default_rng(1000 + sd))
         eps = [E.walk_episode(uni, n) for _ in range(K)]
         lengths.extend(len(e) for e in eps)
         for a in ALPHAS:
             for name, fn in (("td", T.td0), ("mc", T.mc_constant_alpha)):
                 rec = []
+                # gamma = 1, 모든 칸의 초기값 V0 = 0.5. record에는 판마다 V의 사본이 쌓인다
                 fn(eps, n + 2, a, 1.0, v0=0.5, record=rec)
                 curves.setdefault(f"{name}_{a}", []).append(rmse(rec, truth, keep))
         rec = []
@@ -108,6 +117,7 @@ def e1_walk(seeds=range(100), K=1000, n=5):
         curves.setdefault("mc_avg", []).append(rmse(rec, truth, keep))
         # 첫 판 뒤에 값이 바뀐 칸 수 (alpha 0.1)
         for name, fn in (("td", T.td0), ("mc", T.mc_constant_alpha)):
+            # 첫 판만 넣고 0.5에서 바뀐 칸 수(alpha 0.1). TD는 종료 바로 옆 한 칸, MC는 지나간 칸 전부(test_td_changes_one_state... 참고)
             V1 = fn(eps[:1], n + 2, 0.1, 1.0, v0=0.5)
             first_ep_changed[name].append(int(np.sum(V1[keep] != 0.5)))
     secs = time.perf_counter() - t0
@@ -127,12 +137,14 @@ def e1_walk(seeds=range(100), K=1000, n=5):
         row = {}
         for name in ("td", "mc"):
             vals = {a: out["by_method"][f"{name}_{a}"][str(m)]["mean"] for a in ALPHAS}
+            # 그 판 수에서 RMSE 평균이 가장 낮은 alpha. TD와 MC에서 따로 고른다
             a_best = min(vals, key=vals.get)
             row[name] = {"alpha": a_best, "rmse": vals[a_best]}
         best[str(m)] = row
     out["best_alpha_by_episodes"] = best
     # 같은 판 묶음에서 시드별 비교: 100판 시점, 각 방법의 (100판 기준) 최적 alpha
     a_td, a_mc = best["100"]["td"]["alpha"], best["100"]["mc"]["alpha"]
+    # [:, 99]는 100번째 판 뒤(0부터 세므로 99)
     td100 = np.stack(curves[f"td_{a_td}"])[:, 99]
     mc100 = np.stack(curves[f"mc_{a_mc}"])[:, 99]
     out["paired_100"] = {"td_alpha": a_td, "mc_alpha": a_mc, "td_better_seeds": int(np.sum(td100 < mc100)),
@@ -149,7 +161,9 @@ def e2_stuck(f):
         env = E.Cliff(step=step)
         row = {}
         for m in ("mc", "sarsa", "q"):
+            # 갇힌 MC 판의 앞 6줄과 마지막 줄만 로그로 남긴다(전체는 10,000줄)
             log = [] if (m == "mc" and step == -1.0) else None
+            # alpha 0.5, gamma 1, epsilon 0, 시드 0. tie = "first"라 Q = 0에서는 항상 행동 0(위)을 골라 맨 윗줄 벽에서 제자리
             o = T.control(env, m, 3, 0.5, 1.0, 0.0, 0, max_steps=10_000, log=log, tie="first")
             row[m] = {"truncated_of_3": o["truncated"], "lengths": o["lengths"], "updates": o["updates"],
                       "nonzero_Q": int(np.sum(o["Q"] != 0.0)), "returns": [r6(x) for x in o["returns"]]}
@@ -176,9 +190,11 @@ def classify(env, path):
 
 
 def run_cliff(env, method, seeds, eps, episodes=500):
+    # R / R100: 시드별 온라인 리턴 평균(전체 / 마지막 100판), F / F100: 추락 횟수, G / L: 탐욕 경로의 리턴 / 길이, reach: 탐욕 경로가 도착한 시드 수, rows: 경로가 닿은 가장 높은 줄별 시드 수
     R, R100, F, F100, G, L, reach, rows, curves = [], [], [], [], [], [], 0, {}, []
     trunc = []
     for sd in seeds:
+        # alpha 0.5, gamma 1, epsilon = eps(E3: 0.1 또는 0.01). 시드 sd로 난수를 고정한다
         o = T.control(env, method, episodes, 0.5, 1.0, eps, sd)
         rets = np.array(o["returns"])
         R.append(rets.mean())
@@ -186,7 +202,9 @@ def run_cliff(env, method, seeds, eps, episodes=500):
         F.append(sum(o["falls"]))
         F100.append(sum(o["falls"][-100:]))
         trunc.append(o["truncated"])
+        # 25판 묶음 평균 온라인 리턴 곡선(500판이면 점 20개)
         curves.append([rets[i:i + 25].mean() for i in range(0, episodes, 25)])
+        # 학습이 끝난 Q로 epsilon = 0 탐욕 경로를 한 번 걸어 도착하는지, 어느 줄을 지나는지 본다
         g, n, ok, path = T.greedy_rollout(env, o["Q"])
         reach += ok
         if ok:
@@ -206,6 +224,8 @@ def run_cliff(env, method, seeds, eps, episodes=500):
 
 def e3_cliff():
     env = E.Cliff()
+    # 최적 리턴: 절벽 바로 위 줄(2번 줄)로 위 1 + 오른쪽 w-1 + 아래 1 = w+1걸음, 걸음마다 -1이라 -(w+1) = -11
+    # 한 줄 위(1번)는 2걸음, 맨 위(0번)는 4걸음 더 걸어 -(w+3), -(w+5)
     out = {"h": env.h, "w": env.w, "cliff_reward": env.cliff_r, "step_reward": env.step_r, "alpha": 0.5,
            "gamma": 1.0, "episodes": 500, "greedy_eval": "epsilon 0, 동률이면 번호가 가장 작은 행동, 상한 100걸음",
            "optimal_return": -(env.w + 1), "row_paths": {"2": -(env.w + 1), "1": -(env.w + 3), "0": -(env.w + 5)}}
@@ -216,6 +236,7 @@ def e3_cliff():
         out[f"{m}_eps0.01"] = run_cliff(env, m, range(100), 0.01)
     out["seconds_td"] = r6(time.perf_counter() - t0)
     t0 = time.perf_counter()
+    # MC 제어는 시드 10개(TD 계열은 100개)
     out["mc_eps0.1"] = run_cliff(env, "mc", range(10), 0.1)
     out["seconds_mc"] = r6(time.perf_counter() - t0)
     return out
@@ -228,6 +249,7 @@ def e3_log(f):
         log = []
         T.control(env, m, 500, 0.5, 1.0, 0.1, 0, log=log)
         for (ep, t, s, a, r, s2, done, fell) in log:
+            # 500판 중 첫 판(0)과 마지막 판(499)만 남긴다
             if ep not in (0, 499):
                 continue
             f.write(json.dumps({"seed": 0, "episode": ep, "t": t, "s": s, "a": a, "r": r, "s_next": s2,
@@ -242,15 +264,19 @@ def e4_chain(n=10, gamma=0.9):
     for s in range(n - 1):
         s2, r, done = E.chain_step(s, 1, n)
         tr.append((s, r, s2, done))
+    # 식: V*(s) = gamma^(n-2-s)(오른쪽으로만 가는 정책, 보상 1은 마지막 걸음). 종료 칸 n-1은 0
     truth = np.array([gamma ** (n - 2 - s) for s in range(n - 1)] + [0.0])
     need = {}
     for name, fn in (("td", T.td0), ("mc", T.mc_constant_alpha)):
         for k in range(1, 3 * n):
+            # alpha = 1로 같은 판을 k번 반복해 정확해지는 최소 판 수 k를 찾는다(허용 오차 1e-12)
             V = fn([tr] * k, n, 1.0, gamma)
             if np.max(np.abs(V - truth)) < 1e-12:
                 need[name] = k
                 break
+    # TD(0)는 한 판에서 앞에서부터 고치므로 보상 1에 닿은 마지막 칸 하나만 0이 아니게 된다
     V1 = T.td0([tr], n, 1.0, gamma)
+    # q_learning_chain_maxerr: Q-러닝의 고정점이 Q*인지(n = 6, 2000판, epsilon 0.3). [:5]는 종료 칸 행을 뺀 것
     return {"n_states": n, "nonterminal": n - 1, "gamma": gamma, "alpha": 1.0, "episodes_to_exact": need,
             "td_after_1_nonzero": int(np.sum(V1 != 0)),
             "q_learning_chain_maxerr": r6(np.max(np.abs(T.q_learning_chain(6, 0.9, 0.5, 2000, 0.3, 0)[:5]
@@ -265,11 +291,13 @@ def e5_match():
     for m in ("sarsa", "q", "expected"):
         log = []
         o = T.control(env, m, 50, 0.5, 1.0, 0.1, 0, log=log)
+        # control()이 남긴 기록을 NumPy로 재생한 Q와 PyTorch로 재생한 Q를 비교한다(순서 동일, atol 1e-12). replay_vs_run은 재생 Q와 실제 학습 Q의 차
         Qn = T.replay(log, env.S, env.A, m, 0.5, 1.0, 0.1)
         Qt = TT.replay_t(log, env.S, env.A, m, 0.5, 1.0, 0.1).numpy()
         out[m] = {"transitions": len(log), "replay_vs_run_maxdiff": float(np.max(np.abs(Qn - o["Q"]))),
                   "numpy_vs_torch_maxdiff": float(np.max(np.abs(Qn - Qt))),
                   "pass": bool(np.allclose(Qn, Qt, atol=1e-12, rtol=0))}
+    # 시드 100개 x 판 100개의 무작위 보행. 배치 TD / MC(torch)와 시드별 NumPy 결과를 판마다 비교한다
     runs = []
     for sd in range(100):
         uni = E.Uniforms(np.random.default_rng(1000 + sd))
@@ -280,6 +308,7 @@ def e5_match():
             rec = []
             fn(runs[b], 7, 0.1, 1.0, v0=0.5, record=rec)
             Hn.append(rec)
+        # [시드, 판, 칸]을 [판, 시드, 칸]으로 바꿔 torch 쪽 hist [K, B, n_states]와 축을 맞춘다
         Hn = np.transpose(np.array(Hn), (1, 0, 2))
         Ht = fb(runs, 7, 0.1, 1.0, v0=0.5).numpy()
         out[f"walk_{name}_100seeds"] = {"maxdiff": float(np.max(np.abs(Hn - Ht))),
@@ -296,6 +325,7 @@ def e6_cost():
         t0 = time.perf_counter()
         o = T.control(env, m, 500, 0.5, 1.0, 0.1, 0)
         dt = time.perf_counter() - t0
+        # steps = 갱신 걸음 총수. us_per_step = 걸음당 마이크로초(1e6 x 초 / 걸음). 시간은 기계마다 다르다
         steps = sum(o["lengths"])
         out[m] = {"steps": int(steps), "seconds": r6(dt), "us_per_step": r6(1e6 * dt / steps)}
     uni = E.Uniforms(np.random.default_rng(7))

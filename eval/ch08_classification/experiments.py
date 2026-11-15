@@ -34,6 +34,7 @@ OUT = Path(__file__).parent / "results" / "ch08.json"
 PREVS = (0.5, 0.2, 0.1, 0.05, 0.01)
 
 
+# 표준정규 누적분포(오차함수 erf로 계산)
 def phi(x):
     return 0.5 * (1 + erf(x / sqrt(2)))
 
@@ -43,6 +44,7 @@ def nan_to_none(d):
         return {k: nan_to_none(v) for k, v in d.items()}
     if isinstance(d, list):
         return [nan_to_none(v) for v in d]
+    # d != d는 nan 판별(nan만 자기 자신과 다르다)
     if isinstance(d, float) and d != d:
         return None  # JSON에는 null. 본문에는 '정의 안 됨'
     return d
@@ -70,6 +72,7 @@ def e2_majority_positive():
     # 비교: 음성 100개 중 90개를 맞게 골라내는 분류기(양성은 그대로 다 맞힘)
     yhat2 = yhat.copy()
     neg = np.nonzero(y == 0)[0]
+    # 음성 100개 중 90개를 올바르게 음성으로 바꾼 분류기(양성은 모두 맞힘)
     yhat2[neg[:90]] = 0
     out["catches_90_negatives"] = scores_cm(m.confusion(y, yhat2))
     return out
@@ -80,6 +83,7 @@ def e3_prevalence_sweep(seeds=20):
     for prev in PREVS:
         aucs, aps, traps = [], [], []
         for s in range(seeds):
+            # 양성 1000개 고정, 음성 수만 바꿔 양성 비율을 prev로 맞춘다. 시드는 (반복, 비율) 쌍마다 다르게
             y, sc = cases.case_prevalence(prev, 1000, seed=1000 * s + int(prev * 1000))
             aucs.append(m.roc_auc_np(y, sc)); aps.append(m.average_precision_np(y, sc)); traps.append(m.pr_auc_trapezoid(y, sc))
         y0, s0 = cases.case_prevalence(prev, 1000, seed=int(prev * 1000))
@@ -98,6 +102,7 @@ def e3_prevalence_sweep(seeds=20):
         "ap_before": m.average_precision_np(y, sc), "ap_after": m.average_precision_np(y_rep, s_rep),
         "prev_after": float(y_rep.mean())}
     # 임계값 하나에서: 점수 1.5 이상을 양성이라 하면
+    # 임계값 하나(점수 1.5 이상 = 양성)에서의 값. 양성 비율이 낮아질수록 정밀도가 떨어지는지 본다
     thr = []
     for prev in PREVS:
         y, sc = cases.case_prevalence(prev, 1000, seed=int(prev * 1000))
@@ -113,6 +118,7 @@ def e4_pair_flips(seeds=100, n_pos=200):
            "theory_auc": {k: phi(v[0] / sqrt(1 + v[1] ** 2)) for k, v in cases.PAIR.items()},
            "n_pos": n_pos, "seeds": seeds, "rows": []}
     for prev in PREVS:
+        # ROC-AUC와 AP가 B를 고른 시드 수, 두 지표가 서로 다른 모델을 고른 시드 수
         c = {"roc_picks_B": 0, "ap_picks_B": 0, "disagree": 0}
         auc_d, ap_d = [], []
         for s in range(seeds):
@@ -122,6 +128,7 @@ def e4_pair_flips(seeds=100, n_pos=200):
             c["roc_picks_B"] += ab > aa; c["ap_picks_B"] += pb > pa; c["disagree"] += (ab > aa) != (pb > pa)
             auc_d.append(ab - aa); ap_d.append(pb - pa)
         # 큰 표본 기준값(양성 20000개, 시드 하나)
+        # 표본 흔들림이 거의 없는 큰 표본(양성 20000개)에서의 기준값
         y, sa, sb = cases.case_pair(prev, 20_000, seed=7)
         ref = {"auc_A": m.roc_auc_np(y, sa), "auc_B": m.roc_auc_np(y, sb),
                "ap_A": m.average_precision_np(y, sa), "ap_B": m.average_precision_np(y, sb)}
@@ -136,6 +143,7 @@ def e4_pair_flips(seeds=100, n_pos=200):
 def _bootstrap_cm(cm, reps, rng):
     """행을 복원 추출하는 부트스트랩은 혼동행렬 기준으로 '네 칸 비율로 n번 뽑는 다항분포'와 같다."""
     cm = np.asarray(cm); n = int(cm.sum())
+    # 관측 n건을 복원추출하면 네 칸(TP, FN, FP, TN)의 개수는 칸 비율을 확률로 하는 다항분포를 따른다. (reps, 4)
     draws = rng.multinomial(n, cm.ravel() / n, size=reps)
     return [d.reshape(2, 2) for d in draws]
 
@@ -151,6 +159,7 @@ def e5_bootstrap_width(reps=1000):
         for name, fn in (("recall", m.recall), ("precision", m.precision), ("f1", m.f1),
                          ("mcc", lambda c: m.mcc(c, "nan")), ("accuracy", m.accuracy)):
             vals = np.array([fn(c) for c in boot])
+            # 재표집에서 정의되지 않은 값(0/0)은 구간 계산에서 빼고 개수만 따로 센다
             ok = vals[~np.isnan(vals)]
             lo, hi = np.percentile(ok, [2.5, 97.5])
             row["ci"][name] = {"lo": float(lo), "hi": float(hi), "width": float(hi - lo), "undefined": int(np.isnan(vals).sum())}
@@ -169,6 +178,7 @@ def e6_checks():
                 fb = (1 + beta ** 2) * p * r / (beta ** 2 * p + r)
                 grid.append(abs((1 - m.van_rijsbergen_e(p, r, 1 / (beta ** 2 + 1))) - fb))
     rng = np.random.default_rng(5)
+    # NumPy와 torch 값의 절대 차이를 항목별로 모은다(auc_trap_vs_pairs는 NumPy 사다리꼴 대 쌍 비교)
     diffs = {"confusion": [], "f1": [], "f2": [], "mcc": [], "auc": [], "ap": [], "brier": [], "auc_trap_vs_pairs": []}
     for _ in range(20):
         n = int(rng.integers(20, 300))
@@ -209,7 +219,9 @@ def e7_brier():
     y, sc = cases.case_prevalence(0.01, 1000, seed=0)
     prev = y.mean()
     # 점수 분포를 아는 '정직한' 확률: P(양성 | 점수) (양성 N(1,1), 음성 N(0,1), 사전 비율 prev)
+    # 양성 N(1,1) 대 음성 N(0,1)의 우도비 = exp(s - 0.5)
     lr = np.exp(sc - 0.5)
+    # 베이즈 정리: P(양성 | 점수) = prev*LR / (prev*LR + 1 - prev). 점수 분포를 아는 '정직한' 확률
     post = prev * lr / (prev * lr + (1 - prev))
     return {"expected_by_forecast": exp_score, "argmin": best, "p_true": p_true,
             "data": {"n": len(y), "prev": float(prev), "always_0": m.brier(y, np.zeros(len(y))),
@@ -218,6 +230,7 @@ def e7_brier():
 
 
 def main():
+    # 전체 소요 시간을 env에 기록(다른 장과 달리 결과 JSON이 실행마다 조금 달라진다)
     t0 = time.perf_counter()
     res = {
         "env": {"python": platform.python_version(), "numpy": np.__version__, "torch": torch.__version__.split("+")[0],

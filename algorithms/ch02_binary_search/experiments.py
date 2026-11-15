@@ -37,6 +37,7 @@ CARDS = [3, 5, 8, 12, 15, 19, 23, 30]
 
 
 def e0_first_screen():
+    # 손계산 장면: 올바른 판은 3번 만에 위치 5(카드 19)에서 끝나고, lo = mid 판은 구간 [4,5)에서 멈추지 않는다
     good = bs.run_variant("d_correct", CARDS, 16, trace=True)
     stuck = bs.run_variant("b_lo_mid", CARDS, 16, trace=True)
     return {
@@ -51,6 +52,7 @@ def e0_first_screen():
 
 
 def e1_exhaustive():
+    # 전수 검사: 입력 2,772가지 x 변형 4개. 변형별 실패 수와 가장 짧은 반례(first_failure)를 남긴다
     r = bs.exhaustive(5)
     return {"max_len": 5, "values": [0, 2, 4, 6, 8], "targets": bs.targets(), "max_steps_cap": bs.MAX_STEPS,
             "n_arrays": len(list(bs.sorted_arrays(5))), "n_targets": len(bs.targets()),
@@ -58,7 +60,7 @@ def e1_exhaustive():
 
 
 def e3_random_props(n_arrays=3000, seed=0):
-    rng = random.Random(seed)
+    rng = random.Random(seed)  # 시드를 고정해 웹 챕터가 인용하는 숫자가 다시 돌려도 같게 한다
     agree = 0
     step_ok = 0
     inv_ok = 0
@@ -71,7 +73,7 @@ def e3_random_props(n_arrays=3000, seed=0):
         x = rng.randint(-1, 21)
         c = bs.Counter()
         got = bs.lower_bound(a, x, c)
-        agree += got == bisect.bisect_left(a, x)
+        agree += got == bisect.bisect_left(a, x)  # 불리언을 더해 일치 개수를 센다
         step_ok += c.steps <= bs.max_steps_bound(n)
         t = bs.run_variant("d_correct", a, x, trace=True)
         ok = all(i["holds"] for row in t["trace"] for i in row["invariants"])
@@ -104,6 +106,7 @@ def e4_tight_bound():
 
 
 def _median_time(fn, repeats=10):
+    # (중앙값, 최소, 최대) 초. 평균보다 튀는 값에 덜 흔들리는 중앙값을 대표로 쓴다
     ts = []
     for _ in range(repeats):
         t0 = time.perf_counter()
@@ -117,7 +120,7 @@ def e5_linear_vs_binary(repeats=10, n_queries=20, seed=0):
     for n in (10 ** 3, 10 ** 4, 10 ** 5, 10 ** 6):
         rng = random.Random(seed)
         a = sorted(rng.sample(range(10 * n), n))
-        arr = np.asarray(a)
+        arr = np.asarray(a)  # np.searchsorted 비교용 배열 변환은 시간 재기 밖에서 한 번만 한다
         qs = [rng.randrange(-1, 10 * n + 1) for _ in range(n_queries)]
         # 비교 횟수(결정적): 같은 질의 묶음의 평균, 그리고 최악(x 가 모두보다 큰 경우)
         lin_c = []
@@ -167,7 +170,7 @@ def e6_cpython_issue():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         while lo < hi and steps < 200:
-            mid = (lo + hi) // np.int64(2)
+            mid = (lo + hi) // np.int64(2)  # 옛 식: lo+hi 가 2^63 을 넘으면 감겨 mid 가 음수가 된다
             steps += 1
             if mid < 0:
                 first_neg = {"step": steps, "lo": int(lo), "hi": int(hi), "mid": int(mid)}
@@ -188,6 +191,7 @@ def e7_sampling(seed=0, n_u=10000):
         p /= p.sum()
         cdf = np.cumsum(p)
         u = rng.random(n_u) * cdf[-1]
+        # 선형 방식은 느려서 앞 2000개만 이분 탐색 결과와 대조한다(비교 횟수는 선형 V, 이분 상한 ceil(log2(V+1)))
         lin = np.array([bs.sample_index_linear(cdf, ui) for ui in u[:2000]])
         bis = bs.sample_index_bisect(cdf, u[:2000])
         out[str(V)] = {"agree": int((lin == bis).sum()), "checked": int(len(lin)),
@@ -199,7 +203,7 @@ def traces_for_widget():
     cases = {
         "d_correct": (CARDS, 16),
         "b_lo_mid": (CARDS, 16),
-        "c_closed_hi": (CARDS, 31),
+        "c_closed_hi": (CARDS, 31),  # 31 은 모든 카드보다 커서 정답이 n=8 인데 c 는 7 에서 멈춘다
         "a_le_with_hi_mid": (CARDS, 16),
     }
     out = {}

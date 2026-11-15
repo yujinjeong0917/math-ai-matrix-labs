@@ -31,6 +31,7 @@ DEFAULT_DATA = Path(__file__).parent / "data" / "inquiries_2026-W41.json"
 
 
 def log(*a):
+    """로그는 stderr로만 쓴다. stdout은 JSON-RPC 응답 전용이라 다른 글이 섞이면 클라이언트가 깨진다."""
     print("[inquiries-mcp]", *a, file=sys.stderr, flush=True)
 
 
@@ -44,6 +45,7 @@ class InquiryServer:
 
     # ---------- 내놓는 것: 도구, 자료, 프롬프트 틀 ----------
     def tools(self):
+        """내놓는 도구 정의 3개(MCP tools/list 결과 모양)."""
         week = {"type": "string", "description": "ISO 주. 예: 2026-W41"}
         return [   # 순서를 고정한다(사양: 같은 목록은 같은 순서로 → 프롬프트 캐시 적중에 유리)
             {"name": "count_by_category", "title": "유형별 문의 건수",
@@ -73,6 +75,7 @@ class InquiryServer:
 
     # ---------- 도구 실행 ----------
     def _check_args(self, tool, args):
+        """인자를 스키마(required, 속성, enum)와 대조해 오류 문장을 돌려준다. 통과하면 None. 모델이 읽고 고칠 수 있도록 오류에 쓸 수 있는 값을 적는다."""
         schema = tool["inputSchema"]
         if not isinstance(args, dict):
             return "arguments는 객체여야 해요."
@@ -83,6 +86,7 @@ class InquiryServer:
             prop = schema["properties"].get(k)
             if prop is None:
                 return f"'{k}'는 받지 않는 값이에요. 받는 값: {', '.join(schema['properties'])}"
+            # 이 서버의 모든 인자는 글자라 단순 검사로 충분하다(일반 JSON 스키마 검증기가 아님).
             if not isinstance(v, str):
                 return f"'{k}'는 글자여야 해요."
             if "enum" in prop and v not in prop["enum"]:
@@ -99,6 +103,7 @@ class InquiryServer:
             return None, err
         items = self.data["items"]
         if name == "count_by_category":
+            # 문의가 0건인 유형도 0으로 나오도록 아래에서 c.get(k, 0)으로 채운다.
             c = Counter(i["category"] for i in items)
             return {"week": self.data["week"], "total": len(items),
                     "counts": {k: c.get(k, 0) for k in self.categories}}, None
@@ -121,6 +126,7 @@ class InquiryServer:
         if not isinstance(msg, dict) or msg.get("jsonrpc") != "2.0" or not isinstance(msg.get("method"), str):
             return _err(msg.get("id") if isinstance(msg, dict) else None, INVALID_REQUEST, "Invalid Request")
         mid, method, params = msg.get("id"), msg["method"], msg.get("params") or {}
+        # JSON-RPC에서 id가 없는 메시지는 알림이라 응답하면 안 된다.
         if "id" not in msg:                       # 알림: 답하지 않는다
             if method == "notifications/initialized" and self.legacy_version:
                 self.legacy_ready = True
@@ -129,6 +135,7 @@ class InquiryServer:
         meta = params.get("_meta") or {}
         if method == "initialize":
             return self._initialize(mid, params)
+        # _meta에 버전이 있으면 현재 세대 요청으로 처리한다. legacy_only 서버는 이를 모르는 척한다.
         if META_VERSION in meta and not self.legacy_only:
             return self._modern(mid, method, params, meta)
         if self.legacy_version:                   # initialize를 마친 옛 세대 연결
@@ -144,6 +151,7 @@ class InquiryServer:
         if not self.legacy_only and asked == MODERN:
             # 현재 세대에는 initialize가 없다. 받는 버전을 알려 준다(사양 권장).
             return _err(mid, METHOD_NOT_FOUND, f"initialize is not part of {MODERN}; supported: {SUPPORTED}")
+        # 클라이언트가 어떤 옛 버전을 청해도 서버는 아는 하나로 답한다. 협상 규칙의 단순화(실제 사양의 협상 세부는 확인 필요).
         self.legacy_version = LEGACY              # 옛 세대에서 아는 버전은 하나뿐이라 늘 이것으로 답한다
         log("initialize", asked, "->", self.legacy_version)
         return _ok(mid, {"protocolVersion": self.legacy_version,
@@ -166,6 +174,7 @@ class InquiryServer:
         body = self._common(mid, method, params)
         if "error" in body:
             return body
+        # 읽기 전용 목록만 캐시 허용 힌트(ttlMs)를 붙인다. tools/call은 결과가 호출마다 달라질 수 있어 제외.
         cacheable = method in ("tools/list", "resources/list", "prompts/list", "resources/read")
         extra = {"ttlMs": 300_000, "cacheScope": "private"} if cacheable else {}
         return _ok(mid, self._modern_result({**body["result"], **extra}))
@@ -178,10 +187,12 @@ class InquiryServer:
         return self._common(mid, method, params)
 
     def _common(self, mid, method, params):
+        """두 세대가 공유하는 메서드 처리. 세대별 포장(_meta 등)은 호출한 쪽이 더한다."""
         if method == "tools/list":
             return _ok(mid, {"tools": self.tools()})
         if method == "tools/call":
             name = params.get("name")
+            # 없는 도구 이름은 프로토콜 오류(JSON-RPC error). 반면 인자 오류는 위처럼 isError 결과로 돌려준다(둘을 구분하는 것이 사양의 취지).
             if name not in [t["name"] for t in self.tools()]:
                 return _err(mid, INVALID_PARAMS, f"Unknown tool: {name}")
             data, err = self.run_tool(name, params.get("arguments", {}))
@@ -222,6 +233,7 @@ def _err(mid, code, message, data=None):
 
 def serve(stdin, stdout, server):
     for line in stdin:                       # stdin이 닫히면(EOF) 반복이 끝나고 서버도 끝난다
+        # 빈 줄은 무시한다.
         line = line.strip()
         if not line:
             continue

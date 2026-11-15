@@ -22,11 +22,13 @@ def make_grid(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
         term[t[0] * w + t[1]] = True
     for s in range(S):
         if term[s]:
+            # 종료 칸: 어떤 행동이든 자기 자신으로 돌아오는 흡수 상태. R은 0 그대로
             P[s, :, s] = 1.0
             continue
         r, c = divmod(s, w)
         for a in range(A):
             for b in range(A):
+                # 식: P(실제 행동 b | 고른 행동 a) = (1 - slip) * 1[a = b] + slip / A. slip 확률로 네 방향을 균등하게 뽑는다(고른 행동 포함)
                 prob = (1.0 - slip) * (a == b) + slip / A
                 if prob == 0.0:
                     continue
@@ -35,12 +37,15 @@ def make_grid(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
                 if not (0 <= nr < h and 0 <= nc < w):
                     nr, nc = r, c
                 s2 = nr * w + nc
+                # += 인 이유: 벽에 부딪힌 행동 b들이 모두 제자리 칸 s2로 모일 수 있어 확률을 합친다
                 P[s, a, s2] += prob
+                # 보상은 들어간 칸에 붙는다(R[s,a,s']). rewards에 없는 칸은 step_reward
                 R[s, a, s2] = rewards.get((nr, nc), step_reward)
     return P, R, term
 
 
 def uniform_policy(S, A=4):
+    """모든 칸에서 행동 A개를 같은 확률 1/A로 고르는 정책 pi[S,A]."""
     return np.full((S, A), 1.0 / A)
 
 
@@ -50,9 +55,13 @@ def exact_v(P, R, pi, gamma, term):
     (I - gamma P^pi) V = r^pi. 종료 칸은 V=0으로 고정한다(gamma=1에서도 풀리게).
     """
     S = P.shape[0]
+    # 식: P_pi[s,s'] = sum_a pi(a|s) P[s,a,s']
     P_pi = np.einsum("sa,sap->sp", pi, P)
+    # 식: r_pi[s] = sum_a pi(a|s) sum_s' P[s,a,s'] R[s,a,s']
     r_pi = np.einsum("sa,sap,sap->s", pi, P, R)
     keep = ~term
+    # 식: (I - gamma P_pi) V = r_pi. 종료 칸은 V = 0이라 그 열이 식에서 빠지므로 종료 칸을 뺀 부분 행렬만 푼다
+    # (종료 칸으로 들어가는 보상은 r_pi에 이미 들어 있다)
     M = np.eye(int(keep.sum())) - gamma * P_pi[np.ix_(keep, keep)]
     V = np.zeros(S)
     V[keep] = np.linalg.solve(M, r_pi[keep])

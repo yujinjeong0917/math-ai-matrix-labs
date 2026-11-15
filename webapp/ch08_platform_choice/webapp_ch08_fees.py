@@ -38,13 +38,16 @@ def split(gross, store_rate, pg_rate, vat_rate=0.10, store_on="base"):
 
     store_rate 나 pg_rate 가 None 이면(확인 못 한 율) 개발자 몫도 None 이다.
     """
+    # 부가세 포함가 P에서 부가세는 P * 0.1/1.1 = P/11 (포함가 역산)
     vat = gross * vat_rate / (1 + vat_rate)
     base = gross - vat
     if store_rate is None or pg_rate is None:
         return {"gross": gross, "vat": round(vat), "base": round(base), "store_fee": None, "pg_fee": None,
                 "net": None, "net_share_of_gross": None, "unverified": True}
+    # 스토어 수수료의 기준 금액: 기본은 부가세 뗀 금액, 애플 한국 외부 결제만 총액
     store_fee = (gross if store_on == "gross" else base) * store_rate
     pg_fee = gross * pg_rate
+    # 개발자 몫 = 공급가액 - 스토어 수수료 - PG 수수료. PG 수수료는 총액 기준이라 합이 base를 넘지 않는지는 확인하지 않는다
     net = base - store_fee - pg_fee
     return {"gross": gross, "vat": round(vat), "base": round(base), "store_fee": round(store_fee),
             "pg_fee": round(pg_fee), "net": round(net), "net_share_of_gross": round(net / gross, 4),
@@ -58,6 +61,7 @@ def channel_table(gross, fees, share_later=0.0):
         rate = ch["store_rate"]
         if ch.get("subscription_later_rate") is not None and rate is not None:
             rate = blended_store_rate(rate, ch["subscription_later_rate"], share_later)
+        # pg 키가 없는 경로(스토어 결제만 쓰는 경우)는 PG 수수료 0
         pg = fees["pg"][ch["pg"]]["rate"] if ch["pg"] else 0.0
         r = split(gross, rate, pg, fees["assumptions"]["vat_rate"], ch.get("store_on", "base"))
         r.update({"id": ch["id"], "label": ch["label"], "store_rate_used": None if rate is None else round(rate, 4),
@@ -77,6 +81,7 @@ def months_to_threshold(monthly_gross, fees):
     """월 매출이 그대로일 때 기준선(부가세 뗀 금액 기준)에 닿는 데 걸리는 달 수."""
     t = threshold_in_krw(fees)["krw"]
     base = monthly_gross / (1 + fees["assumptions"]["vat_rate"])
+    # 단위: t는 원, base는 월 공급가액(원). 결과는 월 수(실수)
     return t / base
 
 
@@ -105,6 +110,7 @@ def fixed_costs(fees, platforms, need_new_mac):
 
 def subscribers_to_cover(cost_krw, price_gross, net_share):
     """한 달 net_share(고객이 낸 금액 대비 개발자 몫)일 때 cost_krw 를 메우려면 몇 건의 결제가 필요한가(올림)."""
+    # 결제 1건당 개발자 몫(원). 올림해야 비용을 "넘겨서" 메운다
     per = price_gross * net_share
     n = cost_krw / per
     return int(n) if n == int(n) else int(n) + 1

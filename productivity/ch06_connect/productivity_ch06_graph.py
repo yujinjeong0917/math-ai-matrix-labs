@@ -5,6 +5,10 @@
 - 한 위치가 바뀌면 어디까지 퍼지나(도달 집합)를 세 방식으로 구한다: 순수 파이썬 BFS, NumPy 불리언 행렬 거듭제곱,
   sqlite3 재귀 CTE. 서로 독립된 구현이라 결과가 같아야 한다(6절 대조).
 - 사람 확인 간선 위험: 위치마다 원본에서 그 위치까지 가는 길에 있는 사람 확인 간선 수.
+
+입력: items = {항목 id: {"src": 원본 위치, "edges": [(보내는 곳, 받는 곳, 방식), ...]}}. 방식은 ref(자동 참조), human(사람 확인), auto(자동화).
+출력: 규칙 위반 목록, 도달 집합, 위치별 사람 확인 간선 수, 불일치 기댓값. 이 파일은 NumPy가 필요하다(reach_numpy).
+테스트의 기대값(손 고치기 한 곳이면 하나라도 틀릴 확률 0.1, 틀린 곳 수 기댓값 0.3 등)이다(장 본문 숫자와의 대응은 README로 확인 필요).
 """
 
 import random
@@ -15,7 +19,7 @@ import numpy as np
 
 
 def item_graph(item):
-    """item = {"src": ..., "edges": [(a, b, m), ...]} -> (노드 목록, 간선 목록)."""
+    """item = {"src": ..., "edges": [(a, b, m), ...]} -> (노드 목록, 간선 목록). 노드는 원본이 맨 앞, 이후 처음 나온 순서."""
     nodes = [item["src"]]
     for a, b, _ in item["edges"]:
         for x in (a, b):
@@ -26,6 +30,7 @@ def item_graph(item):
 
 def validate(items):
     """등록부 규칙 위반 목록. 비어 있으면 통과."""
+    # 항목마다 네 가지 규칙을 본다: 원본이 정확히 하나, 값을 한 곳에서만 받음, 고리 없음, 원본에서 모두 닿음. 마지막으로 다른 항목과 원본 위치가 겹치는지도 본다
     problems = []
     src_owner = {}
     for k, it in items.items():
@@ -37,13 +42,14 @@ def validate(items):
             out[a].append(b)
             if m not in ("ref", "human", "auto"):
                 problems.append((k, f"모르는 갱신 방식: {m}"))
+        # 들어오는 간선이 0인 노드가 원본 하나뿐이어야 한다. 양방향 동기화(고리)면 원본 후보가 사라진다
         roots = [n for n in nodes if indeg[n] == 0]
         if roots != [it["src"]]:
             problems.append((k, f"원본이 하나가 아님: {roots or '없음(고리)'}"))
         for n in nodes:
             if indeg[n] > 1:
                 problems.append((k, f"{n}이 값을 {indeg[n]}곳에서 받음"))
-        # 고리 찾기(색칠 DFS)
+        # 고리 찾기(색칠 DFS): 0 = 안 가 봄, 1 = 지금 경로 위, 2 = 끝남. 경로 위(1) 노드를 다시 만나면 고리
         color = {n: 0 for n in nodes}
 
         def dfs(u):
@@ -91,6 +97,7 @@ def reach_numpy(edges, nodes):
     """
     idx = {n: i for i, n in enumerate(nodes)}
     n = len(nodes)
+    # 정수 행렬로 곱한 뒤 > 0으로 불리언화한다(불리언 곱이 아니라 정수 곱의 양수 여부로 도달을 본다)
     R = np.eye(n, dtype=np.int64)
     for a, b, *_ in edges:
         R[idx[a], idx[b]] = 1
@@ -102,7 +109,7 @@ def reach_numpy(edges, nodes):
 
 
 def reach_sql(edges, start):
-    """sqlite3 재귀 CTE로 같은 도달 집합."""
+    """sqlite3 재귀 CTE로 같은 도달 집합. UNION(UNION ALL이 아님)이 중복을 없애 고리가 있어도 끝난다."""
     con = sqlite3.connect(":memory:")
     con.execute("CREATE TABLE e(a TEXT, b TEXT)")
     con.executemany("INSERT INTO e VALUES (?, ?)", [(a, b) for a, b, *_ in edges])
@@ -116,15 +123,16 @@ def reach_sql(edges, start):
 def human_hops(item):
     """위치마다 원본에서 그 위치까지 가는 길에 있는 사람 확인 간선 수와 자동화 간선 수."""
     nodes, edges = item_graph(item)
+    # 값을 한 곳에서만 받는 등록부(validate 통과)를 전제로 노드마다 부모 간선 하나만 둔다. 여러 곳에서 받으면 마지막 간선이 덮는다
     parent = {b: (a, m) for a, b, m in edges}
     out = {}
     for n in nodes:
         h = a_ = 0
         cur = n
-        guard = 0
+        guard = 0  # 고리가 있는 등록부에서 무한 반복하지 않도록 노드 수만큼만 거슬러 올라간다
         while cur in parent and guard <= len(nodes):
             a, m = parent[cur]
-            h += m == "human"
+            h += m == "human"  # bool을 정수 1/0으로 더한다
             a_ += m == "auto"
             cur = a
             guard += 1
@@ -149,9 +157,11 @@ def expected_mismatch(item, q, auto_alive=True):
     for n in nodes:
         if n == item["src"]:
             continue
+        # 위치 n이 맞을 확률: 가는 길의 사람 확인 간선이 모두 성공(q^개수), 길에 자동화 간선이 있으면 자동화가 살아 있어야 한다
         p_ok = q ** hops[n]["human"] * (1.0 if (auto_alive or hops[n]["auto"] == 0) else 0.0)
         exp_wrong += 1 - p_ok
     # 하나라도 어긋날 확률 = 1 - (모든 사람 확인 간선 성공 확률). 자동화가 죽어 있고 자동화 간선이 있으면 1.
+    # 가정: 사람 확인 간선의 성공은 서로 독립이다(현실에서는 같은 사람이 바쁜 날 함께 놓치기 쉽다)
     n_h = sum(m == "human" for _, _, m in edges)
     n_a = sum(m == "auto" for _, _, m in edges)
     p_any = 1 - q ** n_h * (1.0 if (auto_alive or n_a == 0) else 0.0)
@@ -159,7 +169,8 @@ def expected_mismatch(item, q, auto_alive=True):
 
 
 def random_registry(rng, n_items=None):
-    """무작위 등록부(나무 모양 항목 여러 개). 대응 구현 대조용."""
+    """무작위 등록부(나무 모양 항목 여러 개). 대응 구현 대조용.
+    노드 j의 부모는 앞선 노드 중 하나라 항상 나무(고리 없음, 원본에서 모두 닿음)다."""
     n_items = n_items or rng.randint(1, 6)
     items = {}
     for k in range(n_items):
@@ -184,6 +195,7 @@ def correspondence(n_cases=500, seed=6):
         for it in items.values():
             for x in item_graph(it)[0]:
                 nodes.append(x)
+        # 항목 여러 개를 한 간선 목록으로 합쳐 모든 시작점에서 세 구현을 대조한다(노드 이름에 항목 번호가 들어 있어 서로 안 섞인다)
         R, idx = reach_numpy(edges, nodes)
         for s in nodes:
             a = reach_bfs(edges, s)

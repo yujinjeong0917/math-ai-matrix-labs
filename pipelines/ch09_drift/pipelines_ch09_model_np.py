@@ -56,4 +56,5 @@ def model_bytes(model):
     parts = [np.asarray(model["w"], dtype="<f8").tobytes(), np.asarray([model["b"]], dtype="<f8").tobytes()]
     for k in model["prep"]["numeric"]:
         parts.append(np.asarray([model["prep"]["mean"][k], model["prep"]["std"][k]], dtype="<f8").tobytes())
+    # <f8: little-endian float64로 고정해 컴퓨터가 달라도 같은 모델이면 같은 바이트(다이제스트)가 되게 한다
     return b"".join(parts)

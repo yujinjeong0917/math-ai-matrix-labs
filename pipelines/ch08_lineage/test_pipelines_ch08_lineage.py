@@ -15,6 +15,7 @@ import pipelines_ch08_steps as S  # noqa: E402
 import pipelines_ch08_store as ST  # noqa: E402
 
 torch.set_num_threads(2)
+# 두 가짜 이미지: 기본 데이터 규칙이 v1인 것과 v2인 것(build는 내용을 다르게 하려는 이름)
 V1 = {"source_version_default": "v1", "build": "commit-a1"}
 V2 = {"source_version_default": "v2", "build": "commit-b2"}
 
@@ -23,6 +24,7 @@ def statuses(run):
     return [t["status"] for t in run["tasks"]]
 
 
+# 저장소와 독립적으로 학습 표의 데이터 지문을 다시 계산한다(리니지 기록이 맞는지 대조용)
 def train_hash(seed, n_rows, shift, version):
     t = D.make_table(seed, n_rows, shift, version)
     n = len(t[D.LABEL])
@@ -46,6 +48,7 @@ def test_model_file_alone_has_no_data_info(env):
     st, reg, tmp = env
     r = R.run(st, reg, tmp, reg.ref("latest"))
     keys = set(json.loads(open(st.artifact(r["artifacts"]["train.model"])["uri"]).read()))
+    # 모델 파일 안에는 가중치, 절편, 전처리 값뿐이고 학습 데이터 정보가 없다
     assert keys == {"w", "b", "prep"}
 
 
@@ -64,6 +67,7 @@ def test_cache_trap_latest_tag_reuses_old_data(env):
     R.run(st, reg, tmp, reg.ref("latest"))
     reg.push("latest", V2)
     r2 = R.run(st, reg, tmp, reg.ref("latest"))
+    # latest 태그가 새 이미지(v2)를 가리켜도 이미지 이름 문자열이 같아 세 단계 모두 캐시 적중. 그래서 데이터는 옛 v1 그대로
     assert statuses(r2) == ["CACHED"] * 3
     assert R.data_of(st, r2)["dataset_hash"] == train_hash(1, 4000, 1.0, "v1")  # 의도는 v2
 
@@ -74,15 +78,18 @@ def test_digest_ref_or_explicit_version_misses(env):
     R.run(st, reg, tmp, reg.ref(digest=d1))
     d2 = reg.push("latest", V2)
     r2 = R.run(st, reg, tmp, reg.ref(digest=d2))
+    # 다이제스트로 참조하면 이미지 이름 문자열이 달라져 지문이 바뀌고 세 단계 모두 다시 실행한다
     assert statuses(r2) == ["RAN"] * 3
     assert R.data_of(st, r2)["dataset_hash"] == train_hash(1, 4000, 1.0, "v2")
     r3 = R.run(st, reg, tmp, reg.ref("latest"), args={"data_version": "v1"})
     r4 = R.run(st, reg, tmp, reg.ref("latest"), args={"data_version": "v1"})
+    # data_version 파라미터를 직접 주면 그 값이 지문에 들어가고, 같은 값으로 다시 돌리면 정당하게 캐시가 맞는다
     assert statuses(r4) == ["CACHED"] * 3  # 키에 든 값만으로 데이터가 정해지면 다시 써도 맞다
     assert R.data_of(st, r4)["dataset_hash"] == R.data_of(st, r3)["dataset_hash"] == train_hash(1, 4000, 1.0, "v1")
 
 
 def test_env_var_ignored_by_2_17_2_key_but_not_master(tmp_path):
+    # 환경변수 SOURCE_VERSION을 바꿨을 때, 환경변수가 지문에 안 들어가는 정책은 캐시가 맞고 들어가는 정책은 다시 실행한다
     for policy, want in (("kfp-2.17.2", "CACHED"), ("kfp-master", "RAN")):
         st, reg = ST.Store(), R.Registry()
         reg.push("latest", V1)
@@ -95,10 +102,12 @@ def test_cache_lookup_is_scoped_by_pipeline_and_namespace(env):
     st, reg, tmp = env
     R.run(st, reg, tmp, reg.ref("latest"), namespace="team-a")
     r2 = R.run(st, reg, tmp, reg.ref("latest"), namespace="team-b")
+    # namespace가 다르면 같은 지문이어도 캐시를 쓰지 않는다(조회 범위가 pipeline + namespace)
     assert statuses(r2) == ["RAN"] * 3
 
 
 def test_disabling_prepare_cache_cascades_with_id_key_only(tmp_path):
+    # prepare만 캐시를 끄면 새 artifact ID가 생긴다. 입력을 ID로 보는 정책은 뒤 단계도 모두 다시 돌고, 내용으로 보는 정책은 내용이 같아 뒤 단계가 캐시에서 나온다
     for policy, want in (("kfp-2.17.2", ["RAN", "RAN", "RAN"]), ("content", ["RAN", "CACHED", "CACHED"])):
         st, reg = ST.Store(), R.Registry()
         reg.push("latest", V1)
@@ -106,6 +115,7 @@ def test_disabling_prepare_cache_cascades_with_id_key_only(tmp_path):
         b = R.run(st, reg, tmp_path, reg.ref("latest"), policy=policy, caching={"prepare": False})
         assert statuses(b) == want, policy
         da, db = (st.artifact(r["artifacts"]["prepare.train_data"]) for r in (a, b))
+        # 내용 지문은 같고 ID만 다르다
         assert da["id"] != db["id"] and da["sha"] == db["sha"]  # 내용은 같고 ID만 새로
 
 
@@ -115,6 +125,7 @@ def test_cached_execution_points_to_same_artifact_ids(env):
     b = R.run(st, reg, tmp, reg.ref("latest"))
     assert a["artifacts"] == b["artifacts"]
     tr = st.trace(b["artifacts"]["train.model"])
+    # 캐시로 재사용한 모델의 출처(made_by)는 처음 만든 run, 재사용한 run은 reused_by_runs에 나온다
     assert tr["made_by"]["run_id"] == a["run_id"] and tr["reused_by_runs"] == [b["run_id"]]
 
 
@@ -123,6 +134,7 @@ def test_sql_and_bfs_lineage_agree(env):
     for i in range(6):
         R.run(st, reg, tmp, reg.ref("latest"), args={"seed": i % 3, "threshold": 0.4 + 0.02 * i})
     for aid in range(1, st.counts()["artifacts"] + 1):
+        # 모든 artifact에 대해 재귀 SQL과 파이썬 탐색의 조상 집합이 같다
         assert st.ancestors_sql(aid) == st.ancestors_bfs(aid)
 
 
@@ -130,6 +142,7 @@ def test_descendants_find_every_run_that_used_bad_data(env):
     st, reg, tmp = env
     runs = [R.run(st, reg, tmp, reg.ref("latest"), args=a) for a in ({}, {}, {"threshold": 0.4}, {"seed": 9})]
     _, exes = st.descendants_sql(runs[0]["artifacts"]["prepare.train_data"])
+    # 첫 학습 데이터(seed 1 기본)를 쓴 세 run(앞 두 개와 threshold만 다른 것)만 나오고 seed 9 run은 빠진다. 캐시로 재사용한 run도 포함
     assert {st.execution(e)["run_id"] for e in exes} == {r["run_id"] for r in runs[:3]}
 
 
@@ -137,12 +150,14 @@ def test_torch_body_same_accuracy_different_model_file(env):
     st, reg, tmp = env
     a = R.run(st, reg, tmp, reg.ref("latest"), args={"impl": "numpy"})
     b = R.run(st, reg, tmp, reg.ref("latest"), args={"impl": "torch"})
+    # impl만 바꾸면 prepare는 캐시, train과 evaluate는 다시 실행
     assert statuses(b) == ["CACHED", "RAN", "RAN"]
     ma, mb = (st.artifact(r["artifacts"]["train.model"]) for r in (a, b))
     wa, ba, _ = S.load_model_weights(ma["uri"])
     wb, bb, _ = S.load_model_weights(mb["uri"])
     assert np.max(np.abs(wa - wb)) < 1e-12 and abs(ba - bb) < 1e-12
     assert R.metrics_of(st, a)["accuracy"] == R.metrics_of(st, b)["accuracy"]
+    # 가중치가 1e-12 안에서 같아도 파일 바이트는 달라 지문이 다르다(부동소수점 마지막 자리 차이로 추정, 확인 필요)
     assert ma["sha"] != mb["sha"]
     assert st.trace(mb["id"])["made_by"]["params"]["impl"] == "torch"
 
@@ -154,4 +169,5 @@ def test_cache_key_fields_follow_kfp_2_17_2():
                         "containerSpec"}
     assert key["inputArtifactNames"] == {"x": {"artifactNames": ["7"]}}
     assert set(key["containerSpec"]) == {"image", "cmdArgs", "pvcNames"}  # env 없음(2.17.2)
+    # 2.17.2 정책의 containerSpec에는 env가 없고 master 정책에만 들어간다
     assert "env" in R.cache_key("kfp-master", {}, {}, {}, "r", "d", "c", {"A": "1"})["containerSpec"]

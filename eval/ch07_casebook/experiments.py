@@ -33,6 +33,7 @@ SEEDS = 100
 N_BOOT = 1000
 
 
+# 목적 두 가지: (1) 10분 넘게 틀리면 5,000원 쿠폰(건수 중심), (2) 틀린 1분마다 100원 할인(평균 중심). 같은 두 모델이 목적에 따라 다른 승자
 def e0_first_screen():
     a, b = cases.first_screen()
     out = {"A_errors": a.tolist(), "B_errors": b.tolist()}
@@ -58,9 +59,11 @@ def e2_e3_e4_seeds():
     flips, flips_alt, flag_rate, indistinct_metric = {}, {}, {}, {}
     for name in cases.CASE_NAMES:
         fn = cases.MAKERS[name]
+        # miss[k]: 지표 k로 고른 모델이 목적 손실과 다른 시드 수
         miss = {k: 0 for k in m.METRICS}
         miss_alt = {k: 0 for k in m.METRICS}
         fl = {k: 0 for k in cb.FLAGS}
+        # ind[k]: 부트스트랩 95% 구간이 0을 포함한(구별 불가) 시드 수
         ind = {k: 0 for k in m.METRICS}
         obj_picks = {"A": 0, "B": 0}
         for s in range(SEEDS):
@@ -107,6 +110,7 @@ def e6_followups():
         c = cases.make_case_fixable_bias(s)
         fixed = dict(c)
         for w in "AB":
+            # 보정량은 검증 달에서만 구해 평가 달 예측에 더한다(평가 정답을 보지 않는다)
             fixed[w] = c[w] + float(np.mean(c["y_val"] - c[w + "_val"]))
         t = cb.metric_table(fixed)
         for k in m.METRICS:
@@ -117,6 +121,7 @@ def e6_followups():
     # 사례 6: 학습 구간 R^2 와 평가 구간 R^2
     tr, te = [], []
     for s in range(SEEDS):
+        # 사례 6: 직선 A의 학습 R^2는 높지만 평가 R^2는 음수가 되는 정도를 시드 100개로 본다
         c6 = cases.make_case_extrapolation(s)
         tr.append(m.r2(c6["y_train"], c6["A_train_fit"]))
         te.append(m.r2(c6["y_test"], c6["A"]))
@@ -146,6 +151,7 @@ def e7_fixture_torch():
         for w in "AB":
             nps = m.metric_row(c["y_train"], c["y_test"], c[w])
             ts = tm.metrics(torch.tensor(c["y_train"]), torch.tensor(c["y_test"]), torch.tensor(c[w]))
+            # 상대 차이(값이 1보다 작으면 절대 차이)의 최댓값
             d = max(d, max(abs(nps[k] - ts[k]) / max(1.0, abs(nps[k])) for k in m.METRICS))
         per_case[name] = d
         worst = max(worst, d)

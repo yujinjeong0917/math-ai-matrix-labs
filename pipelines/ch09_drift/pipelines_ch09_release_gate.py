@@ -33,4 +33,5 @@ def decide(metrics_old, metrics_new, guard):
     return "hold"
 
 
+# 6장 기본 가드와 같은 문턱(z 3, 최소 50, 올리기 400). 구간 가드는 이 장에서 쓰지 않는다
 GUARD = {"z": 3.0, "min_n": 50, "promote_n": 400}

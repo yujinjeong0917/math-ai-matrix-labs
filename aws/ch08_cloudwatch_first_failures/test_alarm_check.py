@@ -5,12 +5,14 @@ import alarm_check as a
 
 
 class AlarmCheckTest(unittest.TestCase):
+    # 마이크로초/밀리초/GPU 개수 환산: 31,500,000us = 31.5초, 29,000ms = 29초, 200% / 4장 = 50%
     def test_units(self):
         self.assertEqual(a.us_to_s(31_500_000), 31.5)
         self.assertEqual(a.ms_to_s(29_000), 29)
         self.assertEqual(a.normalize_gpu(200, 4), 50)
 
     def test_m_out_of_n(self):
+        # M-of-N 판정: 창은 최근 3개
         v = [0, 1, 0, 1]
         self.assertEqual(a.evaluate_alarm(v, 0.5, 3, 2), a.ALARM)      # 최근 3개 [1,0,1] 중 2개가 넘음
         self.assertEqual(a.evaluate_alarm([1, 0, 0], 0.5, 3, 2), a.OK)
@@ -27,6 +29,7 @@ class AlarmCheckTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             a.evaluate_alarm(v, 0, treat_missing="nope")
 
+    # README 기대 출력과 같은 값. scenario.json을 상대 경로로 읽으므로 이 폴더에서 실행한다
     def test_scenario_first_alarm_minutes(self):
         with open("scenario.json", encoding="utf-8") as f:
             r = a.run(json.load(f))["first_alarm_minute"]
@@ -39,6 +42,7 @@ class AlarmCheckTest(unittest.TestCase):
         self.assertIsNone(r["errors_5xx_missing"])
         self.assertEqual(r["wrong_unit_alarm_minutes"], 5)
 
+    # 선행 지표(분 2)가 후행 지표(분 3)보다 먼저 울린다
     def test_leading_indicator_comes_first(self):
         with open("scenario.json", encoding="utf-8") as f:
             r = a.run(json.load(f))["first_alarm_minute"]
@@ -50,6 +54,7 @@ class AlarmCheckTest(unittest.TestCase):
         self.assertEqual(a.first_index(a.replay(s, 0.5)), 1)
         self.assertEqual(a.first_index(a.replay(s, 0.5, evaluation_periods=2, datapoints_to_alarm=2)), 2)
 
+    # 오류가 없어 점이 안 찍히는 지표: notBreaching은 계속 OK, missing은 계속 INSUFFICIENT_DATA
     def test_quiet_errors_look_different_by_mode(self):
         with open("scenario.json", encoding="utf-8") as f:
             st = a.run(json.load(f))["states"]

@@ -6,6 +6,7 @@ from context_limit import (BUDGET, HEADER, POLICY, apply_strategy, build_context
 
 class ContextLimitTest(unittest.TestCase):
     def test_policy_and_turn_sizes_by_hand(self):
+        # 글자 수 손계산 값: 조항 합 887, 머리말 46, 6턴 합 = 46+887+(755+850+690+745+840+680) = 5,493, 7턴 = 5,493+775 = 6,268
         self.assertEqual([len(t) for _, _, t in POLICY], [126, 108, 130, 110, 104, 95, 112, 102])
         self.assertEqual(sum(len(t) for _, _, t in POLICY), 887)
         self.assertEqual(len(HEADER), 46)
@@ -22,16 +23,19 @@ class ContextLimitTest(unittest.TestCase):
 
     def test_s1_loses_policy_front_first(self):
         r = run(7, "S1")
+        # S1은 앞에서부터 지운다: 머리말 46 -> P1 126 -> P2 108까지 지워야 초과 268을 덮는다(누적 280).
         self.assertEqual(r["overflow_chars"], 268)
         self.assertEqual(r["lost_clauses"], ["P1", "P2"])
         self.assertTrue(r["lost_header"])
         self.assertEqual(r["wrong_decisions"], 2)
         self.assertEqual(r["dropped_user_messages"], 0)
         # 잘려 나간 글자는 머리말 46 + P1 126 + P2 108 = 280으로 초과분 268을 처음 덮는다.
+        # 지운 합 280 >= 268이므로 P2에서 멈춘다. 그 직전(P1까지)은 172로 모자란다.
         self.assertEqual(46 + 126 + 108, 280)
         self.assertEqual(total(apply_strategy(build_context(7), "S1")), 6268 - 280)
 
     def test_s1_loses_every_clause_by_turn_8(self):
+        # 8턴이면 초과가 더 커져 정책 8개가 모두 잘린다. 고객 메시지도 1개 잘린다.
         self.assertEqual(run(8, "S1")["lost_clauses"], [p[0] for p in POLICY])
         self.assertEqual(run(8, "S1")["wrong_decisions"], 8)
         self.assertEqual(run(8, "S1")["dropped_user_messages"], 1)
@@ -43,9 +47,11 @@ class ContextLimitTest(unittest.TestCase):
             self.assertFalse(r["lost_header"])
             self.assertLessEqual(r["chars_after"], BUDGET)
         self.assertEqual(run(7, "S2")["dropped_user_messages"], 1)
+        # 30턴에서 S2는 고객 메시지 24개를 잃는다(README S2 행 1, 2, 6, 24와 대응). S3의 30턴 17은 README 표를 따른다.
         self.assertEqual(run(30, "S2")["dropped_user_messages"], 24)
 
     def test_clearing_tool_results_delays_cutting_conversation(self):
+        # 도구 결과를 먼저 줄이면 12턴까지 고객 메시지를 하나도 안 잃고 최근 2턴의 도구 결과만 전체로 남는다.
         self.assertEqual(run(12, "S3")["dropped_user_messages"], 0)
         self.assertEqual(run(12, "S3")["kept_full_tool_results"], 2)
         self.assertEqual(run(15, "S3")["dropped_user_messages"], 2)

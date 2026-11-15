@@ -16,6 +16,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 SPEC_FILE = HERE / "data" / "specs_2026-10-11.json"
 SCENARIO_FILE = HERE / "data" / "scenario.json"
+# 1GB = 10^9바이트(GiB의 2^30이 아니다). 이 장의 모든 GB 값이 이 기준
 GB = 10**9
 
 
@@ -27,12 +28,14 @@ def to_bf16_bytes(x):
     반올림 규칙: 아래 16비트를 그냥 버리는 '자르기'(0 쪽으로 버림)다. 실제 라이브러리는 보통
     가장 가까운 값으로 반올림(round-to-nearest-even)하지만, 이 장은 바이트 수만 재므로 자르기로 충분하다.
     """
+    # 빅엔디언 fp32의 앞 2바이트 = 부호 1 + 지수 8 + 가수 위 7비트. 아래 16비트를 버리는 자르기
     return struct.pack(">f", x)[:2]
 
 
 def pack_numbers(values, fmt):
     """숫자 목록을 형식대로 바이트로 담는다. fmt: 'fp32' | 'fp16' | 'bf16'."""
     if fmt == "fp32":
+        # 리틀엔디언(<)으로 값 개수만큼 형식 문자를 반복해 한 번에 담는다. 길이가 곧 바이트 수
         return struct.pack(f"<{len(values)}f", *values)
     if fmt == "fp16":
         return struct.pack(f"<{len(values)}e", *values)
@@ -67,11 +70,13 @@ def named_tensors(cfg):
     a = cfg["num_attention_heads"]
     kv = cfg["num_key_value_heads"]
     V = cfg["vocab_size"]
+    # 어텐션 헤드 하나의 차원
     d = h // a
     out = [("model.embed_tokens.weight", (V, h))]
     for n in range(cfg["num_hidden_layers"]):
         p = f"model.layers.{n}."
         out += [
+            # 질의는 헤드 a개, 키·값은 헤드 kv개(GQA)라 k, v 행렬은 q보다 작다. q, k, v에만 편향이 있고 o_proj에는 없다(Qwen2 모양, 이 장의 config 기준)
             (p + "self_attn.q_proj.weight", (a * d, h)), (p + "self_attn.q_proj.bias", (a * d,)),
             (p + "self_attn.k_proj.weight", (kv * d, h)), (p + "self_attn.k_proj.bias", (kv * d,)),
             (p + "self_attn.v_proj.weight", (kv * d, h)), (p + "self_attn.v_proj.bias", (kv * d,)),
@@ -81,6 +86,7 @@ def named_tensors(cfg):
             (p + "input_layernorm.weight", (h,)), (p + "post_attention_layernorm.weight", (h,)),
         ]
     out.append(("model.norm.weight", (h,)))
+    # 임베딩과 출력 층의 가중치를 공유(tie)하지 않으면 lm_head를 따로 센다
     if not cfg.get("tie_word_embeddings", False):
         out.append(("lm_head.weight", (V, h)))
     return out
@@ -95,9 +101,11 @@ def count_closed_form(cfg):
     h, i, L = cfg["hidden_size"], cfg["intermediate_size"], cfg["num_hidden_layers"]
     a, kv, V = cfg["num_attention_heads"], cfg["num_key_value_heads"], cfg["vocab_size"]
     d = h // a
+    # 어텐션: q, o 행렬 2h^2 + k, v 행렬 2 h kv d + 편향(q는 h, k와 v는 kv d씩)
     attn = 2 * h * h + 2 * h * kv * d + h + 2 * kv * d
     mlp = 3 * h * i
     layer = attn + mlp + 2 * h
+    # 임베딩 행렬이 1개(공유)인지 2개(임베딩 + lm_head)인지. 총합 = heads x V x h + 층 합 + 마지막 정규화(h)
     heads = 1 if cfg.get("tie_word_embeddings", False) else 2
     return {"per_layer": layer, "attn": attn, "mlp": mlp, "embedding": V * h,
             "total": heads * V * h + L * layer + h, "non_embedding": L * layer + h}
@@ -107,6 +115,7 @@ def count_closed_form(cfg):
 
 def recipe_bytes(recipe):
     """파라미터 하나당 바이트(분수)."""
+    # 사양표의 숫자를 문자열을 거쳐 Fraction으로 읽어 부동소수점 오차 없이 더한다
     return sum(F(str(v)) for v in recipe["parts"].values())
 
 
@@ -118,10 +127,12 @@ def model_state_gb(n_params, recipe):
 
 def activation_parts(s, b, h, a):
     """논문 4.1절의 항목별 내역(바이트). 2바이트 활성값, 1바이트 드롭아웃 마스크."""
+    # s 시퀀스 길이, b 묶음 크기, h hidden, a 헤드 수. sbh는 층 입력 하나의 원소 수, as^2 b는 어텐션 점수 표의 원소 수
     sbh, as2b = s * b * h, a * s * s * b
     return {
         "attn.qkv_input": 2 * sbh,
         "attn.QK^T(Q,K)": 4 * sbh,
+        # 점수 표(a, s, s, b)는 시퀀스 길이의 제곱에 비례해 긴 입력에서 커진다
         "attn.softmax_out": 2 * as2b,
         "attn.softmax_dropout_mask": as2b,
         "attn.over_V(dropout_out)": 2 * as2b,
@@ -138,6 +149,7 @@ def activation_parts(s, b, h, a):
 
 def activation_per_layer(s, b, h, a, keep_scores=True):
     """sbh(34 + 5as/h). keep_scores=False면 s²에 비례하는 5as²b 항을 뺀다(점수 표를 저장하지 않는 어텐션 가정)."""
+    # 항목별 합이 sbh(34 + 5as/h)와 같다(테스트가 확인). 논문의 근사식이며 GPT 모양 블록을 가정한다
     return 34 * s * b * h + (5 * a * s * s * b if keep_scores else 0)
 
 
@@ -146,6 +158,7 @@ def activation_total(s, b, h, a, L, keep_scores=True, checkpoint=False):
     if not checkpoint:
         return L * per
     # 논문: 층마다 입력만 저장하면 2sbhL. 거꾸로 갈 때 한 층을 다시 계산하는 동안 그 층 몫이 잠깐 더 든다.
+    # 체크포인팅: 층마다 입력(2sbh 바이트)만 저장 + 거꾸로 가는 동안 한 층의 활성값이 잠깐 더 든다
     return 2 * s * b * h * L + per
 
 
@@ -167,10 +180,12 @@ def simulate_checkpointing(L, k, input_bytes, layer_bytes):
         for _ in range(L):
             live -= layer_bytes
         return {"peak": peak, "recomputed_layers": 0}
+    # 체크포인트를 저장하는 층 번호들(0, k, 2k, ...)
     starts = list(range(0, L, k))
     for _ in starts:  # 앞으로: 체크포인트 입력만 남긴다
         live += input_bytes
         peak = max(peak, live)
+    # 거꾸로 가며 구간마다 다시 계산한다. 구간이 끝나면 그 구간의 활성값과 체크포인트 입력을 버린다
     for st in reversed(starts):  # 거꾸로: 구간을 다시 계산해 활성값을 들고, 기울기를 구한 뒤 버린다
         seg = range(st, min(st + k, L))
         for _ in seg:
@@ -180,6 +195,7 @@ def simulate_checkpointing(L, k, input_bytes, layer_bytes):
         for _ in seg:
             live -= layer_bytes
         live -= input_bytes
+    # 끝나면 살아 있는 메모리가 0이어야 한다(계산이 맞는지 점검)
     assert live == 0
     return {"peak": peak, "recomputed_layers": recomputed}
 
@@ -188,6 +204,7 @@ def simulate_checkpointing(L, k, input_bytes, layer_bytes):
 
 def grad_mse(w, batch):
     """y ≈ w·x 의 평균 제곱 오차를 w로 미분한 값: 평균(2(wx − y)x)."""
+    # MSE (wx - y)^2 의 w 미분 = 2(wx - y)x. 묶음 평균
     return sum(2 * (w * x - y) * x for x, y in batch) / len(batch)
 
 
@@ -196,6 +213,7 @@ def grad_accumulated(w, batch, steps, divide=True):
     g = F(0)
     for j in range(steps):
         part = grad_mse(w, batch[j * size:(j + 1) * size])
+        # 나눠서 더하면 큰 묶음 한 번의 평균과 같다. divide=False는 나누기를 빠뜨린 실수(결과가 steps배)
         g += part / steps if divide else part
     return g
 

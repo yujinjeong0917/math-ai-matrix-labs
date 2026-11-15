@@ -11,12 +11,14 @@
 
 import sqlite3
 
+# 사용자 이름 -> 가짜 uid.
 USERS = {"alice": "u-alice", "bob": "u-bob", "carol": "u-carol"}
 
 # (주인, 전체 카드 수, 그중 공개 카드 수)
 CARDS_PLAN = [("alice", 5, 2), ("bob", 3, 1), ("carol", 4, 0)]
 
 # policies.sql과 같은 뜻: (정책 이름, 적용 역할, WHERE 조건)
+# 정책 두 개: 공개 카드는 누구나(anon·authenticated), 자기 카드는 로그인한 사람만. 같은 select 정책은 OR로 합쳐진다. 조건은 sqlite의 불리언(0/1 정수) 기준.
 POLICIES = [
     ("Anyone can read public cards", {"anon", "authenticated"}, "is_public = 1"),
     ("Owners can read their own cards", {"authenticated"}, "owner_id = :uid"),
@@ -24,6 +26,7 @@ POLICIES = [
 
 
 class PermissionDenied(Exception):
+    # Postgres의 insufficient_privilege 오류 코드.
     code = "42501"
 
 
@@ -34,6 +37,7 @@ def make_db():
     for owner, total, public in CARDS_PLAN:
         for i in range(total):
             n += 1
+            # 각 사람의 앞쪽 카드부터 public개를 공개(1)로 둔다. 기대 행 수 계산이 쉬워지도록 한 배치.
             db.execute("insert into cards values (?, ?, ?, ?)",
                        (n, USERS[owner], f"{owner}의 카드 {i + 1}", 1 if i < public else 0))
     db.commit()
@@ -49,12 +53,15 @@ def role_of(key, user=None):
 
 def select_cards(db, key, user=None, rls=True, policies=POLICIES, grants=("anon", "authenticated", "service_role")):
     role = role_of(key, user)
+    # 권한 검사가 정책 검사보다 먼저다. grant가 없으면 정책이 있어도 읽기 전에 거부된다.
     if role not in grants:
         raise PermissionDenied(role)
     sql = "select id, owner_id, is_public from cards"
     params = {"uid": USERS.get(user)}
+    # service_role은 정책을 건너뛴다(BYPASSRLS). 비밀 키가 브라우저에 새면 RLS가 소용없는 이유.
     if role != "service_role" and rls:
         conds = [c for _, roles, c in policies if role in roles]
+        # 정책이 하나도 없으면 where 0(항상 거짓) = 0행. RLS를 켜기만 하고 정책을 안 만든 경우(default deny).
         sql += " where " + (" or ".join(f"({c})" for c in conds) if conds else "0")
     return db.execute(sql + " order by id", params).fetchall()
 
@@ -68,6 +75,7 @@ def select_cards_python(rows, key, user=None, rls=True, policies=POLICIES):
     uid = USERS.get(user)
     out = []
     for r in rows:
+        # 정책 이름을 키로 SQL 없이 직접 판정한다. SQL 결과와 행 수가 같은지 대조하는 용도.
         ok = (("Anyone can read public cards" in names and r[2] == 1)
               or ("Owners can read their own cards" in names and r[1] == uid))
         if ok:
@@ -75,6 +83,7 @@ def select_cards_python(rows, key, user=None, rls=True, policies=POLICIES):
     return out
 
 
+# 시나리오 8개. 마지막은 RLS보다 앞서는 권한(grant) 검사를 보이려는 것.
 SCENARIOS = [
     # (이름, 키, 사용자, rls, 정책, grants)
     ("RLS 꺼짐 · 공개용 키만", "publishable", None, False, POLICIES, None),
@@ -101,6 +110,7 @@ def run_scenarios():
         try:
             rows = select_cards(db, key, user, **kw)
             rec["rows"] = len(rows)
+            # SQL 판정과 파이썬 판정이 같은 행 수를 주는지 대조값.
             rec["python_rows"] = len(select_cards_python(all_rows, key, user, rls, pol))
             rec["owners"] = {u: sum(1 for r in rows if r[1] == USERS[u]) for u in USERS}
         except PermissionDenied as e:

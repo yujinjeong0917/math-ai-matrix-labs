@@ -12,16 +12,22 @@
 여기서 열쇠 하나가 덩어리 하나다. 이 말뭉치는 자연어가 아니라, 그 가설이 맞는 상황을 일부러 만든 장난감이다.
 
 데이터는 한 번만 본다(같은 문장을 반복하지 않는다). Hoffmann 등(2022)의 D 항이 한 에폭을 가정하기 때문이다.
+
+입력: 시드와 문장 수. 출력: 토큰 id 배열 (n_seq, 33)과 이론 값(엔트로피 바닥 등, nat 단위). 어휘 V = 64.
+현실과 다른 점: 열쇠 4,096개의 값만 외우면 되는 아주 단순한 과제라, 실제 언어모델의 손실 곡선 모양을 보장하지 않는다.
 """
 
 import math
 
 import numpy as np
 
+# 어휘 크기. 열쇠 하나는 토큰 두 개의 조합(V * V = 4096가지)
 V = 64  # 어휘 크기
 N_KEYS = V * V
+# 모델 입력은 33토큰 중 앞 32개, 정답은 한 칸 밀린 32개
 N_CTX = 32  # 모델 입력 길이(정답까지 33토큰)
 GROUPS = (N_CTX + 1) // 3  # 문장 하나의 (열쇠, 열쇠, 값) 묶음 수 = 11
+# 지프 지수(모형의 선택): 클수록 소수 열쇠에 확률이 몰린다
 ZIPF = 1.5
 P_RULE = 0.9
 TEACHER_SEED = 2026
@@ -30,11 +36,15 @@ TEACHER_SEED = 2026
 def make_teacher(seed=TEACHER_SEED):
     rng = np.random.default_rng(seed)
     ranks = np.arange(1, N_KEYS + 1, dtype=float)
+    # 식: p(rank k) ∝ k^(-ZIPF), 합이 1이 되도록 정규화
     freq = ranks**-ZIPF
     freq /= freq.sum()
+    # 순위 -> 열쇠 번호의 무작위 순열. 흔한 열쇠가 특정 토큰 값에 몰리는 것을 막는다
     key_of_rank = rng.permutation(N_KEYS)  # 흔한 열쇠가 특정 토큰에 몰리지 않게 섞는다
     p_key = np.empty(N_KEYS)
+    # 열쇠 번호별 등장 확률 P_KEY (4096,). 순위 k의 확률을 그 열쇠 번호 칸에 둔다
     p_key[key_of_rank] = freq
+    # 열쇠마다 정답 값 하나(어휘 중 무작위). 모든 문장이 공유하는 '사실'
     value = rng.integers(0, V, N_KEYS)  # 열쇠마다 정해진 값
     return p_key, value
 
@@ -46,8 +56,11 @@ CUM_KEY = np.cumsum(P_KEY)
 def sample_sequences(n_seq, seed):
     """(n_seq, 33) 정수 배열."""
     rng = np.random.default_rng(seed)
+    # 역변환 표집: 균등난수가 누적분포 CUM_KEY의 어느 칸에 들어가는지 searchsorted로 찾는다. 반올림으로 누적합이 1 미만일 때의 범위 초과를 minimum으로 막는다. keys: (n_seq, 11)
     keys = np.minimum(np.searchsorted(CUM_KEY, rng.random((n_seq, GROUPS))), N_KEYS - 1)
+    # 확률 P_RULE(0.9)로 열쇠의 정해진 값, 아니면 무작위 값. (n_seq, 11)
     vals = np.where(rng.random((n_seq, GROUPS)) < P_RULE, VALUE[keys], rng.integers(0, V, (n_seq, GROUPS)))
+    # 각 묶음을 (열쇠 앞 토큰 = keys // V, 열쇠 뒤 토큰 = keys % V, 값)으로 풀어 (n_seq, 11, 3) -> (n_seq, 33)
     X = np.stack([keys // V, keys % V, vals], axis=2).reshape(n_seq, 3 * GROUPS)
     return X.astype(np.int64)
 
@@ -60,19 +73,23 @@ def training_stream(n_seq, seed):
 
     덕분에 '짧게 학습한 모델'과 '길게 학습한 모델의 중간'이 정확히 같은 토큰을 본다.
     """
+    # 묶음 k의 시드 = seed * 100003 + k: 묶음별로 독립이라 n_seq를 늘려도 앞 묶음이 그대로다. -(-n // CHUNK)는 올림 나눗셈
     chunks = [sample_sequences(CHUNK, seed=seed * 100_003 + k) for k in range(-(-n_seq // CHUNK))]
     return np.concatenate(chunks)[:n_seq]
 
 
 def scored_positions():
     """입력 위치 j가 맞히는 토큰은 X[j+1]. 값 자리(인덱스 2, 5, 8, ...)를 맞히는 j만 센다."""
+    # 입력 위치 1, 4, ..., 31(11개). 위치 j의 정답은 X[j+1] = X[2], X[5], ... 즉 값 자리. 위치 1은 두 열쇠 토큰을 모두 본 직후
     return np.arange(1, N_CTX, 3)
 
 
 def entropy_floor():
     """값 자리의 이론 최저 손실(nat). 열쇠를 완벽히 알아도 값의 10%는 아무 토큰이라 남는 엔트로피다."""
+    # 규칙값이 나올 확률 = 0.9 + 0.1/V (무작위가 우연히 같은 경우 포함)
     p_hit = P_RULE + (1 - P_RULE) / V
     p_miss = (1 - P_RULE) / V
+    # 열쇠를 완벽히 알 때 남는 엔트로피 -sum p log p. 모델이 이 값 아래로 내려갈 수 없다
     floor = -(p_hit * math.log(p_hit) + (V - 1) * p_miss * math.log(p_miss))
     return {"floor": floor, "uniform": math.log(V)}
 
@@ -83,6 +100,8 @@ def key_coverage(n_tokens):
     입력 32토큰에 묶음이 대략 32/3개 들어 있으니 본 열쇠 수 m ≈ n_tokens/3. 열쇠 k를 한 번도 못 볼 확률은
     (1 - p_k)^m. 이걸 p_k로 가중평균하면 '처음 보는 열쇠를 물어볼 확률'이 된다.
     """
+    # 입력 토큰 3개당 열쇠 하나가 나온다는 근사(33토큰에 묶음 11개)
     m = n_tokens / 3
+    # 식: sum_k p_k (1 - p_k)^m. 값 자리에서 물어보는 열쇠가 학습 중 한 번도 안 나왔을 확률(질문이 p_k로 뽑히므로 가중평균)
     unseen = float(np.sum(P_KEY * (1 - P_KEY) ** m))
     return {"seen_prob": 1 - unseen, "unseen_prob": unseen}

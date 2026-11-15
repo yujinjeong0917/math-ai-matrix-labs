@@ -30,6 +30,7 @@ CH01 = HERE.parent / "ch01_everything_visible" / "editor"
 def synthetic_samples():
     """진짜 접두사 규칙을 시험할 문자열. 실행 중에만 만들고 파일에 쓰지 않아요."""
     rules = S.load_rules()["rules"]
+    # 값 부분은 의미 없는 x 24개. 규칙이 모양만 보는지 확인하기 위한 값.
     body = "x" * 24
     samples = []
     for r in rules:
@@ -43,6 +44,7 @@ def synthetic_samples():
         tok = b64({"alg": "HS256", "typ": "JWT"}) + "." + b64({"iss": "test", "role": role}) + ".sig" + body
         samples.append(("supabase_legacy_jwt", kind, f'const k = "{tok}";'))
     # 경계: 다른 낱말 속에 접두사 글자가 섞인 경우는 찾지 않아야 해요
+    # 경계 시험용 오탐 후보: 접두사 글자가 단어 중간에 끼어 있는 문장.
     near_miss = ['const risk_test_level = "aaaaaaaaaaaa";', 'const desk_live_mode = "bbbbbbbbbb";']
     return samples, near_miss
 
@@ -55,6 +57,7 @@ def e4_self_test():
         f = [x for x in S.scan_text(text, "real") if x["rule"] == rid]
         hits += 1 if f else 0
         kinds_ok += 1 if f and f[0]["kind"] == kind else 0
+    # 이름 규칙(name:)에 걸리는 것은 제외하고 모양 규칙의 오탐만 센다.
     false_pos = sum(len([x for x in S.scan_text(t, "real") if not x["rule"].startswith("name:")]) for t in near)
     return {"samples": len(samples), "detected": hits, "kind_correct": kinds_ok,
             "near_miss_samples": len(near), "near_miss_flagged": false_pos}
@@ -83,6 +86,7 @@ def main():
         b = B.build(which, write=False)
         dist = B.PROJECT / B.BUILDS[which][2]
         rep = scan_both(dist)
+        # 환경 변수 값 자체가 지도 파일 문자열에 들어 있는지(원본 소스에는 이름만 있고 값은 없어야 한다).
         values_in_map = [k for k, v in b["env"].items() if v in b["map"]]
         e2[which] = {"inlined": b["inlined"], "env_names": list(b["env"]),
                      "not_in_browser": [k for k in b["env"] if k not in b["inlined"]],
@@ -92,6 +96,7 @@ def main():
 
     e3 = R.run_scenarios()
 
+    # dist 폴더의 저장된 결과가 지금 원본 소스로 다시 빌드한 결과와 같은지 대조.
     fresh = all((B.PROJECT / B.BUILDS[w][2] / "app.js").read_text(encoding="utf-8") == B.build(w, write=False)["out"]
                 for w in B.BUILDS)
     e5 = {"dist_matches_build": fresh,

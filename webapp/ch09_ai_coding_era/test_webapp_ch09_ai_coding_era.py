@@ -27,13 +27,16 @@ def saved():
 # ---------- 점검표 손계산 ----------
 
 def test_tally(items):
+    # 31항목 = 다시 검사 9 + 결과 인용 11 + 사람 확인 11. 자동 판정은 앞의 20개
     t = L.tally(items)
     assert t["items"] == 31
     assert (t["recheck"], t["quoted"], t["manual"]) == (9, 11, 11)
     assert t["auto"] == t["recheck"] + t["quoted"] == 20
     assert t["release_pass"] == 20 and t["release_fail"] == []
+    # 첫 판은 자동 판정 15개 중 2개만 통과(점검표가 첫 판의 문제를 잡아낸다는 것을 보임)
     assert (t["first_judged"], t["first_pass"]) == (15, 2)
     assert t["first_fail_blocking"] == 11
+    # 장별 항목 수 합 = 3+2+5+3+5+3+4+4+2 = 31
     assert [t["by_ch"][c]["items"] for c in range(1, 10)] == [3, 2, 5, 3, 5, 3, 4, 4, 2]
 
 
@@ -48,6 +51,7 @@ def test_every_item_has_a_method_and_gate(items):
     for i in items:
         assert i["how"] in ("다시 검사", "결과 인용", "사람 확인")
         assert i["gate"] in ("막음", "확인")
+        # 사람 확인 항목은 기계가 판정하지 않으므로 first/release가 None이어야 한다
         if i["how"] == "사람 확인":
             assert i["first"] is None and i["release"] is None
         else:
@@ -90,6 +94,7 @@ def test_rechecks_agree_with_chapter_results(items):
     assert first_scan["ch02_api_keys/project/dist_mistake"] == r2["e2_builds"]["mistake"]["scan"]["demo"]["summary"]["secret"] == 2
 
 
+# 소스맵 파일이 첫 판 편집기에만 있고 출시 후보에는 없어야 한다
 def test_source_map_only_in_first_editor(items):
     by = {i["id"]: i for i in items}
     v = by["c1_source_map"]["value"]
@@ -106,6 +111,7 @@ def test_server_only_markers_absent_in_both(items):
 
 def test_shape_scanner_misses_ch03_key_but_ch03_item_catches_it(saved):
     o = saved["e6_overlap"]
+    # 모양 검사기 0건, 3장은 1건으로 셌다 -> 검사기가 1건 놓침, 다른 항목(c3_ai_key)이 잡음
     assert (o["ch02_scanner_secret_found"], o["ch03_counted_ai_secret_key"], o["scanner_missed"]) == (0, 1, 1)
     assert o["caught_by_other_item"] is True
 
@@ -117,6 +123,7 @@ def test_ch08_manual_items_have_official_urls():
     assert [x["id"] for x in d["items"]] == ["c8_target_platform", "c8_store_fee", "c8_account_cost", "c8_play_closed_test"]
     fees = d["items"][2]["facts"]
     assert (fees["apple_usd_per_year"], fees["google_usd_once"]) == (99, 25)
+    # 플레이 비공개 테스트 요건 수치(테스터 12명, 14일)는 data 파일에 옮겨 적은 값. 정책은 바뀔 수 있어 출시 전 재확인 필요
     assert d["items"][3]["facts"]["testers"] == 12 and d["items"][3]["facts"]["days"] == 14
     for x in d["items"][1:]:
         assert all(v.startswith("https://") for k, v in x["facts"].items() if k.endswith("url"))
@@ -138,6 +145,7 @@ def test_ch08_refs_equal_live_json_when_present(items):
 
 def test_market_ratios_and_bookend(saved):
     m = saved["e4_market_ratios"]
+    # 14700 / 2000 = 7.35 (출처 안의 2026-01 대 2022-01 월간 신규 구독 앱 수)
     assert m["launch_growth"] == round(14700 / 2000, 2) == 7.35
     assert m["top10_over_median"] == 35.8
     assert m["share_1k_to_10k_kept"] == round(0.046 / 0.173, 3)
@@ -148,6 +156,7 @@ def test_market_ratios_and_bookend(saved):
 def test_no_real_secrets_in_this_folder():
     """이 장 폴더의 데이터·결과에는 진짜 키 모양(접두어 + 긴 꼬리)이 없다."""
     import re
+    # 정규식은 대표적 키 접두어(sk-, sb_secret_, AIza)와 긴 꼬리 조합만 잡는다. 모든 비밀을 보장하는 검사는 아니다
     pat = re.compile(r"(sk-[A-Za-z0-9_-]{16,}|sb_secret_[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{30,})")
     for sub in ("data", "results", "checks"):
         for p in (HERE / sub).rglob("*"):

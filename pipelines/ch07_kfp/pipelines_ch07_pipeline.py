@@ -7,12 +7,14 @@ kfp_pipeline.py와 글자까지 같다(test_kfp_file_and_mini_file_define_the_sa
 import pipelines_ch07_dag as dsl
 from pipelines_ch07_dag import Dataset, Input, Metrics, Model, Output
 
+# 자리표시 이미지 이름. 이 파일 안에서는 값이 바뀌지 않는다
 IMAGE = "registry.example.com/churn:GIT_SHA"  # Jenkins가 커밋 SHA로 바꿔 넣는다(Jenkinsfile 참고)
 
 
 @dsl.component(base_image=IMAGE)
 def prepare(seed: int, n_rows: int, shift: float, train_data: Output[Dataset], valid_data: Output[Dataset]):
     import pipelines_ch07_steps as S
+    # import를 함수 안에서 한다: 컴포넌트 몸통은 함수 밖 이름을 쓰지 않는 방식(kfp_pipeline.py 설명)
     S.prepare(seed, n_rows, shift, train_data.path, valid_data.path)
 
 
@@ -20,12 +22,14 @@ def prepare(seed: int, n_rows: int, shift: float, train_data: Output[Dataset], v
 def train(train_data: Input[Dataset], model: Output[Model], impl: str = "numpy"):
     import pipelines_ch07_steps as S
     info = S.train(train_data.path, model.path, impl)
+    # train이 데이터 지문과 시드를 모델 결과 파일의 metadata에 남긴다
     model.metadata.update(info)
 
 
 @dsl.component(base_image=IMAGE)
 def evaluate(model: Input[Model], valid_data: Input[Dataset], metrics: Output[Metrics], threshold: float = 0.5):
     import pipelines_ch07_steps as S
+    # 지표 파일 경로 = 결과 파일 경로 + .json. 테스트와 실험이 같은 규칙으로 읽는다
     m = S.evaluate(model.path, valid_data.path, metrics.path + ".json", threshold)
     metrics.log_metric("accuracy", m["accuracy"])
 

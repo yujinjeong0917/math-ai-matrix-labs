@@ -39,6 +39,8 @@ def test_coin_max_hand_values():
 
 def test_target_hand_example():
     # 보상 1, 사본의 다음 상태 점수 [3.0, 3.4], 지금 망 [5.1, 4.8]
+    # 식 (DQN): y = r + γ max_a' Q_tgt = 1 + 0.99 * 3.4 = 4.366
+    # 식 (Double): 지금 망의 argmax는 왼쪽(5.1) -> y = 1 + 0.99 * Q_tgt(왼쪽) = 1 + 0.99 * 3.0 = 3.97
     assert 1 + 0.99 * 3.4 == pytest.approx(4.366, abs=1e-12)
     assert 1 + 0.99 * 3.0 == pytest.approx(3.97, abs=1e-12)
 
@@ -75,6 +77,7 @@ def test_double_can_underestimate_when_true_values_differ():
 # ---------------------------------------------------------------- 신경망과 구현 대조
 
 def test_manual_backprop_matches_finite_difference():
+    # 목표 y는 상수(여기서는 R + γ(1-F)·3.0)로 두고 손실 L = mean 1/2 (y - Q(s,a))²의 해석 기울기를 중심 차분 (L(w+h) - L(w-h)) / 2h와 비교
     buf = filled_buffer()
     net = m.MLP([4, 16, 16, 2], 0)
     S, A, R, S2, F = buf.sample_uniform(32)
@@ -111,6 +114,7 @@ def test_torch_autograd_matches_numpy(double):
 
 def test_double_target_never_above_single_target():
     # 같은 타깃망이 매기면 Double 목표(지금 망이 고른 행동)는 단일 목표(최댓값) 이하
+    # Q_tgt(s', a*) <= max_a' Q_tgt(s', a') 이므로 모든 표본에서 성립한다(1e-12는 부동소수점 허용 오차)
     buf = filled_buffer()
     net, tgt = m.MLP([4, 32, 32, 2], 1), m.MLP([4, 32, 32, 2], 2)
     S, A, R, S2, F = buf.sample_uniform(200)
@@ -120,6 +124,7 @@ def test_double_target_never_above_single_target():
 
 
 def test_fell_transition_has_no_bootstrap_but_truncated_does():
+    # 식: y = r + γ (1 - done) · 다음 점수. 첫 전이는 F=1(쓰러짐)이라 y = r = 1, 둘째는 F=0(잘린 판 등)이라 부트스트랩 유지
     net = m.MLP([4, 8, 8, 2], 0)
     S2 = np.zeros((2, 4))
     y = m.td_target(net, net, np.array([1.0, 1.0]), S2, np.array([1.0, 0.0]), 0.99, False)
@@ -152,6 +157,7 @@ def test_uniform_sample_covers_buffer():
 # ---------------------------------------------------------------- 타깃망
 
 def test_target_network_constant_between_copies():
+    # 고치기는 step > learn_start부터 걸음마다 1번: 1,001 ~ 1,400걸음이면 400번. 복사는 고친 횟수가 C의 배수일 때만
     cfg = m.Config(steps=1_400, learn_start=1_000, C=100, eval_every=10 ** 9)
     # 고친 횟수 400번이면 복사는 4번
     run = m.dqn(3, use_replay=True, use_target=True, cfg=cfg)
@@ -183,6 +189,7 @@ def test_dqn_is_deterministic_given_seed():
 # ---------------------------------------------------------------- 웹 챕터에 쓴 파생 숫자
 
 def test_numbers_derived_on_page():
+    # 보상 1, γ 0.99의 할인 리턴: 무한히 버티면 Σ γ^t = 1/(1-γ) = 100, 500걸음이면 (1 - γ^500)/(1 - γ)
     g = 0.99
     assert 1 / (1 - g) == pytest.approx(100.0)                                   # 점수의 상한
     assert round((1 - g ** 500) / (1 - g), 2) == 99.34                            # 500걸음 버틴 판의 할인 리턴

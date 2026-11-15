@@ -14,9 +14,11 @@ import re
 def stages(text):
     """(이름, 본문) 목록. 중괄호 짝을 세어 stage('...') { ... } 블록을 자른다."""
     out = []
+    # stage('이름') { 으로 시작하는 블록을 찾는다. 큰따옴표 이름이나 중첩 stage는 인식하지 않는다
     for m in re.finditer(r"stage\('([^']+)'\)\s*\{", text):
         depth, k = 1, m.end()
         while depth:
+            # 중괄호 짝을 세어 블록 끝을 찾는다. 문자열 안의 중괄호도 센다(단순화)
             depth += {"{": 1, "}": -1}.get(text[k], 0)
             k += 1
         out.append((m.group(1), text[m.end():k - 1]))
@@ -28,6 +30,7 @@ def lint(text):
     st = stages(text)
     names = [n for n, _ in st]
     body = dict(st)
+    # 카나리 단계는 이름에 Canary가 든 첫 단계, 승인 단계는 input { 이 든 단계로 본다
     canary = next((n for n in names if "Canary" in n), None)
     approve = next((n for n, b in st if re.search(r"\binput\s*\{", b)), None)
     full = [n for n, b in st if "--v2 1.0" in b]
@@ -42,6 +45,7 @@ def lint(text):
     for n in full:
         if approve is None or names.index(n) < names.index(approve):
             problems.append(f"'{n}' 단계가 승인 전에 100%로 바꾼다")
+    # 카나리 단계 본문에 post { failure { ... --v2 0.0 } } 가 있는지 정규식으로 확인(중첩 중괄호는 한 겹까지만)
     if canary and not re.search(r"failure\s*\{[^}]*--v2 0\.0", body[canary]):
         problems.append("카나리가 실패해도 v2 비율을 되돌리지 않는다")
     return problems

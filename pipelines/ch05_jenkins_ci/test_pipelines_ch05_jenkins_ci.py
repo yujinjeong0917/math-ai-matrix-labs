@@ -19,6 +19,7 @@ JF = (HERE / "Jenkinsfile").read_text()
 
 # ---------- Jenkinsfile 읽기와 규칙 ----------
 
+# Jenkinsfile을 읽은 결과가 파일 내용과 맞는지: 단계 6개, options, environment, post
 def test_parse_jenkinsfile():
     p = jk.parse(JF)
     assert [s["name"] for s in p["stages"]] == ["Checkout", "Lint", "Unit/Data tests", "Build image", "Model perf test", "Push image"]
@@ -31,6 +32,7 @@ def test_our_jenkinsfile_passes_lint():
     assert jk.lint(JF) == []
 
 
+# 각 변형 Jenkinsfile이 lint에서 어떤 문구의 문제를 내야 하는지
 @pytest.mark.parametrize("name, expect", [
     ("B_true_junit_post_only_guard", "junit으로 읽지 않는다"),
     ("D_true_junit_in_stage_no_guard", "UNSTABLE 빌드에서도"),
@@ -40,6 +42,7 @@ def test_lint_catches_traps(name, expect):
     assert any(expect in p for p in jk.lint(ex.variants()[name]))
 
 
+# push 단계의 when은 결과가 없거나 SUCCESS일 때만 참(UNSTABLE, FAILURE면 건너뜀)
 @pytest.mark.parametrize("result, expected", [(None, True), ("SUCCESS", True), ("UNSTABLE", False), ("FAILURE", False)])
 def test_when_guard(result, expected):
     raw = jk.parse(JF)["stages"][-1]["when"][0][2]
@@ -55,6 +58,7 @@ def test_unknown_step_is_not_silently_ignored(tmp_path):
 # ---------- 실패하는 최소 예제: 진짜 git, 진짜 pytest ----------
 
 @pytest.fixture(scope="module")
+# 모듈 안에서 한 번만 만드는 실제 git 저장소. 브랜치 A, B를 각각 돌리고 main에 합친 뒤 다시 돌린다
 def two_branch(tmp_path_factory):
     d = tmp_path_factory.mktemp("e1")
     repo = d / "repo"
@@ -73,6 +77,7 @@ def test_each_branch_alone_is_green(two_branch):
         assert r["result"] == "SUCCESS" and all(t["ok"] for t in r["tests"]) and r["pushed"]
 
 
+# git이 보기에는 충돌이 없다(고친 파일이 서로 겹치지 않음). 그런데도 합친 결과는 실패한다 = 의미 충돌
 def test_merge_is_textually_clean(two_branch):
     assert two_branch["conflicts"] == []
     assert two_branch["changed"]["branch-a"].isdisjoint(two_branch["changed"]["branch-b"])
@@ -85,6 +90,7 @@ def test_merged_commit_fails_in_unit_stage(two_branch):
     assert status["Push image"].startswith("SKIPPED") and r["pushed"] == []
     failed = [t for t in r["tests"] if not t["ok"]]
     assert [t["name"] for t in failed] == ["tests.test_extra::test_fee_per_call_positive"]
+    # A가 열 이름을 바꿨는데 B의 새 특성이 옛 이름 monthly_fee를 읽어 KeyError가 난다
     assert "KeyError" in failed[0]["message"] and "monthly_fee" in failed[0]["message"]
     assert "always" in r["post_ran"]
 
@@ -96,6 +102,7 @@ def test_swallowed_failure_pushes_unless_guarded(tmp_path):
     v = ex.variants()
     b = ex.run_at(repo, "main", tmp_path, "b", jenkinsfile=v["B_true_junit_post_only_guard"])
     c = ex.run_at(repo, "main", tmp_path, "c", jenkinsfile=v["C_true_junit_in_stage_guard"])
+    # B 변형: junit을 post에서야 읽으므로 push 단계 시점에는 결과가 SUCCESS처럼 보여 push가 일어난다(가드가 있어도). C 변형은 같은 단계에서 읽어 막는다
     assert b["result"] == "UNSTABLE" and b["pushed"]          # 결과를 늦게 읽으면 막는 장치가 있어도 push된다
     assert c["result"] == "UNSTABLE" and c["pushed"] == []    # 같은 단계에서 읽으면 when이 막는다
 
@@ -105,6 +112,7 @@ def test_swallowed_failure_pushes_unless_guarded(tmp_path):
 def test_resolve_registry_keeps_both(tmp_path):
     p = tmp_path / "registry.txt"
     p.write_text("a\n<<<<<<< HEAD\nb\n=======\nc\n>>>>>>> main\n")
+    # 충돌 덩어리 1개, 그 안의 줄 수 2(양쪽 한 줄씩)
     assert hist.resolve(p) == (1, 2)
     assert p.read_text() == "a\nb\nc\n"
 
@@ -122,6 +130,7 @@ def test_late_integration_finds_more_breaks_later(tmp_path):
     late = hist.simulate(10, seed=0, branch_ci=True, root=tmp_path / "l")
     assert late["broken_found"] > daily["broken_found"]
     assert late["max_delay_days"] > daily["max_delay_days"] == 0
+    # 80 = 4명 x 10일 x 하루 2커밋. 브랜치 안에서만 검사하면 다른 브랜치가 바꾼 열 이름을 못 봐서 한 번도 빨갛지 않다
     assert late["branch_ci_runs"] == 80 and late["branch_ci_red"] == 0   # 브랜치 CI는 의미 충돌을 못 본다
     assert daily["final_main_broken"] == late["final_main_broken"] == 0
 
@@ -145,10 +154,12 @@ def test_numpy_torch_same_gate(tmp_path):
 
 def test_seeded_gate_is_stable(tmp_path):
     m = pr.load_modules(tmp_path / "p")
+    # 시드가 고정된 run()은 5번 돌려도 값이 하나
     assert len({m["train"].run()["val_acc"] for _ in range(5)}) == 1
 
 
 def test_results_file_consistent():
+    # experiments.py가 만든 결과 파일이 있어야 한다(없으면 이 테스트는 파일 오류로 실패한다)
     res = json.loads((HERE / "results" / "ch05.json").read_text())
     assert res["E1"]["merged"]["result"] == "FAILURE" and res["E1"]["merge_textual_conflicts"] == []
     assert res["E3"]["B_true_junit_post_only_guard"]["pushed"] and not res["E3"]["C_true_junit_in_stage_guard"]["pushed"]

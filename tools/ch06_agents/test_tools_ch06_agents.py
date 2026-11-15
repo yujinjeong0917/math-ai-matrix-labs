@@ -61,6 +61,7 @@ def test_codex_config_example_uses_documented_values():
 
 # ---------- 닫힌 식 ----------
 
+# 기대값: 0.97^2 = 9409/10000, 0.97^3 = 912673/1000000, 0.97^22 = 0.5117(4째 자리), 한 번 다시 하기 단계 = 1-0.03^2 = 0.9991, 22단계 0.9991^22 = 0.9804.
 def test_hand_numbers():
     p = F(97, 100)
     assert C.chain(p, 2) == F(9409, 10000)
@@ -75,12 +76,14 @@ def test_project_has_22_steps_from_earlier_chapters():
     run = C.load_run()
     ids = [s["id"] for s in run["steps"]]
     assert len(ids) == 22
+    # 단계 구성 22 = Notion 2 + Figma 4 + 절 12 + 나머지 4(데이터 파일 기준).
     assert sum(i.startswith("notion_") for i in ids) == 2       # 5장: 100행씩 2번
     assert sum(i.startswith("figma_") for i in ids) == 4        # 5장: Figma 4번
     assert sum(i.startswith("section_") for i in ids) == 12     # 2·3장: 절 12개
     assert [s["id"] for s in run["steps"] if s["undo"] == "hard"] == ["share"]
 
 
+# 확률 세 갈래의 합이 정확히 1(Fraction이라 == 비교 가능). d=0,k=0이면 확인 없는 경우와 같아야 한다.
 def test_step_outcomes_sum_to_one_and_reduce():
     for p in (F(9, 10), F(97, 100)):
         for d in (F(0), F(1, 2), F(1)):
@@ -97,6 +100,7 @@ def test_run_outcomes_without_checks_is_p_to_the_n():
     o = C.run_outcomes(C.uniform(22, F(97, 100)))
     assert o["all_correct"] == F(97, 100) ** 22
     assert o["stopped_by_check"] == 0
+    # 확인이 없으면 멈춤이 없으니 '틀린 채 끝까지' = 1 - p^n.
     assert o["delivered_wrong"] == 1 - F(97, 100) ** 22        # 멈추지 않고 틀린 채 끝까지 간다
 
 
@@ -105,6 +109,7 @@ def test_first_failure_distribution_sums():
     assert sum(C.first_failure_at(p, i) for i in range(1, 23)) + C.chain(p, 22) == 1
 
 
+# 손익분기 비율에서 두 방식의 혼합 성공률이 정확히 같은지(Fraction이라 등호 가능).
 def test_break_even_share():
     r = C.agent_vs_workflow(F(97, 100), F(99, 100), 22, F(1, 10))
     e = r["break_even_odd_share"]
@@ -115,6 +120,7 @@ def test_break_even_share():
 
 # ---------- 시뮬레이션과 결과 파일 ----------
 
+# 같은 시드면 결과 dict가 같아야 하고, 저장된 결과의 z가 3 미만이어야 한다. 3000주는 속도를 위한 크기.
 def test_simulation_is_deterministic_and_within_3_se():
     a = C.assumptions()
     p, d, h = float(a["p"]), float(a["d"]), float(a["h"])
@@ -130,6 +136,7 @@ def test_results_match_recomputation():
     a = C.assumptions()
     o = C.run_outcomes(C.uniform(22, a["p"], a["d"], a["k"]), human=a["h"], gate=21)
     sc = RES["e3_checks"]["scenarios"]["check_retry_human"]
+    # 저장된 JSON은 소수 6자리 반올림이므로 같은 방식으로 반올림해 비교한다.
     assert sc["all_correct"] == round(float(o["all_correct"]), 6)
     assert sc["delivered_wrong"] == round(float(o["delivered_wrong"]), 6)
     assert RES["e8_crosscheck"]["mismatches"] == 0
@@ -148,6 +155,7 @@ def test_agent_reads_third_page():
     rng = random.Random(0)
     run = C.load_run()
     log = L.run_agent(run["steps"], L.Week(230), rng, p=1.0, q=1.0)
+    # p=q=1이면 실패가 없고, 이상한 주는 22단계 + 읽기 1번 = 23번 시도.
     assert log["outcome"] == "correct" and log["attempts"] == 23
     log = L.run_workflow(run["steps"], L.Week(230), rng, p=1.0)
     assert log["outcome"] == "wrong"
@@ -156,4 +164,5 @@ def test_agent_reads_third_page():
 def test_figma_quota_with_retries():
     so = C.step_outcomes(F(97, 100), F(9, 10), 2)
     month = 4 * so["attempts"] * F(52, 12)
+    # 월 Figma 호출 = 4 x 평균 시도 x 52/12. 허용 오차 0.005는 JSON의 소수 둘째 자리 반올림 때문.
     assert month < 20 and math.isclose(float(month), RES["e7_where"]["figma_calls_month_retry"], abs_tol=0.005)

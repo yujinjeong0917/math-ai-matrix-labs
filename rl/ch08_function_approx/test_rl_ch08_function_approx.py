@@ -27,6 +27,8 @@ def test_star_features_match_baird_figure_1():
 
 
 def test_hand_calculation_one_sweep():
+    # w = (1,1,1,1,1,1,10): V(상태 1~5) = 1 + 2 = 3, V(6) = 2 + 10 = 12. 목표 = 0 + 0.99 * 12 = 11.88
+    # δ(1~5) = 11.88 - 3 = 8.88, δ(6) = 11.88 - 12 = -0.12. w0의 기울기 φ_0(s)는 1~5번 상태가 1, 6번이 2
     w1, _, _ = F.semi_gradient_td_sweeps(PHI, NXT, R, W0, 0.01, 0.99, 1)
     assert np.isclose(w1[0] - 1, 0.01 * (5 * 8.88 * 1 + (-0.12) * 2))     # 0.4416
     assert np.isclose(PHI[5] @ w1, 12.882)                                # V(6)은 오른다
@@ -42,6 +44,8 @@ def test_uniform_updates_diverge_at_gamma_099():
 
 
 def test_real_part_formula_and_threshold():
+    # 복소 고윳값 쌍의 실수부 = 7/6 - 5γ/4 (식 A = Φᵀ D (I - γP) Φ에서 트레이스로 구한 값). 0이 되는 γ = 14/15
+    # 경계 바로 아래(14/15 - 1e-6)는 실수부가 거의 0 이상, 바로 위(+1e-3)는 음수라 기대 갱신이 발산 쪽으로 돈다
     for g in (0.3, 0.5, 0.9, 0.95, 0.99):
         ev = np.linalg.eigvals(F.expected_update_matrix(PHI, P_T, D_U, g))
         cpx = ev[np.abs(ev.imag) > 1e-9]
@@ -110,6 +114,7 @@ def test_trajectory_on_policy_converges_off_policy_diverges():
 
 
 def test_importance_ratio_values():
+    # ρ = P_target / P_behavior. 목표 정책은 늘 상태 6(확률 1), 행동 정책은 모든 칸 1/6이므로 ρ는 6(상태 6로 갔을 때) 또는 0
     log = []
     F.td0_trajectory(PHI, P_B, P_T, R, W0, 0.01, 0.99, 300, seed=0, off_policy=True, log=log, log_steps=300)
     rhos = {row["info"]["rho"] for row in log}

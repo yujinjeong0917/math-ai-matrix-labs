@@ -79,8 +79,9 @@ def e0_hand():
     g, a = 0.99, 0.01
     w = W_BAIRD.copy()
     v = PHI @ w
+    # 식: δ_s = R_s + γ V(s') - V(s). 목표 정책은 모두 상태 6으로 가므로 v[NXT]는 V(6)만 6번 늘어놓은 배열
     delta = R + g * v[NXT] - v
-    w1, _, _ = F.semi_gradient_td_sweeps(PHI, NXT, R, w, a, g, 1)
+    w1, _, _ =F.semi_gradient_td_sweeps(PHI, NXT, R, w, a, g, 1)
     v_tab = v.copy()
     v_tab1, _, _ = F.semi_gradient_td_sweeps(np.eye(6), NXT, R, v_tab, a, g, 1)
     return {
@@ -267,6 +268,7 @@ def e4_grid():
         for a in [0.001, 0.01, 0.1]:
             lam = np.linalg.eigvals(A)
             lam = lam[np.abs(lam) > 1e-9]        # Phi의 영공간 방향(고윳값 0)은 값에 영향이 없어 뺀다
+            # 식: 보상 0이면 한 스윕이 w <- (I - 6αA) w (스윕 = 상태 6개 x 균등 1/6이라 A에 6을 곱함). 반복 행렬의 고윳값 1 - 6αλ의 최대 절댓값이 스펙트럼 반경
             rad = float(np.max(np.abs(1 - 6 * a * lam)))
             w, _, dv = F.semi_gradient_td_sweeps(PHI, NXT, R, W_BAIRD, a, g, SWEEPS, blowup=1e300)
             vm = vmax(w)
@@ -280,6 +282,7 @@ def e4_grid():
 def sweeps_to_converge(Phi, nxt, inits, a, g, mix, cap, thr=1e-2):
     """시드 여러 개를 한꺼번에(행 = 시드) 스윕한다. 시드마다 값 오차가 thr 아래로 처음 내려간 스윕 수.
     한 시드라도 발산하면(노름 > 1e12) None들을 돌려준다. 보상 0이라 한 스윕은 w <- T w (T = I - a M)."""
+    # 식: M = (Φ - mix γΦ[s'])ᵀ (Φ - γΦ[s']) (D를 곱하지 않은 합, 한 스윕 = 전이 한 번씩). 보상 0이면 w <- (I - αM) w
     M = (Phi - mix * g * Phi[nxt]).T @ (Phi - g * Phi[nxt])
     T = np.eye(Phi.shape[1]) - a * M
     W = np.array(inits, float)
@@ -351,6 +354,7 @@ def e6_timing():
     reps = 20000
     t0 = time.perf_counter()
     for _ in range(reps):
+        # 한 스윕(epoch-wise 반경사 TD(0))을 직접 펼친 것: δ = R + γ V(s') - V(s) (γ 0.9), w <- w + α Φᵀ δ (α 0.001)
         v = PHI @ w
         delta = R + 0.9 * v[NXT] - v
         w = w + 0.001 * PHI.T @ delta

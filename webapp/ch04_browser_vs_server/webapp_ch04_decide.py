@@ -13,6 +13,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 FEATURES = HERE / "data" / "features.json"
+# "즉시 반응"의 기준. Nielsen의 응답 시간 한계(약 0.1초) 값을 쓴다. 출처는 위 주석의 영문 문장.
 INSTANT_MS = 100  # Nielsen: 0.1 second is about the limit for ... reacting instantaneously
 
 
@@ -22,10 +23,12 @@ def load_features():
 
 def decide(feature):
     """한 기능의 (어디서, 걸린 규칙 번호, 이유)를 돌려준다."""
+    # 규칙 1이 가장 앞이다: 비밀을 다루면 아무리 빨라야 해도 서버(test_secret_overrides_speed가 확인).
     if feature["touches"]:
         return "서버", 1, "보이면 안 되는 것을 씀: " + ", ".join(feature["touches"])
     if feature["must_survive_device_change"]:
         return "서버", 2, "기기를 바꾸거나 브라우저 데이터가 지워져도 남아야 함"
+    # 규칙 3의 두 갈래: 허용 지연이 0.1초 이하이면 서버 왕복(RTT만 수십 ms)이 버거운 기능이라고 본다.
     if feature["budget_ms"] <= INSTANT_MS:
         return "브라우저", 3, f"{feature['budget_ms']}ms 안에 반응해야 하고 카드 한 장에 {feature['uses_per_card']}번 씀"
     return "브라우저", 3, "지킬 것이 없고, 서버로 보내면 요청과 비용만 늘어남"

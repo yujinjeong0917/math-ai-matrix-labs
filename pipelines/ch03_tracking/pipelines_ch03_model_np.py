@@ -27,6 +27,7 @@ def fit_logistic(X, y, lr=0.5, steps=400, l2=1e-3):
     w, b = np.zeros(X.shape[1]), 0.0
     for _ in range(steps):
         p = 1.0 / (1.0 + np.exp(-(X @ w + b)))
+        # 평균 로그 손실의 기울기 X.T(p - y)/n + L2 항 l2*w. 절편은 규제하지 않는다
         w -= lr * (X.T @ (p - y) / len(y) + l2 * w)
         b -= lr * float(np.mean(p - y))
     return w, b
@@ -40,5 +41,6 @@ def train_and_eval(train, valid, lr, steps, l2, fit=fit_logistic):
     """학습 표로 전처리와 가중치를 정하고, 검증 표 정확도를 낸다."""
     prep = fit_preprocessor(train)
     w, b = fit(transform(train, prep), train[LABEL], lr=lr, steps=steps, l2=l2)
+    # 전처리 평균·표준편차는 학습 표에서만 구하고 검증 표에는 같은 값을 적용한다
     acc = float(np.mean((predict_proba(transform(valid, prep), w, b) >= 0.5) == valid[LABEL]))
     return {"prep": prep, "w": w, "b": b}, {"val_acc": acc}

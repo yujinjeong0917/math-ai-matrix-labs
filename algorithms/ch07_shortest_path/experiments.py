@@ -35,6 +35,7 @@ import algorithms_ch07_shortest_path as A  # noqa: E402
 
 OUT = HERE / "results" / "ch07.json"
 SEEDS = 100
+# 정점 50, 간선 200(평균 나가는 차수 4). 대부분의 실험이 쓰는 기본 크기.
 N, M = 50, 200
 
 
@@ -70,6 +71,7 @@ def e0_first_screen():
 
 # ---------------------------------------------------------------- E1
 def e1_bfs_vs_weighted():
+    # BFS 가 고른 경로의 실제 길이 bc[v] 가 참 최단 d[v] 보다 큰 정점을 센다(bc >= d 는 항상 성립).
     wrong = tot = graphs_wrong = 0
     excess = []
     for seed in range(SEEDS):
@@ -83,6 +85,7 @@ def e1_bfs_vs_weighted():
                 tot += 1
                 if bc[v] > d[v]:
                     w += 1
+                    # 초과 비율 = 길이가 참 최단의 몇 배 더 긴가. d[v] 가 0 이 될 수 없는 이유: 이 실험의 길이는 1~20.
                     excess.append(bc[v] / d[v] - 1)
         wrong += w
         graphs_wrong += w > 0
@@ -102,12 +105,14 @@ def e2_negative_edges():
         pops_dj, pops_re, relax_dj, relax_re = [], [], [], []
         neg_edges = 0
         for seed in range(SEEDS):
+            # 시드 1000 + seed 로 고정해 다시 돌려도 같은 그래프가 나온다.
             rng = A.seeded(1000 + seed)
             edges, r = A.random_negative_graph(N, M, ratio, rng)
             rej += r
             neg_edges += sum(1 for e in edges if e[2] < 0)
             g = A.from_edges(N, edges)
             bf = A.bellman_ford(g, 0)[0]
+            # Bellman-Ford 자체를 Floyd-Warshall 로 교차 검증(음수 순환 없음 확인된 그래프라 안전).
             D = floyd_warshall_np(N, edges)
             fw_ok += all((bf[v] == A.INF and np.isinf(D[0, v])) or bf[v] == D[0, v] for v in range(N))
             c1, c2 = A.Counter(), A.Counter()
@@ -116,10 +121,12 @@ def e2_negative_edges():
             reach = A.reachable(g, 0)
             w = 0
             for v in range(1, N):
+                # 출발점에서 닿는 정점만 비교(닿지 않으면 둘 다 inf 라 의미 없음).
                 if reach[v]:
                     tot += 1
                     if dj[v] != bf[v]:
                         w += 1
+                        # 오차는 항상 >= 0(Dijkstra 는 참 거리보다 짧게 낼 수 없고 같거나 길게 낸다).
                         errs.append(dj[v] - bf[v])
             wrong += w
             graphs_wrong += w > 0
@@ -164,18 +171,21 @@ def e3_compare():
         "dijkstra_relax_mean": r4(statistics.mean(dj_relax)),
         "bf_relax_mean": r4(statistics.mean(bf_relax)), "bf_rounds_mean": r4(statistics.mean(bf_rounds)),
         "bf_rounds_min": min(bf_rounds), "bf_rounds_max": max(bf_rounds),
+        # 최악 이론 상한: V 라운드 x E 간선 = N x M. 실제 측정 횟수와 대비하려고 적음.
         "bf_worst_bound_relax": (N - 1) * M + M,
         "dijkstra_ms_median": r4(statistics.median(dj_ms)), "bf_ms_median": r4(statistics.median(bf_ms)),
     }
     scale = []
     for n in (1000, 10000, 50000):
         rng = A.seeded(7)
+        # 정점당 평균 4 간선 유지. 이완 횟수가 O(E) 로 자라는지, Bellman-Ford 는 라운드 수 x E 인지 비교.
         m = 4 * n
         g = A.from_edges(n, A.random_digraph(n, m, rng))
         c1, c2 = A.Counter(), A.Counter()
         d1 = A.dijkstra(g, 0, c1)[0]
         d2 = A.bellman_ford(g, 0, c2)[0]
         assert d1 == d2
+        # 큰 입력에서는 시간이 길어 1번만 잼.
         reps = 3 if n <= 10000 else 1
         _, t1 = _ms(lambda: A.dijkstra(g, 0), reps)
         _, t2 = _ms(lambda: A.bellman_ford(g, 0), reps)
@@ -196,6 +206,7 @@ def e4_negative_cycle():
         g = A.from_edges(N, edges)
         reach = [v for v in range(N) if A.reachable(g, 0)[v] and v != 0]
         a, b, c = rng.sample(reach, 3)
+        # 합이 음수인 순환 하나를 닿는 정점 세 개 사이에 넣는다. 0 에서 닿는 정점만 고르는 것이 핵심.
         # a->b 1, b->c 1, c->a -5 : 순환 합 -3
         g.add(a, b, 1)
         g.add(b, c, 1)
@@ -220,6 +231,7 @@ def e5_grid():
     for seed in range(SEEDS):
         rng = A.seeded(seed)
         grid = A.random_grid(R, C, 0.25, rng, keep=[s, t])
+        # 목표에 못 닿는 격자는 건너뛴다(skipped). 사용된 격자 수는 used.
         opt = A.grid_dijkstra_cost(grid, s, t)
         if opt is None:
             skipped += 1
@@ -229,6 +241,7 @@ def e5_grid():
             cnt = A.Counter()
             cost, path, order = A.a_star(grid, s, t, h, cnt)
             rec[key].append(cnt.expand)
+            # h=0, 맨해튼은 허용 가능이라 최적이어야 한다(assert). 2배 맨해튼은 최적이 아닐 수 있어 따로 기록.
             if key in ("h0", "man"):
                 assert cost == opt
             else:
@@ -237,6 +250,7 @@ def e5_grid():
                 if cost > opt:
                     sub += 1
                     excess.append(cost - opt)
+    # (사용하지 않는 변수, 아래 del 로 지움)
     free_cells = None
     out = {"rows": R, "cols": C, "block_p": 0.25, "seeds": SEEDS, "used": used, "skipped_no_path": skipped,
            "tie_break": "(f, h, insertion order); closed cells reopened when g improves; stop when goal is popped",
@@ -272,6 +286,7 @@ def dijkstra_widget(n, edges, pos, names):
     true = A.bellman_ford(g, 0)[0]
     tr = []
     A.dijkstra(g, 0, trace=tr)
+    # 위젯 한 단계: [종류, 정점, 간선, dist(None=inf), done(0/1), 힙의 유효 항목, 불변식1, 불변식2]. JSON 은 inf 를 못 쓰므로 None 으로 바꾼다.
     steps = []
     for kind, u, e, dist, done, heap in tr:
         inv1, inv2 = A.check_settled_invariants(dist, done, heap, true)
@@ -294,6 +309,7 @@ def e7_widget():
 
 # ---------------------------------------------------------------- E8 흔한 실패
 def e8_common_failures():
+    # 흔한 실패 (i): 모든 간선에 같은 수를 더해 음수를 없애면 간선 수가 많은 경로가 더 벌점을 받아 최단 경로가 바뀐다. 경로의 실제 비용은 원래 그래프에서 다시 계산한다.
     # (i) 모든 간선에 |최소 음수| 를 더해 다익스트라
     wrong = tot = graphs_wrong = 0
     for seed in range(SEEDS):
@@ -301,6 +317,7 @@ def e8_common_failures():
         edges, _ = A.random_negative_graph(N, M, 0.10, rng)
         g = A.from_edges(N, edges)
         bf = A.bellman_ford(g, 0)[0]
+        # 가장 음수인 간선이 0 이 되도록 올리는 양(모든 간선이 >= 0 이 됨).
         shift = -min(w for _, _, w in edges)
         g2 = A.from_edges(N, [(u, v, w + shift) for u, v, w in edges])
         _, par = A.dijkstra(g2, 0)
@@ -324,6 +341,7 @@ def e8_common_failures():
     shift_res = {"seeds": SEEDS, "neg_ratio": 0.10, "reachable_vertices": tot, "wrong_vertices": wrong,
                  "wrong_ratio": r4(wrong / tot), "graphs_with_wrong": graphs_wrong,
                  "tiny_example_parent_of_a": par_ex[1]}
+    # 흔한 실패 (ii): 라벨이 처음 적힌 값은 잠정값. 확정은 힙에서 꺼낼 때라는 점을 어긴 변형.
     # (ii) 다익스트라를 목표에 처음 라벨이 붙을 때 멈추기(꺼낼 때가 아니라)
     early_wrong = early_tot = 0
     for seed in range(SEEDS):
@@ -355,6 +373,7 @@ def dijkstra_first_label(g, s, t):
             if not done[v] and d + w < dist[v]:
                 first = dist[v] == A.INF
                 dist[v] = d + w
+                # 처음 값이 적히는 순간 반환(잠정 거리일 수 있음).
                 if v == t and first:
                     return dist[v]
                 heapq.heappush(heap, (dist[v], v))
@@ -362,6 +381,7 @@ def dijkstra_first_label(g, s, t):
 
 
 # ---------------------------------------------------------------- E9 NumPy
+# 시간 O(n^3). n 이 30~50 일 때만 쓰는 정답 대조용.
 def floyd_warshall_np(n, edges):
     D = np.full((n, n), np.inf)
     np.fill_diagonal(D, 0)
@@ -381,6 +401,7 @@ def e9_numpy():
         g = A.from_edges(30, edges)
         D = floyd_warshall_np(30, edges)
         for s in range(30):
+            # 30개 출발점 모두에서 Bellman-Ford 와 Floyd-Warshall 의 행을 비교.
             bf = A.bellman_ford(g, s)[0]
             total += 1
             agree += all((bf[v] == A.INF and np.isinf(D[s, v])) or bf[v] == D[s, v] for v in range(30))

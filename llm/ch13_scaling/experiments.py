@@ -17,6 +17,9 @@ E7 IsoFLOP의 실측 최적 크기와 피팅이 예측한 N_opt 비교
 
 결과는 results/ch13.json 에 저장하고, 챕터 본문은 이 파일의 값을 그대로 인용한다.
 학습은 프로세스 여러 개로 나눠 돌리고, 프로세스마다 PyTorch 스레드를 1로 고정한다.
+
+입력: 없음(크기·격자·시드는 파일 상단 상수). 출력: results/ch13.json. 단위: 손실 nat, D = 학습 입력 토큰 수, N = 임베딩 제외 파라미터 수, C = 계산량(FLOP).
+프로세스 10개로 병렬 학습하므로 실행 시간과 CPU 부하가 크다(WORKERS로 조정).
 """
 
 import json
@@ -33,6 +36,7 @@ import ch13_data as cd
 import scaling_np as sn
 
 OUT = Path(__file__).parent / "results" / "ch13.json"
+# 크기 6단계: d, 층 수 L, 헤드 수 h. 임베딩 제외 N은 약 수천 ~ 수십만 개(count_params로 계산)
 SIZES = [
     {"name": "S1", "d": 16, "L": 1, "h": 2},
     {"name": "S2", "d": 24, "L": 2, "h": 2},
@@ -41,11 +45,16 @@ SIZES = [
     {"name": "S5", "d": 64, "L": 4, "h": 4},
     {"name": "S6", "d": 96, "L": 4, "h": 4},
 ]
+# 학습 토큰 수 2^16 ~ 2^21(2배씩 6단계)
 D_GRID = [2**16, 2**17, 2**18, 2**19, 2**20, 2**21]
 SEEDS = (0, 1, 2)
+# 학습률 후보를 3배씩 5개 훑는다(E2)
 LRS = (1e-3, 3e-3, 1e-2, 3e-2, 1e-1)
+# IsoFLOP 예산 C = 6ND의 세 값(FLOP). 4배씩 커진다
 ISO_C = (3e10, 1.2e11, 4.8e11)
+# IsoFLOP에서 D가 이 범위를 벗어나는 크기는 제외
 ISO_D_RANGE = (2**14, 2**23)
+# 병렬 프로세스 수(기기의 코어 수에 맞춰 조정 필요)
 WORKERS = 10
 RULE = (
     "실험 전에 정한 판정 규칙: 두 프로토콜(E3 스케줄을 D에 맞춤, E4 긴 스케줄 하나를 중간에서 읽기)에서 "
@@ -55,9 +64,11 @@ RULE = (
 
 
 def _job(args):
+    # 자식 프로세스 안에서 import: 프로세스마다 torch 상태를 따로 갖는다
     import scaling_torch as st
 
     torch.set_num_threads(1)
+    # 작업 튜플: (종류, 크기 인덱스, 학습 토큰 수, 시드, 학습률, train_run 추가 인자)
     kind, i, tokens, seed, lr, extra = args
     r = st.train_run(SIZES[i], tokens, seed, lr, **extra)
     r.update({"kind": kind, "size": SIZES[i]["name"], "seed": seed, "lr": lr})
@@ -65,8 +76,10 @@ def _job(args):
 
 
 def run_pool(jobs):
+    # 대략적인 비용(토큰 * (d^2 L + 상수))이 큰 작업부터 배정해 마지막에 한 프로세스만 남는 낭비를 줄인다
     jobs = sorted(jobs, key=lambda j: -j[2] * (SIZES[j[1]]["d"] ** 2 * SIZES[j[1]]["L"] + 2000))  # 큰 일부터
     with Pool(WORKERS) as p:
+        # 완료 순서대로 받으므로 결과 순서는 보장되지 않는다. 호출 쪽에서 정렬한다
         return list(p.imap_unordered(_job, jobs))
 
 
@@ -77,6 +90,7 @@ def e0_floor():
     f = cd.entropy_floor()
     cov = {str(D): cd.key_coverage(D) for D in D_GRID}
     return {**f, "V": cd.V, "n_keys": cd.N_KEYS, "zipf": cd.ZIPF, "p_rule": cd.P_RULE, "n_ctx": cd.N_CTX,
+            # 가장 흔한 열쇠의 확률, 상위 10개 열쇠가 차지하는 질량: 지프 분포의 쏠림 정도
             "top_key_prob": float(cd.P_KEY.max()), "top10_key_mass": float(np.sort(cd.P_KEY)[::-1][:10].sum()),
             "key_coverage": cov}
 
@@ -91,6 +105,7 @@ def e1_counts():
         n_t, tot_t = st.torch_param_counts(m)
         n, tot = sn.count_params(cfg)
         f = sn.flops_per_token(cfg)
+        # FlopCounterMode로 순전파 FLOP을 재기 위한 배치 1개 (1, 32)
         x = torch.randint(0, cd.V, (1, cd.N_CTX))
         with FlopCounterMode(display=False) as fc:
             m(x)
@@ -99,6 +114,7 @@ def e1_counts():
             "N": n, "N_total": tot, "torch_N": n_t, "torch_N_total": tot_t,
             "approx_6N": f["approx_6N"], "exact_train": f["exact_train"],
             "ratio_exact_over_6N": f["ratio_exact_over_6N"], "context_share_of_forward": f["context_share_of_forward"],
+            # 측정 FLOP을 토큰 수 N_CTX로 나눈 값. 식으로 센 exact_forward와 같아야 한다
             "flopcounter_forward_per_token": fc.get_total_flops() / cd.N_CTX, "exact_forward": f["exact_forward"],
         })
     return rows
@@ -108,20 +124,25 @@ def e1_counts():
 
 
 def e2_lr_sweep():
+    # 크기 * 학습률 조합마다 D = 2^20, 시드 0 한 번
     res = run_pool([("lr", i, 2**20, 0, lr, {}) for i in range(len(SIZES)) for lr in LRS])
     table = {c["name"]: {str(r["lr"]): r["val_loss"] for r in res if r["size"] == c["name"]} for c in SIZES}
+    # 크기별 검증 손실이 가장 낮은 학습률. 이후 모든 실험에 고정(주의: 시드 하나의 결과라 노이즈 영향 가능)
     best = {k: float(min(v, key=lambda lr: v[lr])) for k, v in table.items()}
     return {"D": 2**20, "seed": 0, "val_loss": table, "best_lr": best}
 
 
 def e3_e4_grid(best_lr, warmup_frac=None):
     jobs = []
+    # E4b(warmup 비율 실패 재현)에서만 warmup_frac을 넘긴다
     w = {} if warmup_frac is None else {"warmup_frac": warmup_frac}
     for i, c in enumerate(SIZES):
         lr = best_lr[c["name"]]
         for s in SEEDS:
             for D in D_GRID:
+                # matched: 각 D마다 코사인 길이를 그 D에 맞춘 독립 학습
                 jobs.append(("matched", i, D, s, lr, dict(w)))
+            # single: 가장 긴 D로 한 번 학습하면서 더 짧은 D 지점에서 중간 손실을 읽는다. 마지막 D는 최종 손실
             jobs.append(("single", i, D_GRID[-1], s, lr, {"eval_at_tokens": tuple(D_GRID[:-1]), **w}))
     res = run_pool(jobs)
     matched = [r for r in res if r["kind"] == "matched"]
@@ -130,11 +151,13 @@ def e3_e4_grid(best_lr, warmup_frac=None):
         if r["kind"] != "single":
             continue
         for D in D_GRID:
+            # 가장 큰 D는 최종 val_loss, 나머지는 중간 평가값(키는 문자열 토큰 수)
             v = r["val_loss"] if D == D_GRID[-1] else r["intermediate_val_loss"][str(D)]
             single.append({"size": r["size"], "seed": r["seed"], "N": r["N"], "D": D, "val_loss": v, "lr": r["lr"]})
     key = lambda r: (r["size"], r["D"], r["seed"])  # noqa: E731
     matched.sort(key=key)
     single.sort(key=key)
+    # 결과 JSON을 줄이려고 필요한 열만 남긴다
     slim = [{k: r[k] for k in ("size", "seed", "N", "N_total", "D", "val_loss", "lr", "seconds", "nan")} for r in matched]
     return slim, single
 
@@ -144,19 +167,23 @@ def e5_isoflop(best_lr):
     for C in ISO_C:
         for i, c in enumerate(SIZES):
             n, _ = sn.count_params(c)
+            # 식: D = C / (6N). 학습 스텝이 정수가 되도록 배치(8문장 * 32토큰)의 배수로 맞춘다
             D = int(round(C / (6 * n) / (8 * cd.N_CTX))) * 8 * cd.N_CTX  # 배치 크기의 배수로
             if not (ISO_D_RANGE[0] <= D <= ISO_D_RANGE[1]):
                 continue
             for s in SEEDS:
                 jobs.append(("iso", i, D, s, best_lr[c["name"]], {"_C": C}))
     # _C는 학습 함수에 넘기지 않는다
+    # (크기, D, 시드) -> C 대응표. 같은 키가 서로 다른 C에서 겹치지 않는다는 가정(겹치면 덮어쓴다, 확인 필요)
     tagged = {(j[1], j[2], j[3]): j[5]["_C"] for j in jobs}
     jobs = [(k, i, D, s, lr, {}) for (k, i, D, s, lr, _) in jobs]
     res = run_pool(jobs)
     out = []
     for r in res:
+        # 결과의 크기 이름을 인덱스로 되돌려 tagged에서 C를 찾는다
         i = [c["name"] for c in SIZES].index(r["size"])
         out.append({"C": tagged[(i, r["D"], r["seed"])], "size": r["size"], "seed": r["seed"], "N": r["N"],
+                    # 실제로 쓴 6ND. 목표 C와 가까운지 확인용(D를 배치 배수로 반올림했다)
                     "D": r["D"], "C_6ND": 6 * r["N"] * r["D"], "val_loss": r["val_loss"]})
     out.sort(key=lambda r: (r["C"], r["N"], r["seed"]))
     summary = []
@@ -164,9 +191,11 @@ def e5_isoflop(best_lr):
         rows = [r for r in out if r["C"] == C]
         by_n = {}
         for r in rows:
+            # (크기, N, D)별로 시드 3개의 손실을 모은다
             by_n.setdefault((r["size"], r["N"], r["D"]), []).append(r["val_loss"])
         cells = [{"size": k[0], "N": k[1], "D": k[2], "tokens_per_param": k[2] / k[1],
                   "mean": float(np.mean(v)), "std": float(np.std(v)), "per_seed": v} for k, v in sorted(by_n.items(), key=lambda kv: kv[0][1])]
+        # 시드 평균이 가장 낮은 크기 = 이 예산의 실측 최적
         best = min(cells, key=lambda c: c["mean"])
         summary.append({"C": C, "cells": cells, "best_size": best["size"], "best_N": best["N"], "best_D": best["D"]})
     return out, summary
@@ -178,8 +207,10 @@ def e5_isoflop(best_lr):
 def _cell_means(rows):
     cells = {}
     for r in rows:
+        # (N, D)칸마다 시드별 손실 목록
         cells.setdefault((r["N"], r["D"]), []).append(r["val_loss"])
     keys = sorted(cells)
+    # keys 순서(정렬된 (N, D))에 맞춘 배열
     N = np.array([k[0] for k in keys], float)
     D = np.array([k[1] for k in keys], float)
     return N, D, cells, keys
@@ -199,12 +230,16 @@ def bootstrap(rows, reps=200, seed=0, E_fixed=None):
     rng = np.random.default_rng(seed)
     out = {"alpha": [], "beta": [], "E": [], "a": []}
     for _ in range(reps):
+        # 부트스트랩: 칸 안의 시드 3개를 복원추출해 평균을 다시 만든다. 시드 3개뿐이라 구간이 좁게 나올 수 있다(한계)
         L = np.array([np.mean(rng.choice(cells[k], size=len(cells[k]))) for k in keys])
+        # 속도 때문에 refine=1(격자 세밀화 1회)
         p = sn.fit_chinchilla(N, D, L, refine=1, E_fixed=E_fixed)
         out["alpha"].append(p["alpha"])
         out["beta"].append(p["beta"])
         out["E"].append(p["E"])
+        # a = beta/(alpha + beta): 최적 N이 C의 몇 제곱으로 느는지(N_opt ∝ C^a)
         out["a"].append(p["beta"] / (p["alpha"] + p["beta"]))
+    # 2.5, 50, 97.5 백분위: 95% 구간과 중앙값
     return {k: {"p2.5": float(np.percentile(v, 2.5)), "p50": float(np.median(v)), "p97.5": float(np.percentile(v, 97.5))}
             for k, v in out.items()}
 
@@ -214,11 +249,14 @@ def e6_fits(matched, single, floor):
     for name, rows in (("matched", matched), ("single", single)):
         N, D, cells, keys = _cell_means(rows)
         L = np.array([np.mean(cells[k]) for k in keys])
+        # E 자유 피팅(NumPy 격자 + LM, PyTorch Huber)
         p_np, p_t = _fit_both(N, D, L)
+        # E를 이론 최저 손실(floor)로 고정한 피팅
         f_np, f_t = _fit_both(N, D, L, E_fixed=floor)
         a = lambda p: p["beta"] / (p["alpha"] + p["beta"])  # noqa: E731
         res[name] = {
             "numpy_fit": p_np, "torch_fit": p_t, "a_numpy": a(p_np), "a_torch": a(p_t),
+            # 피팅된 E가 이론 바닥에서 얼마나 떨어졌나
             "E_minus_floor_numpy": p_np["E"] - floor, "bootstrap": bootstrap(rows),
             "fixedE_numpy_fit": f_np, "fixedE_torch_fit": f_t, "fixedE_a_numpy": a(f_np), "fixedE_a_torch": a(f_t),
             "fixedE_bootstrap": bootstrap(rows, E_fixed=floor),
@@ -226,15 +264,18 @@ def e6_fits(matched, single, floor):
         }
     # Kaplan 꼴: 가장 큰 D에서 L(N), 가장 큰 N에서 L(D)
     m = res["matched"]["cells"]
+    # 가장 큰 D에서 크기에 따른 L(N), 가장 큰 N에서 D에 따른 L(D)를 거듭제곱으로 맞춘다
     big_d = [c for c in m if c["D"] == D_GRID[-1]]
     big_n = max(c["N"] for c in m)
     res["kaplan_L_of_N_at_Dmax"] = sn.fit_power_law([c["N"] for c in big_d], [c["mean"] for c in big_d])
+    # 이론 바닥을 뺀 손실로도 맞춘다(바닥이 있으면 순수 거듭제곱이 아닐 수 있다)
     res["kaplan_L_of_N_at_Dmax_minus_floor"] = sn.fit_power_law([c["N"] for c in big_d], [c["mean"] - floor for c in big_d])
     res["kaplan_L_of_D_at_Nmax"] = sn.fit_power_law([c["D"] for c in m if c["N"] == big_n], [c["mean"] for c in m if c["N"] == big_n])
     res["protocol_diff"] = protocol_diff(matched, single)
     verdict = {}
     for tag in ("bootstrap", "fixedE_bootstrap"):
         bm, bs = res["matched"][tag]["a"], res["single"][tag]["a"]
+        # 두 구간이 겹치지 않으면 RULE에 따라 '결론이 바뀐 것'. 구간이 겹치면 바뀌었다고 쓰지 않는다
         overlap = not (bm["p97.5"] < bs["p2.5"] or bs["p97.5"] < bm["p2.5"])
         verdict[tag] = {"a_intervals_overlap": overlap, "conclusion_changed": not overlap}
     res["verdict"] = verdict
@@ -244,10 +285,13 @@ def e6_fits(matched, single, floor):
 def protocol_diff(matched, single):
     """같은 (크기, D, 시드) 칸에서 '긴 스케줄의 중간 읽기 - D에 맞춘 스케줄'."""
     diffs = []
+    # 단일 긴 스케줄에서 읽은 값을 (크기, D, 시드)로 색인
     s_by = {(r["size"], r["D"], r["seed"]): r["val_loss"] for r in single}
     for r in matched:
+        # 가장 큰 D는 두 프로토콜이 같은 실행이라 비교에서 제외
         if r["D"] == D_GRID[-1]:
             continue
+        # 양수이면 긴 스케줄의 중간 읽기가 D에 맞춘 스케줄보다 손실이 높다(학습률이 덜 감쇠된 상태)
         diffs.append({"size": r["size"], "D": r["D"], "seed": r["seed"], "single_minus_matched": s_by[(r["size"], r["D"], r["seed"])] - r["val_loss"]})
     dv = np.array([d["single_minus_matched"] for d in diffs])
     sizes = [c["name"] for c in SIZES]
@@ -266,19 +310,23 @@ def e7_compare(iso_summary, fit):
         p = fit["matched"][tag]
         rows = []
         for s in iso_summary:
+            # 피팅된 (A, B, alpha, beta)로 이 예산의 최적 N, D를 예측
             pred = sn.optimal_allocation(s["C"], p)
             rows.append({"C": s["C"], "measured_best_N": s["best_N"], "measured_best_size": s["best_size"],
                          "measured_best_tokens_per_param": s["best_D"] / s["best_N"],
                          "predicted_N_opt": float(pred["N_opt"]), "predicted_D_opt": float(pred["D_opt"]),
                          "predicted_tokens_per_param": float(pred["D_opt"] / pred["N_opt"])})
+        # C = 1로 불러 지수 a만 꺼낸다(a, b는 C와 무관)
         out[tag] = {"a": sn.optimal_allocation(1.0, p)["a"], "rows": rows}
     best = [s["best_N"] for s in iso_summary]
+    # 실측 최적 N을 C에 대해 로그-로그 직선으로 맞춘 기울기 = 실측 a. 점이 3개뿐이라 불확실(한계)
     out["measured_a_from_isoflop_minima"] = float(np.polyfit(np.log(ISO_C), np.log(best), 1)[0])
     return out
 
 
 def main():
     t0 = time.perf_counter()
+    # 부모 프로세스도 단일 스레드(자식은 _job에서 따로 고정)
     torch.set_num_threads(1)
     results = {
         "env": {"python": platform.python_version(), "numpy": np.__version__, "torch": torch.__version__,
@@ -290,9 +338,11 @@ def main():
     results["E1"] = e1_counts()
     results["E2"] = e2_lr_sweep()
     print("E2", results["E2"]["best_lr"], flush=True)
+    # E3(matched)와 E4(single)를 같은 격자·시드로 한꺼번에 학습
     matched, single = e3_e4_grid(results["E2"]["best_lr"])
     results["E3"], results["E4"] = matched, single
     print("E3/E4 done", flush=True)
+    # E4b: warmup을 스케줄 길이의 5%로 바꾼 복제 실험. 긴 스케줄은 warmup도 길어진다
     m5, s5 = e3_e4_grid(results["E2"]["best_lr"], warmup_frac=0.05)
     results["E4b"] = {"note": "warmup을 스케줄 길이의 5%로 잡은 경우. 긴 스케줄은 warmup도 길어져 두 효과가 섞인다(7절 흔한 실패).",
                       "warmup_frac": 0.05, "protocol_diff": protocol_diff(m5, s5),

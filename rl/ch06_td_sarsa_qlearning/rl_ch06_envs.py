@@ -37,6 +37,7 @@ class Uniforms:
 
 def walk_true_values(n=5):
     """종료 칸 두 개를 포함한 길이 n+2 배열. 종료 칸은 0."""
+    # 식: V(i) = i / (n+1). 오른쪽 끝에 먼저 닿을 확률이다(gamma = 1, 보상은 오른쪽 끝에서만 1)
     v = np.arange(n + 2) / (n + 1)
     v[0] = v[-1] = 0.0
     return v
@@ -44,11 +45,14 @@ def walk_true_values(n=5):
 
 def walk_episode(uni, n=5):
     """한 판의 전이 목록 [(s, r, s_next, done), ...]. 가운데 칸에서 출발."""
+    # 가운데 칸에서 출발(n = 5이면 칸 3)
     s = (n + 1) // 2
     out = []
     while True:
+        # 반반으로 오른쪽 또는 왼쪽 한 칸. 걸음마다 난수 하나
         s2 = s + 1 if uni() < 0.5 else s - 1
         done = s2 == 0 or s2 == n + 1
+        # 보상은 오른쪽 끝(n+1)에 들어갈 때만 1, 왼쪽 끝은 0. gamma = 1이라 리턴 G는 오른쪽 끝 도착 여부(1 또는 0)
         r = 1.0 if s2 == n + 1 else 0.0
         out.append((s, r, s2, done))
         if done:
@@ -59,11 +63,14 @@ def walk_episode(uni, n=5):
 # ---------- 절벽 격자 ----------
 
 class Cliff:
+    """절벽 격자. 칸 번호 = 줄 x w + 열, 행동 4개(위·오른쪽·아래·왼쪽). step(s, a)로만 경험한다."""
+
     def __init__(self, h=4, w=10, cliff=50.0, step=-1.0):
         self.h, self.w, self.cliff_r, self.step_r = h, w, -float(cliff), float(step)
         self.S, self.A = h * w, 4
         self.start = (h - 1) * w
         self.goal = (h - 1) * w + (w - 1)
+        # 아래 줄에서 출발 칸(열 0)과 도착 칸(열 w-1) 사이의 열 1 ~ w-2가 절벽. range 끝은 포함되지 않는다
         self.cliff = set(range((h - 1) * w + 1, (h - 1) * w + w - 1))
 
     def step(self, s, a):
@@ -74,8 +81,10 @@ class Cliff:
         if not (0 <= nr < self.h and 0 <= nc < self.w):
             nr, nc = r, c
         s2 = nr * self.w + nc
+        # 절벽: -cliff 보상을 받고 출발 칸으로 돌아간다. 판은 이어지므로 done = False, fell = True
         if s2 in self.cliff:
             return self.start, self.cliff_r, False, True
+        # 도착 칸: 걸음 보상(step_r)을 받고 판이 끝난다. 도착 보너스는 따로 없다
         if s2 == self.goal:
             return s2, self.step_r, True, False
         return s2, self.step_r, False, False
@@ -113,6 +122,8 @@ def chain_step(s, a, n):
 def chain_q_star(n, gamma):
     """Q*(s, a)의 해석해. 오른쪽으로만 가면 칸 s에서 도착까지 n-1-s걸음, 보상은 마지막 걸음에 1."""
     Q = np.zeros((n, 2))
+    # 식: Q*(s, 오른쪽) = gamma^(n-2-s), Q*(s, 왼쪽) = 0 + gamma V*(s'), s' = max(s-1, 0), V*(s') = gamma^(n-2-s')
+    # 칸 n-1은 종료 칸이라 행이 0으로 남는다
     for s in range(n - 1):
         Q[s, 1] = gamma ** (n - 2 - s)              # 오른쪽: 남은 걸음 n-1-s, 할인은 (걸음 - 1)번
         Q[s, 0] = gamma * gamma ** (n - 2 - max(s - 1, 0))  # 왼쪽 한 걸음 뒤 최적

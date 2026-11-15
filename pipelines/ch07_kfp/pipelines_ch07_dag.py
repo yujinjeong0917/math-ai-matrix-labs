@@ -53,6 +53,7 @@ class Metrics(Artifact):
     schema = "system.Metrics"
 
 
+# Input[...]/Output[...] 표시를 담는 객체. 방향(in/out)과 결과 파일 종류(Dataset 등)를 기억한다
 class _Marker:
     def __init__(self, direction, cls):
         self.direction, self.cls = direction, cls
@@ -60,6 +61,7 @@ class _Marker:
 
 class Input:
     def __class_getitem__(cls, item):
+        # Input[Dataset] 처럼 대괄호로 부를 때 호출되는 훅(__class_getitem__). 타입 표시 자리에 쓰는 장식
         return _Marker("in", item)
 
 
@@ -68,10 +70,12 @@ class Output:
         return _Marker("out", item)
 
 
+# 파이썬 타입 -> KFP IR의 parameterType 이름
 PARAM_TYPES = {int: "NUMBER_INTEGER", float: "NUMBER_DOUBLE", str: "STRING", bool: "BOOLEAN"}
 
 # ---------- 컴포넌트와 파이프라인 정의 ----------
 
+# @pipeline 정의 중에만 비어 있지 않은 스택. 컴포넌트를 부르면 맨 위 목록에 task가 쌓인다
 _BUILDER = []  # @pipeline을 컴파일하는 동안만 task 목록이 들어 있다
 
 
@@ -90,6 +94,7 @@ class _Outputs(dict):
         super().__init__({k: TaskOutput(task, k, c) for k, c in decl.items()})
         self.task = task
 
+    # 없는 출력 이름을 쓰면 KeyError. 파이프라인을 정의하는 순간 오류가 나서 실행 전에 발견된다
     def __missing__(self, key):
         raise KeyError(f"{key!r}: task '{self.task.name}'에는 이 출력이 없다. 있는 출력: {sorted(self)}")
 
@@ -105,6 +110,7 @@ class Component:
         self.fn, self.name, self.image = fn, fn.__name__, image
         self.module, self.qualname = fn.__module__, fn.__qualname__
         self.params, self.in_artifacts, self.out_artifacts, self.defaults = {}, {}, {}, {}
+        # 함수 시그니처의 타입 표시에서 입력/출력 결과 파일과 파라미터를 가려낸다. 표시가 없으면 TypeError
         for k, p in inspect.signature(fn).parameters.items():
             a = p.annotation
             if isinstance(a, _Marker):
@@ -117,6 +123,7 @@ class Component:
                 self.defaults[k] = p.default
 
     def __call__(self, **kwargs):
+        # 컴포넌트를 @pipeline 밖에서 부르면 막는다. 이 구현에서는 컴포넌트를 직접 실행하지 않고 그래프만 만든다
         if not _BUILDER:
             raise RuntimeError("컴포넌트는 @pipeline 안에서만 부를 수 있다(여기서는 실행하지 않고 그래프만 만든다)")
         tasks = _BUILDER[-1]
@@ -125,6 +132,7 @@ class Component:
                 if not isinstance(v, TaskOutput):
                     raise TypeError(f"{self.name}.{k}: 결과 파일 입력에는 다른 task의 출력을 이어야 한다")
                 want, got = self.in_artifacts[k], v.cls
+                # 타입 검사: 받는 쪽이 Artifact(아무거나)이거나, 만든 쪽 종류가 받는 쪽 종류의 하위 클래스여야 한다
                 if not (want is Artifact or issubclass(got, want)):
                     raise TypeError(f"{self.name}.{k}: {got.schema}를 {want.schema} 입력에 이을 수 없다")
             elif k in self.params:
@@ -137,6 +145,7 @@ class Component:
         missing = [k for k in list(self.in_artifacts) + list(self.params) if k not in kwargs and k not in self.defaults]
         if missing:
             raise TypeError(f"{self.name}: 이어지지 않은 입력 {missing}")
+        # 같은 컴포넌트를 여러 번 부르면 이름 뒤에 -2, -3을 붙여 task 이름을 구분한다
         name = self.name
         used = {t.name for t in tasks}
         i = 2
@@ -158,11 +167,13 @@ class Pipeline:
     def __init__(self, fn, name):
         self.fn, self.name = fn, name or fn.__name__.replace("_", "-")
         self.params = {k: (p.annotation, p.default) for k, p in inspect.signature(fn).parameters.items()}
+        # 정의하는 순간 한 번 실행해 연결 오류를 일찍 드러낸다. 이때 함수 몸통의 컴포넌트는 실제로 돌지 않는다
         self.build()  # kfp의 @dsl.pipeline처럼 정의하는 순간 한 번 불러서, 연결 실수를 실행 전에 드러낸다
 
     def build(self):
         _BUILDER.append([])
         try:
+            # 파이프라인 함수를 실행값 대신 자리표시자(PipelineParam)로 불러 task 연결만 수집한다
             self.fn(**{k: PipelineParam(k, t) for k, (t, _) in self.params.items()})
             return _BUILDER[-1]
         finally:
@@ -188,6 +199,7 @@ def _defs(arts, params=None, defaults=None):
     return out
 
 
+# KFP IR과 같은 모양의 dict를 만든다. 실제 kfp 2.17.0 결과와 비교하는 테스트가 있다(test_graph_matches_real_kfp_compile)
 def compile(pl):  # noqa: A001  (kfp의 compiler.compile과 같은 이름을 일부러 썼다)
     tasks = pl.build()
     comps, execs, dag = {}, {}, {}
@@ -203,10 +215,12 @@ def compile(pl):  # noqa: A001  (kfp의 compiler.compile과 같은 이름을 일
         for k, v in t.args.items():
             if isinstance(v, TaskOutput):
                 arts[k] = {"taskOutputArtifact": {"producerTask": v.task.name, "outputArtifactKey": v.key}}
+                # 다른 task의 출력을 입력으로 받으면 그 task에 의존한다(dependentTasks)
                 deps.add(v.task.name)
             elif isinstance(v, PipelineParam):
                 params[k] = {"componentInputParameter": v.name}
             else:
+                # 파이프라인 인자도 task 출력도 아닌 값은 상수로 기록
                 params[k] = {"runtimeValue": {"constant": v}}
         spec = {"componentRef": {"name": f"comp-{c.name}"}, "taskInfo": {"name": t.name}, "inputs": {}}
         if arts:
@@ -238,11 +252,13 @@ def edges(ir):
 def toposort(ir):
     """Kahn 알고리즘. 이름순으로 깨서 순서가 항상 같다. 사이클이 있으면 ValueError."""
     tasks = ir["root"]["dag"]["tasks"]
+    # 진입 차수(앞서야 하는 task 수) 계산. Kahn 알고리즘으로 위상 정렬
     indeg = {n: len(s.get("dependentTasks", [])) for n, s in tasks.items()}
     children = {n: [] for n in tasks}
     for n, s in tasks.items():
         for d in s.get("dependentTasks", []):
             children[d].append(n)
+    # 차수 0인 task를 이름순으로 시작. 같은 그래프면 항상 같은 순서
     ready = deque(sorted(n for n, d in indeg.items() if d == 0))
     order = []
     while ready:
@@ -252,6 +268,7 @@ def toposort(ir):
             indeg[c] -= 1
             if indeg[c] == 0:
                 ready.append(c)
+    # 정렬된 task가 전체보다 적으면 사이클이 있다는 뜻
     if len(order) != len(tasks):
         raise ValueError("사이클이 있어 순서를 정할 수 없다")
     return order
@@ -268,8 +285,10 @@ def _sha(path):
 def _call(module, function, kwargs, isolation):
     if isolation == "inprocess":
         fn = getattr(importlib.import_module(module), function)
+        # Component 객체로 감싸졌으면 원래 함수(.fn)를 꺼내 호출한다
         fn = getattr(fn, "fn", fn)
         return fn(**kwargs)
+    # isolation="subprocess": task마다 새 파이썬을 띄워 컴포넌트 함수를 실행한다. 결과 파일 객체는 JSON(이름, 경로)으로 넘겼다가 자식에서 복원
     code = (
         "import json,sys,importlib;from pipelines_ch07_dag import Artifact\n"
         "a=json.loads(sys.argv[1]);m=importlib.import_module(a['module']);f=getattr(m,a['function']);f=getattr(f,'fn',f)\n"
@@ -295,6 +314,7 @@ def run_steps(ir, arguments, pipeline_root, run_id=None, isolation="inprocess"):
     tasks, comps = ir["root"]["dag"]["tasks"], ir["components"]
     execs = ir["deploymentSpec"]["executors"]
     pdefs = ir["root"]["inputDefinitions"]["parameters"]
+    # 호출 인자가 없으면 파이프라인 기본값을 쓴다
     params = {k: arguments.get(k, d["defaultValue"]) for k, d in pdefs.items()}
     produced, failed = {}, set()
     for name in toposort(ir):
@@ -302,6 +322,7 @@ def run_steps(ir, arguments, pipeline_root, run_id=None, isolation="inprocess"):
         comp = comps[spec["componentRef"]["name"]]
         ex = execs[comp["executorLabel"]]["python"]
         rec = {"run_id": run_id, "task": name, "inputs": {}, "outputs": {}}
+        # 앞선 task가 실패하거나 건너뛰어졌으면 이 task도 SKIPPED로 두고 실행하지 않는다
         if any(d in failed for d in spec.get("dependentTasks", [])):
             failed.add(name)
             rec["status"] = "SKIPPED"
@@ -316,6 +337,7 @@ def run_steps(ir, arguments, pipeline_root, run_id=None, isolation="inprocess"):
             kwargs[k] = art
             rec["inputs"][k] = {"uri": art.uri, "sha": _sha(art.uri)}
         for k, d in comp.get("outputDefinitions", {}).get("artifacts", {}).items():
+            # 출력 위치는 <pipeline_root>/<run_id>/<task>/<출력 이름>. run_id가 다르면 같은 task도 다른 위치를 쓰므로 두 실행이 파일을 덮어쓰지 않는다
             uri = Path(pipeline_root) / run_id / name / k
             uri.parent.mkdir(parents=True, exist_ok=True)
             kwargs[k] = Artifact(k, uri)
@@ -326,6 +348,7 @@ def run_steps(ir, arguments, pipeline_root, run_id=None, isolation="inprocess"):
             for k in comp.get("outputDefinitions", {}).get("artifacts", {}):
                 produced[(name, k)] = kwargs[k]
                 rec["outputs"][k] = {"uri": kwargs[k].uri, "sha": _sha(kwargs[k].uri)}
+        # task 안의 모든 예외를 잡아 FAILED로 기록하고 뒤 task를 건너뛴다. 오류 문자열은 200자로 자른다
         except Exception as e:  # noqa: BLE001
             failed.add(name)
             rec["status"] = "FAILED"

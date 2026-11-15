@@ -25,12 +25,14 @@ import ngram_np as ng
 import ngram_torch as nt
 
 OUT = Path(__file__).parent / "results" / "ch02.json"
+# 부사 개수 k는 0..6에서 고르게. 1장(0..8)보다 짧다.
 KS = range(7)
 NS = (1, 2, 3, 4, 5, 6)
 SEEDS = (0, 1, 2)
 N_TRAIN, N_VALID, N_TEST, N_BIG = 20_000, 2_000, 5_000, 200_000
 DELTAS = (1.0, 0.3, 0.1, 0.03, 0.01, 0.003, 0.001, 0.0003, 0.0001)
 LAMBDAS = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99)
+# KN 고정 할인 D. 0.75는 흔히 쓰는 값이며 여기서는 튜닝하지 않는다(모형의 선택).
 D_KN = 0.75
 
 WORDS, STOI = ng.grammar_vocab()
@@ -40,6 +42,7 @@ V, BOS = len(WORDS), STOI[ng.BOS]
 def data(seed, n_train=N_TRAIN):
     # 검증·테스트는 학습 크기와 무관한 별도 생성기에서 뽑는다: 2만/20만 비교가 같은 테스트 문장을 쓴다
     train = ng.make_corpus(n_train, KS, np.random.default_rng(seed))
+    # 학습 크기와 관계없이 같은 평가 문장이 나오도록 별도 시드(seed + 1000)를 쓴다.
     rng_eval = np.random.default_rng(seed + 1000)
     valid = ng.make_corpus(N_VALID, KS, rng_eval)
     test = ng.make_corpus(N_TEST, KS, rng_eval)
@@ -57,15 +60,20 @@ def oracle_ppl(corpus):
     문장 확률 = P(the)=1 · P(주어)=1/16 · Π_j [P(부사를 하나 더 | 지금까지 j개) · 1/12]
               · P(여기서 멈춤 | j=k) · P(동사)=1/8 · P(</s>)=1.  k는 0..6에서 고르게 뽑는다.
     """
+    # K = 가능한 k 값의 수(7). k가 균등이라 각 단계의 조건부 확률이 닫힌 꼴로 나온다.
     K = len(KS)
     logs, T = 0.0, 0
     for toks, vpos, _, _ in corpus:
         k = vpos - 2
+        # 주어: 명사 8종 x 단수/복수 2 = 16가지가 균등.
         lp = np.log(1 / (2 * len(ng.NOUNS)))
         for j in range(k):
+            # j개째까지 나온 뒤 "부사가 하나 더 온다"는 조건부 확률 P(k > j | k >= j) = (K-1-j)/(K-j).
             lp += np.log((K - 1 - j) / (K - j)) + np.log(1 / len(ng.ADVERBS))
+        # k개 뒤 멈출 확률 P(k = j | k >= j) = 1/(K-j) (j = k). 동사는 8종 균등이고 수는 주어가 정해 준다.
         lp += np.log(1 / (K - k)) + np.log(1 / len(ng.VERBS))
         logs += lp
+        # 예측 대상 토큰 수: the, 명사, 부사 k개, 동사, </s> = k + 4 (<s>는 제외).
         T += k + 4
     return float(np.exp(-logs / T))
 
@@ -81,11 +89,14 @@ def e1_e2(seed):
     rows = []
     for n in NS:
         st = ng.sparsity_stats(counts, n, te, BOS)
+        # 같은 카운트에서 차수·평활 방법만 바꿔 모델을 만드는 헬퍼.
         mk = lambda method, **kw: ng.NGramModel(counts, n, V, method=method, cont=cont, **kw)
+        # δ, λ는 검증 세트 PPL이 최소인 값으로 고르고, 보고하는 PPL은 테스트 세트에서 잰다(튜닝 누수 방지).
         d_best = min(DELTAS, key=lambda d: ng.perplexity(mk("add", delta=d), va, BOS))
         l_best = min(LAMBDAS, key=lambda l: ng.perplexity(mk("interp", lam=l), va, BOS))
         rows.append({
             "n": n,
+            # 꽉 찬 표라면 V^n 칸. 실제 채워진 칸(nonzero_cells)과 비교해 희소함을 보인다.
             "dense_cells_V_pow_n": V**n,
             "seen_contexts": len(counts[n]),
             "nonzero_cells": ng.nonzero_cells(counts, n),
@@ -112,6 +123,7 @@ def e3_agreement(seed, n_train):
     out = {}
     for n in NS[1:]:
         m = ng.NGramModel(counts, n, V, method="kn", D=D_KN, cont=cont)
+        # n = 1은 문맥이 없어 수 일치를 낼 수 없으므로 NS[1:]만 쓴다.
         out[str(n)] = {
             "agreement_by_k": {str(k): v for k, v in ng.agreement_accuracy(m, test, STOI, BOS).items()},
             "unseen_context_rate": ng.sparsity_stats(counts, n, te_ids, BOS)["unseen_context_rate"],
@@ -131,6 +143,7 @@ def e4_compute(seed=0):
             c = ng.count_ngrams(tr, n, BOS)
             times.append(time.perf_counter() - t0)
         nz = ng.nonzero_cells(c, n)
+        # 시간은 기계·부하에 의존하므로 중앙값 3회. 칸 수는 결정적이다.
         rows.append({"n": n, "count_seconds_median": float(np.median(times)), "nonzero_cells": nz,
                      "dense_cells": V**n, "dense_float64_bytes": 8 * V**n,
                      "fill_ratio": nz / V**n})
@@ -145,6 +158,7 @@ def e5_torch(seed=0):
     for method, kw in (("add", {"delta": 0.01}), ("interp", {"lam": 0.7}), ("kn", {"D": D_KN})):
         m = ng.NGramModel(counts, 3, V, method=method, cont=cont, **kw)
         rows, ys = nt.rows_and_targets(m, ng.positions(te, 3, BOS))
+        # 같은 모델의 분포 행을 PyTorch cross_entropy로 다시 재서 NumPy 값과 대조한다. max_row_sum_error는 정규화 검사.
         p_np = ng.perplexity(m, te, BOS)
         p_t = nt.perplexity_torch(rows, ys)
         out[method] = {"numpy": p_np, "torch": p_t, "abs_diff": abs(p_np - p_t),
@@ -155,6 +169,7 @@ def e5_torch(seed=0):
 def e6_the(seed=0):
     train, _, _ = data(seed)
     counts, cont = fit(ng.to_ids(train, STOI), 2)
+    # uni = 유니그램 카운트(횟수), con = continuation 카운트(앞 단어 종류 수).
     uni, con = counts[1][()], cont[1][()]
     the = STOI["the"]
     return {
@@ -204,6 +219,7 @@ def main():
     res["oracle_test_ppl_mean"] = _mean([per_seed[str(s)]["oracle_test_ppl"] for s in SEEDS])
     res["test_tokens_mean"] = _mean([per_seed[str(s)]["test_tokens"] for s in SEEDS])
 
+    # 학습 문장 2만 vs 20만(10배): 데이터가 늘면 장거리 일치가 좋아지는지 본다.
     e3 = {"20000": {str(s): e3_agreement(s, N_TRAIN) for s in SEEDS},
           "200000": {str(s): e3_agreement(s, N_BIG) for s in SEEDS}}
     e3_sum = {}
@@ -224,6 +240,7 @@ def main():
     res["total_seconds"] = time.perf_counter() - t_all
 
     OUT.parent.mkdir(exist_ok=True)
+    # allow_nan=False: inf/NaN이 섞이면 저장이 실패한다. MLE PPL의 inf는 앞에서 None으로 바꿔 둔다.
     OUT.write_text(json.dumps(res, indent=2, ensure_ascii=False, allow_nan=False))
     print(json.dumps({"E1_E2_summary": summary, "E3_summary": e3_sum, "E4": res["E4"], "E5": res["E5"],
                       "E6": res["E6"], "total_seconds": res["total_seconds"]}, indent=1, ensure_ascii=False))

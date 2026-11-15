@@ -22,6 +22,7 @@ UNK = "<unk>"
 # ---------------------------------------------------------------- 단어 단위 어휘
 
 def word_freqs(sentences):
+    """문장 목록에서 공백으로 나눈 단어별 등장 횟수(Counter)를 센다."""
     return Counter(w for s in sentences for w in s.split(" "))
 
 
@@ -32,6 +33,7 @@ def word_vocab(freqs, V):
 
 
 def word_tokenize(sentence, vocab):
+    """어휘에 없는 단어를 <unk> 하나로 바꾼다(단어 단위 토크나이저의 한계)."""
     return [w if w in vocab else UNK for w in sentence.split(" ")]
 
 
@@ -44,6 +46,7 @@ def unk_rate(sentences, vocab):
 # ---------------------------------------------------------------- BPE 학습
 
 def _pairs(symbols):
+    """기호 열의 인접 쌍 (s_i, s_{i+1}) 이터레이터."""
     return zip(symbols[:-1], symbols[1:])
 
 
@@ -67,6 +70,7 @@ def learn_bpe_naive(freqs, num_merges, tie="lex"):
     tie="lex": 동률이면 사전순(이 구현의 기본 규칙).
     tie="first": 동률이면 처음 센 쌍. 논문 Algorithm 1의 max(pairs, key=pairs.get)과 같은 동작.
     """
+    # 단어를 (글자..., </w>) 튜플로 두고 단어 빈도 f를 값으로 둔다. 쌍 빈도는 단어 빈도만큼 가중해 센다.
     vocab = {tuple(w) + (EOW,): f for w, f in freqs.items()}
     merges = []
     for _ in range(num_merges):
@@ -77,6 +81,7 @@ def learn_bpe_naive(freqs, num_merges, tie="lex"):
         if not stats:
             break
         if tie == "first":
+            # 동률이면 dict에 먼저 들어온 쌍. 논문 Algorithm 1의 동작을 재현하려는 모드.
             best = max(stats, key=stats.get)
         else:
             best = min(stats, key=lambda p: (-stats[p], p))  # 가장 잦은 쌍, 동률이면 사전순
@@ -100,20 +105,24 @@ def learn_bpe(freqs, num_merges):
         for p in _pairs(w):
             counts[p] += f
             where[p].add(i)
+    # 최대 빈도를 힙에서 꺼내려고 빈도를 음수로 넣는다. 동률은 튜플 비교로 쌍 p의 사전순이 되어 naive의 "lex" 규칙과 맞는다.
     heap = [(-c, p) for p, c in counts.items()]
     heapq.heapify(heap)
     merges = []
     while len(merges) < num_merges and heap:
         negc, best = heapq.heappop(heap)
+        # 힙에는 갱신 전 빈도가 남아 있다. 현재 빈도와 다른 항목은 낡은 것이라 버린다.
         if counts.get(best, 0) != -negc or negc == 0:
             continue  # 낡은 항목
         merges.append(best)
         changed = set()
+        # where[best]: 이 쌍이 한 번이라도 나온 단어 번호. 병합 중 where가 바뀌므로 list로 복사해 순회한다.
         for i in list(where[best]):
             w, f = words[i], fs[i]
             if best not in set(_pairs(w)):
                 continue
             for p in _pairs(w):
+                # 바뀌는 단어의 옛 쌍 빈도를 빼고, 새 쌍 빈도를 더한다(증분 갱신).
                 counts[p] -= f
                 changed.add(p)
             w2 = _merge_word(w, best)
@@ -131,13 +140,17 @@ def learn_bpe(freqs, num_merges):
 # ---------------------------------------------------------------- BPE 적용
 
 class BPETokenizer:
+    """학습한 병합 목록으로 단어를 기호 열로 쪼개고 정수 id로 바꾸는 토크나이저."""
     def __init__(self, train_freqs, merges):
+        # 학습 단어에 나온 글자 집합. 여기 없는 글자는 <unk>.
         self.alphabet = sorted({c for w in train_freqs for c in w})
         self.merges = list(merges)
+        # 병합 순위(작을수록 먼저 배운 것). 적용 시 순위가 낮은 병합부터 쓴다.
         self.ranks = {p: r for r, p in enumerate(self.merges)}
         symbols = self.alphabet + [EOW] + [a + b for a, b in self.merges] + [UNK]
         self.sym2id = {}
         for s in symbols:  # 병합 결과가 이미 있는 기호와 같으면 한 번만 넣는다
+            # setdefault라 중복 기호는 처음 번호를 유지한다. vocab_size = 글자 + </w> + 병합 + <unk> (중복 제외).
             self.sym2id.setdefault(s, len(self.sym2id))
         self.id2sym = {i: s for s, i in self.sym2id.items()}
         self._alpha = set(self.alphabet)
@@ -153,8 +166,10 @@ class BPETokenizer:
             return self._cache[word]
         sym = [c if c in self._alpha else UNK for c in word] + [EOW]
         while len(sym) > 1:
+            # 병합 목록에 없는 쌍은 아주 큰 순위(2^60)를 주어 맨 뒤로 밀어낸다.
             cand = [(self.ranks.get(p, 1 << 60), p) for p in _pairs(sym)]
             r, p = min(cand)
+            # 남은 쌍이 모두 병합 목록에 없으면 종료.
             if r == 1 << 60:
                 break
             sym = _merge_word(sym, p)
@@ -162,12 +177,16 @@ class BPETokenizer:
         return sym
 
     def tokenize(self, sentence):
+        """문장을 공백 단위 단어로 나눠 단어마다 BPE를 적용한 기호 목록."""
         return [t for w in sentence.split(" ") for t in self.apply_bpe(w)]
 
     def encode(self, text):
+        """기호 -> id."""
         return [self.sym2id[t] for t in self.tokenize(text)]
 
     def decode(self, ids):
+        """id -> 문자열. </w>를 공백으로 바꾸고 마지막 공백 하나를 뗀다."""
+        # [:-1]은 마지막 </w>가 만든 끝 공백 하나를 뗀다. 원문 단어 사이가 공백 1개라는 가정에서만 복원이 정확하다.
         return "".join(self.id2sym[i] for i in ids).replace(EOW, " ")[:-1]
 
 

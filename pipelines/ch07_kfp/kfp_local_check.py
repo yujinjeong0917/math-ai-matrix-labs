@@ -23,6 +23,7 @@ import tempfile
 import time
 from pathlib import Path
 
+# kfp와 pyyaml이 필요한 선택 실행 스크립트(docstring 참고). 이 저장소 환경에서는 import 오류가 난다
 import yaml
 import kfp
 from kfp import compiler, dsl, local
@@ -35,6 +36,7 @@ RES = HERE / "results"
 
 
 def compile_ir():
+    # 컴파일 결과를 KFP 버전이 든 파일 이름으로 저장한다
     y = RES / f"kfp_ir_{kfp.__version__}.yaml"
     compiler.Compiler().compile(K.churn_pipeline, package_path=str(y))
     spec = yaml.safe_load(y.read_text())
@@ -42,8 +44,10 @@ def compile_ir():
     return y.name
 
 
+# 연결 실수 두 가지를 일부러 만들어 KFP가 정의 단계에서 거절하는지, 컴파일 단계에서 거절하는지 기록한다
 def wiring_errors():
     @dsl.component(base_image="python:3.12")
+    # 출력 이름이 train_v2로 바뀐 컴포넌트. 뒤에서 옛 이름 train_data로 잇는다
     def prep_renamed(train_v2: Output[Dataset]):
         pass
 
@@ -57,6 +61,7 @@ def wiring_errors():
 
     out = {}
     for case in ("renamed_output", "type_mismatch"):
+        # 어느 시점(definition/compile)에 예외가 났는지 기록하기 위한 표지
         stage = "definition"
         try:
             @dsl.pipeline
@@ -78,6 +83,7 @@ def run_once(root):
     t0 = time.perf_counter()
     K.churn_pipeline(seed=1, n_rows=4000, shift=1.0)
     sec = time.perf_counter() - t0
+    # 가장 최근에 만든 실행 폴더를 수정 시각으로 찾는다
     run_dir = sorted(Path(root).iterdir(), key=lambda p: p.stat().st_mtime)[-1]
     metrics = json.loads((run_dir / "evaluate" / "metrics.json").read_text())
     files = sorted(str(p.relative_to(run_dir)) for p in run_dir.rglob("*") if p.is_file() and p.name != "executor_output.json")
@@ -100,6 +106,7 @@ def main():
            "client_signatures": client_signatures()}
     root = Path(tempfile.mkdtemp(prefix="kfp-ch07-"))
     try:
+        # 클러스터 없이 내 컴퓨터의 하위 프로세스로 실행한다(컨테이너 기동 시간 미포함)
         local.init(runner=local.SubprocessRunner(use_venv=False), pipeline_root=str(root))
         res["runs"] = [run_once(root) for _ in range(3)]
         os.environ["CH07_PREP_FAIL"] = "1"

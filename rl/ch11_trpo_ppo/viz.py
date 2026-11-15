@@ -14,6 +14,7 @@ BLOCKS = " .:-=+*#%@"
 
 
 def spark(xs, top=200.0):
+    # 값 0~top(200)을 글자 농도 10단계로 사상. 최댓값이 top일 때 인덱스가 범위를 넘지 않게 min으로 자른다
     return "".join(BLOCKS[min(len(BLOCKS) - 1, int(len(BLOCKS) * x / (top + 1e-9)))] for x in xs)
 
 
@@ -29,6 +30,7 @@ def main():
     for cfg in ("pg_lr1000", "ppo_noclip_adam0.2", "ppo_eps0.2_adam0.2"):
         for seed in (0, 1):
             r = [x for x in rows if x["config"] == cfg and x["seed"] == seed]
+            # KL이 무한대/NaN이라 None으로 저장된 갱신은 가장 센 표시(99)로 취급
             kl = [x["kl_after_update"] if x["kl_after_update"] is not None else 99.0 for x in r]
             print(f"{cfg} 시드 {seed}")
             print("  리턴 " + spark([x["return"] for x in r]))
@@ -39,6 +41,7 @@ def main():
     for k, v in {**d["E1_E2_E3_summary"], **d["E3_adam_lr_sweep"]}.items():
         line = [" "] * 41
         for f in v["final_per_seed"]:
+            # 최종 리턴 0~200을 5 단위 칸(41칸)에 점으로 찍는다
             line[min(40, int(f / 5))] = "o"
         print(f"{k:>22} |{''.join(line)}| 평균 {v['final_mean']:.1f}, 95% 구간 {v['final_ci95']}")
 

@@ -16,6 +16,7 @@ def algorithm1_verbatim(vocab, num_merges):
     def get_stats(vocab):
         pairs = defaultdict(int)
         for word, freq in vocab.items():
+            # 단어를 "l o w </w>"처럼 공백으로 이은 문자열로 두고, 공백으로 기호를 나눈다.
             symbols = word.split()
             for i in range(len(symbols) - 1):
                 pairs[symbols[i], symbols[i + 1]] += freq
@@ -24,6 +25,7 @@ def algorithm1_verbatim(vocab, num_merges):
     def merge_vocab(pair, v_in):
         v_out = {}
         bigram = re.escape(" ".join(pair))
+        # 쌍의 앞뒤가 공백이거나 문자열 경계일 때만 일치한다. 기호 일부(예: 'ab'의 b와 'bc')가 잘못 바뀌지 않게 한다.
         p = re.compile(r"(?<!\S)" + bigram + r"(?!\S)")
         for word in v_in:
             w_out = p.sub("".join(pair), word)
@@ -35,6 +37,7 @@ def algorithm1_verbatim(vocab, num_merges):
         pairs = get_stats(vocab)
         if not pairs:
             break
+        # 동률이면 먼저 센 쌍(dict 삽입 순서). 이 구현의 learn_bpe_naive(tie='first')와 같은 규칙.
         best = max(pairs, key=pairs.get)
         vocab = merge_vocab(best, vocab)
         out.append(best)

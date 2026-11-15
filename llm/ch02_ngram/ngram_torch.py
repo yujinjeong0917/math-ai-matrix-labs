@@ -18,8 +18,10 @@ import torch.nn.functional as F
 
 def perplexity_torch(rows, targets):
     """rows: (T, V) 확률 분포, targets: (T,) 정답 id. float64로 계산한다."""
+    # 확률 행을 로그로 보내 로짓처럼 넣는다. 정규화된 행이면 cross_entropy 안의 log_softmax가 항등이 된다.
     logp = torch.log(torch.as_tensor(np.asarray(rows), dtype=torch.float64))
     y = torch.as_tensor(np.asarray(targets), dtype=torch.long)
+    # mean NLL의 exp = PPL.
     return math.exp(float(F.cross_entropy(logp, y, reduction="mean")))
 
 

@@ -7,6 +7,8 @@
 - "ref"   자동 참조: 링크, 임베드, 수식 참조, relation, 컴포넌트 인스턴스. 원본이 바뀌면 따라 바뀐다.
 - "human" 사람 확인: 사람이 보고 손으로 옮겨 적는다. 놓칠 수 있다.
 - "auto"  자동화: 사람 확인 간선 가운데 자동화 후보로 고른 것. 자동화가 살아 있으면 따라 바뀐다.
+
+이 파일은 계산 없이 6장 모형의 입력 데이터(항목, 이벤트, 권한 표)와 간단한 조회 함수만 둔다. 모든 확률·시간 값은 가정이다.
 """
 
 # 위치 이름은 "도구:자리" 꼴. 도구는 figma / notion / sheets 셋.
@@ -80,6 +82,7 @@ EVENTS = [
 ]
 
 # 이 주에 함께 일어나는 일(자동화를 깨는 일). 모두 공식 문서에 적힌 동작에서 골랐다.
+# (note 안의 "문서" 인용은 각 도구 문서의 확인일 기준이며, 도구 동작은 바뀔 수 있어 확인 필요)
 WEEK_INCIDENTS = [
     {"day": 2, "kind": "script_edit", "note": "E04 지점은 스크립트가 붙였다. Apps Script 문서: 스크립트 실행과 API 요청은 트리거를 실행하지 않는다."},
     {"day": 3, "kind": "chained_automation", "note": "A2가 만든 할 일은 '할 일 생성 -> 담당자 알림' 자동화를 실행하지 않는다(Notion 도움말)."},
@@ -102,7 +105,7 @@ CAN_EDIT = {"can_edit", "full_access", "editor"}
 
 
 def owner_of(src):
-    """원본 위치의 담당. 권한 표와 짝을 이룬다."""
+    """원본 위치의 담당. 권한 표와 짝을 이룬다. Notion은 Specs/Decisions면 서연(기획), 그 밖(Projects, Tasks)이면 준호로 정한 모형의 규칙이다."""
     tool = src.split(":")[0]
     if tool == "figma":
         return "민지"
@@ -113,7 +116,7 @@ def owner_of(src):
 
 def can_edit(person, location):
     """권한 표에서 person이 location을 고칠 수 있나. 정리 시트(clean)는 사람이 못 고친다는 5장 규칙도 함께 본다."""
-    tool = location.split(":")[0]
+    tool = location.split(":")[0]  # 위치 이름의 앞부분이 도구("figma", "notion", "sheets")
     level = PERMISSIONS.get(person, {}).get(tool)
     if level not in CAN_EDIT:
         return False
@@ -141,6 +144,7 @@ def all_edges(items=None):
 
 
 def count_methods(items=None):
+    """간선을 방식별로 센다({"ref", "human", "auto"} 개수)."""
     out = {"ref": 0, "human": 0, "auto": 0}
     for _, _, _, m in all_edges(items):
         out[m] += 1
@@ -150,7 +154,7 @@ def count_methods(items=None):
 # 첫 화면 손계산: 취소 규정 문구 하나가 네 곳에 있다.
 HAND = {
     "places": ["Notion 스펙", "Figma 상세 화면", "Figma 완료 화면", "운영 시트 안내"],
-    "miss": 0.1,       # 한 곳을 손으로 옮길 때 놓칠 확률(가정)
+    "miss": 0.1,       # 한 곳을 손으로 옮길 때 놓칠 확률(가정). 성공 확률 q = 0.9
     "changes": 12,     # 한 주의 변경 수
     "copy_human": 3,   # 복사 방식: 원본 말고 세 곳을 손으로 고친다
     "rule_human": 1,   # 규칙 방식: 컴포넌트 하나만 손으로, 두 화면은 인스턴스, 시트는 링크

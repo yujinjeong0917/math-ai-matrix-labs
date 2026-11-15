@@ -64,7 +64,9 @@ def e0_hand():
     r, g = 1.0, 0.99
     q_tgt_next = [3.0, 3.4]
     q_now_next = [5.1, 4.8]   # 지금 망은 왼쪽을 더 높게 본다
+    # 식 (DQN): y = r + γ max_a' Q_tgt(s', a')
     y_single = r + g * max(q_tgt_next)
+    # 식 (Double): a* = argmax_a' Q_net(s', a'), y = r + γ Q_tgt(s', a*)
     a_dbl = int(np.argmax(q_now_next))
     y_double = r + g * q_tgt_next[a_dbl]
     return {"coin_max_mean": coins, "coin_closed_form_1_minus_2_half_pow_K": closed,
@@ -283,6 +285,7 @@ def time_one_update(n=2000):
     t = time.time()
     for _ in range(n):
         with torch.no_grad():
+            # 식: y = r + γ max_a' Q_tgt(s', a'). 이 타이밍 비교에서는 종료(done) 항 (1 - F)를 뺐다(F가 모두 0)
             y = Rt + 0.99 * tmodel(S2t).max(1).values
         q = model(St).gather(1, At[:, None]).squeeze(1)
         loss = 0.5 * ((y - q) ** 2).mean()
@@ -298,6 +301,8 @@ def e6_cost(cfg, summary):
     macs = sum(a * b for a, b in zip(sizes[:-1], sizes[1:]))
     fwd = 2 * macs   # 곱하고 더하기 = 2 FLOP
     B = cfg.batch
+    # 환경 한 걸음당 연산: 행동 고르기 순전파 1회(상태 1개) + 고치기(순전파+역전파 약 3배, 상태 batch개)
+    # + 목표 계산 S2 순전파(batch개). Double은 지금 망의 S2 순전파가 batch개 더 든다
     per_step = {
         "act_select_forward": fwd,
         "update_forward_backward_S": 3 * fwd * B,   # 순전파 1 + 역전파 약 2
@@ -337,6 +342,7 @@ def main():
         for row in rows:
             row["info"]["condition"] = "replay_target, 학습 초기"
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        # 평가 판의 행동은 탐험 없이(ε = 0) argmax_a Q(s, a)만 쓴다. 시드 900_000은 학습 중 평가(greedy_episode)와 같은 계열
         run = m.dqn(0, cfg=cfg, **CONDITIONS["replay_target"])
         env = cp.CartPole(900_000, cfg.cap)
         s = env.reset()

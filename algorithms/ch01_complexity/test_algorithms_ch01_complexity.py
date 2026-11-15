@@ -25,13 +25,14 @@ def test_all_methods_agree_on_random_lists():
     for _ in range(500):
         n = rng.randint(0, 30)
         xs = [rng.randint(0, 2 * n + 1) for _ in range(n)]  # 값 범위를 좁혀 중복이 자주 나오게
-        truth = len(set(xs)) < len(xs)
+        truth = len(set(xs)) < len(xs)  # 기준 답: 집합으로 줄이면 길이가 줄어든다
         for m in METHODS:
             assert dup.METHODS[m](xs) is truth, (m, xs)
             assert dup.METHODS[m](xs, dup.Counter()) is truth, (m, xs)
 
 
 def test_pairs_count_is_exactly_n_choose_2_on_distinct_inputs():
+    # 중복이 없으면 모든 쌍을 끝까지 비교하므로 n(n-1)/2 와 정확히 같다(n=0,1 이면 0)
     for n in list(range(0, 40)) + [100, 500]:
         for seed in range(3):
             assert dup.count_ops("pairs", dup.distinct_list(n, seed)) == n * (n - 1) // 2
@@ -56,6 +57,7 @@ def test_msort_comparisons_within_n_log_n():
         c = dup.Counter()
         out = dup._merge_sort(dup.distinct_list(n, 0), c)
         assert out == sorted(out)
+        # 합병 정렬의 비교 수 상한 n*ceil(log2 n). 상한이므로 부등호로 확인한다.
         assert c.comparisons <= n * math.ceil(math.log2(n))
 
 
@@ -66,9 +68,10 @@ def test_counter_does_not_change_answer_with_early_duplicate():
 
 
 def test_timing_summary_shape():
+    # 시간 값 자체는 실행마다 달라 모양(개수, 양수)만 확인한다
     ts, number = tm.time_call(lambda: sum(range(10)), repeats=4, target=0.001)
     assert len(ts) == 4 and number >= 1 and all(t > 0 for t in ts)
-    s = tm.summarize([1.0, 2.0, 3.0, 4.0])
+    s = tm.summarize([1.0, 2.0, 3.0, 4.0])  # 중앙값 (2+3)/2 = 2.5, 최대/최소 = 4
     assert s["min"] == 1.0 and s["max"] == 4.0 and s["median"] == 2.5 and s["max_over_min"] == 4.0
 
 
@@ -79,8 +82,10 @@ def test_page_derived_numbers():
     assert 49995000 / 499500 > 100 and round(49995000 / 499500) == 100
     assert 120 / (16 * math.log2(16)) == 1.875
     assert round((16384 * 16383 / 2) / (16384 * 14)) == 585
+    # 아래 370 은 시드 0, n=64 입력에서 실제로 센 합병 정렬 비교 수(입력이 바뀌면 달라진다). 2016 = 64*63/2
     ms = dup.distinct_list(64, 0)
     assert dup.count_ops("msort", ms) == 370 and 370 / 2016 < 0.2  # "5분의 1도 안"
+    # 점근 표기 정의 확인: n>=2 에서 n^2/4 <= n(n-1)/2 <= n^2/2 (상수 c=1/4, C=1/2, n0=2)
     for n in range(2, 2000):
         assert n * n / 4 <= n * (n - 1) / 2 <= n * n / 2  # c=1/4, C=1/2, n0=2
     assert 16 / 4 <= 6 <= 16 / 2

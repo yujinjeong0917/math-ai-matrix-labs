@@ -13,8 +13,10 @@ from pipelines_ch06_model_np import correct
 
 def by_region(model, table):
     c = correct(model, table)
+    # c는 요청마다 맞힘(1)/틀림(0). 정확도 = 평균. 'all' 한 줄과 지역별 줄을 만든다
     rows = {"all": {"n": int(len(c)), "acc": float(c.mean())}}
     for r, name in enumerate(REGIONS):
+        # 지역 r에 속한 요청만 고르는 마스크. 요청이 하나도 없는 지역이면 mean이 NaN이 된다(이 장 데이터에서는 해당 없음)
         m = table["region"] == r
         rows[name] = {"n": int(m.sum()), "acc": float(c[m].mean())}
     return rows
@@ -47,6 +49,7 @@ def render(name, v1_rows, v2_rows, source, numeric):
         "- 정답(이탈 여부)은 늦게 들어온다. 카나리에서는 정답이 들어온 요청만 센다.",
         "",
         "## 배포 조건",
+        # 카드에 적은 배포 조건은 이 장의 DEFAULT_GUARD(z=3, 최소 50, 올리기 400)와 맞춘 문구다. 값을 바꾸면 이 문구도 같이 고쳐야 한다
         "- 카나리 5%, 전체와 지역별로 v1 대비 오류율 z > 3이면 되돌린다. v2 요청 400개를 넘기면 승인 요청.",
         "- 승인: ml-release-owners",
         "",

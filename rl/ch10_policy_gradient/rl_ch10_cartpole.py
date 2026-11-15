@@ -23,6 +23,7 @@ HALF_LEN = 0.5
 FORCE = 10.0
 TAU = 0.02
 X_LIM = 2.4
+# 12도를 라디안으로(12 * 2pi / 360)
 TH_LIM = 12 * 2 * math.pi / 360
 CAP = 200
 
@@ -46,9 +47,12 @@ class CartPole:
         F = FORCE if a == 1 else -FORCE
         cos, sin = math.cos(th), math.sin(th)
         m_total = M_CART + M_POLE
+        # Barto 등(1983) 동역학: tmp = (힘 + 막대 원심항) / 전체 질량. 아래 두 식의 공통 부분
         tmp = (F + M_POLE * HALF_LEN * th_dot * th_dot * sin) / m_total
+        # 막대 각가속도 식. 4/3은 막대를 균일 막대로 본 관성 항
         th_acc = (GRAVITY * sin - cos * tmp) / (HALF_LEN * (4.0 / 3.0 - M_POLE * cos * cos / m_total))
         x_acc = tmp - M_POLE * HALF_LEN * th_acc * cos / m_total
+        # 오일러 적분: 위치는 옛 속도로, 속도는 새 가속도로 한 걸음(0.02초). 정밀하지 않은 단순 적분(모형의 선택)
         x = x + TAU * x_dot
         x_dot = x_dot + TAU * x_acc
         th = th + TAU * th_dot
@@ -56,5 +60,6 @@ class CartPole:
         self.state = np.array([x, x_dot, th, th_dot])
         self.t += 1
         fell = bool(abs(x) > X_LIM or abs(th) > TH_LIM)
+        # 시간 상한 잘림은 실패가 아님: 쓰러짐과 구분해 반환(TD 부트스트랩이 다르게 처리해야 한다)
         truncated = (not fell) and self.t >= self.cap
         return self.state.copy(), 1.0, fell, truncated

@@ -43,6 +43,9 @@ OUT = HERE / "results" / "chbridge.json"
 LOG_SAMPLES = HERE / "logs" / "chbridge_samples.jsonl"
 LOG_CURVES = HERE / "logs" / "chbridge_curves.jsonl"
 SEEDS = list(range(10))
+# 설정값: 비교 쌍 수, 정책경사(PG) 걸음 수/학습률/묶음/평가 간격, DPO 걸음 수/학습률
+# PG_BETAS, DPO_BETAS = KL 벌점 계수 beta 후보(작을수록 기준 정책에서 멀리 가도 벌이 약하다)
+# TILT_BETAS = 정확한 KL 정규 최적해를 계산할 beta 격자, KL_BUDGETS = 같은 KL 예산 비교용
 N_PAIRS = 500
 PG_STEPS, PG_LR, PG_BATCH, PG_EVAL = 600, 0.01, 64, 10
 PG_BETAS = [0.0, 0.01, 0.1, 1.0]
@@ -62,10 +65,12 @@ def word_str(y):
 
 
 def pairs_for(seed):
+    # 난수 시드를 [seed, 용도번호]로 둬서 용도마다 독립된 난수열(1 = 비교 쌍). 같은 seed면 RLHF와 DPO가 같은 쌍을 쓴다
     return m.make_pairs(N_PAIRS, np.random.default_rng([seed, 1]))
 
 
 def heldout():
+    # 평가용 고정 문장 쌍 4000개. 시드와 무관한 고정값이라 모든 방법이 같은 잣대로 채점된다
     rng = np.random.default_rng(12345)
     A = m.sample(m.zeros_theta(), 4000, rng)
     B = m.sample(m.zeros_theta(), 4000, rng)
@@ -74,6 +79,7 @@ def heldout():
 
 def mean_sd(xs):
     xs = np.asarray(xs, float)
+    # 표본 표준편차(ddof=1, n-1로 나눔). 시드 10개의 요약에 쓴다
     return {"mean": r(xs.mean()), "sd": r(xs.std(ddof=1)) if xs.size > 1 else 0.0, "min": r(xs.min()), "max": r(xs.max())}
 
 
@@ -82,6 +88,7 @@ def interp_at_kl(curve, kl_target):
     ks = [c["kl"] for c in curve]
     rs = [c["r_true"] for c in curve]
     for i in range(1, len(ks)):
+        # KL이 단조롭지 않을 수 있어 목표 KL을 '처음 지나는' 구간만 쓰고, 분모가 0이 되는 평평한 구간은 건너뛴다(함정)
         if ks[i - 1] <= kl_target <= ks[i] and ks[i] > ks[i - 1]:
             w = (kl_target - ks[i - 1]) / (ks[i] - ks[i - 1])
             return rs[i - 1] + w * (rs[i] - rs[i - 1])
@@ -140,6 +147,8 @@ def main():
         "space_size": int(m.V**m.L),
     }
 
+    # 행: 시드마다 단어 개수 보상 모델(점수 6개)을 BT 손실로 적합하고 평가용 4000쌍에서의 정확도를 잰다.
+    # 336칸 모델은 l2 두 값에서 같은 방식으로 적합. 정답 순서는 W의 순서(가 < 나 < ... < 바)
     # ---------- E1 보상 모델 ----------
     rm = {}
     for seed in SEEDS:
@@ -175,7 +184,9 @@ def main():
         for beta in PG_BETAS:
             acc_track = []
 
+            # 콜백: kl_regularized_pg가 eval_every마다 호출. 기본 인자로 현재 반복 변수를 고정해 클로저 늦은 바인딩(late binding)을 피한다
             def log_samples(k, theta, rng, beta=beta, seed=seed, u=u, acc_track=acc_track):
+                # beta=0일 때만: 정책이 바뀐 뒤의 문장 쌍에서 보상 모델 정확도가 떨어지는지(분포 이동) 확인
                 if beta == 0.0:  # 정책이 만든 문장 쌍에서 보상 모델이 여전히 맞히나
                     rr = np.random.default_rng([seed, 9, k])
                     A = m.sample(theta, 1000, rr)
@@ -196,6 +207,7 @@ def main():
                                 "info": {"config": f"rlhf_pg_beta{beta}", "step": k, "text": word_str(y),
                                          "r_true": r(m.true_reward(y[None])[0]) if t == m.L - 1 else None}})
 
+            # E2 본 학습: 식 R = r_hat - beta(log pi - log pi_ref)로 REINFORCE. beta가 탐험 대신 '기준 정책에서 못 벗어나게 하는' 규제 세기
             theta, curve = m.kl_regularized_pg(u, beta, seed, steps=PG_STEPS, batch=PG_BATCH, lr=PG_LR,
                                                eval_every=PG_EVAL, log_samples=log_samples)
             pg_theta_final[(seed, beta)] = theta
@@ -222,6 +234,7 @@ def main():
                       "final_p_top")
         }
         summ[str(b)]["drop_peak_to_final"] = mean_sd([x["peak_r_true"] - x["final_r_true"] for x in rows])
+        # 기준 정책(균등)의 평균 참 보상보다 학습 후가 낮은 시드 수 = 과최적화로 출발점보다 나빠진 경우
         summ[str(b)]["seeds_final_below_ref"] = int(sum(x["final_r_true"] < tab["r_true"].mean() for x in rows))
         summ[str(b)]["top_texts"] = sorted({x["final_top_text"] for x in rows})
         mean_curve = []
@@ -247,7 +260,9 @@ def main():
     for seed in SEEDS:
         Yw, Yl = pairs_for(seed)
         u = m.bt_reward_model_fit(Yw, Yl)
+        # 전체 6^8 문장의 학습 점수 r_hat = c . u. (N,) 배열
         rhat_all = tab["counts"] @ u
+        # 각 beta의 정확한 최적해 pi ∝ pi_ref exp(r_hat/beta) 통계. 정책경사가 닿아야 할 목표값
         tilt_lin[seed] = {str(b): {k: r(v) for k, v in m.tilt_stats(rhat_all, b).items()} for b in TILT_BETAS}
         for b in (0.1, 1.0):
             th_star = m.tilt_theta_linear(u, b)
@@ -262,6 +277,7 @@ def main():
     best_tilt = [max(tilt_lin[s].values(), key=lambda x: x["r_true"]) for s in SEEDS]
     # beta가 곡선을 바꾸나: 같은 KL에서의 참 보상
     kl_targets = [0.1, 0.3, 1.0, 2.0, 4.0]
+    # 같은 KL에서의 참 보상 비교: beta를 바꾸면 곡선 자체가 바뀌는지, 같은 곡선 위를 걷기만 하는지 확인
     same_kl = {}
     for b in PG_BETAS:
         same_kl[str(b)] = {}
@@ -299,9 +315,11 @@ def main():
     for seed in SEEDS:
         Yw, Yl = pairs_for(seed)
         u = m.bt_reward_model_fit(Yw, Yl)
+        # DPO 손실에는 L2가 없으므로 비교 대상 보상 모델도 l2를 거의 0으로 둔다
         u_noreg = m.bt_reward_model_fit(Yw, Yl, l2=1e-10)
         for beta in DPO_BETAS:
             # (a) 표현력을 묶은 DPO
+            # (a) 정책 표현력을 단어 개수 모델과 같게 묶은 DPO. 기대: RLHF 정확한 최적해와 같은 정책(KL 거의 0)
             th_s, a = m.train_dpo_shared(Yw, Yl, beta, steps=3000, lr=0.05)
             th_opt = m.tilt_theta_linear(u_noreg, beta)
             st = m.exact_stats(th_s, u)
@@ -312,6 +330,7 @@ def main():
                 "opt_r_true": r(m.tilt_stats(tab["counts"] @ u_noreg, beta)["r_true"]),
                 "grad_norm_end": float(np.abs(g_last).max()),
                 "beta_a_minus_u_shiftfree": r(np.abs((beta * a - beta * a.mean()) - (u_noreg - u_noreg.mean())).max(), 8)})
+            # (b) 336칸 전체 DPO: 걸음마다 전체 500쌍으로 Adam. d는 평가 쌍에서의 암묵 보상 차이 beta[log(pi/pi_ref)]
             # (b) 336칸 전체 DPO
             theta = m.zeros_theta()
             opt = m.Adam(theta.shape, DPO_LR)
@@ -340,6 +359,7 @@ def main():
                 if k == DPO_STEPS:
                     break
                 _, g = m.dpo_grad_theta(theta, Yw, Yl, beta)
+                # 손실 기울기 g의 반대로(opt.step은 상승이므로 -g)
                 theta = opt.step(theta, -g)
             peak = max(curve, key=lambda c: c["r_true"])
             dpo[str(beta)][seed] = {"curve": curve, "peak_r_true": peak["r_true"], "peak_step": peak["step"],
@@ -372,6 +392,7 @@ def main():
         }
     edge_mean = {str(l2): {str(b): {k: r(np.mean([edge_tilt[str(l2)][s][str(b)][k] for s in SEEDS]))
                                     for k in ("r_true", "kl", "uniq")} for b in TILT_BETAS} for l2 in EDGE_L2}
+    # KL <= K인 점들 중 참 보상의 최댓값. 방법마다 '같은 KL 비용으로 얼마나 높은 참 보상을 얻나'를 공정하게 비교
     # 같은 KL 예산 안에서 얻은 참 보상의 최댓값(시드별로 구해 평균)
     budgets = {}
     for K in KL_BUDGETS:
@@ -420,6 +441,7 @@ def main():
             ts.append(time.perf_counter() - t0)
         return float(np.median(ts) * 1000)
 
+    # E5: 중앙값 시간(ms). 평균 대신 중앙값이라 일시적 지연에 덜 흔들린다. 시간은 이 PC 조건에 따른 값(환경 의존)
     t_rm = timeit(lambda: m.bt_reward_model_fit(Yw, Yl), 50)
     t_pg = timeit(lambda: pg_step(theta))
     t_dpo = timeit(lambda: m.dpo_grad_theta(theta, Yw, Yl, 0.1))
@@ -444,6 +466,7 @@ def main():
         th_v, curve = m.rlvr_pg(seed, steps=200, lr=0.05)
         ls = m.log_softmax(th_v).reshape(-1)[tab["flat"]]
         pv = np.exp(ls.sum(axis=1))
+        # 위치별 KL = sum_y p(y) [log pi(y_t | .) - log(1/6)]. 합하면 전체 KL(연쇄 법칙). 답 위치(t=1)에 KL이 몰리는지 본다
         kl_pos = [float(pv @ (ls[:, t] + math.log(m.V))) for t in range(m.L)]
         rv[seed] = {"final_success": r(curve[-1]["success"]), "final_kl": r(curve[-1]["kl"]),
                     "kl_answer_position": r(kl_pos[1]), "kl_other_positions": r(sum(kl_pos) - kl_pos[1]),
@@ -456,12 +479,14 @@ def main():
         "final_kl": mean_sd([rv[s]["final_kl"] for s in SEEDS]),
         "final_r_true": mean_sd([rv[s]["final_r_true"] for s in SEEDS]),
         "step_success_over_0.9": mean_sd([rv[s]["step_success_over_0.9"] for s in SEEDS]),
+        # 성공률 1이 되려면 둘째 단어가 문제에 따라 확정돼야 하는데, 문제(첫 단어)는 균등이라 KL 하한 = log 6(둘째 단어가 6가지에서 1가지로 좁혀지는 정보량)
         "min_kl_for_success1": r(math.log(6), 4),
         "kl_answer_position": mean_sd([rv[s]["kl_answer_position"] for s in SEEDS]),
         "kl_other_positions": mean_sd([rv[s]["kl_other_positions"] for s in SEEDS]),
         "per_seed": {s: {k: v for k, v in x.items() if k != "curve"} for s, x in rv.items()},
     }
 
+    # 손으로 쓴 기울기와 autograd의 상대 오차를 잰다(작을수록 일치). 상대 오차 = 최대 절대차 / 최대 절대값
     # ---------- E7 NumPy vs PyTorch ----------
     Yw, Yl = pairs_for(3)
     rng = np.random.default_rng(5)
@@ -496,6 +521,7 @@ def main():
     # ---------- E8 재현 ----------
     Yw, Yl = pairs_for(0)
     u = m.bt_reward_model_fit(Yw, Yl)
+    # 같은 seed로 두 번 돌려 숫자가 비트 단위로 같은지(재현성) 확인. 난수 생성기를 seed로만 만들기 때문에 같아야 한다
     _, c1 = m.kl_regularized_pg(u, 0.0, 0, steps=100, lr=PG_LR, eval_every=50)
     _, c2 = m.kl_regularized_pg(u, 0.0, 0, steps=100, lr=PG_LR, eval_every=50)
     res["E8_repeat"] = {"identical": all(a["r_true"] == b["r_true"] and a["kl"] == b["kl"] for a, b in zip(c1, c2)),

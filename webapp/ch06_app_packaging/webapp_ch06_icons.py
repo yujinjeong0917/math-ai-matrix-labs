@@ -24,20 +24,24 @@ def _chunk(kind, data):
 
 def make_icon(size):
     """파란 바탕 가운데에 흰 카드 한 장. 카드는 가운데 60% 안쪽이라 둥글게 잘려도 남는다."""
+    # 카드는 가로·세로 20%~80% 구간(가운데 60%). 아이콘이 둥글게 잘려도(마스커블) 카드가 남게 하는 안전 영역.
     lo, hi = int(size * 0.2), int(size * 0.8)
     rows = []
     for y in range(size):
+        # PNG 줄마다 맨 앞에 필터 종류 1바이트(0 = 필터 없음).
         row = bytearray([0])  # 줄마다 필터 0(그대로)
         for x in range(size):
             row += bytes(WHITE if lo <= x < hi and lo <= y < hi else BLUE)
         rows.append(bytes(row))
     raw = b"".join(rows)
+    # IHDR: 가로, 세로(4바이트 빅엔디언), 비트 깊이 8, 색 유형 2(RGB), 압축 0, 필터 0, 인터레이스 0.
     ihdr = struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)  # 8비트 RGB
     return PNG_SIGNATURE + _chunk(b"IHDR", ihdr) + _chunk(b"IDAT", zlib.compress(raw, 9)) + _chunk(b"IEND", b"")
 
 
 def png_size(data):
     """PNG 바이트에서 (가로, 세로)를 읽는다. PNG가 아니면 None."""
+    # IHDR은 서명(8바이트) + 길이(4) + 종류(4) 다음이라 가로·세로는 16~24바이트.
     if len(data) < 24 or data[:8] != PNG_SIGNATURE or data[12:16] != b"IHDR":
         return None
     return struct.unpack(">II", data[16:24])

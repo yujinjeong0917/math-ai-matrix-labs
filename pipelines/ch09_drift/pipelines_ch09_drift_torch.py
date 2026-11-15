@@ -7,6 +7,7 @@ def mmd2_unbiased(x, y, sigma):
     x = torch.as_tensor(x, dtype=torch.float64)
     y = torch.as_tensor(y, dtype=torch.float64)
     g = 2.0 * sigma * sigma
+    # cdist는 거리(제곱 전)를 주므로 제곱해 가우스 커널 exp(-d^2/(2 sigma^2))로 만든다
     kxx = torch.exp(-torch.cdist(x, x).pow(2) / g)
     kyy = torch.exp(-torch.cdist(y, y).pow(2) / g)
     kxy = torch.exp(-torch.cdist(x, y).pow(2) / g)

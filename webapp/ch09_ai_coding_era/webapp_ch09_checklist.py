@@ -37,6 +37,7 @@ CH08_MANUAL = HERE / "data" / "ch08_manual_2026-10-10.json"
 CH08 = WEBAPP / "ch08_platform_choice"
 CH08_RESULT = CH08 / "results" / "ch08.json"
 
+# 앞 장 모듈(webapp_chNN_*)을 import하려고 해당 폴더를 탐색 경로에 넣는다. 이미 있으면 중복해서 넣지 않는다
 for _d in (CH[2], CH[6], CH[7]):
     if str(_d) not in sys.path:
         sys.path.insert(0, str(_d))
@@ -54,7 +55,7 @@ SERVER_ONLY_MARKERS = {
     "하루 사용 한도 설정 이름": "daily_limit_per_user",
 }
 
-# 두 판이 가리키는 폴더
+# 두 판이 가리키는 폴더. 첫 판은 장마다의 "잘못된 예시", 출시 후보는 "고친 예시"를 모은 것(위 docstring 참고)
 FIRST = {
     "public": CH[1] / "editor" / "public",
     "builds": [CH[2] / "project" / "dist_mistake", CH[1] / "editor" / "public", CH[3] / "app" / "public_before"],
@@ -70,6 +71,7 @@ RELEASE = {
 
 
 def rel(p):
+    # 근거 표기를 항상 webapp/ 기준 상대 경로(슬래시)로 통일한다(OS에 따라 달라지지 않게)
     return Path(p).relative_to(WEBAPP).as_posix()
 
 
@@ -87,6 +89,7 @@ def sha256(path):
 
 def get(d, path):
     """'e3_rls[0].rows' 같은 위치로 JSON 값을 꺼내요."""
+    # 경로 문법: 점은 키, 대괄호는 리스트 인덱스. 예: "e3_rls[0].rows" -> d["e3_rls"][0]["rows"]
     cur = d
     for part in path.replace("]", "").split("."):
         name, *idx = part.split("[")
@@ -114,23 +117,27 @@ def ch08_refs():
             "c8_account_cost": {k: r8["e3_fixed"][k]["first_year_cash"] for k in ("web_only", "android", "ios_no_mac")},
         }
     except (KeyError, IndexError, TypeError, json.JSONDecodeError):
+        # 8장 결과 모양이 바뀌어도 9장 전체가 죽지 않게 참고값만 포기한다(참고값은 판정에 쓰이지 않는다)
         return None
 
 
 # ---------- 다시 검사 ----------
 
 def public_bytes(folder):
+    # 정렬해서 이어 붙이므로 파일 순서가 달라도 결과가 같다(재현성). 바이트 단위로 읽어 인코딩 문제를 피한다
     return b"".join(p.read_bytes() for p in sorted(Path(folder).rglob("*")) if p.is_file())
 
 
 def markers_in(folder):
     blob = public_bytes(folder)
+    # 겹치지 않는 출현 횟수. 0이어야 통과
     return {k: blob.count(v.encode()) for k, v in SERVER_ONLY_MARKERS.items()}
 
 
 def source_map_traces(folder):
     folder = Path(folder)
     maps = sorted(rel(p) for p in folder.rglob("*.map"))
+    # 변수 이름이 lines지만 실제로는 sourceMappingURL 줄이 들어 있는 .js 파일 경로 목록이다
     lines = sorted(rel(p) for p in folder.rglob("*.js") if b"sourceMappingURL" in p.read_bytes())
     return {"map_files": maps, "sourcemap_lines": lines}
 
@@ -138,6 +145,7 @@ def source_map_traces(folder):
 def html_comments(folder):
     out = {}
     for p in sorted(Path(folder).rglob("*.html")):
+        # "<!--" 개수만 센다. 조건부 주석이나 문자열 안의 같은 글자도 세는 단순 검사
         n = p.read_text(encoding="utf-8").count("<!--")
         if n:
             out[rel(p)] = n
@@ -154,6 +162,7 @@ def key_scan(folders):
 
 def manifest_check(path):
     text = Path(path).read_text(encoding="utf-8")
+    # 출시 후보 manifest는 같은 폴더에서 아이콘 파일 존재까지 확인하고, 첫 판 초안은 폴더가 없어 파일 존재 검사를 생략한다
     public_dir = path.parent if path.name == "manifest.json" else None
     f = M.check_manifest(text, public_dir=public_dir)
     return {"installable": M.installable_in_chromium(f), "failed": M.failed(f)}
@@ -170,12 +179,15 @@ def android_check(folder):
 
 # ---------- 점검표 ----------
 
+# 점검 항목 한 줄. first/release: True 통과, False 고칠 것, None 판정 안 함
+# gate: "막음"은 출시 전 반드시 고칠 것, "확인"은 이유를 적으면 넘어갈 수 있는 것
 def item(ch, iid, gate, question, how, first, release, evidence, value=None, note=""):
     return {"ch": ch, "id": iid, "gate": gate, "question": question, "how": how,
             "first": first, "release": release, "evidence": evidence, "value": value, "note": note}
 
 
 def build_items():
+    # 앞 장 1~7의 결과 JSON을 모두 읽는다. 앞 장 실험을 아직 돌리지 않았으면 여기서 파일 없음 오류가 난다
     r = {n: load_result(n) for n in CH}
     items = []
 
@@ -213,6 +225,7 @@ def build_items():
 
     # 4장 어디서 돌릴지
     dec = {d["id"]: d for d in r[4]["e0_decisions"]}
+    # 4장 결정 중 서버에서 돌리기로 한 기능 이름
     server = sorted(d["name"] for d in dec.values() if d["where"] == "서버")
     calls_direct = r[3]["e2_keys"]["before"]["calls_ai_provider_directly"]
     items.append(item(4, "c4_secret_on_server", "막음",
@@ -232,6 +245,7 @@ def build_items():
 
     # 5장 RLS·한도
     lay = r[5]["e0_layout"]
+    # 5장: 아래 세 항목은 출시 후보 쪽만 판정한다(첫 판은 5장에 대응하는 "잘못된 예시"가 없어 None)
     items.append(item(5, "c5_key_in_function", "막음", "AI 키는 Edge Function 환경 변수에만 있고 정적 파일·함수 코드에는 값이 없다",
                       "결과 인용", None, (not lay["bundle_has_ai_key"]) and (not lay["function_has_key_value"]) and lay["function_reads_env"],
                       f"{rel(result_path(5))}: e0_layout", {k: lay[k] for k in ("bundle_has_ai_key", "function_has_key_value", "function_reads_env")}))
@@ -242,6 +256,7 @@ def build_items():
     items.append(item(5, "c5_storage_policies", "막음", "파일 보관함에도 정책이 있어, 남의 폴더 올리기·로그인 없는 올리기 같은 경우가 막힌다",
                       "결과 인용", None, r[5]["e1_blocked_with_policies"] > 0,
                       f"{rel(result_path(5))}: e1_blocked_with_policies", {"blocked_with_policies": r[5]["e1_blocked_with_policies"]}))
+    # 월 사용자 100명 행만 뽑는다(없으면 IndexError)
     grid100 = [g for g in r[5]["e6_costs"]["grid"] if g["mau"] == 100][0]
     items.append(item(5, "c5_free_tier_month", "확인", "무료 한도가 넘치는 달과 상업적 사용에 드는 첫 달 비용을 내 숫자로 계산했다",
                       "사람 확인", None, None, f"{rel(result_path(5))}: e6_costs",
@@ -284,6 +299,7 @@ def build_items():
                       {"human_items": ar["signing_human_total"]}))
 
     # 8장 플랫폼·수수료 (판단이라 사람 확인, 8장 결과가 있으면 참고값을 덧붙임)
+    # 8장 결과가 없으면 참고값 없이 진행(None -> 빈 dict)
     refs = ch08_refs() or {}
     for row in json.loads(CH08_MANUAL.read_text(encoding="utf-8"))["items"]:
         value = {"facts": row.get("facts"), "ch08": refs.get(row["id"])}
@@ -299,6 +315,7 @@ def build_items():
 
 
 def tally(items):
+    # auto: 기계가 판정하는 항목(다시 검사 + 결과 인용). first가 None인 자동 항목은 첫 판 통계에서 뺀다
     auto = [i for i in items if i["how"] != "사람 확인"]
     with_first = [i for i in auto if i["first"] is not None]
     manual = [i for i in items if i["how"] == "사람 확인"]
@@ -327,6 +344,7 @@ def tally(items):
 
 def as_csv_rows(items):
     def mark(v):
+        # 값 -> 표 표시 글자. bool과 None 이외의 값이 오면 KeyError
         return {True: "통과", False: "고칠 것", None: "-"}[v]
     head = ["장", "id", "막음/확인", "점검", "확인 방법", "첫 판", "출시 후보", "근거"]
     rows = [head]

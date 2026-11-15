@@ -29,6 +29,7 @@ OUT = HERE / "results" / "ch02.json"
 def e0_hand():
     n, h, meta = H.read_safetensors_header(H.BASE / "safetensors_headers" / "model-00001-of-00004.header.bin")
     t = h["model.embed_tokens.weight"]
+    # 임베딩 행렬 (어휘 크기, hidden_size). 바이트 = 숫자 개수 x 2(BF16)
     rows, cols = t["shape"]
     return {"header_len": n, "metadata": meta, "name": "model.embed_tokens.weight", "dtype": t["dtype"],
             "shape": t["shape"], "numbers": rows * cols, "bytes": rows * cols * 2, "data_offsets": t["data_offsets"],
@@ -46,11 +47,13 @@ def e1_shards():
         st = H.header_stats(s["header"])
         size = src["shard_file_sizes"][f]
         rows.append({"file": f, "header_len": s["n"], **st, "file_size": size,
+                     # 파일 크기 = 8바이트 + 헤더 + 텐서 값 바이트. 저장소에 적어 둔 실제 파일 크기와 대조
                      "file_size_matches": size == 8 + s["n"] + st["bytes"]})
         names |= set(s["header"])
     total_params = sum(r["params"] for r in rows)
     total_bytes = sum(r["bytes"] for r in rows)
     wm = idx["weight_map"]
+    # index.json의 weight_map이 말하는 파일에 그 텐서가 실제로 있는지
     placed_ok = all(name in shards[wm[name]]["header"] for name in wm)
     return {"rows": rows, "tensors": len(names), "params": total_params, "bytes": total_bytes,
             "file_bytes": sum(r["file_size"] for r in rows),
@@ -77,6 +80,7 @@ def e3_config():
     st = H.special_tokens(H.load_json(H.BASE / "tokenizer_config.json"))
     return {"base_readings": H.config_readings(b), "diff_base_vs_instruct": H.dict_diff(b, i),
             "keys": len(b), "tokenizer_total": tc["total"], "vocab_size": b["vocab_size"],
+            # 임베딩 행 수(vocab_size)가 토크나이저 실제 토큰 수보다 큰 만큼(쓰이지 않는 행)
             "unused_rows": b["vocab_size"] - tc["total"], "max_special_id": max(st["table"]),
             "vocab_size_div_128": b["vocab_size"] / 128}
 
@@ -104,11 +108,13 @@ def e5_template():
     checks = {}
     for key, case in fx["cases"].items():
         model, name, agp = key.split("|")
+        # fixture 키는 '모델|메시지 이름|add_generation_prompt' 형식. 이 장의 렌더러가 jinja2 결과(fixture)와 같은지 대조
         ds = H.QWEN25_DEFAULT_SYSTEM["base" if model == "base" else "instruct"]
         mine = H.render_qwen25(msgs[name], agp == "True", ds)
         checks[key] = {"matches_jinja2": mine == case["text"], "n_tokens": case["n_tokens"], "chars": len(mine),
                        "im_start": H.count_marker(mine, "<|im_start|>"), "im_end": H.count_marker(mine, "<|im_end|>")}
     p = fx["pieces"]
+    # 토큰 수는 라이브러리로 한 번 잰 값을 fixture에서 읽는다(이 장 코드가 토크나이저를 돌리지 않는다)
     full = fx["cases"]["inst|with_system|False"]["n_tokens"]
     return {"jinja2": fx["jinja2"], "tokenizers": fx["tokenizers"], "checks": checks,
             "all_match": all(c["matches_jinja2"] for c in checks.values()),
@@ -123,6 +129,7 @@ def e5_template():
 def e6_map():
     s = H.load_sources()
     deps = dict(s["requires_dist"])
+    # torch 선택 의존 항목은 지도에서 뺀다
     deps.pop("transformers_extra_torch")
     return {"stages": H.stage_map(s), "dep_layers": H.topo_order(deps),
             "versions": {l["name"]: l["version"] for l in s["libraries"]}}
@@ -138,6 +145,7 @@ def e7_toy_safetensors():
         back = H.read_tensor(p, "embed.weight")
         size = p.stat().st_size
     return {"header_len": n, "header": h, "metadata": meta, "file_size": size,
+            # F16 6개(2바이트씩) + F32 2개(4바이트씩)
             "file_size_check": size == 8 + n + 6 * 2 + 2 * 4, "embed_back": back}
 
 

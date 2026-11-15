@@ -12,11 +12,13 @@ VARIANT_NAMES = {"A": "방어 없음", "B": "보내기 전에 상태 조회", "C
 
 
 def main():
+    # 심은 장애 주문 {3, 5, 7}. 변형이 막은 수 = 심은 수(3) - 두 번 지급된 주문 수.
     planted = sorted(LATE_REPLY_ORDERS | DUPLICATE_MESSAGE_ORDERS)
     variants = {}
     for v in "ABCD":
         refunds, total, extra = run_variant(v)
         payouts = simulate(v).payouts
+        # 지급 목록에서 같은 주문이 2번 이상 나온 주문번호. README의 막은 수 A 0, B 2, C 3, D 0과 대응.
         doubled = sorted({o for o, _ in payouts if sum(1 for p, _ in payouts if p == o) > 1})
         variants[v] = {"name": VARIANT_NAMES[v], "refund_count": refunds, "total_paid": total,
                        "extra_over_correct": extra, "blocked_of_planted": len(planted) - len(doubled),

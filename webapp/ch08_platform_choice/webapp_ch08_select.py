@@ -36,6 +36,7 @@ class Target:
 
 def load_share(country):
     """StatCounter 월별 모바일 OS 비율(웹 페이지뷰 기준). 마지막 달 값과 12개월 범위."""
+    # 알 수 없는 국가는 전 세계(WW) 파일로 대체한다
     path = SHARE_DIR / COUNTRY_FILE.get(country, COUNTRY_FILE["WW"])
     rows = list(csv.DictReader(path.open(encoding="utf-8")))
     a = [float(r["android"]) for r in rows]
@@ -66,6 +67,7 @@ def _web(t):
                            "안드로이드 크롬은 되고, iPhone은 홈 화면에 추가한 웹앱에서만(iOS 16.4+) 사용자 동작에 이어 권한을 물을 수 있어요",
                            ["webkit_push_164"]))
     if "bluetooth" in t.features:
+        # 기기를 우리가 고르는 행사장이면 Web Bluetooth를 지원하는 기기로 맞출 여지가 있어 "미충족" 대신 "확인 필요"(모형의 선택)
         st = NO if not t.devices_chosen_by_us else CHECK
         items.append(_item("블루투스 기기 연결", st,
                            "Safari(iOS 포함)는 Web Bluetooth를 지원하지 않아요. 손님 iPhone에서는 안 돼요",
@@ -82,6 +84,7 @@ def _android(t):
                            ["android_studio_req"]))
     else:
         items.append(_item("개발 장비", NO, "Android Studio를 돌릴 컴퓨터가 없어요", ["android_studio_req"]))
+    # 실기기가 없다고 막지는 않는다(에뮬레이터 대안이 있어 확인 필요로만 둔다)
     items.append(_item("실기기 시험", OK if t.has_android_phone else CHECK,
                        "가진 안드로이드 폰으로 시험해요" if t.has_android_phone else "에뮬레이터로 시작하고 실기기를 빌릴 곳을 정해요", []))
     items.append(_item("플레이 개발자 계정", OK, "한 번만 내는 등록비 25달러", ["google_reg_fee"]))
@@ -151,6 +154,7 @@ def evaluate(t):
     out = []
     for p in PLATFORMS:
         items = RULES[p](t)
+        # 후보 판정은 "미충족 0건"뿐이다. 확인 필요가 많아도 후보로 남는다
         counts = {s: sum(1 for i in items if i["status"] == s) for s in (OK, NO, CHECK)}
         out.append({"platform": p, "candidate_now": counts[NO] == 0, "counts": counts, "items": items})
     shares = [load_share(c) for c in t.countries]

@@ -10,6 +10,11 @@ Figma를 띄우지 않는 모형이다. 표준 라이브러리만 쓴다.
 - 답을 진짜 의도(truth)와 비교해 네 갈래로 나눈다.
   correct(정보가 있고 맞음) / misread(정보는 있었는데 틀림) /
   guessed_right(정보가 없어 추측했는데 맞음) / guessed_wrong(정보가 없어 추측했는데 틀림)
+
+입력: 질문 20개(QUESTIONS), 화면 x 상태 표(REQUIRED_STATES), 전환 목록, 넘겨주는 방식 다섯 가지의 패키지 dict.
+출력: score가 돌려주는 네 갈래 개수와 질문별 분류, 완성도(그린 칸 / 필요한 칸), 질문 왕복 수. 단위는 개수.
+모형의 단순화: 개발자의 추측은 질문마다 고정된 한 값이고, 답은 문자열·숫자의 정확 일치로만 채점한다(부분 점수 없음).
+테스트의 기대값(상태 11칸, 이미지 방식 (3, 3, 2, 12), 체크리스트 20/20 등)이다(장 본문 숫자와의 대응은 README로 확인 필요).
 """
 
 SCREENS = ["S01", "S02", "S03", "S04"]
@@ -52,7 +57,7 @@ FULL_TRANSITIONS = [
     (("S03", "오류"), ("S03", "기본"), "시간 다시 고르기(입력값 유지)"),
     (("S04", "기본"), ("S01", "로딩"), "목록으로(새로 불러오기)"),
 ]
-START = ("S01", "로딩")  # 앱을 열면 목록을 불러오는 중부터 시작한다
+START = ("S01", "로딩")  # 앱을 열면 목록을 불러오는 중부터 시작한다(checks.py의 도달 검사가 이 노드에서 출발한다)
 
 # 메신저로 보낸 설명에 들어 있던 전환. 이미지에는 기본 상태만 있으니 기본끼리만 잇는다.
 MESSENGER_TRANSITIONS = [
@@ -61,6 +66,7 @@ MESSENGER_TRANSITIONS = [
     (("S03", "기본"), ("S04", "기본"), "확정하면 완료"),
 ]
 
+# 디자인 토큰: 값에 이름을 붙인 것(이름이 있어야 값이 바뀔 때 구현 쪽이 따라온다). 단위 px, 색은 16진수
 TOKENS = {
     "space.4": 16,
     "space.2": 8,
@@ -71,6 +77,7 @@ TOKENS = {
     "color.text.subtle": "#6B7280",
 }
 
+# needs 키 형식: measure:치수 / font:글자 / color:색 / copy:문구 / state:화면:상태 / variant:변형 / edge:출발>도착 / hit:터치영역
 # 질문 20개. needs: 답에 필요한 정보 키. truth: 디자이너의 의도. guess: 정보가 없을 때 개발자가 쓰는 고정 추측.
 QUESTIONS = [
     {"id": "Q01", "cat": "치수", "screen": "S01", "q": "목록 셀 좌우 여백", "needs": ["measure:cell.pad"], "truth": 16, "guess": 16},
@@ -97,21 +104,24 @@ QUESTIONS = [
 
 
 def node_key(n):
+    """(화면, 상태) 노드를 "S01:로딩" 같은 문자열로."""
     return f"{n[0]}:{n[1]}"
 
 
 def edge_key(a, b):
+    """간선 키 "edge:출발>도착". 질문의 needs와 패키지 info가 이 키로 만난다."""
     return f"edge:{node_key(a)}>{node_key(b)}"
 
 
 def required_cells():
+    """화면마다 꼭 필요한 (화면, 상태) 칸 11개."""
     return [(s, st) for s in SCREENS for st in REQUIRED_STATES[s]]
 
 
 def completeness(drawn):
     """정의된 칸 수 / 필요한 칸 수. drawn은 (화면, 상태) 모음."""
     req = required_cells()
-    have = sum(1 for c in req if c in set(drawn))
+    have = sum(1 for c in req if c in set(drawn))  # 필요한 칸이 아닌 것을 그려도 분자에 안 센다
     return have, len(req)
 
 
@@ -139,10 +149,12 @@ def _measures(scale):
 
 
 def _colors():
+    """색 값을 있는 그대로 읽을 수 있는 정보(이미지에서도 색은 찍어 볼 수 있다는 가정)."""
     return {"color:primary": TOKENS["color.primary"], "color:subtle": TOKENS["color.text.subtle"]}
 
 
 def _full_state_info():
+    """상태·변형 질문의 진짜 답. 모든 상태를 그린 파일에서는 이 정보가 다 보인다고 가정한다."""
     info = {}
     for q in QUESTIONS:
         for k in q["needs"]:
@@ -152,6 +164,7 @@ def _full_state_info():
 
 
 def _edges(transitions, behavior_truth):
+    """전환 목록을 "간선 키 -> 동작 설명" 정보로 바꾼다. 동작 질문의 truth가 있으면 그 설명을, 없으면 "연결됨"만 안다."""
     info = {}
     for a, b, _ in transitions:
         k = edge_key(a, b)
@@ -160,11 +173,13 @@ def _edges(transitions, behavior_truth):
 
 
 def _behavior_truth():
+    """동작 질문(cat == "동작")의 needs 키 -> truth."""
     return {q["needs"][0]: q["truth"] for q in QUESTIONS if q["cat"] == "동작"}
 
 
 def package_image(scale_note):
     """이미지(2배로 내보낸 PNG) + 메신저 설명. scale_note가 False면 '2배'라는 말이 없다."""
+    # 2배로 내보낸 PNG인데 "2배"라는 설명이 없으면 개발자가 32픽셀을 32px로 읽는다(실제 16px) -> 치수 3개가 misread
     read_scale = 1 if scale_note else 2  # 개발자가 픽셀을 CSS px로 읽는 배율 오차
     info = {}
     info.update(_measures(read_scale))
@@ -219,6 +234,7 @@ def package_devmode(file_complete):
 
 
 def all_packages():
+    """비교 대상 다섯 패키지(이미지 2종, 체크리스트, Dev Mode 2종)."""
     return [package_image(False), package_image(True), package_checklist(),
             package_devmode(False), package_devmode(True)]
 
@@ -226,6 +242,7 @@ def all_packages():
 # ---------------------------------------------------------------- 채점
 
 def answer(q, pkg):
+    """(답, 정보가 있었나). needs가 여러 키면 모두 있어야 답할 수 있고, 답은 첫 키의 값이다."""
     info = pkg["info"]
     if all(k in info for k in q["needs"]):
         return info[q["needs"][0]], True
@@ -233,6 +250,7 @@ def answer(q, pkg):
 
 
 def classify(q, pkg):
+    """네 갈래 분류. 정보가 있을 때만 correct/misread, 없을 때는 고정 추측의 맞고 틀림으로 나눈다."""
     val, had = answer(q, pkg)
     ok = val == q["truth"]
     if had:
@@ -241,6 +259,7 @@ def classify(q, pkg):
 
 
 def score(pkg):
+    """패키지 하나의 네 갈래 개수와 질문별 분류. unanswerable = 추측으로 답한 수, wrong_total = 틀린 총합."""
     out = {"correct": 0, "misread": 0, "guessed_right": 0, "guessed_wrong": 0}
     per_q = {}
     for q in QUESTIONS:
@@ -254,6 +273,7 @@ def score(pkg):
 
 
 def by_category(pkg):
+    """질문 분류(치수·글자·색·문구·상태·동작·접근성)별 문항 수, 답할 수 없는 수, 틀린 수."""
     cats = {}
     for q in QUESTIONS:
         c = classify(q, pkg)
@@ -286,7 +306,7 @@ def designer_cost(pkg):
 
 # ---------------------------------------------------------------- 토큰 이름 vs 값 복사
 
-BUTTON_SITES = 7  # 2장과 같은 버튼 7개(목록 4, 상세·예약·완료 각 1)
+BUTTON_SITES = 7  # 2장과 같은 버튼 7개(목록 4, 상세·예약·완료 각 1). 구현 코드에서 버튼 색을 쓰는 곳의 수로 가정
 
 
 def token_change_follow(token_names, new_value="#0A6B4B"):
@@ -295,6 +315,7 @@ def token_change_follow(token_names, new_value="#0A6B4B"):
     tokens = {"color.primary": TOKENS["color.primary"]}
     sites = ["var:color.primary" if token_names else TOKENS["color.primary"] for _ in range(BUTTON_SITES)]
     tokens["color.primary"] = new_value  # 디자인 쪽에서 토큰 값 변경
+    # "var:" 접두사(4글자)를 떼고 토큰 값을 찾는다. 복사한 색 값(접두사 없음)은 새 값이 반영되지 않는다
     rendered = [tokens[s[4:]] if s.startswith("var:") else s for s in sites]
     return {"follow": sum(v == new_value for v in rendered), "stale": sum(v != new_value for v in rendered),
             "edit_locations": 1 if token_names else BUTTON_SITES}

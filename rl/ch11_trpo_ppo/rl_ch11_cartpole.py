@@ -14,8 +14,10 @@ import math
 
 import numpy as np
 
+# 단위: 중력 m/s^2, 질량 kg, 길이 m, 힘 N, 시간 간격 s
 GRAVITY, M_CART, M_POLE, HALF_LEN, FORCE, TAU = 9.8, 1.0, 0.1, 0.5, 10.0, 0.02
 TOTAL_M = M_CART + M_POLE
+# 막대의 질량 x 반길이(운동 방정식에 반복해 나오는 곱)
 POLE_ML = M_POLE * HALF_LEN
 THETA_LIMIT = 12 * 2 * math.pi / 360
 X_LIMIT = 2.4
@@ -24,16 +26,19 @@ MAX_STEPS = 200
 
 def step(state, action):
     """state: (n, 4) = [x, x_dot, theta, theta_dot], action: (n,) 0=왼쪽 1=오른쪽. 반환: 다음 상태, 끝남 여부."""
+    # state (n,4)를 전치해 네 성분을 각각 (n,)로 푼다. 여러 판을 한꺼번에 계산
     x, x_dot, th, th_dot = state.T
     force = np.where(action == 1, FORCE, -FORCE)
     cos, sin = np.cos(th), np.sin(th)
     temp = (force + POLE_ML * th_dot**2 * sin) / TOTAL_M
     th_acc = (GRAVITY * sin - cos * temp) / (HALF_LEN * (4.0 / 3.0 - M_POLE * cos**2 / TOTAL_M))
     x_acc = temp - POLE_ML * th_acc * cos / TOTAL_M
+    # 오일러 적분: 위치는 옛 속도로, 속도는 이번 가속도로 갱신(Gymnasium 기본 방식). (n, 4)
     nxt = np.stack([x + TAU * x_dot, x_dot + TAU * x_acc, th + TAU * th_dot, th_dot + TAU * th_acc], axis=1)
     done = (np.abs(nxt[:, 0]) > X_LIMIT) | (np.abs(nxt[:, 2]) > THETA_LIMIT)
     return nxt, done
 
 
 def reset(n, rng):
+    # 시작 상태: 각 성분 U(-0.05, 0.05)
     return rng.uniform(-0.05, 0.05, size=(n, 4))

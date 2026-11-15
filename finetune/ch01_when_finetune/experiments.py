@@ -31,12 +31,14 @@ NAMES = {"": "아무것도 안 함", "P": "프롬프트", "R": "검색(RAG)", "F
 def e0_hand():
     c = {"K": 3, "F": 2, "T": 2, "I": 2, "R": 1, "OK": 0}
     # 손 예시의 가정: 검색은 K 3건을 모두 찾고, 파인튜닝은 K 3건 중 1건만 지난 답변에 충분히 나왔다.
+    # 각 방법이 고치는 종류별 건수(손 예시의 가정). 묶음은 같은 종류에서 더 큰 쪽만 취한다(합치지 않는다)
     fixes = {"P": {"F": 2, "I": 2}, "R": {"K": 3}, "F": {"F": 2, "T": 2, "I": 2, "K": 1}}
     rows = []
     for combo in ["P", "R", "F", "PR", "RF"]:
         merged = {}
         for m in combo:
             for t, n in fixes[m].items():
+                # 두 방법이 같은 문의를 중복으로 고치는 것을 세지 않으려고 합이 아니라 최댓값을 쓴다(상한 가정)
                 merged[t] = max(merged.get(t, 0), n)
         rows.append({"combo": combo, "fixed": sum(merged.values()), "remaining": C.hand_remaining(c, merged)})
     return {"counts": c, "total": sum(c.values()), "fixes": fixes, "rows": rows}
@@ -92,12 +94,14 @@ def table(model, items):
 
 def e3_compare(items, v1):
     m = C.Model(v1, window=8192)
+    # 파인튜닝이 지난 답변으로 배웠다고 본 정답 문서 id 목록
     ft_known = sorted({it["gold"] for it in items if it["failure"] == "K" and m.ft_knows(it)})
     return {"window": 8192, "k_max": m.kmax(), "counts": C.counts(items), "total": len(items),
             "ft_known_docs": ft_known, "rows": table(m, items)}
 
 
 def e4_policy_change(items, v1, v2):
+    # 정책은 v2(지금), 파인튜닝은 v1로 학습한 채인 상황
     m = C.Model(v2, trained_on=v1, window=8192)
     changed = [d["id"] for d, o in zip(v2["docs"], v1["docs"]) if d["text"] != o["text"]]
     stale_items = [it["id"] for it in items if m.outcome(it, "F") == "stale"]
@@ -113,6 +117,7 @@ def e5_big_window(items, v1, b):
 def e6_sensitivity(items, v1):
     out = []
     base = C.load_rules()
+    # 파인튜닝이 사실을 배우는 기준 횟수를 1~6으로 바꿔 결과가 얼마나 달라지는지 본다(기준값 자체가 가정이라서)
     for n in range(1, 7):
         rules = json.loads(json.dumps(base))
         rules["params"]["min_fact_count"] = n
@@ -133,6 +138,7 @@ def e7_basis():
                           "assumed": c["basis"].startswith("[가정]")})
     return {"cells": len(cells), "with_url": sum(c["has_url"] for c in cells),
             "assumed_only": sum(c["assumed"] and not c["has_url"] for c in cells),
+            # 규칙 표 칸 중 계산(예산·검색·횟수)으로 정하는 칸 수. 나머지는 URL 근거 또는 [가정]
             "computed": sum(c["fix"] in ("budget", "retrieval", "count") for c in cells), "detail": cells}
 
 

@@ -28,6 +28,7 @@ import webapp_ch03_upload as U  # noqa: E402
 OUT = HERE / "results" / "ch03.json"
 TOKENS = {"로그인 안 함": None, "alice": "demo-session-alice", "bob": "demo-session-bob",
           "관리자": "demo-session-admin"}
+# 사용량 제한 효과를 원으로 환산하려는 가상 단가(실제 AI 서비스 가격이 아니다).
 UNIT_PRICE_WON = 50  # AI 배경 한 장의 가상 단가(실제 가격이 아니에요)
 
 
@@ -39,6 +40,7 @@ def with_fixes(**kw):
 
 # ---------- E1 RLS ----------
 
+# E1은 RLS 세 모드마다 읽기 3종, 쓰기 7종을 시험한다.
 def e1_rls():
     out = {}
     for mode in ("off", "on_no_policy", "on_policies"):
@@ -50,6 +52,7 @@ def e1_rls():
                 rec["read"][who] = {"status": code, "rows": len(rows), "ids": [r["id"] for r in rows]}
             code, _, _ = A.request(base, "/rest/v1/cards", apikey=None)
             rec["no_api_key_status"] = code
+        # (쓰기 시험은 시험마다 새 서버를 띄워 앞 시험의 변경이 뒤 시험에 영향을 주지 않게 한다.)
         # 쓰기 시험은 하나씩 새 서버에서(앞 시험이 뒤 시험에 영향을 주지 않게)
         tests = [
             ("alice가 bob 이름으로 카드 만들기", "POST", "/rest/v1/cards", "alice",
@@ -69,11 +72,13 @@ def e1_rls():
                 code, _, resp = A.request(base, path, method=method, body=body, token=TOKENS[who],
                                           apikey=A.PUBLISHABLE_KEY)
                 after = st.cards.all_rows()
+            # 시작 데이터(SEED_CARDS)와 비교해 표가 실제로 바뀌었는지 확인. 응답 코드만 보면 "성공처럼 보이지만 0행"을 놓친다.
             changed = after != [dict(zip(("id", "owner_id", "title", "is_public"), r)) for r in L.SEED_CARDS]
             rec["writes"][name] = {"status": code, "response": json.loads(resp), "table_changed": changed}
         out[mode] = rec
     # 고치기 전 번들은 화면에서만 거른다: 받은 행과 화면에 그린 행
     rows_off = out["off"]["read"]["alice"]["rows"]
+    # 고치기 전 번들은 화면에서만 남의 카드를 거른다: 응답에는 5행이 있고 화면에는 alice 몫 3행만 그린다.
     alice_own = sum(1 for c in L.SEED_CARDS if c[1] == "u-alice")
     out["client_filter_before"] = {"rows_in_response": rows_off, "rows_on_screen": alice_own,
                                    "other_users_rows_in_response": rows_off - alice_own}
@@ -92,6 +97,7 @@ def e2_keys():
             "ai_secret_key_count": blob.count(A.AI_SECRET_KEY.encode()),
             "publishable_key_count": blob.count(A.PUBLISHABLE_KEY.encode()),
             "admin_path_count": blob.count(b'"/admin"'),
+            # 고치기 전 번들은 브라우저가 AI 업체 주소(예약된 .invalid 도메인)를 직접 부른다. 키가 번들에 들어간 이유.
             "calls_ai_provider_directly": blob.count(b"ai.example.invalid") > 0,
         }
     return out
@@ -161,11 +167,13 @@ def e4_upload():
 
 # ---------- E5 사용량 제한 ----------
 
+# Fraction을 JSON에 담기 위한 변환: 정수면 int, 아니면 float.
 def frac(x):
     return float(x) if x.denominator != 1 else int(x)
 
 
 def e5_rate():
+    # S1: 0.5초 간격 30번(0~14.5초). S2: 1초 간격 3,600번(1시간).
     s1_times = [R.F(k, 2) for k in range(30)]          # 0.5초 간격 30번(0초 ~ 14.5초)
     s2_times = [R.F(k) for k in range(3600)]           # 1초 간격 3,600번(1시간)
     out = {"capacity_B": R.CAPACITY, "refill_per_sec_r": str(R.REFILL_PER_SEC),
@@ -173,6 +181,7 @@ def e5_rate():
     for key, times in (("s1_burst_30_in_15s", s1_times), ("s2_1_per_sec_for_1h", s2_times)):
         T = times[-1] - times[0]
         sim = R.simulate(R.bucket_take(), times)
+        # 제한 없음 기준선(모두 허용).
         none = R.simulate(lambda u, t: (True, 0), times)
         out[key] = {
             "requests": len(times), "span_seconds": frac(T),
@@ -184,6 +193,7 @@ def e5_rate():
             "cost_won_bucket": sim["allowed"] * UNIT_PRICE_WON,
         }
     # 1장 서버처럼 전체 횟수만 세면(한도 20): alice가 20번 쓰고 나면 bob도 막힌다
+    # 1장 서버 방식(한도 20, 사용자 구분 없음)과 사용자별 버킷을 같은 상황으로 비교.
     g = R.GlobalCounter(20)
     alice_g = sum(g.take("alice")[0] for _ in range(20))
     bob_g = g.take("bob")[0]
@@ -233,6 +243,7 @@ def e6_crosscheck():
                 mism += 1
     over = 0
     grid = 0
+    # 요청 간격 gap_num/4초: 0.25초 ~ 7.5초.
     for gap_num in (1, 2, 3, 5, 7, 12, 13, 30):        # 요청 간격 0.25초 ~ 7.5초
         gap = R.F(gap_num, 4)
         for n in (1, 10, 50, 200):
@@ -258,6 +269,7 @@ def e0_checklist(e1, e2, e3, e4, e5):
          e3["before"]["alice"]["GET /admin/api/users"] == 403, e3["after"]["alice"]["GET /admin/api/users"] == 403),
         ("그림이 아닌 파일은 업로드되지 않는다",
          e4["summary"]["accepted_before"] == 3, e4["summary"]["accepted_after"] == 3),
+        # 점검 5개의 (고치기 전, 고친 뒤) 통과 판정. 업로드 항목의 통과 조건은 "수용한 파일 수 == 3"(정상 그림 3개만 받음). 고치기 전은 11개를 받아 실패.
         ("한 사용자가 AI 배경을 몰아서 만들 수 없다(15초에 30번 시도)",
          e5["http_s1"]["before"]["too_many_429"] > 0, e5["http_s1"]["after"]["too_many_429"] > 0),
     ]

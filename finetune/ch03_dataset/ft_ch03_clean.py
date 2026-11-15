@@ -13,13 +13,16 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 RAW_FILE = HERE / "data" / "raw_pairs.json"
+# 평가 세트는 1장 폴더의 문의 40건을 읽는다(장끼리 import하지 않고 파일만 읽는다)
 EVAL_FILE = HERE.parent / "ch01_when_finetune" / "data" / "inquiries.json"
 
+# 주문번호 모양(대문자 1자 + 숫자 4자리)을 찾는 정규식. 주문번호 때문에 같은 문의가 달라 보이는 것을 막는다
 _ORDER = re.compile(r"\b[A-Z]\d{4}\b")
 _PUNCT = re.compile(r"[^\w\s]")
 _JAMO = re.compile(r"[ㄱ-ㆎ]+")          # ㅠㅠ, ㅋㅋ 같은 낱자
 _SPACE = re.compile(r"\s+")
 # 1장에서 "자주 바뀌니 검색에 맡기자"고 한 정책 값(환불 기한, 배송비, 교환비, 적립률, 쿠폰 기한)
+# 자주 바뀌는 값으로 볼 숫자 패턴(영업일, 원, %, 일 안에, 회). 정책 낱말(VOLATILE_KEY)과 함께 있을 때만 제외한다
 VOLATILE_NUM = re.compile(r"\d+영업일|\d[\d,]*원|\d+%|\d+일 안에|\d+회")
 VOLATILE_KEY = re.compile(r"환불|돌려|배송비|교환|적립금|쿠폰|무료")
 PLACEHOLDERS = {"", "확인 중", "확인중", "-"}
@@ -34,6 +37,7 @@ def load_eval():
 
 
 def normalize(text):
+    # 정규화 순서: 주문번호 통일 -> 낱자(ㅠㅠ, ㅋㅋ) 제거 -> 문장부호 제거 -> 공백 정리
     t = _ORDER.sub("주문번호값", text)
     t = _JAMO.sub(" ", t)
     t = _PUNCT.sub(" ", t)
@@ -53,8 +57,10 @@ def pieces(text):
 
 def jaccard(a, b):
     A, B = pieces(a), pieces(b)
+    # 두 집합이 모두 비면 자카드가 0/0이라 같은 것(1.0)으로 약속한다
     if not A and not B:
         return 1.0
+    # 자카드 = |교집합| / |합집합|. 0(전혀 안 겹침)~1(같음)
     return len(A & B) / len(A | B)
 
 
@@ -73,6 +79,7 @@ def pair_text(it):
 def drop_empty(items):
     keep, drop = [], []
     for it in items:
+        # 빈 답과 '확인 중' 같은 자리표시 답은 학습에 쓸 수 없어 뺀다
         (drop if it["a"].strip() in PLACEHOLDERS else keep).append(it)
     return keep, drop
 
@@ -93,6 +100,7 @@ def drop_exact(items):
     """정규화한 (문의, 답)이 같으면 먼저 나온 것만 남긴다."""
     seen, keep, drop = {}, [], []
     for it in items:
+        # 띄어쓰기·문장부호·낱자만 다른 같은 (문의, 답)을 한 키로 묶는다. 먼저 나온 것만 남긴다
         k = (normalize(it["q"]), normalize(it["a"]))
         if k in seen:
             drop.append({**it, "dup_of": seen[k]})
@@ -105,6 +113,7 @@ def drop_exact(items):
 def near_pairs(items, threshold):
     out = []
     for i in range(len(items)):
+        # 모든 쌍을 한 번씩 비교(O(n^2)). 데이터가 수천 건 이상이면 느려져 다른 방법이 필요하다
         for j in range(i + 1, len(items)):
             s = jaccard(pair_text(items[i]), pair_text(items[j]))
             if s >= threshold:
@@ -117,6 +126,7 @@ def clusters(ids, pairs):
     parent = {i: i for i in ids}
 
     def find(x):
+        # 경로 압축(조부모로 건너뛰기)을 곁들인 대표 찾기
         while parent[x] != x:
             parent[x] = parent[parent[x]]
             x = parent[x]
@@ -125,6 +135,7 @@ def clusters(ids, pairs):
     for a, b, _ in sorted(pairs):
         ra, rb = find(a), find(b)
         if ra != rb:
+            # 큰 id를 작은 id 아래로 합쳐, 묶음의 대표가 항상 가장 앞선 id가 된다
             parent[max(ra, rb)] = min(ra, rb)
     groups = {}
     for i in sorted(ids):
@@ -136,6 +147,7 @@ def drop_near(items, threshold):
     """거의 중복 묶음마다 id가 가장 앞선 것 하나만 남긴다."""
     pairs = near_pairs(items, threshold)
     groups = clusters([it["id"] for it in items], pairs)
+    # 묶음마다 id가 가장 앞선 하나만 남긴다. 묶음에 든 항목이 하나뿐이면 그대로 남는다
     keep_ids = {g[0] for g in groups}
     keep = [it for it in items if it["id"] in keep_ids]
     drop = [{**it, "near_of": next(g[0] for g in groups if it["id"] in g)} for it in items if it["id"] not in keep_ids]
@@ -146,6 +158,7 @@ def leak_scores(items, eval_items):
     """학습 후보마다 평가 문의 40건 가운데 가장 닮은 것과 그 점수."""
     out = []
     for it in items:
+        # 점수 내림차순, 같으면 평가 id 순으로 정렬해 가장 닮은 평가 문의 하나를 고른다. 질문(q)만 비교하고 답은 보지 않는다
         best = sorted(((round(jaccard(it["q"], e["text"]), 4), e["id"]) for e in eval_items), key=lambda t: (-t[0], t[1]))[0]
         out.append({"id": it["id"], "q": it["q"], "eval_id": best[1], "score": best[0]})
     return out
@@ -162,6 +175,7 @@ def drop_leaks(items, eval_items, threshold):
 
 def split_seeded(items, val_n, seed):
     """random.Random(seed)로 섞은 뒤 앞의 val_n개를 검증으로. 같은 seed면 늘 같은 결과."""
+    # id 순으로 먼저 정렬한 뒤 시드로 섞는다. 입력 순서가 달라도 같은 결과가 나오게
     order = sorted(items, key=lambda it: it["id"])
     random.Random(seed).shuffle(order)
     val = sorted(order[:val_n], key=lambda it: it["id"])
@@ -173,6 +187,7 @@ def split_hash(items, val_ratio, salt="ch03"):
     """id의 sha256으로 나누기. 데이터가 늘어도 이미 있던 항목은 같은 쪽에 남는다."""
     train, val = [], []
     for it in sorted(items, key=lambda it: it["id"]):
+        # id 해시를 0~9999로 줄여 val_ratio x 10000 미만이면 검증 쪽. 항목 자신의 id만으로 정해지므로 데이터가 늘어도 자리가 안 바뀐다
         h = int(hashlib.sha256((salt + it["id"]).encode()).hexdigest(), 16) % 10000
         (val if h < val_ratio * 10000 else train).append(it)
     return train, val
@@ -182,6 +197,7 @@ def cross_twins(train, val, threshold):
     """검증 항목마다 학습 세트에 닮은꼴(자카드 >= threshold)이 있는지."""
     out = []
     for v in val:
+        # 검증 항목과 가장 닮은 학습 항목(점수, id). 동점이면 id가 큰 쪽이 뽑힌다(max의 키 순서)
         s, tid = max(((jaccard(pair_text(v), pair_text(t)), t["id"]) for t in train), key=lambda x: (x[0], x[1]))
         out.append({"val": v["id"], "train": tid, "score": round(s, 4), "twin": s >= threshold})
     return out
@@ -195,6 +211,7 @@ def fake_memorizer(train, val, pass_at=0.8):
     rows = []
     for v in val:
         s, t = max(((jaccard(v["q"], t["q"]), t["id"]) for t in train), key=lambda x: (x[0], x[1]))
+        # 가장 닮은 학습 문의의 답을 그대로 내놓는다(학습이 아닌 외우기)
         ans = next(x["a"] for x in train if x["id"] == t)
         j = jaccard(ans, v["a"])
         rows.append({"val": v["id"], "nearest": t, "q_sim": round(s, 4), "a_sim": round(j, 4), "pass": j >= pass_at})

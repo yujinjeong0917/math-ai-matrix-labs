@@ -9,6 +9,7 @@
 
 import re
 
+# \w와 공백이 아닌 문자(문장부호)를 찾는 정규식. 한글은 \w에 포함된다
 _PUNCT = re.compile(r"[^\w\s]")
 
 
@@ -16,14 +17,17 @@ def bigrams(text):
     words = _PUNCT.sub(" ", text).split()
     out = set()
     for w in words:
+        # 한 글자 어절은 바이그램을 만들 수 없어 글자 그대로 넣는다
         if len(w) == 1:
             out.add(w)
+        # 어절 안에서 이웃한 두 글자. 어절 경계를 넘는 쌍은 만들지 않는다
         for i in range(len(w) - 1):
             out.add(w[i:i + 2])
     return out
 
 
 def score(query, doc):
+    # 점수 = 질문과 문서(제목 + 본문)의 바이그램 집합 교집합 크기. 같은 바이그램은 한 번만 센다
     return len(bigrams(query) & bigrams(doc["title"] + " " + doc["text"]))
 
 
@@ -35,6 +39,7 @@ def rank(query, docs):
 def top1(query, docs):
     r = rank(query, docs)
     s, did = r[0]
+    # 1등 점수가 0이거나 1등과 2등이 동점이면 못 찾은 것(None). 동점을 id 순서로 고르면 우연히 맞는 경우가 생긴다
     if s == 0 or (len(r) > 1 and r[1][0] == s):
         return None
     return did

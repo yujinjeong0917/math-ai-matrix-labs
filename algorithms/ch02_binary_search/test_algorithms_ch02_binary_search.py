@@ -14,7 +14,7 @@ import torch
 
 import algorithms_ch02_bsearch as bs
 
-torch.set_num_threads(2)
+torch.set_num_threads(2)  # 다른 작업과 CPU 를 나눠 쓰는 환경에서 스레드 수를 고정
 CARDS = [3, 5, 8, 12, 15, 19, 23, 30]
 
 
@@ -27,6 +27,7 @@ def test_first_screen_hand_walk():
     lin = bs.Counter()
     assert bs.linear_lower_bound(CARDS, 16, lin) == 5 and lin.comparisons == 6  # 앞에서부터면 여섯 번
     # 0~5장, 값 5종(중복 허용) 정렬 더미 252가지 x 목표값 11가지 = 2,772가지
+    # 중복 허용 조합 수: 값 5종에서 n개를 고르는 경우 = C(n+4, 4). n=0..5 를 합하면 252
     assert sum(math.comb(n + 4, 4) for n in range(6)) == len(list(bs.sorted_arrays(5))) == 252
     assert 252 * len(bs.targets()) == 2772
     # lo = mid 판은 후보가 15 한 장 남은 [4,5) 에서 멈추지 않는다
@@ -36,10 +37,12 @@ def test_first_screen_hand_walk():
     assert tail == [(4, 5)] * 4
     # 질문 수 상한: 8장이면 4번, 100만 장이면 20번
     assert bs.max_steps_bound(8) == 4 and bs.max_steps_bound(10 ** 6) == 20
+    # 2^19 = 524,288 < 1,000,001 <= 2^20 = 1,048,576 이므로 ceil(log2(10^6+1)) = 20
     assert 2 ** 19 < 10 ** 6 + 1 <= 2 ** 20
 
 
 def test_overflow_numbers():
+    # 1.5e9 + 2.0e9 = 3.5e9 는 int32 최댓값 약 2.147e9 를 넘어 2^32 만큼 감긴다(음수가 된다)
     d = bs.mid_overflow_demo()
     assert d["true_sum"] == 3_500_000_000 > d["int32_max"] == 2_147_483_647
     assert d["wrapped_sum"] == 3_500_000_000 - 2 ** 32 == -794_967_296
@@ -58,7 +61,7 @@ def test_lower_bound_matches_bisect_and_numpy_and_torch():
         got = bs.lower_bound(a, x, c)
         assert got == bisect.bisect_left(a, x) == bs.linear_lower_bound(a, x)
         assert c.steps <= bs.max_steps_bound(n)
-        if n:
+        if n:  # numpy/torch 는 빈 배열 처리 방식이 달라 길이 1 이상만 비교
             assert got == int(np.searchsorted(np.array(a), x, side="left"))
             assert got == int(torch.searchsorted(torch.tensor(a), torch.tensor(x), right=False))
 
@@ -72,10 +75,11 @@ def test_invariant_holds_and_size_shrinks_every_step():
         t = bs.run_variant("d_correct", a, x, trace=True)
         for row in t["trace"]:
             assert all(i["holds"] for i in row["invariants"]), (a, x, row)
-            assert row["state"].get("shrank", True)
+            assert row["state"].get("shrank", True)  # 매 반복 hi - lo 가 줄었다(종료 척도)
 
 
 def test_exhaustive_variants_and_shortest_counterexamples():
+    # 길이 0~5 정렬 배열 252가지 x 목표값 11가지 = 2,772가지를 전부 돌린다. 짧은 배열부터라 첫 실패 = 최단 반례
     r = bs.exhaustive(5)
     assert r["d_correct"]["fail"] == 0
     assert r["a_le_with_hi_mid"]["counts"]["ok"] == 0  # 한 번도 정상 종료하지 못한다
@@ -90,6 +94,7 @@ def test_exhaustive_variants_and_shortest_counterexamples():
 
 
 def test_bound_is_tight():
+    # 상한이 "꽉 찬다"는 확인: 모든 x 중 최악의 반복 수가 상한과 정확히 같다(부등호가 아닌 등호)
     for n in list(range(1, 65)) + [1000]:
         a = list(range(n))
         worst = 0
@@ -101,6 +106,7 @@ def test_bound_is_tight():
 
 
 def test_cpython_bisect_handles_huge_range_now():
+    # 옛 CPython 은 (lo+hi)/2 가 넘쳤던 문제(bpo-13496)가 있었고, 지금은 range(sys.maxsize)에서도 끝난다
     big = sys.maxsize
     assert bisect.bisect(range(big), big - 3) == big - 2
 
@@ -111,7 +117,7 @@ def test_sampling_linear_count_equals_bisect_right():
         p = rng.random(V)
         p /= p.sum()
         cdf = np.cumsum(p)
-        u = rng.random(500) * cdf[-1]
+        u = rng.random(500) * cdf[-1]  # cdf 끝값(부동소수점이라 1 과 조금 다를 수 있음)으로 맞춰 범위 안에 둔다
         lin = np.array([bs.sample_index_linear(cdf, ui) for ui in u])
         assert np.array_equal(lin, bs.sample_index_bisect(cdf, u))
         assert np.array_equal(lin, np.array([bisect.bisect_right(list(cdf), ui) for ui in u]))

@@ -15,6 +15,7 @@ SCRIPT = HERE / "run_all.sh"
 
 def run_glue(workdir, seed, shift, strict="", extra_env=None):
     """bash run_all.sh를 실제로 실행한다. (종료 코드, metrics.json 내용 또는 None)."""
+    # run_all.sh가 이 인터프리터를 쓰게 PY를 넘기고, CH07_STRICT로 set -e/pipefail 모드를 고른다
     env = {**os.environ, "PY": sys.executable, "CH07_STRICT": strict, "OMP_NUM_THREADS": "2"}
     env.update(extra_env or {})
     r = subprocess.run(["bash", str(SCRIPT), str(workdir), str(seed), str(shift)], env=env, capture_output=True, text=True)
@@ -25,6 +26,7 @@ def run_glue(workdir, seed, shift, strict="", extra_env=None):
 
 def interleavings(n_a=3, n_b=3):
     """두 실행의 단계(각 3개)를 각자의 순서는 지키며 섞는 모든 방법. C(6,3) = 20가지."""
+    # 전체 6칸 중 A의 단계가 놓일 위치 3곳을 고르는 조합 C(6,3) = 20가지. 각 실행 안의 순서는 항상 유지
     for pos in itertools.combinations(range(n_a + n_b), n_a):
         seq, ia, ib = [], 0, 0
         for k in range(n_a + n_b):
@@ -39,6 +41,7 @@ def shared_folder_steps(workdir, run, seed, shift):
     """run_all.sh와 같은 파일 이름 규약으로 세 단계를 함수로 돌린다(한 폴더를 두 실행이 같이 쓰는 상황용)."""
     w = Path(workdir)
     return [
+        # 세 단계는 같은 폴더의 train.npz, model.json을 공유한다. 실행 A, B가 섞이면 한쪽이 다른 쪽 파일을 읽을 수 있다. metrics만 실행별 이름으로 분리
         lambda: S.prepare(seed, 4000, shift, w / "train.npz", w / "valid.npz"),
         lambda: S.train(w / "train.npz", w / "model.json"),
         lambda: S.evaluate(w / "model.json", w / "valid.npz", w / f"metrics_{run}.json"),

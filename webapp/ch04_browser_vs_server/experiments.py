@@ -32,6 +32,7 @@ import webapp_ch04_storage as S  # noqa: E402
 OUT = HERE / "results" / "ch04.json"
 
 
+# Fraction을 JSON에 넣기 위한 반올림(float 변환).
 def r(x, nd=6):
     return round(float(x), nd)
 
@@ -49,9 +50,11 @@ def e1(a):
 
 def e4(p, a):
     v = p["vercel"]
+    # 서울(icn1) 단가로 요청 하나의 비용을 분해한다.
     reg = v["regions"]["icn1"]
     out = {}
     for name, job in a["server"].items():
+        # 메모리 요금 기준 시간 = CPU + 기다림. AI 배경은 기다림 8초가 대부분.
         wall = F(job["cpu_ms"]) + F(job.get("wait_ms", 0))
         cpu = F(job["cpu_ms"], 3_600_000) * F(str(reg["active_cpu_usd_per_hour"]))
         mem = v["default_memory_gb"] * wall / 3_600_000 * F(str(reg["memory_usd_per_gb_hour"]))
@@ -76,6 +79,7 @@ def e5_e6_e7(p, a):
                  "transfer_tb": r(c["transfer_tb"], 6), "cdn_tier_usd": c["cdn_tier_usd"],
                  "over_credit_usd": r(c["over_credit"], 4), "bill_usd": r(c["bill"], 4)}
         iad = C.vercel_cost(p, a, m, region="iad1")
+        # 같은 사용량을 미국 동부 단가로 계산해 지역별 차이를 본다.
         e5[d]["iad1_cpu_memory_usd"] = r(iad["parts"]["active_cpu"] + iad["parts"]["provisioned_memory"], 4)
         e5[d]["icn1_cpu_memory_usd"] = r(c["parts"]["active_cpu"] + c["parts"]["provisioned_memory"], 4)
         h = C.hobby_check(p, a, m)
@@ -112,11 +116,13 @@ def e10(p, a):
     for d in C.DESIGNS:
         per = C.usage_per_card(a, d)
         mon = C.monthly_usage(a, d)
+        # 한 달 값 = 카드 한 장 값 x 카드 수가 모든 항목에서 정확히 성립하는지(분수라 == 비교 가능).
         ok &= all(mon[k] == per[k] * mon["cards"] for k in per)
         c = C.vercel_cost(p, a, mon)
         ok &= c["usage"] == sum(c["parts"].values())
     # 손계산: 서버 미리보기 대기 = 40 + 0.48 + 30 + 32
     lt = C.latency_table(a)
+    # 손계산 식과 모형 값을 직접 비교: 40 + 0.48 + 30 + 32 = 102.48ms.
     hand = F(40) + F(48, 100) + 30 + 32
     return {"per_card_times_cards_equals_month": ok, "preview_server_hand_ms": r(hand, 2),
             "preview_server_model_ms": r(lt["preview_server"], 2), "hand_equals_model": hand == lt["preview_server"]}
@@ -127,6 +133,7 @@ def derived(p, a, e5):
     net, s = a["network"], a["server"]
     lt, lt_us = C.latency_table(a), C.latency_table(a, "iad1")
     a2 = json.loads(json.dumps(a))
+    # 연습 문제: 사용자가 두 배가 되면 요금이 어떻게 되는지(깊은 복사한 가정값을 수정).
     a2["traffic"]["users_per_month"] *= 2
     m2 = C.monthly_usage(a2, "decided")
     c2 = C.vercel_cost(p, a2, m2)

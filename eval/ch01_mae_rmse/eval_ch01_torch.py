@@ -7,14 +7,17 @@
 import torch
 import torch.nn.functional as F
 
+# CPU 스레드 수 고정(재현성과 공용 PC 부하 때문)
 torch.set_num_threads(2)
 
 
 def mae(y, yhat):
+    # l1_loss의 기본 reduction은 mean이라 MAE와 같다. 인자 순서는 (예측, 정답)
     return F.l1_loss(yhat, y).item()
 
 
 def rmse(y, yhat):
+    # mse_loss도 mean이므로 sqrt를 씌우면 RMSE
     return torch.sqrt(F.mse_loss(yhat, y)).item()
 
 
@@ -25,6 +28,7 @@ def fit_constant(y, loss, steps=4000, lr=0.05):
     loss="l2"면 기울기가 2(c - 평균)이라 평균에서 멈춘다.
     """
     y = torch.as_tensor(y, dtype=torch.float64)
+    # 스칼라 파라미터 c(모양 ()). 0에서 시작
     c = torch.zeros((), dtype=torch.float64, requires_grad=True)
     opt = torch.optim.SGD([c], lr=lr)
     fn = F.l1_loss if loss == "l1" else F.mse_loss
@@ -33,6 +37,7 @@ def fit_constant(y, loss, steps=4000, lr=0.05):
             for g in opt.param_groups:
                 g["lr"] = lr * (1 - t / steps) + 1e-4
         opt.zero_grad()
+        # c를 (n,)으로 늘려(메모리 복사 없이) 손실을 만들고 dL/dc를 구한다
         fn(c.expand_as(y), y).backward()
         opt.step()
     return float(c.detach())

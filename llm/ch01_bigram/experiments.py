@@ -24,8 +24,10 @@ import bigram_np as bnp
 from bigram_torch import fit_bigram, perplexity_torch
 
 OUT = Path(__file__).parent / "results" / "ch01.json"
+# 시드는 데이터 생성용. 같은 시드면 말뭉치가 같아 결과 JSON이 재현된다.
 SEEDS = (0, 1, 2)
 N_TRAIN, N_TEST = 20_000, 2_000
+# 학습은 부사 0..8개 문장을 고르게 섞고, 평가는 k별로 따로 만든다. k는 주어-동사 사이 거리.
 TRAIN_KS = range(9)  # 학습 문장의 부사 개수는 0..8에서 고르게
 TEST_KS = (0, 1, 3, 5, 8)
 STOI, ITOS = bnp.grammar_vocab()
@@ -59,6 +61,7 @@ def e0_hand():
     return {"sentences": [" ".join(s) for s in sents], "rows": rows}
 
 
+# 트라이그램 MLE 확률 함수. 앞 두 단어 (a, b)를 보고 c(a,b,w)/c(a,b)로 w 확률을 낸다(예고용 비교).
 def trigram_fn(train):
     c3, c2 = Counter(), Counter()
     for toks, *_ in train:
@@ -68,6 +71,7 @@ def trigram_fn(train):
 
     def f(ctx, w):
         a, b = ctx[-2], ctx[-1]
+        # 학습에서 못 본 문맥 (a, b)는 0을 돌려준다. 그래서 동률이 늘고, 정답 동사 확률이 0이 되는 경우가 생긴다.
         return c3[(a, b, w)] / c2[(a, b)] if c2[(a, b)] else 0.0
 
     return f
@@ -75,6 +79,7 @@ def trigram_fn(train):
 
 def e1_agreement():
     out = {m: {str(k): [] for k in TEST_KS} for m in ("unigram", "bigram", "trigram")}
+    # 트라이그램은 못 본 문맥에서 정답 확률이 0이라 놀람이 무한대. 평균이 의미 없어 제외한다.
     bits = {m: {str(k): [] for k in TEST_KS} for m in ("unigram", "bigram")}  # 트라이그램은 못 본 문맥에서 무한대
     ties = {m: {str(k): [] for k in TEST_KS} for m in ("unigram", "bigram", "trigram")}
     no_tie = {m: {str(k): [] for k in TEST_KS} for m in ("unigram", "bigram", "trigram")}
@@ -95,6 +100,7 @@ def e1_agreement():
                 if m in bits:
                     bits[m][str(k)].append(s["bits"])
                 ties[m][str(k)].append(s["ties"])
+                # 동률이 아닌 문장만의 정확도: acc = (비동률 정답 + 0.5*동률)/n 에서 동률 몫을 빼고 다시 정규화한다.
                 if s["ties"] < 1:  # 동률을 뺀 문장만의 정확도: (acc - 0.5*ties) / (1 - ties)
                     no_tie[m][str(k)].append((s["acc"] - 0.5 * s["ties"]) / (1 - s["ties"]))
     def summ(table):
@@ -111,6 +117,7 @@ def e2_perplexity():
         tr_ids, te_ids = ids_of(train), ids_of(mixed)
         P = bnp.bigram_mle(bnp.count_sentences(tr_ids, V))
         p1 = bnp.unigram_mle(tr_ids, V)
+        # 평가 쌍 중 확률 0인 것의 수. 0이 아니면 바이그램 PPL은 무한대가 된다.
         zero = sum(int((P[s[:-1], s[1:]] == 0).sum()) for s in te_ids)
         rows.append({
             "seed": seed,
@@ -138,7 +145,9 @@ def e3_torch_fit():
     T = model.table().detach().numpy()
     seen = counts.sum(1) > 0
     N = counts.sum()
+    # MLE 해의 교차엔트로피(nats). 학습 손실이 이 값에 수렴해야 한다. 0인 칸은 log를 못 취하니 P > 0만 합산.
     mle_loss = float(-(counts[P > 0] * np.log(P[P > 0])).sum() / N)
+    # 본 적 있는 행에서만 학습 표와 MLE 표의 절대 차이를 본다. (V, V)
     D = np.where(seen[:, None], np.abs(T - P), 0.0)
     i, j = np.unravel_index(int(D.argmax()), D.shape)
     return {
@@ -166,10 +175,12 @@ def e4_generate():
     text = " ".join(ITOS[i] for i in toks)
 
     # 1000문장을 뽑아 구조별로 센다. 바이그램 표는 구조(the→명사→부사*→동사→</s>)를 강제한다.
+    # 명사/동사 형태 -> 0(단수) 또는 1(복수). 생성 문장의 수 일치 오류를 세는 데 쓴다.
     noun_num = {w: i for pair in bnp.NOUNS for i, w in enumerate(pair)}
     verb_num = {w: i for pair in bnp.VERBS for i, w in enumerate(pair)}
     rng = np.random.default_rng(456)
     stats = {"k0": [0, 0], "k_ge1": [0, 0]}  # [오류 수, 문장 수]
+    # 구조가 깨진 문장 수를 따로 센다. 바이그램은 문법을 강제하므로 0이 기대된다(실측은 결과 JSON 확인 필요).
     ks, malformed = [], 0
     for _ in range(1000):
         s = [bos]
@@ -184,6 +195,7 @@ def e4_generate():
         key = "k0" if k == 0 else "k_ge1"
         stats[key][0] += int(noun_num[w[1]] != verb_num[w[-1]])
         stats[key][1] += 1
+    # 문장 토큰 수 = <s>, the, 명사, 부사 k개, 동사, </s> = k + 5. 그래서 k = 길이 - 5.
     train_ks = [len(t) - 5 for t, *_ in train]
     return {
         "sample_50_tokens": text,
@@ -200,6 +212,7 @@ def e5_compute():
     train, _, _ = data(0)
     ids = ids_of(train)
     rows = []
+    # 같은 말뭉치를 1, 4, 16배 반복해 토큰 수 T를 키우고 카운트 시간이 선형인지 본다. 시간은 기계 의존.
     for reps in (1, 4, 16):
         big = ids * reps
         T = int(sum(len(s) for s in big))
@@ -220,6 +233,7 @@ def e5_compute():
 
 
 def main():
+    # 스레드 1개로 고정해 시간 측정과 수치 재현성을 맞춘다.
     torch.set_num_threads(1)
     results = {
         "env": {

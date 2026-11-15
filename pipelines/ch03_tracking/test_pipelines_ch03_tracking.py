@@ -11,6 +11,7 @@ import pipelines_ch03_model_np as mnp
 import pipelines_ch03_model_torch as mtt
 import pipelines_ch03_tracking as trk
 
+# 테스트는 experiments.py(3000/2000)보다 작은 표로 빠르게 돌린다
 N_ROWS, N_TRAIN, SPLIT_SEED = 1500, 1000, 7
 
 
@@ -35,6 +36,7 @@ def test_hash_sensitive():
     t = dat.make_table(1, 500)
     h = hsh.dataset_hash(t)
     t2 = {k: v.copy() for k, v in t.items()}
+    # 값 하나만 바꿔도 해시가 달라져야 한다
     t2["age"][0] += 1.0
     assert hsh.dataset_hash(t2) != h
     t3 = {k: v.copy() for k, v in t.items()}
@@ -58,6 +60,7 @@ def test_rerun_from_record(tmp_path):
     assert rec["run_id"] == rid
     assert trk.rerun_from_record(rec, make_data, train_fn)["val_acc"] == m["val_acc"]
     saved = np.load(tmp_path / rec["artifact_uri"]["model"])
+    # 저장한 결과 파일(.npz)을 다시 읽어 가중치가 비트까지 같은지 확인
     np.testing.assert_array_equal(saved["w"], model["w"])
 
 
@@ -76,7 +79,9 @@ def test_log_is_append_only_and_groups(tmp_path):
         tr, va, h = make_data(p)
         ids.append(trk.log_run(tmp_path, p, train_fn(tr, va, p), data={"train_valid": h}, code={"source_sha256": "x"}))
     runs = trk.load_runs(tmp_path)
+    # 같은 설정·데이터를 두 번 기록해도 순번이 달라 run_id가 다르다(3개 모두 서로 다름)
     assert [r["run_id"] for r in runs] == ids and len(set(ids)) == 3
+    # 데이터 시드 3이 2번, 4가 1번이라 묶음 크기는 [1, 2]
     assert sorted(len(v) for v in trk.comparable_groups(runs).values()) == [1, 2]
     json.loads((tmp_path / "runs.jsonl").read_text().splitlines()[0])
 
@@ -99,5 +104,6 @@ def test_numpy_matches_torch():
 def test_csv_roundtrip_looks_same_but_hash_differs():
     t = dat.make_table(1, 200)
     back, _ = hsh.csv_roundtrip(t, digits=6)
+    # 6자리 유효숫자 반올림 오차는 1e-3 미만(눈으로 보면 같은 표)이지만 해시는 달라야 한다
     assert max(float(np.max(np.abs(back[k] - t[k]))) for k in t) < 1e-3
     assert hsh.dataset_hash(back) != hsh.dataset_hash(t)

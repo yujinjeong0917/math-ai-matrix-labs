@@ -40,6 +40,7 @@ def size(rel):
 def e0_files():
     ch01_index = (CH01_PUBLIC / "index.html").read_text(encoding="utf-8").splitlines()
     ours = (PUBLIC / "index.html").read_text(encoding="utf-8").splitlines()
+    # 줄 단위 집합 차이로 1장 편집기 대비 더해진 줄과 지워진 줄을 본다(줄 순서 변화는 못 잡는다).
     added = [l for l in ours if l not in ch01_index]
     removed = [l for l in ch01_index if l not in ours]
     return {
@@ -112,6 +113,7 @@ def e6_crosscheck():
     missing = [p for p in cfg["precache"] if not (PUBLIC / ("index.html" if p == "/" else p.lstrip("/"))).is_file()]
     mismatched = []
     with S.running() as base:
+        # 서버가 보낸 바이트가 디스크 파일과 같은지 대조(precache 12개 + sw.js).
         for p in cfg["precache"] + ["/sw.js"]:
             body = urllib.request.urlopen(base + p).read()
             disk = (PUBLIC / ("index.html" if p == "/" else p.lstrip("/"))).read_bytes()
@@ -122,6 +124,7 @@ def e6_crosscheck():
     node = shutil.which("node")
     node_ok = None
     if node:
+        # node가 없으면 None. 있으면 sw.js와 app.min.js의 문법만 확인(실행 안 함).
         node_ok = all(subprocess.run([node, "--check", str(PUBLIC / f)], capture_output=True).returncode == 0
                       for f in ("sw.js", "app.min.js"))
     return {"precache_missing": missing, "served_mismatch": mismatched, "manifest_content_type": ctype,
@@ -141,6 +144,7 @@ def main():
         "e5_paths": e5_paths(),
         "e6_crosscheck": e6_crosscheck(),
     }
+    # 결과 파일이 파이썬 패치 버전에 따라 바뀌지 않게 고정 문자열로 덮어쓴다(실제 실행 버전이 아니다).
     res["meta"]["python"] = "3.12"  # 결과 파일이 버전 패치 번호로 바뀌지 않게
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

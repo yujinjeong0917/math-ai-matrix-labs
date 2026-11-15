@@ -20,6 +20,7 @@ import rl_ch10_pg_np as m  # noqa: E402
 
 
 def bar(x, xmax, width=40):
+    # 막대 길이 = width * x / xmax(반올림). 양수면 최소 1칸으로 0 근처 값도 보이게 한다
     return "#" * max(1 if x > 0 else 0, round(width * x / xmax))
 
 
@@ -28,6 +29,7 @@ def main():
     print("== 짧은 복도 J(p) = -(도착까지 걸음 수의 기댓값) ==")
     for p in np.linspace(0.05, 0.95, 19):
         J = cor.exact_v(p)[0]
+        # J는 음수(-걸음 수). 100을 더해 막대 길이로 바꾸므로 J < -100이면 막대가 없다(표시용 눈금)
         print(f"p={p:4.2f} {J:8.2f} " + bar(100 + J, 100))
     print(f"가장 좋은 p = {d['E0_hand']['best_p']}, J = {d['E0_hand']['best_J']}")
 
@@ -36,6 +38,7 @@ def main():
     eps = [m.corridor_episode(0.0, rng) for _ in range(1000)]
     edges = np.arange(-60, 61, 10)
     for b in ("none", "const", "value"):
+        # 같은 판 1000개에 기준선만 바꿔 기울기 추정을 비교. 평균은 정확값 2.0 근처, 표준편차가 달라진다
         g = np.array([m.corridor_grad_estimate(e, 0.0, b) for e in eps])
         h, _ = np.histogram(np.clip(g, -59.9, 59.9), edges)
         print(f"-- {b}: 평균 {g.mean():.2f}, 표준편차 {g.std(ddof=1):.2f} (정확한 기울기 2.0)")

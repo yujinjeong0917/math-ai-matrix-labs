@@ -19,6 +19,7 @@ from threading import Thread
 HERE = Path(__file__).parent
 PUBLIC = HERE / "pwa" / "public"
 
+# 끝 글자로 맞춘다: sw.js와 .html은 no-cache(쓰기 전에 서버 확인), 나머지는 하루.
 CACHE_RULES = {"sw.js": "no-cache", ".html": "no-cache"}
 DEFAULT_CACHE = "public, max-age=86400"
 STUB_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320">'
@@ -26,6 +27,7 @@ STUB_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width
 
 
 class PwaHandler(SimpleHTTPRequestHandler):
+    # 확장자별 Content-Type을 명시. 서비스 워커(JS)와 manifest는 형식이 맞아야 브라우저가 받아들인다.
     extensions_map = {**SimpleHTTPRequestHandler.extensions_map,
                       ".json": "application/json", ".js": "text/javascript", ".webmanifest": "application/manifest+json",
                       ".woff2": "font/woff2", ".svg": "image/svg+xml", ".png": "image/png"}
@@ -43,6 +45,7 @@ class PwaHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
         path = self.path.split("?")[0]
         if not path.startswith("/api/"):
+            # "/"는 .html로 끝나지 않으므로 아래에서 따로 HTML 규칙을 준다.
             rule = next((v for k, v in CACHE_RULES.items() if path.endswith(k)), None)
             if path == "/":
                 rule = CACHE_RULES[".html"]
@@ -54,11 +57,13 @@ class PwaHandler(SimpleHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
             return
         length = int(self.headers.get("Content-Length") or 0)
+        # 요청 본문은 쓰지 않지만 연결을 깔끔히 하려고 읽어 버린다.
         self.rfile.read(length)
         body = STUB_SVG.encode()
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "image/svg+xml")
         self.send_header("Content-Length", str(len(body)))
+        # API 응답은 저장하지 않는다. 바로 다음 줄에서 super().end_headers()를 불러 이 클래스의 end_headers(캐시 헤더 추가)를 건너뛴다(헤더 중복 방지).
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
         self.wfile.write(body)

@@ -16,6 +16,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 DATA = HERE / "data"
 SPEC_FILE = DATA / "specs_2026-10-11.json"
+# 평가 문의는 1장 폴더의 inquiries.json을 복사하지 않고 그대로 읽는다(장끼리 import하지 않고 파일만 읽는다)
 INQUIRIES = HERE.parent / "ch01_when_finetune" / "data" / "inquiries.json"
 TYPES = ["K", "F", "T", "I", "R", "OK"]
 
@@ -36,17 +37,20 @@ def load_inquiries():
 # ---------- 손실 곡선 ----------
 
 def train_loss(s, p, noise=0.0):
+    # 학습 손실 = 바닥값 + 진폭 x e^(-s/tau) + 잡음. 실제 학습 기록이 아니라 식으로 만든 가상 곡선
     return p["floor"] + p["amp"] * math.exp(-s / p["tau"]) + noise
 
 
 def val_loss(s, p, noise=0.0):
     return (p["floor"] + p["amp"] * math.exp(-s / p["tau"])
+            # 검증 손실은 같은 감소 곡선에 rise_start 이후 제곱으로 오르는 항(과적합)을 더한 가상 곡선
             + p["rise_coef"] * max(0, s - p["rise_start"]) ** 2 + noise)
 
 
 def make_curves(cfg, steps_per_epoch):
     """학습 손실은 스텝마다(logging_steps=1), 검증 손실은 eval_every 스텝마다 만든다."""
     total = cfg["epochs"] * steps_per_epoch
+    # 학습·검증 잡음을 서로 다른 시드의 생성기로 뽑아 결과가 매번 같다
     rt = random.Random(cfg["train"]["seed"])
     rv = random.Random(cfg["val"]["seed"])
     train = [round(train_loss(s, cfg["train"], rt.gauss(0, cfg["train"]["noise_sd"])), 4)
@@ -56,6 +60,7 @@ def make_curves(cfg, steps_per_epoch):
         evals.append({"step": s,
                       "val": round(val_loss(s, cfg["val"], rv.gauss(0, cfg["val"]["noise_sd"])), 4),
                       "train_smooth": round(train_loss(s, cfg["train"]), 4),
+                      # 누수된 검증 세트를 흉내 낸 곡선: 학습 곡선에 상수만 더해 항상 내려간다(검증이 학습과 겹치면 과적합이 안 보인다)
                       "leaky_val": round(train_loss(s, cfg["train"]) + cfg["leaky_val_offset"], 4)})
     return {"total_steps": total, "train": train, "evals": evals}
 
@@ -67,6 +72,7 @@ def early_stopping_trace(values, patience=1, threshold=0.0, greater_is_better=Fa
     (2) 그다음 Trainer가 threshold 없이 조금이라도 좋아졌으면 best를 바꾼다.
     카운터가 patience 이상이 되면 그 평가에서 멈춘다. 반환: 평가마다의 기록, 멈춘 위치(없으면 None), best 위치.
     """
+    # 지표가 클수록 좋은지(greater_is_better)에 따라 '더 좋다'의 방향을 정한다
     better = (lambda a, b: a > b) if greater_is_better else (lambda a, b: a < b)
     best = None
     best_i = None
@@ -75,13 +81,16 @@ def early_stopping_trace(values, patience=1, threshold=0.0, greater_is_better=Fa
     stop = None
     for i, v in enumerate(values):
         prev = best
+        # 콜백의 판정: 이전 best보다 threshold 넘게 좋아져야 카운터를 0으로 되돌린다. 같은 값은 개선이 아니다
         if best is None or (better(v, best) and abs(v - best) > threshold):
             counter = 0
         else:
             counter += 1
+        # best 갱신은 threshold 없이 조금이라도 좋아지면 한다(Trainer 쪽 규칙). 그래서 카운터는 오르는데 best만 바뀌는 경우가 생긴다
         if best is None or better(v, best):  # _determine_best_metric
             best, best_i = v, i
         rows.append({"i": i, "value": v, "prev_best": prev, "counter": counter, "best_after": best})
+        # 카운터가 patience에 닿으면 그 평가 스텝에서 멈춘다
         if counter >= patience:
             stop = i
             break
@@ -99,8 +108,10 @@ def first_below(values, limit):
 
 def punct_variant(body):
     """띄어쓰기 하나와 마지막 문장부호만 바꾼다. 뜻은 그대로다."""
+    # 첫 마침표 뒤 공백을 두 칸으로(띄어쓰기 변형). 뜻은 같다
     out = body.replace(". ", ".  ", 1)
     if out.endswith("."):
+        # 마지막 마침표를 느낌표로 바꾼다. 정규화 일치는 이 둘을 무시한다
         out = out[:-1] + "!"
     return out
 
@@ -121,6 +132,7 @@ def compose(bank, qid, variant, greet=True, sign=True):
     parts.append(body_text(bank, qid, variant))
     if sign:
         parts.append(bank["signoff"])
+    # 인사, 본문, 맺음말을 줄바꿈으로 잇는다. greet/sign이 거짓이면 해당 부분을 뺀다(모델이 빠뜨린 경우를 흉내)
     return "\n".join(parts)
 
 
@@ -129,6 +141,7 @@ def reference(bank, qid):
 
 
 def sentences(text):
+    # 마침표, 물음표, 느낌표 뒤의 공백에서 문장을 나눈다. 숫자 안의 마침표(3.5)는 뒤에 공백이 없어 나뉘지 않는다
     return [s for s in re.split(r"(?<=[.?!])\s+", text.strip()) if s]
 
 
@@ -142,18 +155,21 @@ def human_rubric(bank, qid, variant, greet, sign):
     r = {
         "인사": greet,
         "맺음말": sign,
+        # 본문 문장 수 상한(max_body_sentences) 이하여야 통과
         "길이": len(sentences(body_text(bank, qid, variant))) <= bank["max_body_sentences"],
         "사실·계산": variant != "wrong",
         "규칙": variant != "forbidden",
         "말투": variant != "curt",
         "질문에 맞음": variant != "offtopic",
     }
+    # 사람 채점은 일곱 칸을 모두 만족해야 통과
     r["통과"] = all(r[k] for k in RUBRIC)
     return r
 
 
 # ---------- 자동 채점 ----------
 
+# 공백과 문장부호(.,!?~·)를 지우는 정규식. 정규화 일치는 이것을 지운 뒤 같은지 본다
 _NORM = re.compile(r"[\s.,!?~·]")
 
 
@@ -172,6 +188,7 @@ def rule_check(bank, qid, answer):
     g, s = bank["greeting"], bank["signoff"]
     starts, ends = answer.startswith(g), answer.endswith(s)
     body = answer
+    # 인사와 맺음말을 뗀 본문에서만 길이·필수·금지 글자를 검사한다
     if starts:
         body = body[len(g):]
     if ends:
@@ -181,9 +198,11 @@ def rule_check(bank, qid, answer):
         "인사": starts,
         "맺음말": ends,
         "길이": len(sentences(body)) <= bank["max_body_sentences"],
+        # must 글자가 모두 본문에 들어 있어야 한다. 낱말이 달라진 같은 뜻의 답은 떨어진다(규칙 검사의 한계)
         "필수 글자": all(m in body for m in item.get("must", [])),
         "금지 글자 없음": not any(f in body for f in item.get("forbid", [])),
     }
+    # 규칙 검사는 다섯 칸을 모두 통과해야 통과. 말투와 질문에 맞는지는 보지 않는다
     r["통과"] = all(r.values())
     return r
 
@@ -212,12 +231,14 @@ def summarize(rows):
             "human": sum(r["human"] for r in rows),
             "rule_false_pass": [r["id"] for r in rows if r["rule"] and not r["human"]],
             "rule_false_fail": [r["id"] for r in rows if not r["rule"] and r["human"]],
+            # 규칙 검사와 사람 판정이 같은 문항 수
             "rule_agree": sum(r["rule"] == r["human"] for r in rows),
             **rule_vs_human(rows)}
 
 
 def rule_vs_human(rows):
     """사람 판정을 정답으로 두고 규칙 검사의 혼동행렬. '통과'를 양성으로 본다."""
+    # 혼동행렬: 사람 판정이 정답, '통과'가 양성. tp 둘 다 통과, fp 규칙만 통과(잘못된 통과), fn 사람만 통과(잘못된 탈락)
     tp = sum(r["rule"] and r["human"] for r in rows)
     fp = sum(r["rule"] and not r["human"] for r in rows)
     fn = sum((not r["rule"]) and r["human"] for r in rows)
@@ -243,6 +264,7 @@ def by_type(rows_a, rows_b):
 
 # ---------- 일반 문항(잊어버림) ----------
 
+# 일반 문항(파인튜닝으로 잊어버렸는지 보는 문항)은 기대 낱말이 하나라도 있으면 통과. 대소문자는 무시
 def probe_pass(answer, expect):
     a = answer.lower()
     return any(e.lower() in a for e in expect)
@@ -253,12 +275,14 @@ def probe_pass(answer, expect):
 def toy_judge(human_x, human_y, x_first):
     """사람 판정이 갈리면 사람이 고른 쪽을, 둘 다 통과이거나 둘 다 탈락이면 먼저 보여 준 쪽을 고른다.
     Zheng 외(2023)가 보고한 '순서 치우침'만 흉내 낸 장난감이다([가정]). 반환: x를 골랐으면 True."""
+    # 사람 판정이 갈리면 사람이 통과로 본 쪽을 고른다. 같으면(둘 다 통과나 둘 다 탈락) 먼저 보여 준 쪽을 고른다
     if human_x != human_y:
         return human_x
     return x_first
 
 
 def judge_both_orders(hx, hy):
+    # 같은 쌍을 x를 먼저 보여 준 경우와 y를 먼저 보여 준 경우로 두 번 채점한다. 두 결과가 다르면 순서에 흔들린 것(inconsistent)
     xf = [toy_judge(a, b, True) for a, b in zip(hx, hy)]
     yf = [toy_judge(a, b, False) for a, b in zip(hx, hy)]
     n = len(hx)
@@ -276,6 +300,7 @@ def sampled_pass_counts(greedy_pass, p_hit, p_miss, runs, seed0):
     out = []
     for k in range(runs):
         rng = random.Random(seed0 + k)
+        # 그리디 통과 문항은 확률 p_hit로, 탈락 문항은 p_miss로 통과한다고 둔다(가정값). 시드가 달라 실행마다 통과 수가 흔들리는 정도를 본다
         out.append(sum(rng.random() < (p_hit if g else p_miss) for g in greedy_pass))
     return out
 
@@ -285,6 +310,7 @@ def sampled_pass_counts(greedy_pass, p_hit, p_miss, runs, seed0):
 def percentile(sorted_vals, q):
     """NumPy 기본(linear)과 같은 방식의 백분위수. q는 0~100."""
     n = len(sorted_vals)
+    # NumPy 기본(linear 보간)과 같은 위치 계산. 정렬된 값 사이를 선형으로 잇는다
     pos = (n - 1) * q / 100
     lo = math.floor(pos)
     hi = min(lo + 1, n - 1)
@@ -300,9 +326,11 @@ def paired_bootstrap(a, b, n_boot=1000, seed=0, level=0.95):
     rng = random.Random(seed)
     diffs = []
     for _ in range(n_boot):
+        # 문항 위치를 중복을 허락해 n개 다시 뽑는다. 두 모델 모두 같은 위치를 쓰는 것이 '짝지은' 부트스트랩
         idx = [rng.randrange(n) for _ in range(n)]
         diffs.append(sum(b[i] - a[i] for i in idx) / n)
     diffs.sort()
+    # 95% 구간이면 양쪽 꼬리가 2.5%씩. 부트스트랩 차이의 2.5, 97.5 백분위수를 구간으로 삼는다
     tail = (1 - level) / 2 * 100
     lo, hi = percentile(diffs, tail), percentile(diffs, 100 - tail)
     return {"n": n, "diff": (sum(b) - sum(a)) / n, "lo": lo, "hi": hi,
@@ -319,6 +347,7 @@ def sign_test(a_only, b_only):
     n = a_only + b_only
     if n == 0:
         return 1.0
+    # 양측 검정: 엇갈린 n개가 동전 던지기(확률 1/2)일 때 적은 쪽이 k 이하일 확률의 두 배(1을 넘지 않게)
     k = min(a_only, b_only)
     tail = sum(math.comb(n, i) for i in range(k + 1)) / 2 ** n
     return min(1.0, 2 * tail)
@@ -326,6 +355,7 @@ def sign_test(a_only, b_only):
 
 def copies_needed(a_only, b_only, alpha=0.05, max_k=50):
     """엇갈린 비율이 그대로일 때, 평가 세트를 몇 배로 늘려야 부호 검정이 alpha 아래로 내려가나."""
+    # 엇갈린 문항 수를 k배로 불려 가며 처음으로 alpha 미만이 되는 k. 비율이 그대로라는 가정이고, 실제 평가 세트를 늘리면 비율이 달라질 수 있다
     for k in range(1, max_k + 1):
         if sign_test(a_only * k, b_only * k) < alpha:
             return k

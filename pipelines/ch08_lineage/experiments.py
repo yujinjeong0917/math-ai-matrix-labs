@@ -37,6 +37,7 @@ import pipelines_ch08_store as ST  # noqa: E402
 torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch08.json"
+# 레지스트리에 올리는 가짜 이미지 내용. source_version_default가 이 이미지가 기본으로 쓰는 데이터 규칙이고 build는 구별용 이름
 IMG_V1 = {"source_version_default": "v1", "build": "commit-a1"}
 IMG_V2 = {"source_version_default": "v2", "build": "commit-b2"}
 

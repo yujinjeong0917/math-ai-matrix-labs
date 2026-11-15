@@ -10,6 +10,7 @@ from pipelines_ch06_data import CATEGORICAL, LABEL
 
 def fit_preprocessor(table, numeric):
     return {
+        # 어떤 수치 열을 어떤 순서로 썼는지 함께 기억해 v1(6열)과 v2(7열)가 같은 코드로 변환된다
         "numeric": list(numeric),
         "mean": {k: float(table[k].mean()) for k in numeric},
         "std": {k: float(table[k].std()) for k in numeric},
@@ -37,6 +38,7 @@ def fit_logistic(X, y, lr=0.5, steps=400, l2=1e-3):
 
 
 def predict_proba(X, w, b):
+    # 로짓을 [-500, 500]으로 잘라 exp 오버플로를 막는다. 부산 요청처럼 매우 큰 값이 들어와도 경고 없이 0 또는 1에 가까운 확률이 나온다
     return 1.0 / (1.0 + np.exp(-np.clip(X @ w + b, -500, 500)))
 
 
@@ -48,6 +50,7 @@ def train(table, numeric, fit=fit_logistic):
 
 def predict(model, table):
     """0/1 예측(이탈할 것 같다 = 1)."""
+    # 0/1 예측: 확률 0.5 이상이면 1(이탈)
     return (predict_proba(transform(table, model["prep"]), model["w"], model["b"]) >= 0.5).astype(float)
 
 

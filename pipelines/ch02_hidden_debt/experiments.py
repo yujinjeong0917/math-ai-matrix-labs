@@ -34,6 +34,7 @@ import pipelines_ch02_model_torch as mtt  # noqa: E402
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch02.json"
 SEEDS = range(5)
+# 학습 4000행, 서빙 2000행. 서빙은 시드를 1000+seed로 달리해 학습과 다른 고객
 N_TRAIN, N_SERVE = 4000, 2000
 V2_CODEBOOK = dat.UPSTREAM[2]["plan_codebook"]
 
@@ -52,6 +53,7 @@ def _predict_safely(model, batch, y):
         p = mnp.predict_proba(mnp.transform(batch, prep), w, b)
         return {"accuracy": float(np.mean((p >= 0.5) == y)), "exception": None, "nan": int(np.isnan(p).sum()),
                 "mean_pred": float(p.mean())}
+    # 예외도 실패 유형으로 기록하려고 모든 예외를 잡는다(조용한 실패와 시끄러운 실패를 구분)
     except Exception as e:  # noqa: BLE001
         return {"accuracy": None, "exception": type(e).__name__, "nan": None, "mean_pred": None}
 
@@ -62,6 +64,7 @@ def e1_silent_failure():
         tr, sv = _world(s)
         model = mnp.train(dat.emit_batch(tr, 1), tr["churned"])
         y = sv["churned"]
+        # 다수 클래스 기준선: 전부 한쪽으로만 답했을 때의 정확도
         majority = float(max(y.mean(), 1 - y.mean()))
         rows.append({
             "seed": s,
@@ -94,6 +97,7 @@ def e1_silent_failure():
     return {"per_seed": rows, "summary": summary}
 
 
+# 사례별 (요금제 비율, 학습 쪽 설정, 서빙 쪽 설정). codes_uniform은 비율이 같아 분포 비교가 못 잡는 경우
 CASES = {
     # 이름: (세상의 요금제 비율, 학습 쪽 보내는 방식, 서빙 쪽 보내는 방식)
     "unit": ((0.5, 0.3, 0.2), {}, {"fee_divisor": 1000.0}),
@@ -121,6 +125,7 @@ def e2_designs():
             clean = _predict_safely(model, dat.emit_batch(sv, 1, **tr_cfg), y)["accuracy"]
 
             serve = dat.emit_batch(sv, 1, **sv_cfg)
+            # 검사 없이 그냥 예측한 정확도(설계 A)
             a = _predict_safely(model, serve, y)["accuracy"]
             errors = chk.validate(serve)
             alerts = chk.drift_alerts(ref, serve)
@@ -141,6 +146,7 @@ def e2_designs():
                 "seed": s, "clean_acc": clean, "none_acc": a,
                 "schema_errors": errors, "drift_alerts": alerts,
                 "contract_blocked": c_blocked, "contract_acc": c_acc,
+                # 성능 게이트: 다수 클래스 기준선 + 0.05 미만이면 실패(0.05는 이 실험의 선택)
                 "perf_gate_fail": bool(a < majority + 0.05),
             })
         out[name] = {
@@ -161,6 +167,7 @@ def e2_designs():
 
 
 def e3_fee_multiplier():
+    # 금액에 곱하는 배율. 서빙 쪽 fee_divisor = 1/배율
     mults = [1.0, 1.1, 0.9, 0.5, 0.1, 0.01, 0.001]
     out = {}
     worlds = [_world(s) for s in SEEDS]
@@ -182,6 +189,7 @@ def e3_fee_multiplier():
 
 def e3b_tighter_tolerance():
     """연습 1의 정답: 이상치 허용치를 1%에서 0.1%로 낮추면?"""
+    # 모듈 전역 상수를 임시로 바꿨다가 finally에서 되돌린다
     saved = chk.MAX_OUT_OF_RANGE
     try:
         chk.MAX_OUT_OF_RANGE = 0.001
@@ -198,6 +206,7 @@ def e4_cost():
     tr, _ = _world(0)
     ref = chk.profile(dat.emit_batch(tr, 1))
     false_alarm = {}
+    # 아무것도 안 바뀐 v1 표인데 경보가 울리면 오탐. 표 크기별로 오탐 횟수가 어떻게 달라지는지 센다(값은 results/ch02.json 참고)
     for n in (100, 300, 1000, 3000):
         hits, schema_hits, cols = 0, 0, {}
         for s in range(40):
@@ -236,6 +245,7 @@ def e5_cace():
         # support_calls 열만 빼고 다시 학습한다
         reduced_prep = mnp.fit_preprocessor(full)
         X = mnp.transform(full, reduced_prep)
+        # 변환된 행렬 X의 열 번호 중 support_calls 열(수치 열 순서의 위치)만 제외
         keep = [i for i in range(X.shape[1]) if i != names.index("support_calls")]
         w2, _ = mnp.fit_logistic(X[:, keep], tr["churned"])
         w_full = {n: float(w[i]) for i, n in enumerate(names)}
@@ -257,12 +267,14 @@ def e5_cace():
             "max_abs_acc_diff_consistent_unit": float(max(abs(r["acc_consistent_krw"] - r["acc_consistent_thousand"]) for r in out))}
 
 
+# 빈 줄과 # 주석을 뺀 줄 수. docstring은 센다
 def _count_lines(path):
     return sum(1 for line in path.read_text().splitlines() if line.strip() and not line.strip().startswith("#"))
 
 
 def e6_line_counts():
     src = (HERE / "pipelines_ch02_model_np.py").read_text().splitlines()
+    # model_np.py의 '모델 코드 시작/끝' 표지 사이의 줄만 모델 코드로 센다
     a = next(i for i, l in enumerate(src) if "모델 코드 시작" in l)
     z = next(i for i, l in enumerate(src) if "모델 코드 끝" in l)
     model_lines = sum(1 for l in src[a + 1:z] if l.strip() and not l.strip().startswith("#"))
@@ -289,6 +301,7 @@ def e8_np_vs_torch():
     prep = mnp.fit_preprocessor(batch)
     X, y = mnp.transform(batch, prep), tr["churned"]
     w1, b1 = mnp.fit_logistic(X, y)
+    # 같은 X, y, 초기값 0에서 NumPy와 PyTorch 가중치 차이를 잰다
     w2, b2 = mtt.fit_logistic(X, y)
     return {"max_abs_weight_diff": float(np.max(np.abs(w1 - w2))), "bias_diff": abs(b1 - b2),
             "max_abs_prob_diff": float(np.max(np.abs(mnp.predict_proba(X, w1, b1) - mtt.predict_proba(X, w2, b2))))}

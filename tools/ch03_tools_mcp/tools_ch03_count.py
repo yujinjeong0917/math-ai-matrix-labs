@@ -9,23 +9,28 @@ from itertools import product
 
 
 def pairwise(n, m):
+    """짝마다 따로 잇는 방식의 연결 코드 수 N x M."""
     return n * m
 
 
 def standard(n, m):
+    """공통 규약을 쓰는 방식의 연결 코드 수 N + M(앱의 클라이언트 N개, 도구의 서버 M개)."""
     return n + m
 
 
 def gap(n, m):
+    """두 방식의 차이. N x M - (N + M) = (N-1)(M-1) - 1 (전개하면 NM - N - M + 1 - 1)."""
     return (n - 1) * (m - 1) - 1
 
 
 def pairwise_by_listing(apps, tools):
     """짝을 하나씩 늘어놓아 센다(공식과 대조용)."""
+    # product는 데카르트 곱: 앱과 도구의 모든 짝.
     return len(list(product(apps, tools)))
 
 
 def standard_by_listing(apps, tools):
+    """표준 방식의 연결 수를 클라이언트·서버 목록을 만들어 센다(공식 대조용)."""
     return len([("client", a) for a in apps] + [("server", t) for t in tools])
 
 
@@ -42,5 +47,6 @@ def ripple(n, m):
 
 
 def table(max_n=6, max_m=6):
+    """N, M을 1부터 max까지 훑은 비교표. n=1이거나 m=1이면 gap이 -1이라 표준 방식이 오히려 하나 많다(표준의 이득이 없는 경우)."""
     return [{"n": n, "m": m, "pairwise": pairwise(n, m), "standard": standard(n, m), "gap": gap(n, m)}
             for n in range(1, max_n + 1) for m in range(1, max_m + 1)]

@@ -5,6 +5,7 @@ import hosting_fit as hf
 
 
 def profile(**kw):
+    """통과하는 기준 프로필(변환된 safetensors 모델, 미국 동부). 바꿀 항목만 kw로 덮어쓴다."""
     p = {"architecture": "Qwen2.5", "weights_format": "safetensors", "weights_gb": 15.2,
          "max_context_tokens": 32768, "region": "us-east-1", "needs_converse_api": False,
          "needs_batch_inference": False, "needs_cloudformation": False}
@@ -13,6 +14,7 @@ def profile(**kw):
 
 
 class HostingFitTest(unittest.TestCase):
+    # model_profile.json은 GGUF, 서울 리전, Qwen2.5의 Converse 요구라 막는 이유 3개(README)
     def test_chapter_profile_is_blocked_three_ways(self):
         with open("model_profile.json", encoding="utf-8") as f:
             r = hf.run(json.load(f))
@@ -27,6 +29,7 @@ class HostingFitTest(unittest.TestCase):
         self.assertEqual(blockers, [])
         self.assertTrue(notes)
 
+    # 경계: 200GB는 탈락, 199.9GB는 통과. 문맥 131072는 탈락, 129000은 경고만(K의 정의 불명)
     def test_limits(self):
         self.assertTrue(hf.check_cmi(profile(weights_gb=200))[0])
         self.assertEqual(hf.check_cmi(profile(weights_gb=199.9))[0], [])
@@ -38,16 +41,19 @@ class HostingFitTest(unittest.TestCase):
         self.assertEqual(hf.check_cmi(profile(architecture="Qwen2", needs_converse_api=True))[0], [])
         self.assertTrue(hf.check_cmi(profile(architecture="Qwen2.5", needs_converse_api=True))[0])
 
+    # 시작 시 입력 + max_tokens, 끝난 뒤 입력 + 출력 x 소각률
     def test_token_quota_reserve_vs_final(self):
         self.assertEqual(hf.quota_reserve(800, 4096), 4896)
         self.assertEqual(hf.quota_reserve(800, 512), 1312)
         self.assertEqual(hf.quota_final(800, 300), 1100)
         self.assertEqual(hf.quota_final(1000, 100, 5), 1500)  # 문서의 예시 1,000 + 100 x 5
 
+    # 100,000 // 4,896 = 20, 100,000 // 1,312 = 76 (쿼터는 가상)
     def test_concurrency_under_a_made_up_quota(self):
         self.assertEqual(hf.concurrent_by_tpm(100000, 800, 4096), 20)
         self.assertEqual(hf.concurrent_by_tpm(100000, 800, 512), 76)
 
+    # 1시간 간격 20건이면 창 20개 x 4 CMU x 5분 = 400. 200초 안에 몰리면 1창
     def test_billing_windows_lower_bound(self):
         self.assertEqual(hf.billing_windows([]), 0)
         self.assertEqual(hf.billing_windows([0, 10, 299]), 1)

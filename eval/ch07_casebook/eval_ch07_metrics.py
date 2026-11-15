@@ -39,6 +39,7 @@ def r2(y, yhat):
     """R^2 = 1 - SSE/SST. 정답이 모두 같으면 정의되지 않는다(3장)."""
     y = _arr(y)
     sst = float(np.sum((y - y.mean()) ** 2))
+    # SST = 0(정답이 모두 같음)이면 R^2 정의 불가
     if sst == 0.0:
         raise ValueError("정답이 모두 같아 R^2가 정의되지 않는다")
     return 1.0 - float(np.sum(errors(y, yhat) ** 2)) / sst
@@ -47,6 +48,7 @@ def r2(y, yhat):
 def mape(y, yhat):
     """100 * mean(|y - yhat| / |y|) (%). 정답에 0이 있으면 ValueError(4장의 zero='raise')."""
     y = _arr(y)
+    # 정답에 0이 있으면 MAPE 정의 불가(4장의 raise 정책)
     if np.any(y == 0.0):
         raise ValueError(f"정답에 0이 {int(np.sum(y == 0.0))}개 있어 MAPE가 정의되지 않는다")
     return float(100.0 * np.mean(np.abs(errors(y, yhat)) / np.abs(y)))
@@ -55,9 +57,11 @@ def mape(y, yhat):
 def naive_mae_in_sample(y_train, lag=1):
     """학습 구간에서 'lag 시점 전 값 그대로 찍기'의 MAE. MASE의 분모(5장)."""
     y = _arr(y_train)
+    # 차이를 만들 수 있는 최소 길이 조건
     if len(y) <= lag:
         raise ValueError("학습 구간이 lag보다 길어야 한다")
     d = float(np.mean(np.abs(y[lag:] - y[:-lag])))
+    # 분모 0 방지(학습 구간이 상수)
     if d == 0.0:
         raise ValueError("학습 구간의 naive 오차가 0이라 MASE가 정의되지 않는다")
     return d
@@ -85,10 +89,12 @@ def metric_row(y_train, y_test, yhat):
     m, r = mae(y_test, yhat), rmse(y_test, yhat)
     row = {"mae": m, "rmse": r, "r2": r2(y_test, yhat), "mape": mape(y_test, yhat),
            "mase": mase(y_train, y_test, yhat), "nmbe": nmbe(y_test, yhat), "cv_rmse": cv_rmse(y_test, yhat),
+           # MAE가 0이면(완벽 예측) 0 나누기라 nan
            "rmse_mae_ratio": r / m if m > 0 else float("nan"),
            # MSE 가운데 '평균 편향' 조각의 몫(6장 분해). 1에 가까우면 상수 하나로 거의 고쳐진다.
            "bias_share": float(np.mean(e) ** 2 / np.mean(e ** 2)) if np.any(e) else 0.0,
            # MAPE가 'MAE를 평균 수준으로 나눈 %'보다 몇 배 큰가. 크면 작은 정답값이 MAPE를 끌어올린 것이다.
+           # 분모 100*MAE/mean|y|는 'MAE를 평균 크기로 나눈 %'. 정답이 균일하면 비율은 1 근처
            "mape_inflation": mape(y_test, yhat) / (100.0 * m / float(np.mean(np.abs(y_test)))) if m > 0 else float("nan")}
     return row
 
@@ -97,6 +103,7 @@ def better(metric, a, b):
     """지표 하나로 A와 B 중 고른다. 'A' 또는 'B'(같으면 'tie')."""
     if metric == "nmbe":
         a, b = abs(a), abs(b)
+    # 동률이면 'tie'. 부동소수점으로 정확히 같을 때만 해당
     if a == b:
         return "tie"
     if metric in HIGHER_IS_BETTER:

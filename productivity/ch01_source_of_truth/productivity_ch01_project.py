@@ -2,9 +2,12 @@
 
 값은 손으로 적었다. 실존 회사·인물 없음. 사람 이름과 역할은 6장(`ch06_connect`)과 같게 맞췄다
 (민지 디자인, 서연 기획, 준호 개발, 하린 운영). 6장 폴더는 동시에 쓰이므로 import하지 않고 필요한 항목을 여기 새로 적었다.
+
+이 파일은 계산 없이 실험의 "입력 데이터"만 둔다. 변경 카드 8장(CARDS)은 productivity_ch01_sim의 두 방식(복사 / 원본 등록부)에 같은 순서로 들어간다.
+단위: 요금은 원, 시각은 시(0~24), 무료 취소 기한은 시간. 모두 가상의 값이다.
 """
 
-# 값이 적혀 있는 자리 세 곳
+# 같은 값이 따로 적혀 있는 자리 세 곳(복사 방식에서 값이 어긋나는 무대)
 PLACES = ["notion", "figma", "sheets"]
 PLACE_LABEL = {"notion": "기획 문서(Notion 스펙)", "figma": "디자인 시안(Figma)", "sheets": "운영 시트(Sheets)"}
 
@@ -17,6 +20,7 @@ INITIAL = {
     "cancel": {"free_before_h": 24},
 }
 
+# 카드 순서가 곧 시간 순서다. 같은 값(예: price)을 서로 다른 자리에서 번갈아 고치는 점이 어긋남을 만든다
 # 시나리오 카드 8장. where = 이 카드를 받은 사람이 실제로 고친 곳(손에 익은 곳).
 # 변경은 칸 단위다. 운영 시간 카드는 여는 시각이나 닫는 시각 하나만 바꾼다.
 CARDS = [
@@ -46,6 +50,7 @@ DECISION_RULE = {
     "text": "notion",    # 결정·스펙 문장은 Notion
     "number": "sheets",  # 숫자 데이터는 Sheets
 }
+# SOURCE: 값마다 원본 자리 하나. 위 DECISION_RULE(숫자는 Sheets, 문장은 Notion)을 따르되, 운영 시간은 문장 취급이라 Notion이다
 SOURCE = {"price": "sheets", "hours": "notion", "cancel": "notion"}
 LINKS = {
     "price": {"notion": "ref", "figma": "hand"},    # Notion 스펙에는 시트를 임베드, 화면 글자는 손으로
@@ -53,12 +58,12 @@ LINKS = {
     "cancel": {"figma": "hand", "sheets": "ref"},   # 운영 시트에는 문구 대신 Notion 링크
 }
 
-# 첫 화면 손계산
+# 첫 화면 손계산에 쓰는 값: q 맞출 확률, k 자리 수, m 변경 횟수. 0.9^(k-1) = 0.81이 한 번 바꾼 뒤 다 맞을 확률
 HAND = {"q": 0.9, "k": 3, "m": 8}
 
 
 def render(value, v):
-    """사람이 읽는 꼴로."""
+    """사람이 읽는 꼴로(요금 "7,000원", 운영 시간 "08:00-24:00", 취소 규정 "12시간 전까지 무료"). 비교는 이 문자열이 아니라 값 dict로 한다."""
     if value == "price":
         return f"{v['won']:,}원"
     if value == "hours":

@@ -2,6 +2,10 @@
 
 표준 라이브러리만 쓴다. 모든 숫자는 학습용 가상값(예시용)이다.
 최대화 문제:  maximize c·x  subject to  A x <= b,  x >= 0,  x 정수.
+
+입력: 처리량 계수 C, 제약 계수 A, 한도 B(모두 가상). 출력: LP 완화 해, 반올림 결과, 전수 탐색, 분기한정.
+대응(README 기대 출력): LP 완화 (8/5, 11/5) 처리량 84/5 = 16.8, 반올림 (2, 2)는 인건비 14 > 13,
+정수 최적 (3, 0) 처리량 15, 가능한 정수점 10개, 분기한정 노드 13개, 한도 10~16의 정수 최적 13, 14, 15, 15, 18, 19, 20.
 """
 from fractions import Fraction as F
 from itertools import combinations, product
@@ -15,9 +19,11 @@ B = (13, 6)                     # 쓸 수 있는 한도
 
 def _solve_square(M, v):
     """정사각 연립방정식을 Fraction으로 푼다. 특이하면 None."""
+    # 가우스-조던 소거(Fraction이라 반올림 오차 없음). 증강행렬 [M | v]의 마지막 열이 해
     n = len(M)
     a = [[F(x) for x in row] + [F(y)] for row, y in zip(M, v)]
     for col in range(n):
+        # 피벗(0이 아닌 행)을 찾는다. 없으면 특이행렬: 두 제약선이 평행해 교점이 없다
         piv = next((r for r in range(col, n) if a[r][col] != 0), None)
         if piv is None:
             return None
@@ -43,12 +49,13 @@ def solve_lp(c, A, b, lower=None, upper=None):
     rows = [(tuple(map(F, r)), F(v)) for r, v in zip(A, b)]
     for i in range(n):
         e = [F(0)] * n
-        e[i] = F(-1)
+        e[i] = F(-1)   # x_i >= lower_i 를 -x_i <= -lower_i 로 바꿔 같은 부등식 형식에 넣는다
         rows.append((tuple(e), F(-lower[i])))
         if upper[i] is not None:
             e = [F(0)] * n
             e[i] = F(1)
             rows.append((tuple(e), F(upper[i])))
+    # 변수 n개면 제약 n개를 골라 등호로 풀어 꼭짓점 후보를 만든다. 변수가 늘면 조합 수가 폭발해 학습용(변수 4개 이하)
     best = None
     for pick in combinations(range(len(rows)), n):
         x = _solve_square([rows[i][0] for i in pick], [rows[i][1] for i in pick])
@@ -86,8 +93,10 @@ def brute_force(c, A, b, limit=30):
 def rounding_report(c, A, b):
     """LP 해를 반올림·버림·올림했을 때 무엇이 되는지 정리한다."""
     _, x = solve_lp(c, A, b)
+    # 반올림은 (8/5, 11/5) -> (2, 2): 인건비 4*2+3*2 = 14로 한도 13 초과(README)
     nearest = tuple(round(xi) for xi in x)
     cands = []
+    # 변수마다 바닥 또는 천장(floor, floor+1)으로 가능한 조합 4개만 확인. 정수 최적이 이 안에 없을 수 있다
     for pick in product(*[(floor(xi), floor(xi) + 1) for xi in x]):
         if is_feasible(pick, A, b):
             cands.append((objective(c, pick), pick))
@@ -107,6 +116,7 @@ def branch_and_bound(c, A, b):
     반환: dict(best, x, nodes, log)
     """
     n = len(c)
+    # incumbent: 지금까지 찾은 최선의 정수해. 리스트로 둔 것은 안쪽 함수 visit이 바꿀 수 있게 하려는 것
     incumbent = [None, None]  # (값, 해)
     log = []
     nodes = [0]
@@ -119,7 +129,9 @@ def branch_and_bound(c, A, b):
             log.append((no, depth, "가능해 없음", None, None))
             return
         val, x = res
+        # 계수가 정수이면 정수해의 값도 정수이므로 LP 값의 내림이 이 가지의 상한
         bound = floor(val)
+        # 상한이 이미 가진 정수해 이하면 더 좋아질 수 없어 가지를 버린다(같은 값은 개선이 아니므로 버림)
         if incumbent[0] is not None and bound <= incumbent[0]:
             log.append((no, depth, "가지치기", val, x))
             return
@@ -130,6 +142,7 @@ def branch_and_bound(c, A, b):
                 incumbent[0], incumbent[1] = int(val), tuple(int(v) for v in x)
             return
         log.append((no, depth, f"x{frac + 1} 분기", val, x))
+        # x_frac <= floor 가지와 x_frac >= floor+1 가지로 나눠 분수 해 구간을 잘라낸다
         fl = floor(x[frac])
         up = list(upper)
         up[frac] = fl
@@ -150,7 +163,7 @@ def sweep_budget(c, A, b, budgets):
     """인건비 한도를 바꿔 가며 LP 상한과 정수 최적값의 차이를 본다."""
     rows = []
     for v in budgets:
-        bb = (v, b[1])
+        bb = (v, b[1])   # 첫 제약(인건비)의 한도만 v로 바꾼다. 감독 한도는 그대로
         lp_val, _ = solve_lp(c, A, bb)
         bnb = branch_and_bound(c, A, bb)
         rows.append((v, lp_val, bnb["best"], bnb["x"], bnb["nodes"]))

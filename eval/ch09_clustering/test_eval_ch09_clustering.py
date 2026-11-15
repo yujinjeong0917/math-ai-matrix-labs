@@ -15,9 +15,11 @@ def test_first_screen_hand_numbers():
     t, p, s = cases.first_screen()
     assert m.raw_accuracy(t, p) == 0.0 and m.matched_accuracy(t, p) == 1.0
     n11, n10, n01, n00 = m.pair_counts(t, s)
+    # 모두 한 점씩 따로이면 군집 쌍 중 같이 묶인 것이 없어 n00 = 정답에서 따로인 9쌍. RI = 9/15 = 0.6
     assert (n11 + n10 + n01 + n00, n11 + n10, n00) == (15, 6, 9)  # 쌍 15개, 정답에서 같이 6, 따로 9
     assert m.rand_index(t, s) == pytest.approx(0.6)
     assert m.expected_rand_index(t, s) == pytest.approx(0.6)  # 모두 따로 두면 어떻게 섞어도 0.6
+    # 정보 없는 결과의 ARI는 0(RI는 0.6으로 높아 보여도 우연 수준)
     assert m.ari(t, s) == pytest.approx(0.0, abs=1e-12)
     assert m.ari(t, p) == 1.0
     assert m.matched_accuracy(t, s) == pytest.approx(1 / 3)
@@ -26,6 +28,7 @@ def test_first_screen_hand_numbers():
 
 def test_card_fixtures():
     u, v = cases.fixture_ari_half()
+    # 카드 예제: ARI = -1/2(우연보다 나쁨, 음수 가능). 분수로 되돌려 정확 비교
     assert Fraction(m.ari(u, v)).limit_denominator(100) == Fraction(-1, 2)
     assert m.rand_index(u, v) == pytest.approx(1 / 3)
     nu, nv = cases.fixture_nmi()
@@ -34,10 +37,12 @@ def test_card_fixtures():
     assert m.nmi(nu, nv, "arithmetic") == pytest.approx(2 / 3)
     X = cases.fixture_silhouette()
     assert m.silhouette_samples(X, [0, 0, 1, 1])[0] == pytest.approx(9 / 11)
+    # 점 2: a = (8+10)/2 = 9, b = 2(0까지 거리) -> (2-9)/9 = -7/9
     assert m.silhouette_samples(X, [0, 1, 1, 1])[1] == pytest.approx(-7 / 9)
     assert m.silhouette_samples(X, [0, 1, 1, 1])[0] == 0.0  # 한 점짜리 군집은 0
 
 
+# 논문에 적힌 E{I} = 0.4618(N=100)을 재현. 점을 10배로 늘리면 E{I}가 급감(논문이 적은 상한 두 값보다 작아야 함)
 def test_vinh_expected_mutual_info():
     a, b = cases.vinh_emi_sizes()
     assert round(m.expected_mutual_info_sizes(a, b), 4) == 0.4618  # Vinh 4.2절
@@ -48,6 +53,7 @@ def test_vinh_expected_mutual_info():
 def test_permutation_model_bruteforce():
     """순열 모형의 기댓값을 720가지 배치를 다 세어 확인: E{I}·E[RI] 공식, ARI·AMI 평균 0."""
     u, v = np.array([0, 0, 0, 1, 1, 2]), np.array([0, 0, 1, 1, 2, 2])
+    # 점 6개의 모든 배치 720가지. 순열 모형의 평균을 전수로 구해 공식과 대조
     perms = [v[list(p)] for p in permutations(range(6))]
     assert np.mean([m.mutual_info(u, w) for w in perms]) == pytest.approx(m.expected_mutual_info(u, v), abs=1e-12)
     assert np.mean([m.rand_index(u, w) for w in perms]) == pytest.approx(m.expected_rand_index(u, v), abs=1e-12)
@@ -61,6 +67,7 @@ def test_hungarian_matches_bruteforce():
         w = rng.integers(0, 30, (rng.integers(1, 8), rng.integers(1, 8)))
         r, c = m.hungarian_max(w)
         assert len(set(r)) == len(r) and len(set(c)) == len(c)  # 일대일
+        # 정수 가중치라 정확히 같다. 행·열 수를 1~7로 무작위(직사각형 포함)
         assert w[r, c].sum() == m.brute_force_max(w)
 
 
@@ -73,6 +80,7 @@ def test_relabel_invariance():
     noisy[flip] = rng.integers(0, 3, int(flip.sum()))
     base = (m.ari(y, noisy), m.nmi(y, noisy), m.ami(y, noisy), m.matched_accuracy(y, noisy))
     for perm in permutations(range(3)):
+        # 번호를 순열로 바꾸고 +10까지 해도 지표가 같아야 한다(라벨은 이름표)
         relab = np.array(perm)[noisy] + 10  # 번호 값도 아무렇게나
         now = (m.ari(y, relab), m.nmi(y, relab), m.ami(y, relab), m.matched_accuracy(y, relab))
         assert np.allclose(now, base, atol=1e-12)
@@ -95,10 +103,12 @@ def test_ari_pair_formula_matches_vinh_form():
     for _ in range(30):
         u, v = rng.integers(0, 3, 40), rng.integers(0, 5, 40)
         n11, n10, n01, n00 = m.pair_counts(u, v)
+        # Vinh 2절의 쌍 세기로 쓴 ARI 식. (RI - E)/(1 - E) 꼴과 같은 값
         alt = 2 * (n00 * n11 - n01 * n10) / ((n00 + n01) * (n01 + n11) + (n00 + n10) * (n10 + n11))
         assert m.ari(u, v) == pytest.approx(alt, abs=1e-12)
 
 
+# 무작위 라벨에서 NMI는 군집 수가 늘수록 오르는 편향(우연 보정 없음), ARI·AMI는 0 근처. 시드 30개 평균이라 허용 0.02
 def test_random_labels_chance_correction():
     """n=100에서 무작위 라벨: 군집 수가 늘면 NMI는 오르고, ARI·AMI 평균은 0 근처."""
     means = {}
@@ -112,6 +122,7 @@ def test_random_labels_chance_correction():
         assert abs(means[k][1]) < 0.02 and abs(means[k][2]) < 0.02
 
 
+# 반달에서는 정답 분할보다 k-평균의 잘못된 분할이 실루엣이 더 높다(라벨 없는 지표의 한계)
 def test_silhouette_prefers_wrong_split_on_moons():
     X, y = cases.case_moons(seed=0)
     km = m.kmeans(X, 2, seed=0)
@@ -122,6 +133,7 @@ def test_silhouette_prefers_wrong_split_on_moons():
 def test_silhouette_range_and_validity():
     X, y = cases.case_blobs(k=4, seed=0)
     s = m.silhouette_samples(X, y)
+    # 실루엣은 [-1, 1]. 군집 하나로는 정의되지 않아 ValueError
     assert np.all(s >= -1) and np.all(s <= 1)
     with pytest.raises(ValueError):
         m.silhouette(X, np.zeros(len(X), dtype=int))
@@ -142,11 +154,13 @@ def test_numpy_matches_torch():
         assert abs(m.mutual_info(u, v) - tm.mutual_info(u, v)) < 1e-12
         assert abs(m.expected_mutual_info(u, v) - tm.expected_mutual_info(u, v)) < 1e-12
         assert abs(m.ami(u, v, "arithmetic") - tm.ami(u, v, "arithmetic")) < 1e-10
+        # 거리 계산을 직접 방식으로 맞춰 1e-12까지 일치
         assert abs(m.silhouette(P, u) - tm.silhouette(P, u)) < 1e-12
 
 
 def test_web_chapter_exercise_answers():
     # 연습 1: 정답 (가 가 나 나 다 다), 군집 (1 1 1 2 2 3): 번호 맞춘 정확도 4/6
+    # 군집 {0,1,2}{3,4}{5}를 정답 {0,1}{2,3}{4,5}에 일대일로 짝지으면 맞는 점이 4개(4/6)
     t = np.array([0, 0, 1, 1, 2, 2]); c = np.array([0, 0, 0, 1, 1, 2])
     assert m.matched_accuracy(t, c) == pytest.approx(4 / 6)
     # 연습 2: 정답 (가 가 나 나), 모두 따로 -> RI 4/6, 우연 평균 4/6, ARI 0

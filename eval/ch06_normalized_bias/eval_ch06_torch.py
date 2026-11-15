@@ -8,6 +8,7 @@ torch.set_num_threads(2)
 
 
 def nmbe_ashrae(y, yhat, p=1):
+    # 샘플 수. y는 (n,) 텐서
     n = y.shape[0]
     return (100.0 * (y - yhat).sum() / ((n - p) * y.mean())).item()
 
@@ -24,5 +25,6 @@ def nmae(y, yhat, norm):
 def mse_decomposition(y, yhat):
     e = y - yhat
     bias = e.mean()
+    # torch.var 기본은 n-1이라 NumPy(분모 n)와 맞추려고 unbiased=False
     var = e.var(unbiased=False)  # 분모 n
     return {"mse_builtin": F.mse_loss(yhat, y).item(), "bias_sq": (bias ** 2).item(), "var": var.item()}

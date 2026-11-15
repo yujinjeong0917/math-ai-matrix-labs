@@ -34,6 +34,7 @@ OUT = Path(__file__).parent / "results" / "ch05.json"
 SEEDS = 100
 
 
+# 평균과 5·50·95 백분위수를 한 번에 요약
 def q(a, p=(5, 50, 95)):
     a = np.asarray(a, float)
     return {"mean": float(a.mean()), **{f"p{k}": float(np.percentile(a, k)) for k in p}}
@@ -56,6 +57,7 @@ def e0_first_screen():
     }
 
 
+# 세 예측: 평균 고정(A), 마지막 값 고정(N_fixed), 매일 전날 실제값(N_rolling)
 def _models_rw(tr, te):
     h = len(te)
     return {"A_mean_fixed": m.mean_forecast(tr, h), "N_fixed": m.naive_forecast(tr, h), "N_rolling": m.naive_rolling(tr, te)}
@@ -76,6 +78,7 @@ def e1_random_walk():
         v = {k: (m.mape(te, p), m.mase(tr, te, p)) for k, p in ps.items()}
         for k in v:
             many[k]["mape"].append(v[k][0]); many[k]["mase"].append(v[k][1])
+        # MAPE는 1% 미만인데 MASE는 1 초과인 시드 수. 수준이 크면 MAPE만으로는 못한 모델이 드러나지 않는다
         a_mape_below_1pct_and_mase_above_1 += v["A_mean_fixed"][0] < 1.0 and v["A_mean_fixed"][1] > 1.0
         a_beats_nfixed += v["A_mean_fixed"][1] < v["N_fixed"][1]
     summ = {k: {"mape": q(d["mape"]), "mase": q(d["mase"])} for k, d in many.items()}
@@ -91,6 +94,7 @@ def e2_horizon():
         for s in range(SEEDS):
             tr, te = cases.case_random_walk_level(seed=2000 + s)
             p = m.naive_rolling(tr, te, lag=h)  # 평가 시점 t를 h일 전 실제값으로 예측
+            # 같은 예측 p를 1스텝 분모와 h스텝 분모로 각각 나눠 비교. 랜덤워크에서 h일 전 값 예측의 오차는 약 sqrt(h)배라 1스텝 분모 MASE의 이론값은 sqrt(h), h스텝 분모는 약 1
             one_step.append(m.mase(tr, te, p, lag=1))
             h_step.append(m.mase(tr, te, p, lag=h))
         out[str(h)] = {"theory_sqrt_h": float(np.sqrt(h)), "scaled_by_1step": q(one_step), "scaled_by_hstep": q(h_step)}
@@ -98,6 +102,7 @@ def e2_horizon():
 
 
 def _panel(seed):
+    # 큰 가게(랜덤워크, 수준 1000)와 작은 가게(수준 20)를 시드 대역을 달리해 독립으로 만든다
     big = cases.case_random_walk_level(seed=3000 + seed)
     small = cases.case_iid_level(seed=4000 + seed)
     res = {}
@@ -106,6 +111,7 @@ def _panel(seed):
         res[name] = {}
         for mk, p in (("A_mean", m.mean_forecast(tr, h)), ("B_naive", m.naive_forecast(tr, h))):
             res[name][mk] = {"mape": m.mape(te, p), "mase": m.mase(tr, te, p), "mae": m.mae(te, p)}
+    # 계열 평균(MASE는 단위가 없어 큰 가게가 지배하지 않지만, MAE 평균은 단위가 큰 가게가 지배한다)
     avg = {mk: {k: float(np.mean([res[s][mk][k] for s in ("big", "small")])) for k in ("mape", "mase", "mae")}
            for mk in ("A_mean", "B_naive")}
     return res, avg
@@ -148,8 +154,10 @@ def e4_intermittent(n=120, n_train=80):
             for k in ms:
                 mase_vals[k].append(ms[k])
             c["mase_finite"] += all(np.isfinite(list(ms.values())))
+            # 평가 구간에 0이 하나라도 있으면 정의대로의 MAPE는 계산 불가
             c["mape_undefined"] += bool((te == 0).any())
             ep = {k: m.mape(te, p, zero="eps") for k, p in preds.items()}
+            # eps 정책에서 늘 0 예측(Z)이 이기는 횟수. 4장의 함정이 그대로 나타난다
             c["eps_Z_best"] += ep["Z"] < min(ep["A"], ep["B"])
             c["mase_A_best"] += ms["A"] < min(ms["B"], ms["Z"])
             c["mase_Z_best"] += ms["Z"] < min(ms["A"], ms["B"])
@@ -169,6 +177,7 @@ def e5_denominator_limits():
     except ValueError as e:
         const = f"ValueError: {e}"
     rows = {}
+    # jump가 작을수록 분모(jump/99)가 작아 같은 오차 1에서 MASE = 99/jump로 커진다
     for jump in (1.0, 10.0, 50.0):
         tr, te, p = cases.case_nearly_flat(jump=jump)
         rows[str(jump)] = {"denominator": m.naive_mae_in_sample(tr), "test_mae": m.mae(te, p), "mase": m.mase(tr, te, p)}
@@ -178,11 +187,13 @@ def e5_denominator_limits():
 def e6_seasonal():
     tr, te = cases.case_weekly(seed=0)
     h = len(te)
+    # 요일별 학습 평균 7개(인덱스 i, i+7, i+14, ...의 평균)
     wk = np.array([tr[i::7].mean() for i in range(7)])
     preds = {
         "overall_mean": np.full(h, tr.mean()),
         "naive_rolling_lag1": m.naive_rolling(tr, te, lag=1),
         "seasonal_naive_rolling_lag7": m.naive_rolling(tr, te, lag=7),
+        # 평가 구간 h = 28일이므로 4주 반복(h가 7의 배수라는 가정)
         "weekday_mean": np.tile(wk, h // 7),
     }
     d1, d7 = m.naive_mae_in_sample(tr, 1), m.naive_mae_in_sample(tr, 7)
@@ -201,6 +212,7 @@ def e6_seasonal():
 
 def e7_fixture_torch():
     tr, te, p = cases.fixture_small()
+    # fixture 값이 정수라 Fraction으로 분모·MASE를 정확한 분수로 구해 부동소수 결과와 대조
     exact_den = sum(Fraction(abs(int(a) - int(b))) for a, b in zip(tr[1:], tr[:-1])) / (len(tr) - 1)
     exact = sum(Fraction(abs(int(a) - int(b))) for a, b in zip(te, p)) / len(te) / exact_den
     rng = np.random.default_rng(7)

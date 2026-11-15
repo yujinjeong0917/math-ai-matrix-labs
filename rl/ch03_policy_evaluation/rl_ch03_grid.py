@@ -27,6 +27,7 @@ def make_grid_full(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
         r, c = divmod(s, w)
         for a in range(A):
             for b in range(A):
+                # 행동 a를 골랐을 때 실제로 b 방향으로 갈 확률: 확률 slip만큼은 네 방향 균등(a 자신 포함)
                 prob = (1.0 - slip) * (a == b) + slip / A
                 if prob == 0.0:
                     continue
@@ -35,8 +36,8 @@ def make_grid_full(h, w, rewards, terminals, slip=0.0, step_reward=0.0):
                 if not (0 <= nr < h and 0 <= nc < w):
                     nr, nc = r, c
                 s2 = nr * w + nc
-                P[s, a, s2] += prob
-                R[s, a, s2] = rewards.get((nr, nc), step_reward)
+                P[s, a, s2] += prob  # += : 벽에 부딪혀 여러 방향이 같은 칸(제자리)으로 모일 수 있다
+                R[s, a, s2] = rewards.get((nr, nc), step_reward)  # 도착한 칸 기준 보상 R(s,a,s')
     return P, R
 
 
@@ -61,6 +62,7 @@ def neighbors(h, w, terminals):
         r, c = divmod(s, w)
         for a, (dr, dc) in enumerate(ACTIONS):
             nr, nc = r + dr, c + dc
+            # 종료 칸이거나 격자 밖이면 제자리. 이 장은 미끄러짐이 없으므로 행동 a는 항상 방향 a로 이동
             if term[s] or not (0 <= nr < h and 0 <= nc < w):
                 nr, nc = r, c
             nbr[s, a] = nr * w + nc
@@ -79,12 +81,14 @@ def make_policy_mats(h, w, rewards, terminals, pi=None, dense=True):
     prob[term] = 0.25  # 종료 칸: 어디로 가든 자기 자신, 보상 0
     rew = np.zeros((S, 4))
     for (r, c), v in rewards.items():
-        rew[nbr == r * w + c] = v
-    rew[term] = 0.0
+        rew[nbr == r * w + c] = v  # (S, 4) 불리언 마스크: 그 칸으로 들어가는 모든 (s, a)에 보상
+    rew[term] = 0.0  # 종료 칸의 자기 순환에는 보상을 다시 주지 않는다(보상은 들어가는 순간 한 번만)
+    # 식: r^pi(s) = sum_a pi(a|s) R(s,a)  (이동이 결정적이라 sum_s' P(s'|s,a) R(s,a,s') 가 rew[s,a] 하나로 줄어듦)
     r_pi = (prob * rew).sum(axis=1)
     P_pi = None
     if dense:
         P_pi = np.zeros((S, S))
+        # 식: P^pi[s, s'] = sum_a pi(a|s) [nbr[s,a] = s'].  add.at은 같은 (s, s')가 겹치면(벽 부딪힘) 확률을 누적한다
         np.add.at(P_pi, (np.repeat(np.arange(S), 4), nbr.ravel()), prob.ravel())
     return {"P_pi": P_pi, "r_pi": r_pi, "nbr": nbr, "prob": prob, "rew": rew, "term": term}
 

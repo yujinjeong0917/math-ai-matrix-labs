@@ -17,19 +17,25 @@ MODEL_B = {"배송": 1.0, "환불": 2.0, "결제 오류": 0.5}
 
 
 def softmax(scores, T=1.0):
+    """점수 dict를 온도 T의 소프트맥스로 확률 dict로 바꾼다. 확률의 합은 1."""
     if T <= 0:
         raise ValueError("온도는 0보다 커야 해요. 0에 가까운 경우는 greedy()를 쓰세요.")
+    # 수치 안정화: 최댓값을 빼도 분자·분모에서 e^(-mx/T)가 약분돼 확률이 같고, exp 폭주(overflow)를 막는다.
     mx = max(scores.values())
+    # 식: e^((점수-mx)/T)
     ex = {k: math.exp((v - mx) / T) for k, v in scores.items()}
     s = sum(ex.values())
     return {k: v / s for k, v in ex.items()}
 
 
 def greedy(scores):
+    """점수가 가장 높은 후보 하나(온도 0 극한). 동점이면 먼저 나온 키."""
     return max(scores, key=scores.get)
 
 
 def sample(scores, T, n, seed):
+    """확률대로 n번 뽑는다. 반환: (후보별 횟수 dict, 뽑힌 순서 리스트)."""
+    # 전역 난수 상태를 건드리지 않는 독립 난수기. 시드를 고정해야 실행마다 같은 횟수가 나온다.
     rng = random.Random(seed)
     p = softmax(scores, T)
     keys = list(p)

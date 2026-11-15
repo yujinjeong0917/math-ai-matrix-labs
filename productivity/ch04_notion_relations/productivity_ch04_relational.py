@@ -12,6 +12,10 @@ DB 모양(사전):
   task_dec:  {(T, D)}   할 일 ↔ 근거 결정 relation (양방향으로 보이는 한 쌍)
   dec_spec:  {(D, S)}   결정 ↔ 영향받는 스펙 relation
   task_spec: {(T, S)}   할 일 ↔ 관련 스펙 relation
+
+무엇을 재는가: 연결(relation)이 데이터로 저장돼 있을 때 같은 질문 다섯 개를 필터·조인·묶어 세기로 답하고, 연결을 잃으면 빈칸 검사로 얼마나 드러나는지.
+입력: build(lost)가 만든 DB 사전. 출력: 질문별 답, rollup(결정별 미완료 할 일 수), 빈칸 검사 결과. 같은 값을 SQL(sqlite3)로도 계산해 대조한다.
+관계형 방식은 연결이 구조로 있어 "빈 relation"이 곧 눈에 띄는 신호가 되지만, 한 칸에 연결이 둘 이상 있을 때 하나를 잃으면 칸이 비지 않아 못 잡는다(테스트의 "두 번째 연결" 사례).
 """
 
 import sqlite3
@@ -34,12 +38,12 @@ def build(lost=frozenset()):
             if ("spec", d, s) not in lost:
                 db["dec_spec"].add((d, s))
     for t, v in DATA.TASKS.items():
-        db["tasks"][t] = {k: v[k] for k in ("title", "status", "owner", "updated")}
+        db["tasks"][t] = {k: v[k] for k in ("title", "status", "owner", "updated")}  # 연결 정보(decisions, specs)는 별도 표로 뺀다
         for d in v["decisions"]:
             if ("task", d, t) not in lost:
                 db["task_dec"].add((t, d))
         for s in v["specs"]:
-            db["task_spec"].add((t, s))
+            db["task_spec"].add((t, s))  # 할 일-스펙 연결은 lost 대상이 아니다(data.links()에 없다)
     for s, v in DATA.SPECS.items():
         db["specs"][s] = dict(v)
     return db
@@ -52,7 +56,7 @@ def select(rows, pred):
 
 
 def join(left, right, lkey, rkey):
-    """자연 조인(중첩 반복). 키가 같은 두 행을 합친다."""
+    """자연 조인(중첩 반복). 키가 같은 두 행을 합친다. 시간은 두 행 수의 곱(작은 데이터용)이다. 겹치는 키는 오른쪽 값이 덮는다."""
     out = []
     for a in left:
         for b in right:
@@ -62,7 +66,8 @@ def join(left, right, lkey, rkey):
 
 
 def group_count(rows, key, all_keys=()):
-    """gamma: key로 묶어 개수를 센다. all_keys에 있는데 행이 없으면 0."""
+    """gamma: key로 묶어 개수를 센다. all_keys에 있는데 행이 없으면 0.
+    all_keys가 없으면 행이 0개인 결정이 결과에서 빠진다(SQL의 LEFT JOIN이 0을 살리는 것과 같은 역할)."""
     out = {k: 0 for k in all_keys}
     for r in rows:
         out[r[key]] = out.get(r[key], 0) + 1
@@ -70,10 +75,12 @@ def group_count(rows, key, all_keys=()):
 
 
 def _task_rows(db):
+    """tasks 사전을 행 목록(dict)으로 펼친다. 할 일 번호는 "task" 열."""
     return [{"task": t, **v} for t, v in db["tasks"].items()]
 
 
 def _td_rows(db):
+    """task_dec 쌍 집합을 행 목록으로 펼친다(열: task, decision). 집합이라 순서가 없다."""
     return [{"task": t, "decision": d} for t, d in db["task_dec"]]
 
 
@@ -95,6 +102,7 @@ def rollup_open_tasks_formula(db):
 
 
 def project_rollups(db):
+    """프로젝트 수준 rollup: 결정 수, 미완료 할 일 수."""
     return {
         "decisions": len(db["decisions"]),
         "open_tasks": len([t for t, v in db["tasks"].items() if v["status"] != DONE]),
@@ -103,29 +111,35 @@ def project_rollups(db):
 
 # ---------------------------------------------------------------- 질문 5개
 def q1(db, d="D04"):
+    """Q1: 결정 d를 근거로 한 할 일(정렬 목록)."""
     return sorted({t for t, dd in db["task_dec"] if dd == d})
 
 
 def q2(db, s="S03"):
+    """Q2: 화면 s에 직접 영향을 준 결정(결정-스펙 relation 기준)."""
     return sorted({d for d, ss in db["dec_spec"] if ss == s})
 
 
 def q2_via_tasks(db, s="S03"):
-    """연결 함정: 결정 → 할 일 → 스펙 경로를 따라가서 '영향을 준 결정'을 고른다."""
+    """연결 함정: 결정 → 할 일 → 스펙 경로를 따라가서 '영향을 준 결정'을 고른다.
+    할 일에 스펙이 안 달렸거나 결정이 화면과 무관하게 할 일만 걸려 있으면 직접 연결(q2)과 결과가 달라진다."""
     tasks_on_s = {t for t, ss in db["task_spec"] if ss == s}
     return sorted({d for t, d in db["task_dec"] if t in tasks_on_s})
 
 
 def q3(db):
+    """Q3: 미완료 할 일이 하나라도 있는 결정(rollup이 0보다 큰 결정)."""
     r = rollup_open_tasks(db)
     return sorted(d for d, n in r.items() if n > 0)
 
 
 def q4(db):
+    """Q4: 결정별 결정자. 결정자가 비어 있으면 None이 그대로 나온다(페이지 방식은 이 경우 전체를 답할 수 없음으로 처리)."""
     return {d: v["owner"] for d, v in sorted(db["decisions"].items())}
 
 
 def q5(db):
+    """Q5: 완료된 할 일이 스펙의 마지막 수정일보다 먼저 수정된 스펙(할 일 끝난 뒤 스펙이 또 바뀐 것). 날짜 문자열의 사전순 비교를 쓴다."""
     stale = set()
     for t, s in db["task_spec"]:
         tv = db["tasks"][t]
@@ -135,6 +149,7 @@ def q5(db):
 
 
 def answer_all(db):
+    """질문 다섯 개의 답을 한 사전에."""
     return {"Q1": q1(db), "Q2": q2(db), "Q3": q3(db), "Q4": q4(db), "Q5": q5(db)}
 
 
@@ -146,6 +161,7 @@ def view_rows(db):
         "Q3": len(db["decisions"]),                          # Decisions 보기 + 미완료 rollup 열
         "Q4": len(db["decisions"]),                          # Decisions 보기, 결정자 열
         "Q5": len(db["task_spec"]),                          # Tasks × 관련 스펙 보기
+        # 위 행 수는 "그 보기를 열었을 때 눈으로 훑을 행"을 읽은 양으로 어림한 값이다(모형의 선택)
     }
 
 
@@ -163,6 +179,7 @@ def empty_checks(db):
 
 def detected_links(db, lost):
     """잃은 연결 가운데 빈칸 검사로 드러나는 것. 드러난 칸은 사람이 원래 연결을 모두 다시 채운다고 둔다."""
+    # 연결을 잃었어도 그 결정/할 일에 다른 연결이 남아 있으면 칸이 비지 않아 드러나지 않는다(예: 근거 결정이 둘인 할 일)
     chk = empty_checks(db)
     found = set()
     for kind, d, x in lost:
@@ -187,6 +204,7 @@ CREATE TABLE task_spec(task TEXT REFERENCES tasks(id), spec TEXT REFERENCES spec
 
 
 def to_sqlite(db):
+    """파이썬 DB 사전을 메모리 SQLite로 옮긴다. 쌍 집합은 정렬해 넣어 삽입 순서를 고정한다."""
     con = sqlite3.connect(":memory:")
     con.executescript(SCHEMA)
     con.executemany("INSERT INTO decisions VALUES(?,?,?,?,?)",
@@ -202,6 +220,7 @@ def to_sqlite(db):
 
 def sql_answer_all(con, d1="D04", s2="S03"):
     col = lambda q, *a: [r[0] for r in con.execute(q, a)]  # noqa: E731
+    # 미완료 수: LEFT JOIN 조건에 status != 완료를 넣어야 결정은 남기고 미완료 할 일만 센다(WHERE에 넣으면 0인 결정이 사라진다)
     open_by_dec = dict(con.execute(
         """SELECT d.id, COUNT(t.id) FROM decisions d
            LEFT JOIN task_dec td ON td.decision = d.id

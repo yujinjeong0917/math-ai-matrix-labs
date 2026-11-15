@@ -22,7 +22,9 @@ def mae(y, yhat):
 def ape(y, yhat):
     """시점마다 백분율 오차의 크기 100 * |y - yhat| / |y|. y = 0인 자리는 inf(오차 있음) 또는 nan(0/0)."""
     y, yhat = _arr(y), _arr(yhat)
+    # y=0이면 NumPy가 경고를 내므로 끄고 inf/nan을 그대로 돌려준다(값으로 문제를 드러내기 위해)
     with np.errstate(divide="ignore", invalid="ignore"):
+        # APE_i = 100 |y_i - yhat_i| / |y_i| (%). 정답이 분모라 예측이 클 때는 상한이 없고 모자랄 때는 100%에서 막힌다(예측 >= 0일 때)
         return 100.0 * np.abs(y - yhat) / np.abs(y)
 
 
@@ -35,6 +37,7 @@ def mape(y, yhat, zero="raise"):
                    (sklearn은 비율이라 이 값의 1/100).
     """
     y, yhat = _arr(y), _arr(yhat)
+    # 정확히 0인 정답만 센다. 0에 아주 가까운 값(0.01 등)은 통과해 APE가 폭주할 수 있다(case_near_zero)
     zeros = y == 0.0
     if zero == "raise":
         if zeros.any():
@@ -43,14 +46,17 @@ def mape(y, yhat, zero="raise"):
     if zero == "drop":
         if zeros.all():
             raise ValueError("정답이 모두 0이라 남는 시점이 없다")
+        # drop 정책은 평균에서 0인 시점을 아예 제외한다. 제외된 날의 오차는 평가에서 사라진다는 점이 함정
         return float(np.mean(ape(y[~zeros], yhat[~zeros])))
     if zero == "eps":
+        # y=0이면 분모가 2.2e-16이 되어 오차가 조금만 있어도 1e15 수준 값이 나온다. 예측도 정확히 0이면 0/EPS = 0
         return float(100.0 * np.mean(np.abs(yhat - y) / np.maximum(np.abs(y), EPS)))
     raise ValueError(f"알 수 없는 zero 정책: {zero}")
 
 
 def ape_bounds_demo(y=100.0, forecasts=(0.0, 50.0, 100.0, 150.0, 200.0, 400.0, 1000.0)):
     """정답 y를 고정하고 예측만 바꿨을 때의 APE. 0 이상 예측에서 모자란 쪽은 100%에서 막힌다."""
+    # 리스트로 감싸 ape에 넘겨 스칼라 하나씩 계산한다. 예측 0이면 100%, 1000이면 900%
     return {float(f): float(ape([y], [f])[0]) for f in forecasts}
 
 
@@ -64,7 +70,9 @@ def best_constant_mape(y):
     y = _arr(y)
     if np.any(y <= 0):
         raise ValueError("정답이 모두 양수여야 한다")
+    # y를 오름차순으로 정렬하고 같은 순서로 가중치 1/y를 쌓는다
     order = np.argsort(y, kind="stable")
     ys, w = y[order], 1.0 / y[order]
     cum = np.cumsum(w)
+    # 누적 가중치가 전체의 절반 이상이 되는 첫 y(searchsorted 기본은 왼쪽 경계). 가중 중앙값이 최적이라는 근거는 함수 docstring의 논리이며, 테스트가 격자 탐색과 대조해 확인한다
     return float(ys[np.searchsorted(cum, 0.5 * cum[-1])])

@@ -17,8 +17,10 @@ def rnn_forward(x, W, U, b=None, h0=None):
     n, H = x.shape[0], W.shape[0]
     b = np.zeros(H) if b is None else b
     h = np.zeros(H) if h0 is None else h0
+    # hs[t] = 시점 t의 은닉 상태. 모양 (n, H).
     hs = np.empty((n, H))
     for t in range(n):  # 이 루프는 병렬화할 수 없다: h_t가 h_{t-1}을 필요로 한다
+        # 식: h_t = tanh(W h_{t-1} + U x_t + b). W (H, H), U (H, d_in).
         h = np.tanh(W @ h + U @ x[t] + b)
         hs[t] = h
     return hs
@@ -34,12 +36,15 @@ def rnn_state_jacobian_norms(x, W, U):
     J = np.eye(W.shape[0])
     norms = []
     for t in range(x.shape[0]):
+        # J = dh_t/dh_0 를 한 걸음씩 곱해 만든다. tanh' = 1 - h^2.
         J = (np.diag(1.0 - hs[t] ** 2) @ W) @ J
+        # ord=2는 행렬의 스펙트럼 노름(최대 특이값).
         norms.append(np.linalg.norm(J, 2))
     return np.array(norms)
 
 
 def softmax(z):
+    """수치 안정 softmax(1차원 로짓 벡터). 최댓값을 빼도 결과는 같고 exp 오버플로만 막는다."""
     z = z - z.max()
     e = np.exp(z)
     return e / e.sum()
@@ -48,6 +53,7 @@ def softmax(z):
 def rnn_loss(params, x, y):
     """마지막 상태 h_n 하나로 클래스 y를 맞히는 교차엔트로피."""
     hs = rnn_forward(x, params["W"], params["U"], params["b"])
+    # Wo: (클래스 수, H). 마지막 시점 상태 하나만 분류에 쓴다.
     logits = params["Wo"] @ hs[-1] + params["bo"]
     return -np.log(softmax(logits)[y])
 
@@ -63,10 +69,13 @@ def rnn_bptt(params, x, y):
     dlogits[y] -= 1.0  # softmax + 교차엔트로피의 기울기: p - e_y
     g = {"Wo": np.outer(dlogits, hs[-1]), "bo": dlogits, "W": np.zeros_like(W), "U": np.zeros_like(U), "b": np.zeros_like(b)}
     dx = np.zeros_like(x)
+    # 손실에서 마지막 h_n으로 오는 기울기 (H,).
     dh = Wo.T @ dlogits
     for t in range(n - 1, -1, -1):  # 앞으로 n걸음 왔으니 뒤로도 n걸음 간다
         da = dh * (1.0 - hs[t] ** 2)  # tanh의 미분
+        # t = 0이면 이전 상태는 h0 = 0(rnn_forward 기본값과 같다).
         h_prev = hs[t - 1] if t > 0 else np.zeros_like(hs[0])
+        # 같은 W를 모든 시점이 공유하므로 시점마다 기울기를 더한다(BPTT의 핵심).
         g["W"] += np.outer(da, h_prev)
         g["U"] += np.outer(da, x[t])
         g["b"] += da
@@ -77,16 +86,20 @@ def rnn_bptt(params, x, y):
 
 # ---------------------------------------------------------------- LSTM
 def sigmoid(z):
+    """시그모이드 1/(1+e^-z). 게이트 값을 (0, 1)로 만든다. z가 매우 작으면 exp가 오버플로 경고를 낼 수 있다."""
     return 1.0 / (1.0 + np.exp(-z))
 
 
 def lstm_cell_forward(x, h_prev, c_prev, Wx, Wh, b):
     """한 시점. Wx: (4H, d_in), Wh: (4H, H), b: (4H,). 게이트 순서 (i, f, o, g)."""
     H = h_prev.shape[0]
+    # 네 게이트의 pre-activation을 한 번에: (4H,). 아래에서 H씩 잘라 (i, f, o, g)로 쓴다.
     z = Wx @ x + Wh @ h_prev + b
     i, f, o = sigmoid(z[:H]), sigmoid(z[H : 2 * H]), sigmoid(z[2 * H : 3 * H])
     g = np.tanh(z[3 * H :])
+    # 식: c_t = f * c_{t-1} + i * g. 덧셈 경로라 기울기가 f만 곱해져 흐른다.
     c = f * c_prev + i * g  # 덧셈 경로: c_prev는 f를 곱한 채로 그대로 넘어간다
+    # 식: h_t = o * tanh(c_t).
     h = o * np.tanh(c)
     return h, c, (x, h_prev, c_prev, i, f, o, g, c)
 
@@ -95,15 +108,19 @@ def lstm_cell_backward(dh, dc, cache, Wx, Wh):
     """한 시점의 역전파. 반환: (dx, dh_prev, dc_prev, dWx, dWh, db)."""
     x, h_prev, c_prev, i, f, o, g, c = cache
     tc = np.tanh(c)
+    # h = o * tanh(c)에서 dh -> do. tc = tanh(c).
     do = dh * tc
+    # c로 오는 기울기 = 다음 시점에서 온 dc + h를 통해 오는 몫.
     dc = dc + dh * o * (1.0 - tc**2)
     di, df, dg = dc * g, dc * c_prev, dc * i
     dc_prev = dc * f  # 셀 경로의 야코비안은 diag(f) 하나뿐이다
+    # 각 게이트의 pre-activation 기울기. 시그모이드' = s(1-s), tanh' = 1 - g^2. 순서 (i, f, o, g).
     dz = np.concatenate([di * i * (1 - i), df * f * (1 - f), do * o * (1 - o), dg * (1 - g**2)])
     return Wx.T @ dz, Wh.T @ dz, dc_prev, np.outer(dz, x), np.outer(dz, h_prev), dz
 
 
 def lstm_forward(x, Wx, Wh, b, h0=None, c0=None):
+    """x: (n, d_in) -> (hs (n, H), cs (n, H), 시점별 cache 리스트). 게이트 순서 (i, f, o, g)."""
     H = Wh.shape[1]
     h = np.zeros(H) if h0 is None else h0
     c = np.zeros(H) if c0 is None else c0
@@ -117,11 +134,13 @@ def lstm_forward(x, Wx, Wh, b, h0=None, c0=None):
 
 
 def lstm_loss(params, x, y):
+    """마지막 은닉 상태 h_n으로 클래스 y를 맞히는 교차엔트로피."""
     hs, _, _ = lstm_forward(x, params["Wx"], params["Wh"], params["b"])
     return -np.log(softmax(params["Wo"] @ hs[-1] + params["bo"])[y])
 
 
 def lstm_bptt(params, x, y):
+    """LSTM 시간 역전파. 반환: (손실, 파라미터 기울기 dict, 입력 기울기 dx (n, d_in))."""
     Wx, Wh, b, Wo, bo = (params[k] for k in ("Wx", "Wh", "b", "Wo", "bo"))
     hs, _, caches = lstm_forward(x, Wx, Wh, b)
     p = softmax(Wo @ hs[-1] + bo)
@@ -146,32 +165,39 @@ def lstm_state_jacobian_norms(x, Wx, Wh, b):
     """
     H = Wh.shape[1]
     hs, cs, caches = lstm_forward(x, Wx, Wh, b)
+    # 상태 s = (h, c) 2H차원에 대한 전체 야코비안. 항등으로 시작해 시점마다 A를 곱한다.
     J = np.eye(2 * H)  # 행/열 순서: (h, c)
     Wi, Wf, Wo_, Wg = Wh[:H], Wh[H : 2 * H], Wh[2 * H : 3 * H], Wh[3 * H :]
     cell_norms, state_norms, f_prod = [], [], np.ones(H)
     for t in range(x.shape[0]):
         _, _, c_prev, i, f, o, g, c = caches[t]
         tc = np.tanh(c)
+        # c가 h_{t-1}에 의존하는 경로: f, i, g 게이트를 거친다. 각 항이 (H, H).
         dc_dh = (c_prev * f * (1 - f))[:, None] * Wf + (g * i * (1 - i))[:, None] * Wi + (i * (1 - g**2))[:, None] * Wg
+        # 셀 경로 야코비안은 diag(f). f가 1에 가까우면 기울기가 보존된다.
         dc_dc = np.diag(f)
         dh_dh = (tc * o * (1 - o))[:, None] * Wo_ + (o * (1 - tc**2))[:, None] * dc_dh
         dh_dc = (o * (1 - tc**2) * f)[:, None] * np.eye(H)
+        # 한 시점 야코비안 d(h_t, c_t) / d(h_{t-1}, c_{t-1}) 을 (2H, 2H) 블록으로 조립.
         A = np.block([[dh_dh, dh_dc], [dc_dh, dc_dc]])
         J = A @ J
         cell_norms.append(np.linalg.norm(J[H:, H:], 2))
         state_norms.append(np.linalg.norm(J, 2))
+        # 셀 경로만의 근사(forget 게이트의 누적곱). 비교용 값.
         f_prod = f_prod * f
     return np.array(cell_norms), np.array(state_norms), f_prod
 
 
 # ---------------------------------------------------------------- 클리핑
 def global_norm(grads):
+    """모든 기울기 배열을 하나로 이은 벡터의 L2 노름."""
     return float(np.sqrt(sum(float((g**2).sum()) for g in grads)))
 
 
 def clip_by_norm(grads, c):
     """Pascanu 등(2013) Algorithm 1: 전체 노름이 c를 넘으면 c가 되게 같은 비율로 줄인다. 방향은 그대로."""
     norm = global_norm(grads)
+    # 노름이 c 이하면 s = 1로 그대로 둔다. 방향은 보존하고 크기만 줄인다.
     s = min(1.0, c / norm) if norm > 0 else 1.0
     return [g * s for g in grads]
 
@@ -183,10 +209,12 @@ def clip_elementwise(grads, c):
 
 # ---------------------------------------------------------------- 계산량
 def rnn_flops_per_step(d_in, H):
+    """한 시점 FLOP(부동소수점 연산 수)."""
     return 2 * H * H + 2 * H * d_in  # W h + U x (곱셈·덧셈을 각각 1로 센다)
 
 
 def lstm_flops_per_step(d_in, H):
+    """게이트 4개가 각각 행렬곱을 하므로 RNN의 4배."""
     return 4 * (2 * H * H + 2 * H * d_in)  # 게이트 4개가 각자 W h + U x를 한다
 
 
@@ -195,11 +223,13 @@ def rnn_forward_batched(x, W, U):
     B, n, _ = x.shape
     h = np.zeros((B, W.shape[0]))
     for t in range(n):
+        # (B, H) @ (H, H) -> (B, H). 배치 차원은 행렬곱으로 묶이지만 t 루프는 순차다. b는 쓰지 않는 단순화.
         h = np.tanh(h @ W.T + x[:, t] @ U.T)  # B개는 행렬곱 한 번에 처리된다
     return h
 
 
 def lstm_forward_batched(x, Wx, Wh, b):
+    """x: (B, n, d_in) -> 마지막 시점 h (B, H). 시점 루프는 직렬이다."""
     B, n, _ = x.shape
     H = Wh.shape[1]
     h, c = np.zeros((B, H)), np.zeros((B, H))

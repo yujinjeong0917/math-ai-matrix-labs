@@ -15,9 +15,12 @@ import numpy as np
 def dataset_hash(table):
     h = hashlib.sha256()
     for name in sorted(table):
+        # C 순서(행 우선)로 메모리를 정렬해야 같은 값이 같은 바이트가 된다
         a = np.ascontiguousarray(table[name])
+        # 바이트 순서를 little-endian으로 통일(다른 CPU에서 만든 표도 같은 해시가 되도록)
         a = a.astype(a.dtype.newbyteorder("<"), copy=False)
         h.update(name.encode())
+        # 이름·dtype·모양 사이에 구분자(\x00)를 넣어, 서로 다른 (이름, 값) 조합이 같은 바이트열로 이어붙는 일을 막는다
         h.update(b"\x00" + a.dtype.str.encode() + b"\x00" + repr(a.shape).encode() + b"\x00")
         h.update(a.tobytes())
     return h.hexdigest()
@@ -35,11 +38,13 @@ def csv_roundtrip(table, digits=6):
     buf.write(",".join(names) + "\n")
     n = len(table[names[0]])
     for i in range(n):
+        # 유효숫자 digits자리(g 형식)로만 적는다. 이 손실 때문에 읽어 온 표는 원본과 바이트 단위로 달라진다
         buf.write(",".join(f"{table[k][i]:.{digits}g}" for k in names) + "\n")
     buf.seek(0)
     rows = [line.split(",") for line in buf.read().strip().split("\n")[1:]]
     out = {}
     for j, k in enumerate(names):
         col = [r[j] for r in rows]
+        # 정수 열은 정수로, 나머지는 float64로 되돌린다
         out[k] = np.array(col, dtype=table[k].dtype) if table[k].dtype.kind == "i" else np.array(col, dtype=float)
     return out, len(buf.getvalue().encode())

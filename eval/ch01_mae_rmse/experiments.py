@@ -29,6 +29,7 @@ import eval_ch01_torch as tm  # noqa: E402
 
 torch.set_num_threads(2)
 OUT = Path(__file__).parent / "results" / "ch01.json"
+# N(0,1)의 E|e|. 모델 A의 MAE 기대값
 SQRT_2_OVER_PI = float(np.sqrt(2 / np.pi))
 
 
@@ -36,6 +37,7 @@ def e0_first_screen():
     a = np.array([2.0, 2, 2, 2, 2])
     b = np.array([0.0, 0, 0, 0, 9])
     zero = np.zeros(5)
+    # 상수 예측 예시 데이터(중앙값 3, 평균 4)
     y_const = np.array([1.0, 2, 3, 4, 10])
     return {
         "errors_A": a.tolist(),
@@ -77,9 +79,11 @@ def e2_boundary(n=1000):
         rows.append({"k": k, "mae_B": m.mae(yb, pb), "rmse_B": m.rmse(yb, pb)})
     last_rmse_prefers_B = max(r["k"] for r in rows if r["rmse_B"] < a_rmse)
     last_mae_prefers_B = max(r["k"] for r in rows if r["mae_B"] < a_mae)
+    # k를 실수로 풀면 k < 0.75n/399.75 (RMSE), k < (sqrt(2/pi)-0.5)n/19.5 (MAE). 표본 A가 아니라 기대값(1, 0.798)과 비교한 이론 경계
     # 기대값 기준 해석적 경계: RMSE  ((n-k)0.25 + 400k)/n < 1,  MAE ((n-k)0.5 + 20k)/n < sqrt(2/pi)
     k_rmse = 0.75 * n / (400 - 0.25)
     k_mae = (SQRT_2_OVER_PI - 0.5) * n / (20 - 0.5)
+    # 결과 JSON에 싣을 k만 고른다(전체 0..60은 계산만 하고 일부만 저장)
     show = {0, 1, 2, 5, 10, 15, 16, 20, 50}
     return {
         "n": n,
@@ -102,8 +106,10 @@ def e3_stability(seeds=100, p_big=0.01):
         mae_B_wins = rmse_B_wins = disagree = 0
         ks = []
         for s in range(seeds):
+            # A와 B의 시드를 다른 대역으로 분리해 두 표본이 독립이 되게 한다
             ya, pa = cases.case_gaussian_errors(n, seed=10_000 + s)
             yb, pb = cases.case_random_rare_large_errors(n, p_big=p_big, seed=20_000 + s)
+            # 크기가 big(20)인 원소 수 = 이번 표본의 큰 실수 개수(small=0.5는 1을 넘지 않는다)
             ks.append(int(np.sum(np.abs(pb) > 1)))
             mb = m.mae(yb, pb) < m.mae(ya, pa)
             rb = m.rmse(yb, pb) < m.rmse(ya, pa)
@@ -140,7 +146,7 @@ def e5_best_constant():
     res = {}
     small = np.array([1.0, 2, 3, 4, 10])
     rng = np.random.default_rng(0)
-    skewed = rng.lognormal(0.0, 1.0, 1001)  # 오른쪽 꼬리가 긴 데이터(홀수 개라 중앙값이 하나로 정해진다)
+    skewed = rng.lognormal(0.0, 1.0, 1001)  # 오른쪽 꼬리가 긴 데이터(홀수 개라 중앙값이 하나로 정해진다)  # 평균은 꼬리에 끌려 중앙값보다 크게 나온다
     for name, y in (("small_1_2_3_4_10", small), ("lognormal_1001", skewed)):
         c_mae, step = m.best_constant(y, "mae")
         c_mse, _ = m.best_constant(y, "mse")
@@ -165,6 +171,7 @@ def e6_noise_distribution(n=101, seeds=2000):
     rng = np.random.default_rng(0)
     out = {}
     for name in ("gaussian", "laplace"):
+        # 표본마다 평균·중앙값 추정치를 모아 2000회 반복 후 흩어짐(표준편차)을 비교
         means, meds = [], []
         for _ in range(seeds):
             z = rng.normal(0, 1, n) if name == "gaussian" else rng.laplace(0, 1 / np.sqrt(2), n)
@@ -177,6 +184,7 @@ def e6_noise_distribution(n=101, seeds=2000):
             "var_ratio_median_over_mean": float(meds.var() / means.var()),
         }
     out["n"], out["seeds"] = n, seeds
+    # n이 클 때 분산비(중앙값/평균)의 이론값: 정규 pi/2(약 1.57, 평균이 유리), 라플라스 0.5(중앙값이 유리)
     out["asymptotic_ratio"] = {"gaussian": float(np.pi / 2), "laplace": 0.5}
     return out
 

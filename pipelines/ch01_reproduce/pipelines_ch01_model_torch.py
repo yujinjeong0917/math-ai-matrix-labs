@@ -8,6 +8,7 @@ import torch.nn.functional as F
 
 
 def fit_sgd(X, y, w0, b0, orders, batch, lr):
+    # 입력 배열의 dtype을 따라 float64/float32 중 하나를 쓴다
     dt = torch.float64 if X.dtype.name == "float64" else torch.float32
     X = torch.as_tensor(X, dtype=dt)
     y = torch.as_tensor(y, dtype=dt)
@@ -17,7 +18,9 @@ def fit_sgd(X, y, w0, b0, orders, batch, lr):
         order = torch.as_tensor(order)
         for start in range(0, len(order), batch):
             j = order[start:start + batch]
+            # 로짓을 직접 받는 수치 안정형 교차엔트로피. 배치 평균을 돌려준다
             loss = F.binary_cross_entropy_with_logits(X[j] @ w + b, y[j])
+            # NumPy 쪽 손계산 기울기(p - y)와 같은 값이 나오는지 대조하는 것이 이 파일의 목적
             gw, gb = torch.autograd.grad(loss, (w, b))
             with torch.no_grad():
                 w -= lr * gw
@@ -27,6 +30,7 @@ def fit_sgd(X, y, w0, b0, orders, batch, lr):
 
 def seeded_split(n, test_frac, seed):
     """torch.manual_seed로 같은 분할을 다시 낼 수 있는지 보는 용도."""
+    # 전역이 아닌 독립 생성기에 시드를 준다. NumPy 분할과 같은 인덱스가 나온다는 보장은 없다(별도 난수 알고리즘)
     g = torch.Generator().manual_seed(seed)
     idx = torch.randperm(n, generator=g)
     n_test = int(round(n * test_frac))

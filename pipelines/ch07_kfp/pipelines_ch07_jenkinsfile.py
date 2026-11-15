@@ -9,6 +9,7 @@
 
 import re
 
+# Jenkins 단계 본문에서 학습을 직접 돌리는 흔적으로 보는 패턴(정규식). 학습은 KFP train task에서만 해야 한다는 규칙 3의 검사 기준
 TRAIN_PATTERNS = [r"churn\.train", r"steps\.py\s+train", r"\btrain\.py\b", r"fit_logistic"]
 
 
@@ -41,6 +42,7 @@ def lint(text):
     ref = image.group(1) if image else ""
     if not ref:
         problems.append("제출할 이미지 이름(IMAGE)이 없다")
+    # 이미지 참조가 :latest이거나 태그도 다이제스트도 없는 경우(암묵적 latest)는 움직이는 태그로 본다. 연산자 우선순위: and가 or보다 먼저 계산된다
     elif ref.endswith(":latest") or ":" not in ref.split("/")[-1] and "@" not in ref:
         problems.append(f"이미지가 움직이는 태그다: {ref}")
     elif "GIT_COMMIT" not in ref and "@sha256:" not in ref:

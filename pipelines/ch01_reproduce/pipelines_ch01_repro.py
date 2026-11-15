@@ -21,6 +21,7 @@ def set_seeds(seed):
     이 저장소의 학습 코드는 전역 생성기 대신 default_rng(seed)를 직접 넘기지만,
     라이브러리 안쪽에서 전역 생성기를 쓰는 경우를 막으려고 같이 고정한다.
     """
+    # torch는 이 함수 안에서만 가져온다(다른 곳에서 NumPy 부분만 쓸 때 torch가 없어도 되게)
     import torch
 
     random.seed(seed)
@@ -37,6 +38,7 @@ def env_snapshot():
         "torch": torch.__version__,
         "os": f"{platform.system()} {platform.release()}",
         "machine": platform.machine(),
+        # processor가 빈 문자열인 환경이 있어 "unknown"으로 대체
         "processor": platform.processor() or "unknown",
         "cpu_count": os.cpu_count(),
         "omp_num_threads": os.environ.get("OMP_NUM_THREADS"),
@@ -52,6 +54,7 @@ def env_diff(a, b):
 
 def sequential_sum(x):
     """앞에서부터 한 개씩 더한다(가장 단순한 순서). 결과 자료형은 x와 같다."""
+    # 누산기를 x와 같은 자료형으로 시작한다. float32 배열이면 합도 float32로 반올림된다
     acc = x.dtype.type(0)
     for v in x:
         acc = acc + v
@@ -60,6 +63,7 @@ def sequential_sum(x):
 
 def chunked_sum(x, k):
     """k개 일꾼이 나눠 더한 뒤 합치는 병렬 합을 흉내 낸다. k가 바뀌면 더하는 순서가 바뀐다."""
+    # array_split: 길이가 나누어떨어지지 않으면 앞 조각이 1개씩 더 길다. 조각 합 순서도 고정
     parts = [np.sum(c) for c in np.array_split(x, k)]
     acc = x.dtype.type(0)
     for p in parts:
@@ -69,4 +73,5 @@ def chunked_sum(x, k):
 
 def exact_sum(x):
     """math.fsum: 반올림 오차 없이 더한 값(비교 기준)."""
+    # fsum은 중간 반올림 오차를 추적해 정확히 반올림한 합을 준다. float32 합이 얼마나 벗어났는지 재는 기준
     return math.fsum(float(v) for v in x)

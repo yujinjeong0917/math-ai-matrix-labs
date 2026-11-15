@@ -20,6 +20,7 @@ VENDOR_FILE = DATA / "vendors_2026-10-10.json"
 
 
 def load_rules():
+    """토큰 근사 규칙 목록: [기본, 대안...]. 대안은 규칙 선택에 결과가 얼마나 민감한지 보려는 것이다."""
     r = json.loads(RULE_FILE.read_text(encoding="utf-8"))
     return [r["default"]] + r["alternatives"]
 
@@ -32,13 +33,16 @@ def tokens(text, rule=None):
     rule = rule or DEFAULT_RULE
     ascii_n = sum(1 for ch in text if ord(ch) < 128)
     other_n = len(text) - ascii_n
+    # ASCII: 글자 수 / (토큰당 글자 수), 올림. Fraction이라 부동소수점 오차 없이 올림한다.
     a = math.ceil(F(ascii_n) / F(str(rule["ascii_chars_per_token"])))
+    # 한글 등: 글자 수 x (글자당 토큰), 올림. 실제 토크나이저와 다른 근사라 절대값보다 비율을 읽는다.
     b = math.ceil(F(other_n) * F(str(rule["non_ascii_tokens_per_char"])))
     return a + b
 
 
 def meta_text(skill):
     """모델이 늘 보는 목록 한 줄: 이름과 설명."""
+    # 목록 한 줄의 형식은 frontmatter.listing_line과 같다(여기서는 자르지 않는다).
     return f"{skill['fm']['name']}: {skill['fm']['description']}"
 
 
@@ -59,6 +63,7 @@ def sizes(skills, rule=None):
 
 
 def project_tokens(rule=None):
+    """프로젝트 지침 파일(AGENTS.md)의 근사 토큰 수. 모든 대화에 항상 실린다."""
     return tokens(PROJECT_FILE.read_text(encoding="utf-8"), rule)
 
 
@@ -69,9 +74,11 @@ def paste_all_per_conversation(sz, project):
 
 def staged_per_conversation(sz, project, conv, rule=None):
     """단계적 공개: 프로젝트 지침 + 모든 스킬의 목록 한 줄 + (쓴 스킬의 본문 + 읽은 파일 + 스크립트 출력)."""
+    # 아래 parts 합으로 다시 구하므로 이 값은 곧 덮어쓰인다(사용되지 않는 중간값).
     total = project + sum(x["meta"] for x in sz)
     parts = {"project": project, "meta": sum(x["meta"] for x in sz), "body": 0, "files": 0, "script_output": 0}
     if conv.get("skill"):
+        # 이 대화가 쓰는 스킬. skill이 없는 대화는 이 블록을 건너뛰어 body, files, script_output이 0으로 남는다.
         x = next(s for s in sz if s["name"] == conv["skill"])
         parts["body"] = x["body"]
         parts["files"] = sum(x["refs"][p] for p in conv.get("files", []))
@@ -82,10 +89,12 @@ def staged_per_conversation(sz, project, conv, rule=None):
 
 
 def load_week():
+    """한 주 대화 15개와 왕복 시나리오 가정값(data/week_tasks.json)을 읽는다."""
     return json.loads(WEEK_FILE.read_text(encoding="utf-8"))
 
 
 def week(skills=None, rule=None):
+    """한 주(대화 15번)의 지시문 토큰 합계: 전부 싣기 대 단계적 공개. 절감률 = 1 - 단계적 / 전부."""
     skills = skills or FM.load_skills()
     sz = sizes(skills, rule)
     proj = project_tokens(rule)
@@ -105,6 +114,7 @@ def scale(m, b, n_list, k=1):
     """스킬 N개 중 k개를 쓸 때 대화 하나의 토큰: 전부 N(m+b), 단계적 Nm + kb. (m: 목록 한 줄, b: 본문과 딸린 파일)"""
     rows = []
     for n in n_list:
+        # 전부 싣기: 스킬 N개의 (목록 한 줄 + 본문)을 모두. 단계적 공개는 N개의 목록 한 줄 + 쓰는 k개의 본문.
         allt = n * (m + b)
         st = n * m + k * b
         rows.append({"n": n, "paste_all": allt, "staged": st, "meta_only": n * m,
@@ -119,8 +129,10 @@ def _bill(inputs, w, r):
     새로 붙은 부분(도구 호출 + 읽은 내용)은 쓰기로 낸다.
     """
     nocache = sum(inputs)
+    # 첫 호출은 전부 새로 쓰므로 w배. 단위는 '기본 입력가 몇 토큰어치'.
     cached = F(str(w)) * inputs[0]
     for prev, cur in zip(inputs, inputs[1:]):
+        # 다음 호출: 앞 호출까지의 입력은 캐시 읽기(r배), 새로 늘어난 부분만 쓰기(w배). 매 호출이 직전 호출의 입력을 그대로 앞부분으로 가진다는 가정(모형의 단순화).
         cached += F(str(r)) * prev + F(str(w)) * (cur - prev)
     return nocache, cached
 
@@ -134,17 +146,21 @@ def round_trip(sz, project, conv, user_tokens, tool_call, w, r, rule=None, batch
     """
     x = next(s for s in sz if s["name"] == conv["skill"])
     script = tokens(conv["script_output"], rule) if conv.get("script_output") else None
+    # 각 원소는 호출 하나의 입력 토큰 수. 전부 싣기는 첫 호출에 모든 것이 들어 있다.
     pa = [paste_all_per_conversation(sz, project) + user_tokens]
     if script is not None:
         pa.append(pa[-1] + tool_call + script)
     refs = [x["refs"][p] for p in conv.get("files", [])]
+    # 본문을 읽은 뒤 더 읽을 것: 딸린 파일과 스크립트 출력. 스크립트 코드 자체는 읽지 않고 실행 결과만 문맥에 들어간다.
     after_body = refs + ([script] if script is not None else [])
     if batch:
+        # batch: 본문을 읽는 호출 1번 + 나머지를 한꺼번에 읽는 호출 1번. 호출이 늘면 앞 입력이 반복해서 청구되므로 호출 수가 비용을 좌우한다.
         steps = [(tool_call, x["body"])]
         if after_body:
             steps.append((tool_call * len(after_body), sum(after_body)))
     else:
         steps = [(tool_call, item) for item in [x["body"]] + after_body]
+    # 단계적 공개의 첫 호출: 프로젝트 지침 + 모든 스킬의 목록 한 줄 + 사용자 메시지.
     st = [project + sum(s["meta"] for s in sz) + user_tokens]
     for call, item in steps:
         st.append(st[-1] + call + item)
@@ -156,6 +172,7 @@ def round_trip(sz, project, conv, user_tokens, tool_call, w, r, rule=None, batch
 
 
 def utf8_bytes(text):
+    """UTF-8 바이트 수. 한글은 글자당 3바이트라 글자 수보다 크다(Codex 한도는 바이트 기준)."""
     return len(text.encode("utf-8"))
 
 

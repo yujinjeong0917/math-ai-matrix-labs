@@ -37,10 +37,13 @@ def f(x, nd=6):
 
 
 def e0_hand():
+    """첫 화면 손계산. 단위는 '토큰 1개 = 1원'으로 둔 가상 금액이라 가격표와 무관하다."""
+    # P: 앞부분 토큰, q: 질문 토큰, w: 쓰기 배율 1.25, r: 읽기 배율 0.1.
     P, q, w, r = 10_000, 100, F(5, 4), F(1, 10)
     rows = []
     for n in range(1, 6):
         no = n * (P + q)
+        # 캐싱: 첫 호출은 앞부분을 w배로 쓰고, 이후 n-1번은 r배로 읽는다. 질문 q는 매번 일반가.
         ca = (w * P + q) + (n - 1) * (r * P + q)
         rows.append({"n": n, "nocache": int(no), "cache": int(ca), "cheaper": "cache" if ca < no else "nocache"})
     return {"prefix": P, "question": q, "first_call_cache": int(w * P + q), "later_call_cache": int(r * P + q),
@@ -49,6 +52,7 @@ def e0_hand():
 
 
 def e1_request():
+    """예시 요청의 칸 구성, 캐시 지점 위치, 가정 토큰 수를 뽑는다."""
     req = RQ.load_example()
     blocks = RQ.walk_blocks(req)
     p = PJ.load_project()
@@ -58,10 +62,12 @@ def e1_request():
             "assumed_tokens": {b["id"]: b["tokens"] for b in p["blocks"]},
             "prefix_tokens": PJ.prefix_tokens(p),
             "input_tokens_per_call": PJ.prefix_tokens(p) + p["blocks"][-1]["tokens"],
+            # 출력에 키가 그대로 찍히지 않도록 값을 가린다. dict 병합(|)은 파이썬 3.9 이상.
             "headers": RQ.MiniClient(RQ.FakeTransport([]), api_key="sk-test").headers() | {"x-api-key": "(키)"}}
 
 
 def e2_breakeven(prices):
+    """모델별 손익분기 호출 수. 공식 결과를 브루트포스와 assert로 대조한다."""
     rows = []
     for m in prices["models"]:
         for ttl in ("5m", "1h"):
@@ -70,6 +76,7 @@ def e2_breakeven(prices):
             w, r = C.multipliers(m, ttl)
             n = C.breakeven_calls(w, r)
             assert n == C.breakeven_bruteforce(w, r)
+            # 표시용 라벨. OpenAI는 5m/1h 선택이 없고 기본 30분이라고 가격표 규칙이 적은 값을 따른 것(확인 필요).
             ttl_label = ttl if m["provider"] != "OpenAI" else "30m"
             if m["provider"] == "Google":
                 ttl_label = "implicit"
@@ -81,8 +88,10 @@ def e2_breakeven(prices):
 
 
 def e3_doc_claims():
+    """공식 문서가 직접 적은 숫자를 우리 공식으로 재현해 본다."""
     # Anthropic 가격 문서: "caching pays off after one cache read for the 5-minute duration (1.25x write),
     # or after two cache reads for the 1-hour duration (2x write)"
+    # 손익분기 호출 수 n*에서 첫 쓰기 1번을 뺀 것이 '읽기 횟수'.
     a5 = C.breakeven_calls(F(5, 4), F(1, 10)) - 1
     a1 = C.breakeven_calls(F(2), F(1, 10)) - 1
     # OpenAI 캐싱 문서: "writing a prefix once and fully reusing it once costs 1.35x ... compared with 2x"
@@ -90,6 +99,7 @@ def e3_doc_claims():
     # OpenAI 캐싱 문서: M = 1,024, r = 0.1, w = 1.25 -> 102.4 + 1,177.6 / N, N = 10에서 221토큰
     M, r, w, N = 1024, F(1, 10), F(5, 4), 10
     cross = M * r + M * (w - r) / N
+    # cross 이상이어야 이득이므로 정수 아니면 올림. 정수면 그 값(등호일 때 같아짐을 허용하는 정의로 보임, 확인 필요).
     min_len = int(cross) + 1 if cross != int(cross) else int(cross)
     return {"anthropic_reads_to_payoff_5m": a5, "anthropic_reads_to_payoff_1h": a1,
             "openai_one_write_one_read": f(oa, 4), "openai_no_cache_two": 2,
@@ -98,6 +108,7 @@ def e3_doc_claims():
 
 
 def e4_weekly(prices, p):
+    """모델별 한 주(12번) 비용. 캐싱 없음 대 캐싱, 입력만과 출력 포함 두 가지 절감률."""
     rows = []
     for m in prices["models"]:
         res = PJ.run(p, "good", m)
@@ -119,6 +130,7 @@ def e4_weekly(prices, p):
 
 
 def e5_failures(prices, p):
+    """캐시가 깨지는 8가지 시나리오를 같은 모델(Sonnet 5.5) 가격으로 비교한다."""
     m = C.price_of("claude-sonnet-5-5", prices)
     rows = []
     for s in PJ.SCENARIOS:
@@ -133,8 +145,10 @@ def e5_failures(prices, p):
 
 
 def e6_usage(prices, p):
+    """같은 호출(두 번째, 읽기가 생기는 첫 호출)의 usage를 두 모양으로 읽어 올바른 값과 두 번 센 값을 비교한다."""
     m = C.price_of("gpt-6.1-sol", prices)
     us = C.run_calls(PJ.calls(p, "good"), m["ttl_minutes"][0], m["min_cache_tokens"])
+    # us[0]은 첫 쓰기 호출이라 읽기가 없다. 읽기가 있는 두 번째를 쓴다.
     second = us[1]
     oa = C.to_openai_usage(second)
     right_a = C.cost_anthropic_usage(second, m)
@@ -146,11 +160,14 @@ def e6_usage(prices, p):
 
 
 def e7_sdk():
+    """SDK 흉내의 재시도·실패·필수 칸 오류를 네 경우로 확인한다. 네트워크 없음."""
+    # 429, 529는 재시도 대상(529는 500 이상). 두 번 실패 후 세 번째에 성공.
     t1 = RQ.FakeTransport([429, 529], usage={"input_tokens": 150, "cache_creation_input_tokens": 0,
                                              "cache_read_input_tokens": 32000, "output_tokens": 700})
     c1 = RQ.MiniClient(t1, env={"ANTHROPIC_API_KEY": "sk-test"})
     req = RQ.load_example()
     r1 = c1.create(**req)
+    # 3번 모두 실패하면 재시도 한도(2번) 소진으로 APIError.
     t2 = RQ.FakeTransport([500, 500, 500])
     c2 = RQ.MiniClient(t2, env={"ANTHROPIC_API_KEY": "sk-test"})
     try:
@@ -158,6 +175,7 @@ def e7_sdk():
         fail = None
     except RQ.APIError as e:
         fail = {"status": e.status, "attempts": e.attempts}
+    # 400은 재시도 대상이 아니라 1번 만에 실패.
     t3 = RQ.FakeTransport([400])
     try:
         RQ.MiniClient(t3, env={"ANTHROPIC_API_KEY": "sk-test"}).create(**req)
@@ -175,6 +193,8 @@ def e7_sdk():
 
 
 def e8_crosscheck(n_cases=500):
+    """무작위 500경우에서 세 가지 계산(닫힌 식, 캐시 시뮬레이터, 하나씩 세기)이 일치하는지 본다."""
+    # 고정 시드로 재현 가능한 무작위 입력.
     rng = random.Random(SEED)
     bad = 0
     for _ in range(n_cases):
@@ -183,6 +203,7 @@ def e8_crosscheck(n_cases=500):
         n = rng.randint(1, 30)
         w = F(rng.choice([100, 125, 200]), 100)
         r = F(rng.choice([25, 50, 100]), 1000)
+        # 닫힌 식. 시뮬레이터 usage를 배율로 환산한 값과 비교한다.
         closed = (w * P + q) + (n - 1) * (r * P + q)
         cache = C.PrefixCache(ttl_minutes=5, min_tokens=512)
         sim = F(0)
@@ -191,6 +212,7 @@ def e8_crosscheck(n_cases=500):
             u = cache.request([("pre", P), (f"q{i}", q)], [0], t=i)
             sim += u["input_tokens"] + w * u["cache_creation_input_tokens"] + r * u["cache_read_input_tokens"]
             loop += (w * P if i == 0 else r * P) + q
+        # Fraction이라 정확히 같아야 한다(허용 오차 없음).
         if not (closed == sim == loop):
             bad += 1
         if C.breakeven_calls(w, r) != C.breakeven_bruteforce(w, r):

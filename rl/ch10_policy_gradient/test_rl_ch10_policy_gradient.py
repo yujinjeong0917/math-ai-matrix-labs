@@ -18,13 +18,16 @@ torch.set_num_threads(2)
 
 def test_corridor_hand_values_at_half():
     # 첫 화면 손계산: p = 0.5에서 A, B, C의 가치는 -12, -10, -6
+    # 식 (I-P)V = -1을 p=0.5로 풀면 정수 해가 나온다(손계산 가능). atol 1e-12는 선형방정식 수치 해의 반올림 허용
     np.testing.assert_allclose(cor.exact_v(0.5), [-12.0, -10.0, -6.0], atol=1e-12)
+    # theta=0이면 p(1-p)=0.25이고 dJ/dp=8이라 dJ/dtheta=2 (아래 viz의 '정확한 기울기 2.0'과 같은 값)
     assert cor.exact_grad(0.0) == pytest.approx(2.0, abs=1e-12)
 
 
 def test_corridor_matches_textbook_printed_values():
     # Sutton-Barto 2판 예제 13.1 본문: 가장 좋은 확률 약 0.59, 가치 약 -11.6, eps=0.1이면 -44, -82보다 나쁘다
     p = cor.best_p()
+    # 교과서가 말하는 '약 0.59'의 정확한 값 2-sqrt(2) = 0.5858. 이분법 결과와 비교
     assert p == pytest.approx(2 - np.sqrt(2), abs=1e-9)
     assert round(p, 2) == 0.59
     assert cor.exact_v(p)[0] == pytest.approx(-11.6, abs=0.06)
@@ -34,6 +37,7 @@ def test_corridor_matches_textbook_printed_values():
 def test_deterministic_policies_never_finish():
     # 실패 재현: 칸을 못 보는 결정론적 정책은 끝나지 않는다
     rng = np.random.default_rng(0)
+    # theta=+-40이면 p가 사실상 1이나 0이라 같은 행동만 반복해 칸을 못 보는 정책은 도착하지 못한다(cap에서 잘림 = done이 거짓)
     assert not m.corridor_episode(40.0, rng, cap=500).done
     assert not m.corridor_episode(-40.0, rng, cap=500).done
     assert np.isneginf(cor.exact_v(1.0)[0]) and np.isneginf(cor.exact_v(0.0)[0])
@@ -41,6 +45,7 @@ def test_deterministic_policies_never_finish():
 
 def test_aliased_sarsa_can_only_reach_eps_policies():
     Q, p_right, _ = m.corridor_sarsa_aliased(300, 0)
+    # eps=0.1이면 Q가 큰 쪽의 확률이 1-eps/2 = 0.95, 작은 쪽 eps/2 = 0.05만 가능(부동소수 값이지만 같은 식으로 만든 값이라 == 비교가 통한다)
     assert p_right in (0.05, 0.95)
     assert cor.exact_v(p_right)[0] < cor.exact_v(cor.best_p())[0] - 30
 
@@ -48,18 +53,23 @@ def test_aliased_sarsa_can_only_reach_eps_policies():
 def test_exact_gradient_matches_finite_difference():
     h = 1e-6
     for t in (-1.5, -0.3, 0.0, 0.8):
+        # 중앙차분(h=1e-6)과 해석적 기울기의 비교. rel 1e-6은 차분 오차 수준
         fd = (cor.exact_J(t + h) - cor.exact_J(t - h)) / (2 * h)
         assert cor.exact_grad(t) == pytest.approx(fd, rel=1e-6, abs=1e-8)
 
 
 def test_shortest_episode_estimates():
     ep = m.Episode(states=[0, 1, 2], actions=[1, 0, 1], rewards=[-1.0] * 3, done=True)
+    # 손계산: theta=0이라 p=0.5, G = [-3,-2,-1], (a-p) = [+.5,-.5,+.5]. none: -1.5+1-0.5 = -1
     assert m.corridor_grad_estimate(ep, 0.0, "none") == pytest.approx(-1.0)
+    # const: b = J(0) = -12 => G-b = [9,10,11], 합 4.5-5+5.5 = 5
     assert m.corridor_grad_estimate(ep, 0.0, "const") == pytest.approx(5.0)
+    # value: b = V = [-12,-10,-6] => G-V = [9,8,5], 합 4.5-4+2.5 = 3
     assert m.corridor_grad_estimate(ep, 0.0, "value") == pytest.approx(3.0)
 
 
 @pytest.mark.parametrize("theta", [0.0, -1.0])
+# 검정: 몬테카를로 평균이 정확한 기울기에서 표준오차(se)의 4배 안. 확률적 시험이지만 rng 시드를 고정해 항상 같은 결과
 def test_reinforce_unbiased_for_every_baseline(theta):
     # 몬테카를로 평균이 정확한 기울기에서 표준오차 4배 안. 베이스라인은 평균을 바꾸지 않는다
     rng = np.random.default_rng(123)
@@ -73,15 +83,18 @@ def test_reinforce_unbiased_for_every_baseline(theta):
         assert abs(g.mean() - exact) < 4 * se
         sds[b] = g.std(ddof=1)
     # 실패 재현: 베이스라인이 없으면 흔들림이 더 크다
+    # 기준선 효과: 표준편차가 줄었는지(1.3배는 이 시드에서 통과하도록 정한 문턱이라 이론값은 아님)
     assert sds["none"] > 1.3 * sds["const"]
 
 
 def test_baseline_term_has_zero_mean_exactly():
     # E[(a - p)] = p(1-p) - (1-p)p = 0: 행동에 기대지 않는 b를 곱해도 평균은 0
     for p in (0.1, 0.5, 0.8):
+        # E[a - p] = p(1-p) + (1-p)(-p) = 0. 기준선이 평균을 바꾸지 않는 이유
         assert p * (1 - p) + (1 - p) * (0 - p) == pytest.approx(0.0, abs=1e-15)
 
 
+# 식 (a-p)phi를 log softmax_policy의 중앙차분(h=1e-7)과 비교
 def test_grad_log_pi_matches_numeric():
     theta = np.array([0.2, -0.4, 1.1, 0.3, -0.1])
     phi = np.array([0.5, -0.2, 0.3, 0.1, 1.0])
@@ -105,6 +118,7 @@ def test_torch_autograd_matches_numpy_corridor():
             bb = {"none": np.zeros_like(G), "const": np.full_like(G, cor.exact_J(th)),
                   "value": cor.exact_v(cor.sigmoid(th))[np.asarray(e.states)]}[b]
             g_t = mt.pg_grad([th], np.ones((len(G), 1)), e.actions, G - bb)[0]
+            # autograd(PyTorch)와 손으로 쓴 NumPy 추정이 float64에서 일치. 복도는 특징이 상수 1이라 phi를 1로 둔다
             np.testing.assert_allclose(g_t, m.corridor_grad_estimate(e, th, b), rtol=1e-9, atol=1e-12)
 
 
@@ -116,12 +130,14 @@ def test_torch_autograd_matches_numpy_cartpole():
     np.testing.assert_allclose(mt.returns(R, 0.99).numpy(), G, rtol=1e-12)
     Phi = np.array([m.phi_policy(s) for s in S])
     g_np = (G * (A - m.sigmoid(Phi @ theta))) @ Phi
+    # g_np = sum_t G_t (a_t - p_t) phi_t (기준선 없음)
     np.testing.assert_allclose(mt.pg_grad(theta, Phi, A, G), g_np, rtol=1e-9)
 
 
 def test_cartpole_physics_falls_without_control_and_is_seeded():
     env = cp.CartPole(0)
     s = env.reset()
+    # reset 대신 상태를 직접 지정(0.05 rad = 약 2.9도). 번갈아 밀면 평균 힘 0이라 중력으로 쓰러져야 한다(100걸음 안)
     env.state = np.array([0.0, 0.0, 0.05, 0.0])  # 살짝 기운 막대
     for t in range(200):
         _, _, fell, _ = env.step(1 if t % 2 else 0)  # 번갈아 밀기: 평균 힘 0
@@ -137,9 +153,11 @@ def test_cartpole_episode_truncates_at_cap():
     env = cp.CartPole(0, cap=30)
     theta = np.array([0.0, 0.0, 3.0, 1.0, 0.0])  # 막대가 기운 쪽으로 미는 손 규칙
     S, A, R, fell = m.run_cartpole_episode(env, theta, np.random.default_rng(0))
+    # 상한 cap=30이면 판은 30걸음 이하이고, 쓰러지지 않았다면 정확히 30걸음
     assert len(A) <= 30 and (fell or len(A) == 30)
 
 
 def test_reinforce_learns_corridor_from_bad_start():
+    # 학습률 2^-8(교과서 예제 13.1의 값 중 하나로 추정, 확인 필요)로 나쁜 출발(theta=-2)에서 300판 학습하면 J가 5 이상 개선
     _, J, _ = m.corridor_reinforce(-2.0, 2.0 ** -8, 300, 0)
     assert J[-1] > cor.exact_J(-2.0) + 5

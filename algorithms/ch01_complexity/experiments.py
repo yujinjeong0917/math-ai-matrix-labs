@@ -37,10 +37,12 @@ METHODS = ("pairs", "sorted", "msort", "set")
 
 
 def e0_first_screen():
+    # 값이 모두 다른 입력이면 비교 수는 n(n-1)/2: 6, 28, 120 (JSON 키는 문자열이라 str(n))
     return {str(n): dup.count_ops("pairs", list(range(n))) for n in (4, 8, 16)}
 
 
 def e1_determinism():
+    # 연산 수는 입력만 같으면 매번 같아야 한다(시간과 달리 기기 부하와 무관). 집합 크기가 1이면 결정적.
     xs = dup.distinct_list(1000, 0)
     same_input = {m: sorted({dup.count_ops(m, xs) for _ in range(10)}) for m in METHODS}
     by_seed = {}
@@ -50,6 +52,7 @@ def e1_determinism():
 
 
 def e2_jitter():
+    # 같은 입력을 10번 재서 max/min 이 얼마나 벌어지는지 본다(시간은 결정적이지 않다는 근거).
     r = tm.run([1000], repeats=10, seed=0, methods=METHODS)
     return {row["method"]: {k: row[k] for k in ("min", "q1", "median", "q3", "max", "max_over_min", "ops", "number", "times_s")}
             for row in r["rows"]}
@@ -88,6 +91,8 @@ def e3_table():
 
 def _first_win(grid, a, b):
     """grid 에서 b 가 a 보다 작아진 뒤 끝까지 그대로인 첫 n."""
+    # 함정: 한 번 이겼다가 다시 지면 처음 이긴 n 이 아니다. 지는 순간 first 를 비워서
+    # "이긴 뒤 끝까지 이기는" 첫 n 만 남긴다. 반환 None 은 격자 끝까지 역전이 없다는 뜻.
     first = None
     for n in grid:
         if b[n] < a[n]:
@@ -99,6 +104,7 @@ def _first_win(grid, a, b):
 
 
 def e4_crossover():
+    # 작은 n 을 촘촘히 잡은 격자: 순위가 뒤집히는 지점이 작은 n 에 있기 때문
     grid = [2, 3, 4, 5, 6, 7, 8, 10, 12, 16, 20, 24, 32, 40, 48, 56, 64, 72, 80, 96, 112, 128, 160, 192, 256]
     r = tm.run(grid, repeats=10, seed=0, methods=("pairs", "sorted", "msort"))
     med = {m: {} for m in ("pairs", "sorted", "msort")}
@@ -118,6 +124,7 @@ def e4_crossover():
 
 
 def e5_bands():
+    # 점근 표기의 "띠": f(n)/n^2 나 f(n)/(n log2 n) 이 n 이 커져도 상수 구간 안에 머무는지 본다
     ns = [2 ** k for k in range(4, 15)]  # 16 .. 16384
     rows = []
     for n in ns:
@@ -134,6 +141,8 @@ def e5_bands():
 
 
 def e6_interpreters():
+    # 같은 코드를 다른 파이썬 버전 프로세스로 돌려 연산 수는 같고 시간만 다른지 확인한다.
+    # 인터프리터 경로(/usr/bin/python3, python3.14)는 이 PC 환경 의존이라 없으면 건너뛴다.
     cfg = {"ns": [100, 1000], "repeats": 10, "seed": 0, "methods": ["pairs", "sorted", "msort", "set"]}
     cands = [("this", sys.executable), ("system", "/usr/bin/python3"), ("py314", shutil.which("python3.14"))]
     out = {}
@@ -155,7 +164,7 @@ def e6_interpreters():
 
 
 def main():
-    import numpy as np  # 환경 기록용
+    import numpy as np  # 환경 기록용(버전만 기록. 계산에는 쓰지 않는다)
 
     res = {
         "env": {"python": platform.python_version(), "numpy": np.__version__, "machine": platform.machine(),

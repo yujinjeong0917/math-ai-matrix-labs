@@ -19,14 +19,17 @@ MTOK = 1_000_000
 
 
 def frac(x):
+    """JSON 숫자를 문자열 경유로 Fraction 변환한다(이진 부동소수점 근사를 피함)."""
     return None if x is None else F(str(x))
 
 
 def load_prices(path=PRICE_FILE):
+    """가격표 JSON을 읽는다. 단가 단위는 달러 / 100만 토큰."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def price_of(model, prices=None):
+    """모델 id로 가격표 항목을 찾는다. 없으면 KeyError."""
     prices = prices or load_prices()
     for m in prices["models"]:
         if m["model"] == model:
@@ -52,11 +55,13 @@ def breakeven_calls(w, r):
     """
     w, r = F(w), F(r)
     bound = (w - r) / (1 - r)
+    # 부등식이 엄격(<)이라 bound가 정수일 때 n=bound는 같아질 뿐 이득이 아니다. int(bound)+1이 항상 그보다 큰 가장 작은 정수(bound>0일 때).
     n = int(bound) + 1          # bound보다 큰 가장 작은 정수
     return max(n, 1)
 
 
 def breakeven_bruteforce(w, r, limit=1000):
+    """검증용: 공식 대신 n을 1부터 직접 늘려 가며 첫 이득 지점을 찾는다(O(limit)). 공식 결과와 대조한다."""
     w, r = F(w), F(r)
     for n in range(1, limit):
         if w + (n - 1) * r < n:
@@ -86,6 +91,7 @@ class PrefixCache:
     def __init__(self, ttl_minutes, min_tokens):
         self.ttl = ttl_minutes
         self.min_tokens = min_tokens
+        # 키를 튜플로 두는 이유: 처음부터 끝까지 같은 블록 열일 때만 같은 키가 되어 '앞부분 일치'가 된다.
         self.store = {}  # 앞부분(블록 key 튜플) -> 만료 시각(분)
 
     def request(self, blocks, breakpoints, t):
@@ -93,13 +99,16 @@ class PrefixCache:
         toks = [n for _, n in blocks]
         total = sum(toks)
         bps = sorted(breakpoints)
+        # 캐시 지점이 없으면 전부 일반 입력.
         if not bps:
             return {"input_tokens": total, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}
         last = bps[-1]
+        # 마지막 캐시 지점까지의 토큰 수. 최소 토큰 수 판정과 쓰기량 계산의 기준.
         upto = sum(toks[: last + 1])
         if upto < self.min_tokens:
             return {"input_tokens": total, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}
         matched = -1
+        # 긴 앞부분부터 짧은 쪽으로 찾아 가장 긴 일치를 잡는다. 만료(exp < t)된 항목은 없는 것으로 본다.
         for i in range(last, -1, -1):
             key = tuple(keys[: i + 1])
             exp = self.store.get(key)
@@ -108,10 +117,13 @@ class PrefixCache:
                 self.store[key] = t + self.ttl      # 읽으면 유지 시간이 다시 시작
                 break
         read = sum(toks[: matched + 1])
+        # 읽고 남은, 마지막 캐시 지점까지의 구간이 새로 쓰는 토큰.
         write = upto - read
         for b in bps:
+            # 이미 읽은 지점 이하는 위에서 만료만 갱신했고, 그보다 뒤 지점만 새로 쓴다.
             if b > matched:
                 self.store[tuple(keys[: b + 1])] = t + self.ttl
+        # Anthropic usage 모양: input_tokens는 캐시 지점 뒤의 일반 입력만이다(캐시 토큰 제외).
         return {"input_tokens": total - upto, "cache_creation_input_tokens": write, "cache_read_input_tokens": read}
 
 
@@ -137,7 +149,9 @@ def to_openai_usage(u):
 
 
 def cost_openai_usage(u, m, output_tokens=0):
+    """OpenAI 모양 usage를 금액(달러)으로 바꾼다."""
     d = u["input_tokens_details"]
+    # OpenAI 모양은 input_tokens가 전체라서 캐시 토큰을 빼야 일반 입력이 남는다. 안 빼면 이중 계산이 된다.
     plain = u["input_tokens"] - d["cached_tokens"] - d["cache_write_tokens"]
     write_price = m["input"] if m["write_5m"] is None else m["write_5m"]
     c = (plain * frac(m["input"]) + d["cache_write_tokens"] * frac(write_price)
@@ -152,6 +166,7 @@ def cost_openai_double_count(u, m):
 
 
 def cost_nocache(total_input, m, output_tokens=0):
+    """캐싱이 없을 때의 비용(달러). 비교 기준."""
     return (total_input * frac(m["input"]) + output_tokens * frac(m["output"])) / MTOK
 
 
@@ -159,6 +174,7 @@ def cost_nocache(total_input, m, output_tokens=0):
 
 def run_calls(requests, ttl_minutes, min_tokens):
     """requests: [(blocks, breakpoints, t)], 결과: usage 목록."""
+    # 호출 묶음 하나마다 새 캐시로 시작한다(앞선 실행의 캐시가 남지 않음).
     cache = PrefixCache(ttl_minutes, min_tokens)
     return [cache.request(b, bp, t) for b, bp, t in requests]
 

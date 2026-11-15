@@ -21,6 +21,7 @@ import webapp_ch06_server as S
 
 HERE = Path(__file__).parent
 PUBLIC = HERE / "pwa" / "public"
+# experiments.py가 만든 결과 파일. 일부 테스트가 지금 코드의 값과 같은지 대조한다.
 RESULTS = json.loads((HERE / "results" / "ch06.json").read_text(encoding="utf-8"))
 
 
@@ -34,6 +35,7 @@ def test_our_manifest_passes_every_check():
     f = M.check_manifest(read("manifest.json"), "http://127.0.0.1:8000/", PUBLIC)
     assert M.failed(f) == []
     assert M.installable_in_chromium(f)
+    # 크롬 조건 검사 6개: https, name, icons, start_url, display, prefer_related_applications.
     assert [x["group"] for x in f].count("chromium") == 6
 
 
@@ -45,6 +47,7 @@ def test_index_links_manifest_and_registers_sw():
 
 
 @pytest.mark.parametrize("name, failed", [
+    # 일부러 망가뜨린 manifest 4종. 괄호의 목록은 기대하는 실패 항목 id(순서도 검사 순서와 같아야 한다).
     ("broken_first_draft", ["icons", "start_url", "display"]),
     ("broken_prefer_store", ["prefer_related_applications"]),
     ("broken_trailing_comma", ["json"]),
@@ -59,6 +62,7 @@ def test_wrong_size_passes_chromium_group_but_not_file_group():
     text = (HERE / "data" / "manifests" / "broken_wrong_size.json").read_text(encoding="utf-8")
     f = M.check_manifest(text, "http://127.0.0.1:8000/", PUBLIC)
     assert M.installable_in_chromium(f)
+    # 크기만 틀린 아이콘은 크롬 설치 조건은 통과하지만 파일 대조(file 그룹)에서 잡힌다. 두 그룹을 나눈 이유.
     assert any(x["group"] == "file" and not x["ok"] for x in f)
 
 
@@ -67,6 +71,7 @@ def test_secure_context_rule():
     assert M.secure_context("http://localhost:3000/")
     assert M.secure_context("http://127.0.0.1:8000/")
     assert not M.secure_context("http://card.example/")
+    # 같은 와이파이 주소는 localhost가 아니라서 https가 아니면 서비스 워커를 쓰지 못한다.
     assert not M.secure_context("http://192.168.0.10:8000/")
 
 
@@ -80,6 +85,7 @@ def test_icons_are_real_pngs_of_declared_size():
     for size in (192, 512):
         data = (PUBLIC / "icons" / f"icon-{size}.png").read_bytes()
         assert I.png_size(data) == (size, size)
+        # 아이콘 생성이 결정적(같은 입력, 같은 바이트)이라 저장된 파일과 정확히 같다.
         assert data == I.make_icon(size)  # 다시 만들어도 같은 바이트
     assert I.png_size(b"not a png") is None
 
@@ -89,6 +95,7 @@ def test_icons_are_real_pngs_of_declared_size():
 def test_sw_config_parses_and_precache_files_exist():
     cfg = C.load_sw_config()
     assert cfg["version"] == "card-editor-v1"
+    # 미리 받을 파일 12개(페이지 8개 + quote.json, manifest, 아이콘 2개).
     assert len(cfg["precache"]) == 12
     for p in cfg["precache"]:
         assert (PUBLIC / ("index.html" if p == "/" else p.lstrip("/"))).is_file(), p
@@ -107,6 +114,7 @@ def test_sw_network_requests_skip_http_cache():
     js = read("sw.js")
     assert 'new Request(u, { cache: "reload" })' in js      # 설치 때 미리 받기
     assert 'return fetch(req, { cache: "reload" });' in js  # 실행 중 네트워크 요청
+    # sw.js의 모든 네트워크 요청이 fromNetwork 하나를 거치므로 cache: reload 옵션이 빠진 경로가 없다는 것의 간접 확인.
     assert js.count("fetch(req") == 1                         # 모든 네트워크 요청이 fromNetwork 를 거친다
 
 
@@ -145,12 +153,15 @@ def test_server_serves_disk_bytes_and_headers():
 
 def test_first_visit_hand_count():
     v = C.run("mixed")["visits"][0]
+    # 첫 방문 손계산: 페이지 GET 8 + AI 버튼 POST 1 + precache 12 = 21번.
     assert v["network_requests"] == 8 + 1 + 12
+    # 7793 = PWA판 페이지 8개 파일 합(1장의 7659에서 HTML +170, app.min.js -36 = +134), 11405 = precache 12개 파일 합. POST 응답은 바이트에 넣지 않는다.
     assert v["network_bytes"] == 7793 + 11405
 
 
 def test_no_service_worker_fails_offline():
     r = C.run("none")
+    # 서비스 워커가 없으면 오프라인 방문(2번째, 5번째)에서 문서를 못 받아 페이지가 안 열린다.
     assert [v["page_opened"] for v in r["visits"]] == [True, False, True, True, False]
     # HTTP 캐시(하루)에 남은 옛 notice.json, app.min.js 를 배포 뒤에도 준다
     assert r["visits"][2]["stale_paths"] == ["/app.min.js", "/templates/notice.json"]
@@ -160,15 +171,19 @@ def test_every_sw_strategy_opens_offline_but_post_fails():
     for s in ("cache-first", "network-first", "stale-while-revalidate", "mixed"):
         r = C.run(s)
         assert all(v["page_opened"] for v in r["visits"])
+        # 오프라인 방문(2번째, 5번째)마다 실패 1건: 페이지는 열려도 AI 배경 버튼(POST)은 안 된다.
         assert [v["failed"] for v in r["visits"]] == [0, 1, 0, 0, 1]  # 오프라인 AI 버튼만 실패
 
 
 def test_staleness_pattern_by_strategy():
     stale = lambda s, b=True: [v["stale"] for v in C.run(s, b)["visits"]]
+    # 방문 순서: 1 온라인, 2 오프라인, (배포), 3 온라인, 4 온라인, 5 오프라인이라 stale 목록의 세 번째가 배포 직후 첫 방문.
     assert stale("network-first") == [0, 0, 0, 0, 0]
     assert stale("stale-while-revalidate") == [0, 0, 3, 0, 0]
     assert stale("cache-first") == [0, 0, 3, 0, 0]
+    # sw.js 버전을 안 바꾸면(bump 없음) 새 캐시가 만들어지지 않아 바뀐 파일 3개가 계속 옛 버전.
     assert stale("cache-first", False) == [0, 0, 3, 3, 3]  # 버전을 안 바꾸면 계속 옛것
+    # mixed: 문서는 network-first라 최신, 템플릿(SWR)과 앱 코드(cache-first)만 옛것 = 2개.
     assert stale("mixed") == [0, 0, 2, 0, 0]
     assert stale("mixed", False) == [0, 0, 2, 1, 1]  # cache-first 길의 app.min.js 만 남는다
 
@@ -177,6 +192,7 @@ def test_swr_does_not_save_requests_compared_to_network_first():
     a = C.run("stale-while-revalidate")["total"]
     b = C.run("network-first")["total"]
     assert a["network_requests"] == b["network_requests"]
+    # SWR은 요청 수를 아끼는 방법이 아니다(요청 수 같음). 달라지는 것은 사용자가 보는 응답이 캐시에서 온다는 점(체감 속도).
     assert a["from_cache"] > b["from_cache"]
 
 
@@ -190,6 +206,7 @@ def test_choose_has_no_ranking_and_keeps_table_order():
     data = P.load_paths()
     names = [p["name"] for p in data["paths"]]
     r = P.choose(["ios_bluetooth"], data)
+    # 표의 순서가 그대로인지(순위 없음) 확인.
     assert r["fits"] == [n for n in names if n in r["fits"]]
     assert r["fits"] == ["Capacitor", "React Native", "Flutter", "네이티브(Swift·Kotlin)"]
 
@@ -198,6 +215,7 @@ def test_cases():
     assert P.choose(P.CASES["A 링크로 퍼뜨리고, 새 템플릿 알림은 iOS에도"])["fits"] == ["PWA", "Capacitor"]
     assert P.choose(P.CASES["B 앱스토어 검색에 나오되 웹 코드는 그대로"])["fits"] == ["Capacitor"]
     assert P.choose(P.CASES["D 심사 없이 오늘 바로 휴대폰에 설치"])["fits"] == ["PWA"]
+    # 세 조건을 모두 만족하는 길이 없으면 빈 목록. 조건을 줄여야 한다는 것이 연습 문제.
     assert P.choose(P.CASES["E 웹 코드 그대로 + iOS 블루투스 + 심사 없이"])["fits"] == []
     with pytest.raises(KeyError):
         P.choose(["fast"])
@@ -232,5 +250,7 @@ def test_exercise_drop_one_condition():
 def test_exercise_precache_without_icons():
     cfg = C.load_sw_config()
     rest = [p for p in cfg["precache"] if not p.startswith("/icons/")]
+    # 아이콘 2개를 빼면 요청 수 = 페이지 8 + POST 1 + precache 10 = 19.
     assert len(C.PAGE_GETS) + 1 + len(rest) == 19
+    # precache 합 11405에서 아이콘 521 + 2472을 뺀 값.
     assert sum(C.file_bytes(p) for p in rest) == 8412

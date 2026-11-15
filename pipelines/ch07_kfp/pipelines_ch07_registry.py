@@ -15,7 +15,9 @@ import numpy as np
 
 def simulate(ref_mode, commit_gap, n_commits=2000, build_min=8.0, queue_min=5.0, task_min=3.0, seed=0):
     rng = np.random.default_rng(seed)
+    # 커밋 도착 시각: 지수분포 간격의 누적합(분 단위)
     commit_t = np.cumsum(rng.exponential(commit_gap, n_commits))
+    # 빌드 시간이 모두 같아 이미지가 올라오는 순서는 커밋 순서와 같다(교육용 단순화)
     push_t = commit_t + build_min  # 빌드 시간이 같으니 올라가는 순서는 커밋 순서와 같다
     start_t = push_t + rng.exponential(queue_min, n_commits)
     wrong_runs = mixed_runs = 0
@@ -24,8 +26,10 @@ def simulate(ref_mode, commit_gap, n_commits=2000, build_min=8.0, queue_min=5.0,
         for k in range(3):
             t = start_t[i] + k * task_min
             if ref_mode == "latest":
+                # task가 뜨는 시각 t에 latest가 가리키는 이미지 = 그 시각까지 올라온 마지막 이미지(번호). 자기 커밋 번호 i와 다르면 시험한 이미지가 아니다
                 images.append(int(np.searchsorted(push_t, t, side="right") - 1))  # 그 순간 latest = 마지막으로 올라간 이미지
             else:
+                # SHA/다이제스트로 제출하면 항상 자기 커밋의 이미지
                 images.append(i)
         wrong_runs += any(im != i for im in images)
         mixed_runs += len(set(images)) > 1

@@ -31,6 +31,8 @@ def count_bigrams(ids, V):
     """
     ids = np.asarray(ids)
     counts = np.zeros((V, V), dtype=np.int64)
+    # (앞 단어, 다음 단어) 쌍마다 칸 (a, b)에 1을 더한다. 같은 칸이 반복돼도 누적되도록 counts[idx] += 1 대신 np.add.at을 쓴다.
+    # ids[:-1]은 앞 단어 열, ids[1:]은 한 칸 밀린 다음 단어 열이라 길이 T-1개의 쌍이 나온다.
     np.add.at(counts, (ids[:-1], ids[1:]), 1)
     return counts
 
@@ -46,7 +48,9 @@ def count_sentences(sentences_ids, V):
 def bigram_mle(counts):
     """P[a, b] = c(a, b) / c(a). 한 번도 앞에 나온 적 없는 행(예: </s>)은 0으로 둔다."""
     counts = np.asarray(counts, dtype=np.float64)
+    # c(a) = 행 합. (V, 1) 모양이라 (V, V) 카운트를 행별로 나눌 수 있다.
     row = counts.sum(axis=1, keepdims=True)
+    # where=row > 0 인 행만 나눈다. 안 나눈 칸은 out의 0으로 남아 0으로 나누기 경고를 피한다.
     return np.divide(counts, row, out=np.zeros_like(counts), where=row > 0)
 
 
@@ -54,6 +58,7 @@ def unigram_mle(sentences_ids, V, skip_first=True):
     """비교용 유니그램: 앞 단어를 전혀 보지 않는 P(b). 첫 토큰 <s>는 예측 대상이 아니라 뺀다."""
     c = np.zeros(V, dtype=np.float64)
     for ids in sentences_ids:
+        # skip_first=True면 첫 토큰(<s>)을 센 대상에서 뺀다. 바이그램 PPL과 예측 토큰 수를 맞추려는 선택.
         np.add.at(c, np.asarray(ids[1:] if skip_first else ids), 1)
     return c / c.sum()
 
@@ -61,7 +66,9 @@ def unigram_mle(sentences_ids, V, skip_first=True):
 def sequence_log_prob(P, ids):
     """log P(w_2..w_T | w_1) = sum_t log P[w_{t-1}, w_t]. 확률 0인 칸이 있으면 -inf."""
     ids = np.asarray(ids)
+    # 각 위치 t의 P[w_{t-1}, w_t]를 한 번에 꺼낸다. 모양 (T-1,).
     p = P[ids[:-1], ids[1:]]
+    # log(0) = -inf 경고만 끈다. 값 자체는 -inf로 남아 PPL이 무한대가 된다(테스트 test_unseen_bigram_gives_infinite_perplexity).
     with np.errstate(divide="ignore"):
         return float(np.log(p).sum())
 
@@ -75,6 +82,7 @@ def perplexity(P, sentences_ids):
     return float(np.exp(-total / n))
 
 
+# 유니그램 PPL. perplexity와 같은 식에서 P[a, b] 대신 앞 단어와 무관한 p[b]를 쓴다.
 def unigram_perplexity(p, sentences_ids):
     total, n = 0.0, 0
     for ids in sentences_ids:
@@ -124,11 +132,13 @@ def make_sentence(k, rng):
 
     반환: (토큰 목록, 동사 위치, 주어가 복수인지, 동사 원형 번호)
     """
+    # 0 = 단수, 1 = 복수. NOUNS/VERBS의 쌍 (단수형, 복수형)을 이 값으로 고른다. 정답 일치의 기준이 된다.
     plural = int(rng.integers(2))
     noun = NOUNS[int(rng.integers(len(NOUNS)))][plural]
     vi = int(rng.integers(len(VERBS)))
     advs = [ADVERBS[int(i)] for i in rng.integers(len(ADVERBS), size=k)]
     toks = [BOS, "the", noun] + advs + [VERBS[vi][plural], EOS]
+    # 동사 위치 = <s>, the, 명사 다음부터 부사 k개 뒤이므로 인덱스 3 + k.
     return toks, 3 + k, plural, vi
 
 
@@ -151,12 +161,14 @@ def agreement_scores(prob_fn, corpus, stoi):
     forms = [w for pair in VERBS for w in pair]
     hits, ties, bits = 0.0, 0, 0.0
     for toks, vpos, plural, vi in corpus:
+        # 동사 앞까지가 문맥. 모델은 이 문맥만 보고 두 동사 형태의 확률을 낸다.
         ctx = toks[:vpos]
         right = prob_fn(ctx, VERBS[vi][plural])
         wrong = prob_fn(ctx, VERBS[vi][1 - plural])
         if right == wrong:
             ties += 1
         hits += 1.0 if right > wrong else (0.5 if right == wrong else 0.0)
+        # 동사 16개 형태의 확률 합 z로 정규화해 "동사 자리" 안에서의 확률만 본다.
         z = sum(prob_fn(ctx, w) for w in forms)
         with np.errstate(divide="ignore", invalid="ignore"):
             bits += -np.log2(right / z) if z > 0 else np.inf

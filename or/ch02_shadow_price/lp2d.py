@@ -3,6 +3,9 @@
 문제: max c.x  s.t.  A x <= b, x >= 0  (변수 2개)
 첫 번째 길: 제약선 두 개씩 교점을 모두 구해 꼭짓점 중 가장 좋은 값을 고른다(Fraction, 정확 계산).
 두 번째 길: 가능한 정수 생산량을 모두 세어 본다.
+
+이 파일은 1장 product_mix.py와 같은 코드의 사본이다(2장 shadow_price.py가 import해서 쓴다).
+입력: 제약 목록 [((a1, a2), b), ...]. 출력: 최적 생산량과 마진(만원). 2장에서는 우변 b를 바꿔 다시 푸는 데 쓴다.
 """
 from fractions import Fraction as F
 from itertools import combinations
@@ -15,6 +18,7 @@ BASE = [((2, 1), 100),          # 재봉 시간(시간)
 
 def _rows(constraints):
     rows = [(F(a1), F(a2), F(b)) for (a1, a2), b in constraints]
+    # 비음 조건 x >= 0도 같은 형식(a1*x1 + a2*x2 <= b)의 제약 행으로 넣어 교점 계산에 함께 쓴다
     rows += [(F(-1), F(0), F(0)), (F(0), F(-1), F(0))]   # x1>=0, x2>=0
     return rows
 
@@ -23,11 +27,13 @@ def vertices(constraints):
     rows = _rows(constraints)
     out = set()
     for (a1, a2, b), (d1, d2, e) in combinations(rows, 2):
+        # 두 제약선의 교점을 크래머 공식으로 구한다. det == 0이면 평행(교점 없음)
         det = a1 * d2 - a2 * d1
         if det == 0:
             continue
         x1 = (b * d2 - a2 * e) / det
         x2 = (a1 * e - b * d1) / det
+        # 모든 제약을 만족하는 교점만 꼭짓점. Fraction이라 == 비교가 정확하다
         if all(r1 * x1 + r2 * x2 <= rb for r1, r2, rb in rows):
             out.add((x1, x2))
     return sorted(out)
@@ -37,11 +43,13 @@ def solve(constraints, c=C):
     vs = vertices(constraints)
     if not vs:
         return None
+    # 선형 목적함수의 최댓값은 가능영역의 꼭짓점 중 하나에서 나온다
     best = max(vs, key=lambda v: c[0] * v[0] + c[1] * v[1])
     return best, c[0] * best[0] + c[1] * best[1]
 
 
 def brute_force(constraints, c=C, limit=200):
+    # 상한 200은 이 가상 문제의 범위를 덮기 위한 값
     best = None
     for x1 in range(limit + 1):
         for x2 in range(limit + 1):

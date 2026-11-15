@@ -26,6 +26,7 @@ import webapp_ch01_server as S  # noqa: E402
 import webapp_ch01_visible as V  # noqa: E402
 
 OUT = HERE / "results" / "ch01.json"
+# 서버 전용 값의 표식 문자열. 내려받은 바이트에서 몇 번 나오는지 센다(0이어야 한다).
 SERVER_ONLY_MARKERS = {
     "가짜 AI 키": "DEMO_NOT_A_REAL_KEY_0000",
     "이미지 생성 지시문": "글자를 넣지 말 것",
@@ -39,6 +40,7 @@ def e0_e1(log):
     first = [r for r in rows if r["step"] == "open"]
     by_kind = {}
     for r in first:
+        # 종류별 파일 수와 바이트 합 집계.
         by_kind.setdefault(r["kind"], {"files": 0, "bytes": 0})
         by_kind[r["kind"]]["files"] += 1
         by_kind[r["kind"]]["bytes"] += r["bytes"]
@@ -51,6 +53,7 @@ def e0_e1(log):
 
 
 def e3_markers(log):
+    # 200으로 받은 본문을 모두 이어 붙여 한 번에 검색.
     blob = V.all_downloaded_bytes(log)
     return {name: blob.count(mark.encode()) for name, mark in SERVER_ONLY_MARKERS.items()}
 
@@ -58,6 +61,7 @@ def e3_markers(log):
 def e4_minify():
     original, minified, smap = B.build(write=False)
     ob, mb = original.encode(), minified.encode()
+    # 경로 문자열은 이름 바꾸기 대상이 아니라 배포본에도 그대로 남는다는 것을 보이는 비교.
     lits = [s for s in B.string_literals(original) if "templates/" in s or "/api/" in s]
     return {
         "original_bytes": len(ob), "min_bytes": len(mb), "min_ratio": round(len(mb) / len(ob), 4),
@@ -75,6 +79,7 @@ def e4_minify():
 def e5_source_maps():
     out = {}
     original = B.SRC.read_text(encoding="utf-8")
+    # 지도 파일을 내보낼 때와 숨길 때를 각각 새 서버로 방문해 비교.
     for serve in (True, False):
         with V.running_editor(serve_maps=serve) as base:
             log = V.visit(base, actions=(), devtools_source_maps=True)
@@ -105,6 +110,7 @@ def e8_crosscheck(log):
         rel = "index.html" if r["path"] == "/" else r["path"].lstrip("/")
         disk = (S.PUBLIC / rel).read_bytes()
         checked += 1
+        # 디스크 파일에서 다시 계산한 크기와 압축 크기가 요청 목록 값과 달라야 불일치로 센다.
         if len(disk) != r["bytes"] or V.gzip_size(disk) != r["gzip_bytes"]:
             bad += 1
     return {"checked": checked, "mismatches": bad}
@@ -113,6 +119,7 @@ def e8_crosscheck(log):
 def main():
     with V.running_editor(serve_maps=True) as base:
         log = V.visit(base)
+        # 개발자 도구 지도 설정을 켠 방문. 같은 서버에서 두 번째 방문이라 서버 사용량 카운터가 하나 더 올라간다.
         log_dev = V.visit(base, devtools_source_maps=True)
         outside = e7_outside(base)
     e0, e1 = e0_e1(log)

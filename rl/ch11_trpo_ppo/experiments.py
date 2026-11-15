@@ -47,8 +47,10 @@ LOG_UPD = HERE / "logs" / "ch11_updates.jsonl"
 LOG_EP = HERE / "logs" / "ch11_episodes.jsonl"
 SEEDS = list(range(10))
 N_ITERS = 60
+# eps = inf는 '클리핑 없음'(비율을 어디까지든 허용)
 INF = float("inf")
 
+# 실험 설정표: 이름 -> (방법, 인자). pg의 lr = 바닐라 학습률, trpo의 delta = KL 한계, ppo의 eps = 클리핑 폭, adam_lr = Adam 학습률
 CONFIGS = {
     "pg_lr10": ("pg", {"lr": 10.0}),
     "pg_lr100": ("pg", {"lr": 100.0}),
@@ -80,17 +82,20 @@ def e0_hand():
         return p * math.log(p / q) + (1 - p) * math.log((1 - p) / (1 - q))
 
     out = {"p_at_z": {str(z): r4(sig(z)) for z in (0, 1, 4, 5)}}
+    # 같은 손잡이 이동(z에서 z+1)의 KL을 출발점에 따라 비교(0 -> 1: 0.12, 4 -> 5: 0.0066)
     out["same_step_from_0"] = {"p_before": r4(sig(0)), "p_after": r4(sig(1)), "kl": r4(kl(sig(0), sig(1)))}
     out["same_step_from_4"] = {"p_before": r4(sig(4)), "p_after": r4(sig(5)), "kl": r4(kl(sig(4), sig(5)))}
     # 오른쪽이 좋았다(이득 +1). 오른쪽 확률을 0.5에서 0.6, 0.73으로 올렸을 때 비율과 잘라 낸 목적
     rows = []
     for p_new in (0.6, sig(1)):
+        # 비율 r = 새 확률 / 옛 확률(0.5). 이득 +1이면 목적 = min(r, clip(r, 0.8, 1.2))
         r = p_new / 0.5
         rows.append({"p_new": r4(p_new), "ratio": r4(r), "unclipped": r4(r * 1.0),
                      "clipped": r4(min(r * 1.0, min(max(r, 0.8), 1.2) * 1.0))})
     out["clip_rows_adv_plus1"] = rows
     out["z_for_ratio_1.2"] = r4(math.log(0.6 / 0.4))
     # 0.5에서 출발해 KL이 정확히 0.01(TRPO의 delta)이 되는 오른쪽 확률: 4q(1-q) = e^{-0.02}
+    # KL(0.5||q) = -(1/2) ln(4q(1-q)) = 0.01 이므로 4q(1-q) = e^-0.02. q에 대한 이차방정식의 해(큰 쪽)
     q = 0.5 + math.sqrt(0.25 - math.exp(-0.02) / 4)
     out["p_at_kl_0.01_from_0.5"] = {"p": r4(q), "kl_check": r4(kl(0.5, q))}
     # 이득이 -1이면(오른쪽이 나빴다) 비율을 0.8 아래로 내려도 더 얻는 게 없다
@@ -103,6 +108,7 @@ def run_all(configs):
     runs = {}
     for name, (algo, kw) in configs.items():
         t0 = time.perf_counter()
+        # 설정마다 시드 10개로 60번 갱신. 시드가 같으면 초기 판 묶음이 같아 방법 간 비교가 짝지어진다
         runs[name] = [m.train(algo, s, n_iters=N_ITERS, **kw) for s in SEEDS]
         print(f"{name}: {time.perf_counter() - t0:.1f}s", flush=True)
     return runs
@@ -110,6 +116,7 @@ def run_all(configs):
 
 def summarize(hs):
     finals = [final_return(h) for h in hs]
+    # 최종 리턴 10개의 평균과 부트스트랩 95% 구간(백분위 방법)
     mean, lo, hi = m.bootstrap_ci(finals, seed=0)
     cols = [m.collapsed(h["ret"], h["steps"]) for h in hs]
     kls = np.concatenate([h["kl"] for h in hs])
@@ -148,6 +155,7 @@ def seed_split(finals):
     t, df, p = m.welch_t(finals[:5], finals[5:])
     ps, diffs = [], []
     for g in itertools.combinations(range(10), 5):
+        # 10개를 5+5로 나누는 방법: C(10,5)=252, 대칭 중복을 빼면 126가지. 0이 들어 있는 쪽만 세어 중복 제거
         if 0 not in g:  # {g, 나머지}와 {나머지, g}는 같은 나눔이라 한 번만 센다
             continue
         rest = [i for i in range(10) if i not in g]
@@ -163,6 +171,7 @@ def seed_split(finals):
 def three_seed_flip(fa, fb):
     """같은 시드 3개를 골라 두 설정을 비교할 때(120가지), A의 평균이 B보다 높게 나오는 비율."""
     fa, fb = np.asarray(fa), np.asarray(fb)
+    # C(10,3) = 120가지 시드 3개 조합: 시드를 적게 고르면 순위가 뒤집히는 정도를 본다
     wins = [fa[list(c)].mean() > fb[list(c)].mean() for c in itertools.combinations(range(10), 3)]
     return {"n_triples": len(wins), "a_wins": int(sum(wins)), "a_mean_10": r4(fa.mean()), "b_mean_10": r4(fb.mean()),
             "welch_10_vs_10": dict(zip(("t", "df", "p_two_sided"), map(r4, m.welch_t(fa, fb))))}
@@ -204,6 +213,7 @@ def e5_compute(runs):
     bt = np.array([i["backtracks"] for i in tr])
     acc = np.array([i["accepted"] for i in tr])
     # 묶음 전체를 훑는 횟수(행렬-벡터 곱 하나 = 1회). TRPO: 기울기 1 + 켤레기울기 k + s^T F s 1 + 선탐색 시도마다 2(KL, 대리 목적)
+    # 묶음 전체 훑기 횟수 추정: 기울기 1 + CG k + s^T F s 1 + L0 1 + 선탐색 시도마다 2(KL, 대리 목적). 시도 횟수 = 되돌림 수 + 수락 1(수락 안 되면 0)
     trpo_pass = 1 + cg + 1 + 1 + 2 * (bt + acc)  # 1: 선탐색 전 대리 목적 L0
     return {
         "pg": {"passes_per_update": 1, "ms_median": r4(np.median([x for h in runs["pg_lr100"] for x in h["update_ms"]]))},
@@ -223,6 +233,7 @@ def e5_compute(runs):
 def _first_flip(hn, wt, upto):
     """두 구현의 매개변수로 같은 난수열을 다시 걸어, 갈라진 갱신의 묶음에서 처음 행동이 달라진 판과 걸음을 찾는다."""
     rng1, rng2 = np.random.default_rng(0), np.random.default_rng(0)
+    # 두 구현이 거의 같지만 부동소수 오차 때문에 어느 갱신에선가 행동이 갈라진다. 같은 난수열로 갈라진 첫 판과 걸음을 찾는 진단
     w1, w2 = np.zeros(5), np.zeros(5)
     for k in range(upto + 1):
         b1, b2 = m.collect(w1, 16, rng1), m.collect(w2, 16, rng2)
@@ -243,6 +254,7 @@ def e6_torch():
     w = rng.normal(0, 0.5, 5)
     batch = m.collect(w, 16, np.random.default_rng(4))
     adv = m.advantages(batch)
+    # w_old와 같으면 r=1이라 클리핑이 안 걸려 대조가 무의미. 일부러 옮긴 점에서 비교
     w2 = w + rng.normal(0, 0.3, 5)  # 비율이 1에서 벗어나 잘라 내기가 실제로 걸리는 점
     out = {}
     for eps in (0.1, 0.2, INF):
@@ -262,6 +274,7 @@ def e6_torch():
     out["cg_vs_solve_max_rel_diff"] = float(np.max(np.abs(x - np.linalg.solve(F, g)) / np.abs(np.linalg.solve(F, g))))
     out["cg_iters"] = k
     # PPO 갱신 한 번(10에폭 x 미니배치 4개 = Adam 40걸음)
+    # 한 번의 PPO 갱신 = 10 epoch x 미니배치 4 = Adam 40걸음(epoch/미니배치 값은 이 장의 설정)
     wn, _ = m.ppo_update(w, batch, adv, 0.2, 10, 4, m.Adam(5, 0.05), np.random.default_rng(7))
     wt = mt.ppo_update(w, batch, adv, 0.2, 10, 4, 0.05, np.random.default_rng(7))
     out["ppo_update_w_max_abs_diff"] = float(np.max(np.abs(wn - wt)))
@@ -270,6 +283,7 @@ def e6_torch():
     rt, wt = mt.train_ppo(0, 20, eps=0.2, adam_lr=0.05)
     dw = np.max(np.abs(np.array(hn["w"]) - wt), axis=1)
     same = [a == b for a, b in zip(hn["ret"], rt)]
+    # NumPy와 torch의 리턴이 처음 달라지는 갱신 번호(0부터). 부동소수 차이가 확률적 행동 표집을 뒤집어 판 이후 궤적이 갈라지는 현상
     first_diff = same.index(False) if False in same else None
     out["train_loop_20_updates"] = {
         "first_update_with_different_return": first_diff,  # 0부터 센 갱신 번호
@@ -316,6 +330,7 @@ def main():
                        for k in ("pg_lr1000", "ppo_noclip_adam0.2") for s in SEEDS if final_return(pool[k][s]) < 20}
     res["E1_stuck_reference_ppo_eps0.2_seed0"] = {a: r4(b) for a, b in m.stuck_diagnosis(runs["ppo_eps0.2"][0]["final_w"]).items()}
     res["E5_compute"] = e5_compute(runs)
+    # 갱신별 KL/리턴 로그와 판 기록 로그 저장
     write_logs(pool)
     res["E6_torch"] = e6_torch()
     res["E7_repeat"] = e7_repeat()

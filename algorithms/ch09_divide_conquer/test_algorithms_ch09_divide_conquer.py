@@ -14,8 +14,10 @@ import algorithms_ch09_mul as mm
 
 def _cases(seed=0, count=300, max_digits=80):
     rng = random.Random(seed)
+    # 경계 사례: 0, 음수, 9·99 같은 올림 연쇄, 자릿수 차가 큰 쌍.
     out = [(0, 0), (0, 123), (-7, 0), (1, -1), (9, 9), (99, 99), (10 ** 40, 10 ** 39 + 7)]
     for _ in range(count):
+        # 자릿수를 먼저 무작위로 골라 작은 수와 큰 수가 고르게 나오게 한다(x 와 y 의 자릿수도 서로 독립).
         x = rng.randint(-10 ** rng.randint(0, max_digits), 10 ** rng.randint(0, max_digits))
         y = rng.randint(-10 ** rng.randint(0, max_digits), 10 ** rng.randint(0, max_digits))
         out.append((x, y))
@@ -23,9 +25,11 @@ def _cases(seed=0, count=300, max_digits=80):
 
 
 def test_first_screen_numbers():
+    # 12 x 34 = (1*10+2)(3*10+4). 학교식 조각곱 3, 4, 6, 8 -> 3*100 + (4+6)*10 + 8 = 408.
     # 12 x 34: 학교식 곱 4번, Karatsuba 곱 3번
     assert (1 * 3, 1 * 4, 2 * 3, 2 * 4) == (3, 4, 6, 8)
     assert 3 * 100 + (4 + 6) * 10 + 8 == 408
+    # Karatsuba: z2 = 3, z0 = 8, (1+2)(3+4) = 21 -> 가운데 항 21 - 3 - 8 = 10 (학교식의 4+6 과 같다).
     z2, z0, s = 1 * 3, 2 * 4, (1 + 2) * (3 + 4)
     assert (z2, z0, s, s - z2 - z0) == (3, 8, 21, 10)
     assert z2 * 100 + (s - z2 - z0) * 10 + z0 == 408 == 12 * 34
@@ -34,15 +38,18 @@ def test_first_screen_numbers():
     c = mm.Counter()
     assert mm.schoolbook_mul(12, 34, c) == 408 and c.mults == 4
     c = mm.Counter()
+    # 4 자리 = 2^2: 계수 판 곱 횟수 3^2 = 9, 학교식 4^2 = 16.
     assert mm.karatsuba_poly_mul(1213, 2121, 1, c) == 2572773 == 1213 * 2121 and c.mults == 9
     c = mm.Counter()
     assert mm.schoolbook_mul(1213, 2121, c) == 2572773 and c.mults == 16
+    # (계수 판이라 합이 9 를 넘어도 올림하지 않으므로, 잎에 들어가는 값은 여전히 한 자리 곱 한 번이다. 아래 단언은 0..9 범위를 확인.)
     # 첫 화면의 손계산: 조각을 더해도(12+13=25, 21+21=42) 모든 잎이 한 자리 곱이다
     tr = []
     mm.karatsuba_poly(mm.to_digits(1213), mm.to_digits(2121), 1, None, tr)
     leaves = [(p[0], q[0]) for d, p, q, r, _ in tr if len(p) == 1]
     assert len(leaves) == 9 and all(0 <= a <= 9 and 0 <= b <= 9 for a, b in leaves)
     # 표: 2^12 = 4096자리에서 4^12 대 3^12
+    # 4096 = 2^12 자리: 학교식 4^12 대 Karatsuba 3^12, 비율 약 31.6배.
     assert 4 ** 12 == 16777216 and 3 ** 12 == 531441
     assert round(4 ** 12 / 3 ** 12, 1) == 31.6
 
@@ -51,6 +58,7 @@ def test_all_multipliers_match_python_int():
     for x, y in _cases():
         want = x * y
         assert mm.schoolbook_mul(x, y) == want
+        # 기저 크기(이 이하면 학교식)를 바꿔도 결과는 같아야 한다.
         for b in (1, 2, 8, 32):
             assert mm.karatsuba_mul(x, y, b) == want, (x, y, b)
             assert mm.karatsuba_poly_mul(x, y, b) == want, (x, y, b)
@@ -59,6 +67,7 @@ def test_all_multipliers_match_python_int():
 
 def test_exact_counts_powers_of_two():
     """n = 2^k 자리, 기저 크기 2^j: 계수 판 Karatsuba 는 정확히 3^(k-j) 4^j, 학교식은 4^k."""
+    # 시드 1 고정. n 자리 수를 최고 자릿수가 0 이 아니게 뽑는다(길이가 정확히 n 이 되도록).
     rng = random.Random(1)
     for k in range(0, 9):
         n = 2 ** k
@@ -85,12 +94,14 @@ def test_carry_version_is_near_but_not_exactly_3k():
     y = rng.randrange(10 ** (n - 1), 10 ** n)
     c = mm.Counter()
     mm.karatsuba_mul(x, y, 1, c)
+    # 자리올림 판은 합이 n/2+1 자리가 되기도 해서 3^k 보다 많다. 상한 n^2/4 는 이 한 입력(시드 2)의 관찰에 맞춘 느슨한 경계.
     assert 3 ** k < c.mults < n * n // 4
 
 
 def test_recursion_tree_levels():
     for b in (3, 4):
         lv = mm.recursion_tree(4096, b, 1)
+        # 4096 = 2^12 이므로 층은 0..12 로 13개.
         assert len(lv) == 13
         for row in lv:
             assert row["nodes"] == b ** row["level"]
@@ -108,7 +119,9 @@ def test_widget_trace_invariants():
         counts = {}
         for depth, p, q, r, _ in tr:
             counts[depth] = counts.get(depth, 0) + 1
+            # 재귀 노드마다 부분 문제의 답이 맞다(p * q = r).
             assert mm.from_digits(p) * mm.from_digits(q) == mm.from_digits(r)
+        # 8 자리 = 2^3: 층 0..3 의 노드 수가 3 갈래면 1, 3, 9, 27, 4 갈래면 1, 4, 16, 64.
         assert [counts[d] for d in sorted(counts)] == [branches ** d for d in range(4)]
 
 
@@ -119,7 +132,9 @@ def test_fft_recursive_matches_numpy_and_count():
         a = rng.standard_normal(n) + 1j * rng.standard_normal(n)
         c = mm.Counter()
         got = np.array(mm.fft_recursive(list(a), c))
+        # NumPy FFT 와 비교. 부동소수라 허용 오차가 필요하고 n 에 비례해 넉넉히 둔다.
         assert np.allclose(got, np.fft.fft(a), atol=1e-9 * max(1, n))
+        # 복소수 곱 (n/2) log2 n 번(e = log2 n). n = 1 이면 0.
         assert c.mults == (n // 2) * e
 
 
@@ -128,7 +143,9 @@ def test_fft_counted_formula():
         n = 2 ** k
         c = mm.Counter()
         mm.fft_poly_mul_counted([9] * n, [9] * n, c)
+        # 두 길이 n 계수의 곱은 길이 2n-1 이라 N = 2n 점.
         N = 2 * n
+        # FFT 3번(순, 순, 역) x (N/2) log2 N + 점별 곱 N.
         assert c.mults == 3 * (N // 2) * int(math.log2(N)) + N
 
 
@@ -144,12 +161,14 @@ def test_big_round_trip_beyond_str_limit():
 
 def test_fft_mul_bits_exact_small_and_breaks_large():
     rng = random.Random(4)
+    # 이 크기까지는 float64 반올림이 정확해야 한다. dist < 0.5 는 반올림 전 값이 정수에 충분히 가깝다는 뜻.
     for bits in (4, 8, 12, 16):
         for n in (1, 7, 64, 300):
             x = rng.getrandbits(n * bits) | 1
             y = rng.getrandbits(n * bits) | 1
             v, dist = mm.fft_mul_bits(x, y, bits)
             assert v == x * y and dist < 0.5
+    # 계수 하나가 최대 (2^24 - 1)^2 x 256 약 2^56 으로 float64 가수 53 비트를 넘는다. 모든 자리가 최대인 입력이 최악.
     # 24비트 계수는 계수 곱의 합이 2^53 을 넘어 256개만 돼도 틀린다(모든 자리가 최대인 입력)
     n, bits = 256, 24
     x = (1 << (n * bits)) - 1

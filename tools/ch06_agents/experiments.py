@@ -31,6 +31,7 @@ import tools_ch06_loop as L  # noqa: E402
 
 OUT = HERE / "results" / "ch06.json"
 FACTS = HERE / "data" / "agents_2026-10-10.json"
+# 시뮬레이션 주 수. 표준오차 sqrt(p(1-p)/N)가 충분히 작아지도록 크게 잡은 값(모형의 선택).
 WEEKS = 20_000
 
 
@@ -42,6 +43,7 @@ def outs(o):
     return {k: f(v) for k, v in o.items() if k != "stop_at"}
 
 
+# 손계산: 0.97^22 = 0.5117, 90%를 지키는 최대 단계는 3. 한 번 다시 하기(확인이 늘 잡을 때)는 단계당 1-(0.03)^2 = 0.9991.
 def e0_hand(a):
     p = a["p"]
     return {"p": f(p), "n2": f(C.chain(p, 2)), "n3": f(C.chain(p, 3)), "n4": f(C.chain(p, 4)),
@@ -73,6 +75,7 @@ def e2_table():
             "max_steps_90": [C.max_steps(p, F(9, 10)) for p in ps]}
 
 
+# gate = n-1: 마지막 단계(공유, 되돌리기 어려움) 바로 앞이 사람 승인 위치.
 def scen(a, n=22):
     p, d, k, h = a["p"], a["d"], a["k"], a["h"]
     gate = n - 1
@@ -112,6 +115,7 @@ def e5_agent(a, n=22):
                                                         for x in ("correct", "missed")) ** 2, 4)}
 
 
+# 각 행: (이름, 실행 함수, 이상한 주 비율, 인자, 닫힌 식 값). 이상한 주 행은 닫힌 식이 없거나 별도라 비교(z)를 건너뛴다.
 def sim_rows(a):
     p, q, d, k, h = (float(a[x]) for x in ("p", "q", "d", "k", "h"))
     k = int(k)
@@ -138,6 +142,7 @@ def sim_rows(a):
                "stopped_rate": f(s["stopped"] / WEEKS, 4), "stop_steps": dict(sorted(s["stop_steps"].items()))}
         if cf is not None:
             pc = float(cf["all_correct"])
+            # z = (관측 비율 - 닫힌 식)/표준오차. |z| < 3이면 우연의 범위로 본다(테스트가 확인).
             se = math.sqrt(pc * (1 - pc) / WEEKS)
             row.update(closed_correct=f(pc, 4), se=f(se, 5), z=f((s["correct"] / WEEKS - pc) / se, 2) if se else 0.0)
         rows.append(row)
@@ -149,6 +154,7 @@ def e7_where(a, run):
     ids = [s["id"] for s in run["steps"]]
     first = [f(C.first_failure_at(p, i), 4) for i in range(1, 23)]
     so = C.step_outcomes(a["p"], a["d"], a["k"])
+    # 한 달 = 52/12주, 주 1회 실행 가정. Figma 한도 20은 확인일 기준 사실 파일의 값(변경 가능, 확인 필요).
     figma_runs_month = F(52, 12)
     return {"first_failure_at": dict(zip(ids, first)), "first_failure_at_1": f(C.first_failure_at(p, 1), 4),
             "first_failure_at_22": f(C.first_failure_at(p, 22), 4),
@@ -160,6 +166,7 @@ def e7_where(a, run):
             "figma_limit_month": 20}
 
 
+# 닫힌 식 검증용 독립 계산: 시도를 나무로 펼친다. 깊이가 (단계 수 n) x (다시 하기 k)라 작은 n에서만 쓴다(경로 수는 세 갈래의 거듭제곱).
 def enumerate_paths(p, d, k, n):
     """시도 하나하나를 나무처럼 펼쳐 모든 경로의 확률을 더한다(작은 n만)."""
     tries = [("ok", p), ("caught", (1 - p) * d), ("missed", (1 - p) * (1 - d))]
@@ -186,6 +193,7 @@ def enumerate_paths(p, d, k, n):
 
 
 def e8_crosscheck(n_cases=300):
+    # 대조 경우 300개를 시드 6으로 고정.
     rng = random.Random(6)
     bad = 0
     for _ in range(n_cases):
@@ -198,6 +206,7 @@ def e8_crosscheck(n_cases=300):
         if not (o["all_correct"] == e["correct"] and o["delivered_wrong"] == e["wrong"]
                 and o["stopped_by_check"] == e["stopped"] and sum(e.values()) == 1):
             bad += 1
+        # 확인이 없으면 p^n과 같아야 한다는 추가 점검.
         if d == 0 and k == 0 and o["all_correct"] != p ** n:
             bad += 1
     return {"cases": n_cases, "mismatches": bad}

@@ -26,12 +26,15 @@ from urllib.parse import urlparse
 import webapp_ch01_build as B
 import webapp_ch01_server as S
 
+# 이 모형이 요청을 보내도 되는 유일한 호스트(같은 컴퓨터의 실습 서버). request()가 강제한다.
 ALLOWED_HOST = "127.0.0.1"
 
 
 @contextlib.contextmanager
 def running_editor(serve_maps=True):
+    # 포트 0 = 운영체제가 빈 포트를 골라 준다. 실제 포트는 server_address[1]에서 읽는다.
     srv = S.make_server(0, serve_maps=serve_maps)
+    # 요청을 받는 서버는 별도 스레드에서 돌리고, 호출한 쪽은 그동안 클라이언트 역할을 한다.
     t = threading.Thread(target=srv.serve_forever, daemon=True)
     t.start()
     try:
@@ -43,11 +46,13 @@ def running_editor(serve_maps=True):
 
 def gzip_size(data):
     """압축해서 보낸다면 몇 바이트일까(이 서버는 실제로 압축하지 않는다). mtime=0으로 결정적."""
+    # mtime=0이 아니면 헤더에 현재 시각이 들어가 바이트 수가 실행마다 달라질 수 있다.
     return len(gzip.compress(data, compresslevel=9, mtime=0))
 
 
 def request(base, path, method="GET", body=None):
     url = base + path
+    # 다른 사이트로 요청이 새지 않게 막는 안전장치(실습 서버 외 요청 금지).
     host = urlparse(url).hostname
     if host != ALLOWED_HOST:
         raise ValueError("이 모형은 실습 서버(127.0.0.1)에만 요청해요")
@@ -59,6 +64,7 @@ def request(base, path, method="GET", body=None):
         with urllib.request.urlopen(req) as r:
             payload = r.read()
             return r.status, dict(r.headers), payload
+    # 404, 429 같은 오류 응답도 예외로 끝내지 않고 (상태, 헤더, 본문)으로 돌려줘 요청 목록에 남긴다.
     except urllib.error.HTTPError as e:
         return e.code, dict(e.headers), e.read()
 
@@ -66,11 +72,13 @@ def request(base, path, method="GET", body=None):
 class _Refs(HTMLParser):
     def __init__(self):
         super().__init__()
+        # (경로, 종류) 목록. 종류는 css, js, img 세 가지만 구분한다.
         self.refs = []  # (path, kind)
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "link" and a.get("href"):
+            # rel=stylesheet가 아닌 <link>(아이콘 등)는 그림으로 본다(모형의 단순화).
             self.refs.append((a["href"], "css" if a.get("rel") == "stylesheet" else "img"))
         elif tag == "script" and a.get("src"):
             self.refs.append((a["src"], "js"))
@@ -78,6 +86,7 @@ class _Refs(HTMLParser):
             self.refs.append((a["src"], "img"))
 
 
+# 확장자로 요청 종류를 추정하는 표. 표에 없으면 "other". 실제 브라우저는 Content-Type과 요청 맥락으로 정한다.
 KIND_BY_SUFFIX = {".html": "document", ".css": "css", ".js": "js", ".svg": "img", ".woff2": "font",
                   ".json": "json", ".map": "sourcemap"}
 
@@ -88,6 +97,7 @@ def _norm(p):
 
 def visit(base, actions=("change_template", "make_background"), devtools_source_maps=False):
     """요청 목록을 차례대로 돌려준다. 같은 주소는 한 번만 받는다(브라우저도 한 페이지 안에서 같은 그림을 다시 받지 않는다고 가정)."""
+    # seen: 이미 받은 경로. 한 방문 안에서 같은 주소는 한 번만 센다(캐시 재사용 가정).
     log, seen = [], set()
 
     def get(path, initiator, step):
@@ -96,9 +106,11 @@ def visit(base, actions=("change_template", "make_background"), devtools_source_
             return None
         seen.add(path)
         status, headers, payload = request(base, path)
+        # "/"는 확장자가 없으니 index.html로 바꿔 종류를 document로 맞춘다.
         suffix = Path(path if path != "/" else "/index.html").suffix
         log.append({
             "step": step, "path": path, "method": "GET", "kind": KIND_BY_SUFFIX.get(suffix, "other"),
+            # bytes는 압축 전 본문 길이, gzip_bytes는 압축했다면의 길이(실제로는 압축해 보내지 않는다). _body는 검증용 본문.
             "initiator": initiator, "status": status, "bytes": len(payload), "gzip_bytes": gzip_size(payload),
             "cache_control": headers.get("Cache-Control", ""), "sha256": hashlib.sha256(payload).hexdigest(),
             "_body": payload,
@@ -106,6 +118,7 @@ def visit(base, actions=("change_template", "make_background"), devtools_source_
         return payload
 
     # 1) 페이지 열기
+    # 1) 페이지 열기: HTML을 받고, 그 안의 참조를 위에서부터 따라간다(받는 순서가 곧 기대 요청 순서).
     html = get("/", "주소창", "open").decode()
     p = _Refs()
     p.feed(html)
@@ -115,19 +128,24 @@ def visit(base, actions=("change_template", "make_background"), devtools_source_
         if body is None:
             continue
         if kind == "css":
+            # CSS 안의 url("...")(글꼴, 배경 그림)도 CSS를 받은 뒤에야 알 수 있어 두 번째 단계 요청이 된다.
             for u in re.findall(r'url\("([^"]+)"\)', body.decode()):
                 get(u, "CSS", "open")
         if kind == "js":
             js_text = body.decode()
     # JS가 처음에 부르는 것: 템플릿 목록 -> 첫 템플릿
+    # JS 본문의 문자열 리터럴 중 .json으로 끝나는 첫 값이 템플릿 목록 주소(app.js가 그렇게 쓰도록 짜여 있다는 전제).
     index_path = next(s.strip('"') for s in B.string_literals(js_text) if s.strip('"').endswith(".json"))
     index = json.loads(get(index_path, "JS fetch", "open"))
+    # 목록의 첫 템플릿 파일 -> 그 파일이 가리키는 배경 그림 순서로 연쇄 요청.
     first = json.loads(get(index["templates"][0]["file"], "JS fetch", "open"))
     get(first["background"], "템플릿", "open")
     # 2) 사용자 동작
+    # 두 번째 템플릿(index.json의 [1])을 고르는 동작. 한 번 더 JSON만 받는다.
     if "change_template" in actions:
         get(index["templates"][1]["file"], "JS fetch", "change_template")
     if "make_background" in actions:
+        # POST 요청은 캐시 대상이 아니므로 seen을 쓰지 않고 항상 보낸다. 한글 프롬프트는 JSON에 그대로 담는다.
         status, headers, payload = request(base, "/api/generate-image", "POST",
                                            {"prompt": "파란 하늘과 종이비행기", "template": first["id"]})
         log.append({"step": "make_background", "path": "/api/generate-image", "method": "POST", "kind": "api",
@@ -136,14 +154,17 @@ def visit(base, actions=("change_template", "make_background"), devtools_source_
                     "sha256": hashlib.sha256(payload).hexdigest(), "_body": payload})
     # 3) 개발자 도구에서 지도 파일 설정을 켜고 열었을 때
     if devtools_source_maps:
+        # 배포본 맨 끝 줄의 지도 파일 주소. 개발자 도구에서 지도 설정을 켠 때만 브라우저가 이 파일을 요청한다.
         m = re.search(r"//# sourceMappingURL=(\S+)", js_text)
         if m:
+            # 이전 방문에서 받은 기록이 있어도 이번 요청은 새로 보내도록 지운다.
             seen.discard(_norm(m.group(1)))
             get(m.group(1), "개발자 도구", "devtools")
     return log
 
 
 def public_view(log):
+    # _body(원문 바이트)를 빼 JSON으로 저장할 수 있게 한다.
     return [{k: v for k, v in r.items() if k != "_body"} for r in log]
 
 
@@ -153,11 +174,14 @@ def all_downloaded_bytes(log):
 
 def inventory(log):
     """editor/ 아래 모든 파일이 브라우저로 내려갔는지 표로 만든다."""
+    # 성공(200)한 응답만 "내려간 것"으로 센다.
     ok = [r for r in log if r["status"] == 200]
+    # 내용 해시로 비교하므로 경로가 달라도 같은 내용이면 같은 파일로 본다.
     hashes = {r["sha256"] for r in ok}
     map_sources = []
     for r in ok:
         if r["kind"] == "sourcemap":
+            # 지도 파일의 sourcesContent에는 원본 소스 전문이 들어 있다. 이 장의 핵심 포인트.
             map_sources += json.loads(r["_body"])["sourcesContent"]
     rows = []
     for f in sorted(S.EDITOR.rglob("*")):
@@ -167,6 +191,7 @@ def inventory(log):
         data = f.read_bytes()
         if hashlib.sha256(data).hexdigest() in hashes:
             where = "내려감"
+        # 디스크 파일 전체가 지도 파일 속 원본과 같으면 "지도로 내려감".
         elif data.decode("utf-8", "replace") in map_sources:
             where = "지도 파일 안에 내용이 들어 있어 내려감"
         elif rel.startswith("public/"):
@@ -183,6 +208,7 @@ def cache_after_first_visit(log):
     for r in log:
         if r["status"] != 200:
             continue
+        # 판정 순서가 중요하다: no-store(저장 안 함) > no-cache(저장하되 매번 서버에 확인) > max-age(기간 동안 확인 없이 사용).
         cc = r["cache_control"]
         if "no-store" in cc:
             not_stored.append(r["path"])
@@ -191,6 +217,7 @@ def cache_after_first_visit(log):
             revalidate.append(r["path"])
         elif "max-age" in cc:
             stored.append(r["path"])
+    # 저장되는 파일의 압축 전 바이트 합(모형의 근사).
     stored_bytes = sum(r["bytes"] for r in log if r["path"] in stored and r["status"] == 200)
     return {"stored": stored, "stored_bytes": stored_bytes, "ask_server_again": revalidate,
             "not_stored": not_stored}

@@ -14,6 +14,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 DATA_FILE = HERE / "data" / "inquiries_2026-W41.json"
 WEEK = "2026-W41"
+# 첫 문의가 오는 가장 이른 시각은 월요일 09:00(가정). 아래 minutes는 이 시각부터의 경과 분.
 WEEK_START = datetime(2026, 10, 5, 9, 0)   # ISO 2026년 41주는 10월 5일(월)부터 11일(일)까지
 SEED = 3
 
@@ -37,13 +38,18 @@ CHANNELS = ["앱", "웹", "전화", "메일"]
 
 
 def build(seed=SEED):
+    """고정 시드로 문의 120건을 만든다. 같은 시드면 항상 같은 dict가 나와 JSON 파일이 재현된다."""
     rng = random.Random(seed)
+    # 유형별 건수만큼 유형 이름을 펼쳐서 120칸 목록을 만든다.
     cats = [c for c in CATEGORIES for _ in range(COUNTS[c])]
+    # 접수 순서에서 유형이 섞이도록 한다(시드 고정이라 결과는 같다).
     rng.shuffle(cats)
+    # 중복 없는 접수 시각(분)을 뽑아 오름차순 정렬. 범위는 월요일 09:00부터 일요일 24:00까지의 분(일주일 10,080분에서 앞의 9시간 540분을 뺌).
     minutes = sorted(rng.sample(range(0, 7 * 24 * 60 - 9 * 60), len(cats)))
     items = []
     for i, (c, m) in enumerate(zip(cats, minutes), start=1):
         t = WEEK_START + timedelta(minutes=m)
+        # 틀에 쓰이지 않는 값도 매번 함께 뽑는다. 뽑는 순서가 난수 소비 순서를 정하므로 이 순서를 바꾸면 파일 내용이 달라진다.
         text = rng.choice(TEMPLATES[c]).format(
             o=f"A{rng.randint(10000, 99999)}", d=rng.randint(3, 9), e=f"P-{rng.randint(100, 999)}",
             c=rng.choice(["가을맞이", "10% 할인", "무료배송"]), v=f"5.{rng.randint(0, 4)}.{rng.randint(0, 9)}",
@@ -56,6 +62,7 @@ def build(seed=SEED):
 
 
 def load(path=DATA_FILE):
+    """만들어 둔 문의 JSON을 읽는다."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 

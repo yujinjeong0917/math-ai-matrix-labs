@@ -22,11 +22,14 @@ import numpy as np  # noqa: E402
 import pipelines_ch04_data as dat  # noqa: E402
 import pipelines_ch04_model_np as mnp  # noqa: E402
 
+# 3장과 같은 데이터·분할 설정. 환경만 바꿔 결과를 비교하려고 고정
 DATA_SEED, N_ROWS, N_TRAIN, SPLIT_SEED = 100, 3000, 2000, 7
 LR, STEPS, L2 = 0.5, 400, 0.01
+# 서빙 입력 행 수(10만)
 N_SERVE = 100_000
 
 
+# 3장 해시 규칙을 이 장에서 다시 구현했다(장끼리 import하지 않는 저장소 규칙)
 def table_hash(table):
     """3장 dataset_hash와 같은 규칙(열 이름 정렬, 타입·모양·바이트)."""
     h = hashlib.sha256()
@@ -50,9 +53,11 @@ def serve_probe(tr, model):
     """float32로 들어온 서빙 입력 10만 행을 np.float64 통계로 변환해 확률을 낸다."""
     stats = mnp.serving_stats(tr)
     serve = dat.make_table(DATA_SEED + 1, N_SERVE)
+    # 서빙 입력은 수치 열을 float32로 보낸 상황을 흉내 낸다
     serve32 = {k: (v.astype(np.float32) if k in dat.NUMERIC else v) for k, v in serve.items()}
     dtype, Xnum = mnp.transform_serving(serve32, stats)
     k = len(dat.NUMERIC)
+    # 수치 6열의 가중치(앞 k개)만 써서 점수를 낸다. 범주 열은 빼고 dtype 차이만 보려는 단순화
     p = 1.0 / (1.0 + np.exp(-(Xnum @ model["w"][:k] + model["b"])))  # 수치 열만 쓰는 점수(타입 차이만 보려고)
     return dtype, p
 
@@ -66,6 +71,7 @@ def main(argv):
         "val_acc": metrics["val_acc"],
         "w": [float(x) for x in model["w"]], "b": float(model["b"]),
         "w_sha256": hashlib.sha256(np.asarray(model["w"], dtype="<f8").tobytes()).hexdigest(),
+        # NEP 50(NumPy 2의 타입 결정 규칙)에서 달라지는 예: float32 스칼라 + 파이썬 float
         "nep50_scalar": str((np.float32(3) + 3.0).dtype),          # NEP 50 표의 예
         "nep50_array": str((np.array([1.0], np.float32) + np.float64(1.0)).dtype),
     }
@@ -76,9 +82,11 @@ def main(argv):
     if "--dump-p" in argv:
         np.save(argv[argv.index("--dump-p") + 1], p.astype("<f8"))
     rng = np.random.default_rng(1)
+    # normal(40, 12)와 40 + 12*z(표준정규)가 같은 값을 내는지의 비율. 환경(NumPy 버전)에 따라 달라지는지 본다
     a = rng.normal(40, 12, 3000)
     z = np.random.default_rng(1).standard_normal(3000)
     out["normal_eq_affine_frac"] = float(np.mean(a == 40 + 12 * z))  # normal(40,12) == 40 + 12*z 인 비율
+    # 다른 환경이 만든 표로 학습해, 가중치 차이가 데이터 생성 때문인지 학습 계산 때문인지 가른다
     if "--train-on" in argv:  # 다른 환경이 만든 표로 학습해, 차이가 데이터 때문인지 계산 때문인지 가른다
         t = dict(np.load(argv[argv.index("--train-on") + 1]))
         tr2, va2 = dat.split(t, N_TRAIN, SPLIT_SEED)
@@ -105,6 +113,7 @@ def main(argv):
                 else:
                     w = np.load(d / "model.npz")["w"]
                 loads[fmt] = {"ok": True, "same_w": bool(np.array_equal(w, model["w"]))}
+            # 불러오기 실패 원인(버전 불일치 등)을 그대로 기록하려고 모든 예외를 잡는다
             except Exception as e:  # 어떤 오류가 나는지 그대로 기록한다
                 loads[fmt] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
         out["load"] = loads

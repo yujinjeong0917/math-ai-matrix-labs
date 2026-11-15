@@ -26,6 +26,7 @@ OUT = HERE / "results" / "ch09.json"
 CSV_OUT = HERE / "results" / "checklist_ch09.csv"
 MARKET = HERE / "data" / "market_2026-10-10.json"
 
+# 사람 확인 항목 11개를 성격별로 묶는 분류표. 점검표에 사람 항목을 추가하면 여기에도 넣어야 KeyError가 나지 않는다
 MANUAL_KIND = {
     "c4_month_cost": "돈", "c5_free_tier_month": "돈", "c8_store_fee": "돈", "c8_account_cost": "돈",
     "c5_pause": "운영", "c7_signing_human": "운영", "c9_support_channel": "운영", "c8_play_closed_test": "운영",
@@ -56,11 +57,13 @@ def e3_bookend():
 def e4_market():
     m = json.loads(MARKET.read_text(encoding="utf-8"))
     rc, so, pe = m["revenuecat_sosa_2026"], m["stackoverflow_2025"], m["pearce_2022"]
+    # 비율은 같은 출처 안의 두 값끼리만 나눈다. 출처가 다른 값끼리 나누면 정의가 달라 비교가 틀어진다
     return {
         "launch_growth": round(rc["new_sub_apps_per_month_2026_01"] / rc["new_sub_apps_per_month_2022_01"], 2),
         "top10_over_median": round(rc["top10_monthly_revenue_1y_usd"] / rc["median_monthly_revenue_1y_usd"], 1),
         "share_1k_to_10k_kept": round(rc["share_hit_10k_all"] / rc["share_hit_1k_all"], 3),
         "pearce_vulnerable_programs_approx": round(pe["programs"] * pe["vulnerable_share_approx"]),
+        # 비율(0~1)의 차를 100배해 퍼센트포인트(%p)로 바꾼 뒤 반올림
         "so_ai_use_change_pt": round((so["use_or_plan_ai_2025"] - so["use_or_plan_ai_2024"]) * 100),
         "so_distrust_change_pt": round((so["distrust_accuracy_2025"] - so["distrust_accuracy_2024"]) * 100),
     }
@@ -70,6 +73,7 @@ def e5_crosscheck(items):
     by = {i["id"]: i for i in items}
     r = {n: L.load_result(n) for n in L.CH}
     checks = {}
+    # 점검표가 앞 장 결과를 옮겨 적은 값이 원본 JSON과 같은지 대조한다(원본이 바뀌었는데 점검표가 낡은 경우를 잡는다)
     # 인용: 3장 다섯 항목이 지금 JSON과 같은가
     rows = r[3]["e0_checklist"]["items"]
     checks["ch03_quoted_equal"] = all(
@@ -95,6 +99,7 @@ def e5_crosscheck(items):
                                  and kr["ch02_api_keys/project/dist_good"]["secret"] == r[2]["e2_builds"]["good"]["scan"]["demo"]["summary"]["secret"])
     # 다시 검사: 1장 결과와 같은가(서버에만 둔 값 0번)
     checks["ch01_markers_equal"] = by["c1_server_only"]["value"]["first"] == r[1]["e3_server_only_markers_in_downloads"]
+    # 하나라도 False면 all이 False이다
     checks["all"] = all(checks.values())
     return checks
 
@@ -103,6 +108,7 @@ def e6_overlap(items):
     by = {i["id"]: i for i in items}
     r3 = L.load_result(3)
     scan = {x["folder"]: x for x in by["c2_secret_in_build"]["value"]["first"]}["ch03_vibe_security/app/public_before"]
+    # 2장식 모양 검사기는 3장 첫 판의 가짜 AI 키를 못 찾고(0), 3장 점검 항목이 따로 잡는다는 점을 보인다
     return {"ch02_scanner_secret_found": scan["secret"],
             "ch03_counted_ai_secret_key": r3["e2_keys"]["before"]["ai_secret_key_count"],
             "scanner_missed": r3["e2_keys"]["before"]["ai_secret_key_count"] - scan["secret"],

@@ -36,9 +36,11 @@ torch.set_num_threads(2)
 
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch01.json"
+# "정확도가 이 값 이상" 테스트를 가정한 합격선(E2, E3에서 통과 횟수를 센다)
 PASS_LINE = 0.84
 
 
+# 표준편차는 표본 표준편차(n-1). 값이 1개면 0.0
 def _stats(accs):
     return {
         "n": len(accs),
@@ -62,6 +64,7 @@ def e1_unseeded_five():
 
 def e2_unseeded_vs_seeded():
     unseeded = [_public(mnp.train({"seed": None})) for _ in range(20)]
+    # 시드 0을 20번: 가중치 지문이 모두 같아야 한다(distinct_weight_fps == 1)
     seeded = [_public(mnp.train({"seed": 0})) for _ in range(20)]
     return {
         "unseeded": {"stats": _stats([r["accuracy"] for r in unseeded]),
@@ -86,6 +89,7 @@ def e3_seed_sweep():
 
 
 def e4_sources():
+    # 분할만 바꿀 때와 초기값·순서만 바꿀 때 정확도 흔들림을 나눠서 본다(무작위의 출처 분해)
     split_only = [mnp.train({"split_seed": s, "train_seed": 0})["accuracy"] for s in range(20)]
     train_only = [mnp.train({"split_seed": 0, "train_seed": s})["accuracy"] for s in range(20)]
     return {"split_only": _stats(split_only), "train_only": _stats(train_only)}
@@ -99,6 +103,7 @@ def e6_replay():
 
 
 def e7_float_sum():
+    # float32 100만 개. 시드가 있어 값은 고정이고, 합의 순서만 바뀐다
     x = np.random.default_rng(0).uniform(0.0, 1.0, 10**6).astype(np.float32)
     xs = x[np.random.default_rng(1).permutation(len(x))]
     exact = rp.exact_sum(x)
@@ -114,6 +119,7 @@ def e7_float_sum():
     out["sequential_diff_original_vs_shuffled"] = (out["original"]["sequential_float32"]
                                                    - out["shuffled"]["sequential_float32"])
     out["chunked_distinct_values_original"] = len(set(out["original"]["chunked_float32"].values()))
+    # 1e8과 1.0의 크기 차이가 float32 유효숫자(약 7자리)를 넘어 1.0이 사라지는 예
     a, b, c = np.float32(1e8), np.float32(-1e8), np.float32(1.0)
     out["hand"] = {
         "float32_(1e8+-1e8)+1": float((a + b) + c),
@@ -150,6 +156,7 @@ def e8_environment():
     tx = torch.from_numpy(x)
     sums = {}
     for th in (1, 2):
+        # 스레드 수를 바꿔 같은 합·행렬곱이 비트 단위로 같은지 본다. 결과는 실행 환경에 따라 다를 수 있다(확인 필요)
         torch.set_num_threads(th)
         sums[f"torch_threads_{th}"] = float(tx.sum())
     torch.set_num_threads(2)
@@ -164,6 +171,7 @@ def e8_environment():
     torch.set_num_threads(2)
     det_ok = True
     try:
+        # 결정적 알고리즘 강제 모드에서 CPU 행렬곱이 예외 없이 도는지만 확인한다
         torch.use_deterministic_algorithms(True)
         _ = A @ A
     except RuntimeError:
@@ -216,6 +224,7 @@ def e9_env_and_cost():
 def e10_exercise_lr():
     """연습 1 정답. train_seed는 0으로 고정, 분할 시드 s=0..9.
     같은 분할: 두 모델 모두 split_seed=s. 다른 분할: 학습률 0.05 모델만 split_seed=s+10."""
+    # 연습 1: 같은 분할에서 비교하면 학습률 차이만, 다른 분할에서 비교하면 분할 차이까지 섞인다
     base = [mnp.train({"split_seed": s, "train_seed": 0})["accuracy"] for s in range(10)]
     same = [mnp.train({"split_seed": s, "train_seed": 0, "lr": 0.05})["accuracy"] - base[s] for s in range(10)]
     diff = [mnp.train({"split_seed": s + 10, "train_seed": 0, "lr": 0.05})["accuracy"] - base[s] for s in range(10)]

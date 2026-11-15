@@ -21,6 +21,8 @@ import random
 
 
 class Counter:
+    """비교·해시 계산·크기 재조정 횟수를 세는 계수기. 시간 대신 이 횟수를 비용으로 쓴다."""
+
     def __init__(self):
         self.comparisons = 0
         self.hash_calls = 0
@@ -40,6 +42,7 @@ class ModHash:
         self.m = m
 
     def __call__(self, x):
+        # 입력만으로 칸이 정해지는 결정적 함수라 m 의 배수 키를 넣으면 전부 0번 칸이다
         return x % self.m
 
     def with_m(self, m):
@@ -65,6 +68,7 @@ class UniversalHash:
         self.p, self.m, self.a, self.b = p, m, a, b
 
     def __call__(self, x):
+        # 식 f(x) = ((a x + b) mod p) mod m. p 는 소수여야 하고(여기서는 호출하는 쪽의 책임), 안쪽 mod p 가 먼저다
         assert 0 <= x < self.p, "범용 해시 H1 의 키는 0..p-1 이어야 한다"
         return ((self.a * x + self.b) % self.p) % self.m
 
@@ -82,6 +86,7 @@ def universal_hash(p, m, rng):
     return UniversalHash(p, m, a, b)
 
 
+# 키 공간 0..p-1 이 이 p 보다 작거나 같아야 H1 이 성립한다(키 최대값 < p)
 P31 = 2 ** 31 - 1  # 메르센 소수. Carter·Wegman 이 mod p 를 나눗셈 없이 하는 예로 든 2^j - 1 꼴
 
 
@@ -99,11 +104,14 @@ class ChainedHashTable:
         self.n = 0
         self.buckets = [[] for _ in range(m)]
 
+    # 시간: 삽입·조회·삭제 모두 체인 길이에 비례(평균 O(1 + n/m), 한 칸에 몰리면 O(n)). 공간 O(m + n).
+    # 불변식(check_invariants): 키 k 는 항상 buckets[h(k)] 에 있고, 체인 길이 합 = n, 같은 키는 한 번만 있다.
     def _bucket(self, key):
         self.c.hash_calls += 1
         return self.buckets[self.h(key)]
 
     def _find(self, chain, key):
+        # 찾으면 즉시 끝내므로 비교 수 = 키의 체인 안 위치 + 1, 못 찾으면 체인 길이. 못 찾으면 -1.
         for i, kv in enumerate(chain):
             self.c.comparisons += 1
             if kv[0] == key:
@@ -117,8 +125,9 @@ class ChainedHashTable:
         if i >= 0:
             chain[i][1] = value
             return False
-        chain.append([key, value])
+        chain.append([key, value])  # 체인 끝에 붙이므로 먼저 들어온 키가 찾기 쉽다
         self.n += 1
+        # 부하율 n/m 이 max_load 를 넘으면 칸 수를 두 배로 늘린다(상환 O(1)). 해시가 나쁘면 이 처방은 소용없다(테스트 참고)
         if self.max_load is not None and self.n > self.max_load * self.m:
             self.resize(2 * self.m)
         return True
@@ -143,6 +152,7 @@ class ChainedHashTable:
 
     def resize(self, new_m):
         """버킷 수를 new_m 으로 바꾸고 모든 키를 새 h 로 다시 넣는다(이미 서로 다른 키라 비교는 하지 않는다)."""
+        # 해시 함수의 a, b 는 유지하고 m 만 바꾼다(with_m). 시간 O(n + new_m).
         old = [kv for chain in self.buckets for kv in chain]
         self.m = new_m
         self.h = self.h.with_m(new_m)
@@ -165,6 +175,7 @@ class ChainedHashTable:
     def check_invariants(self):
         """[(이름, 성립 여부, 설명)]. 해시 계산은 계수기에 세지 않는다."""
         lens = self.chain_lengths()
+        # 해시를 직접 부르므로 hash_calls 는 올라가지 않는다(계수 규칙 밖의 검사용 호출)
         placed = all(self.h(k) == b for b, ch in enumerate(self.buckets) for k, _ in ch)
         keys = [k for ch in self.buckets for k, _ in ch]
         return [
@@ -178,17 +189,18 @@ class ChainedHashTable:
 
 def adversarial_keys(m, n):
     """x mod m 이 모두 0 인 키 n 개."""
-    return [i * m for i in range(n)]
+    return [i * m for i in range(n)]  # 서로 다른 키 n 개가 ModHash(m) 에서 모두 0번 칸
 
 
 def random_keys(n, rng, hi=P31):
     """0..hi-1 에서 서로 다른 키 n 개."""
-    return rng.sample(range(hi), n)
+    return rng.sample(range(hi), n)  # 복원 없이 뽑아 키가 겹치지 않는다. 키 < hi <= p 여야 범용 해시에 쓸 수 있다
 
 
 def keys_for_known_seed(h, n, target=None, start=0):
     """해시 h(a, b, p, m 이 모두 공개된 경우)에서 같은 칸(target, 기본은 h(start))으로 가는 키 n 개를
     start 부터 하나씩 시험해 찾는다. (키 목록, 시험한 횟수)를 돌려준다. 기대 시험 횟수는 약 n*m 이다."""
+    # h 가 칸 m 개에 고르게 퍼지면 한 키가 target 에 걸릴 확률이 1/m 이라 기대 시험 횟수가 약 n*m. 공격이 공개 시드를 전제한다는 점이 요점.
     if target is None:
         target = h(start)
     out, x, tries = [], start, 0
@@ -203,6 +215,7 @@ def keys_for_known_seed(h, n, target=None, start=0):
 # ---------------------------------------------------------------- 한꺼번에 넣기
 
 def build(keys, m, hash_fn, max_load=None):
+    # 키를 차례로 삽입하고 (표, 계수기)를 돌려준다. 계수기 비교 수가 삽입 전체 비용이다.
     c = Counter()
     t = ChainedHashTable(m, hash_fn, c, max_load=max_load)
     for k in keys:
@@ -212,7 +225,7 @@ def build(keys, m, hash_fn, max_load=None):
 
 def successful_search_cost(t, keys):
     """keys 각각을 찾을 때의 비교 수 평균."""
-    before = t.c.comparisons
+    before = t.c.comparisons  # 이전 누적을 빼서 이 검색들만의 비교 수를 얻는다
     for k in keys:
         assert t.contains(k)
     return (t.c.comparisons - before) / len(keys)
@@ -229,6 +242,7 @@ def unsuccessful_search_cost(t, keys):
 
 def trace_inserts(keys, hash_fn):
     """삽입 한 번마다 한 단계. [설명, 키, 버킷, 체인 길이 목록, 버킷 내용, 누적 비교, [불변식1, 불변식2]]."""
+    # 위젯용: 삽입마다 직전 누적과의 차이로 그 삽입의 비교 수를 기록한다. 마지막 값 두 개는 check_invariants 의 앞 두 항목
     c = Counter()
     t = ChainedHashTable(hash_fn.m, hash_fn, c)
     steps = [["start", None, None, t.chain_lengths(), [[] for _ in range(t.m)], 0, [True, True]]]

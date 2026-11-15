@@ -19,6 +19,7 @@ HERE = Path(__file__).parent
 PRICING = json.loads((HERE / "data" / "pricing_2026-10-10.json").read_text(encoding="utf-8"))
 USAGE = json.loads((HERE / "data" / "usage_assumptions.json").read_text(encoding="utf-8"))
 
+# 금액과 사용량은 분수로 정확히 계산하고, 표시할 때만 to_float로 반올림한다(부동소수점 오차 방지).
 F = Fraction
 
 
@@ -27,8 +28,11 @@ def per_user():
     u = USAGE["per_active_user_month"]
     kb = USAGE["kb_per_mb"]
     return {
+        # DB: 새 카드 수 x 카드 한 줄 크기(KB) / 1000 = MB. 가정값 6 x 2KB = 0.012MB.
         "db_mb": F(u["new_cards"] * u["card_row_kb"], kb),
+        # 스토리지: 올린 그림 2장 x 400KB + AI 배경 4장 x 300KB = 2000KB = 2MB.
         "storage_mb": F(u["uploads"] * u["upload_kb"] + u["ai_backgrounds"] * u["ai_png_kb"], kb),
+        # 내보내는 양: 그림 30번 x 300KB = 9MB + API JSON 1MB = 10MB(캐시 여부는 나누지 않는 보수적 값).
         "egress_mb": F(u["image_views"] * u["image_view_kb"], kb) + u["api_json_mb"],
         "edge_calls": u["edge_calls"],
         "static_mb": F(u["full_bundle_loads"] * u["bundle_kb"], kb),
@@ -45,8 +49,10 @@ def free_walls():
     return {
         "mau": s["mau"],
         "egress_mau": F(s["egress_gb"] * gb) / pu["egress_mb"],
+        # Edge Function 호출 한도 / 사용자당 호출 수 = 한도에 닿는 활성 사용자 수.
         "edge_mau": F(s["edge_invocations"]) / pu["edge_calls"],
         # 쌓이는 것: 사용자 수 x 달 수 가 이 값을 넘으면 넘쳐요
+        # 쌓이는 것은 한 달 값이 아니라 (사용자 수 x 달 수)가 한도를 넘는 시점으로 센다.
         "storage_user_months": F(s["storage_gb"] * gb) / pu["storage_mb"],
         "db_user_months": F(s["db_size_mb"]) / pu["db_mb"],
     }
@@ -54,6 +60,7 @@ def free_walls():
 
 def first_month_over(user_months_cap, mau):
     """활성 사용자 mau명이 매달 같은 양을 쌓을 때, 쌓인 양이 한도를 처음 넘는 달(1부터)."""
+    # 한도 / mau의 정수 부분 + 1. 딱 나누어떨어지는 달에는 한도와 같을 뿐 넘지 않으므로 다음 달이 첫 초과(off-by-one 주의).
     return math.floor(F(user_months_cap) / mau) + 1
 
 
@@ -66,10 +73,12 @@ def free_status(mau, month):
         "mau": mau,
         "egress_gb": mau * pu["egress_mb"] / gb,
         "edge_calls": mau * pu["edge_calls"],
+        # 쌓이는 양은 월 사용량 x 달 수(해당 달 끝 기준). 사용자 수는 그대로라는 가정.
         "storage_gb": mau * pu["storage_mb"] * month / gb,
         "db_mb": mau * pu["db_mb"] * month,
     }
     over = []
+    # 한도와 "같음"은 넘은 것이 아니다(> 비교).
     if used["mau"] > s["mau"]:
         over.append("MAU")
     if used["egress_gb"] > s["egress_gb"]:
@@ -88,15 +97,18 @@ def pro_cost(mau, month, spend_cap_off=True):
     p = PRICING["supabase"]["pro"]
     o = p["overage"]
     used, _ = free_status(mau, month)
+    # 기본료 + Micro 컴퓨트에서 포함 크레딧을 뺀 금액이 사용량과 무관한 고정비.
     lines = {"base": F(p["price_usd"]),
              "compute_after_credit": F(p["micro_compute_usd_month"]) - F(p["compute_credit_usd"])}
     over = {
         "mau": max(0, mau - p["mau"]),
         "storage_gb": max(F(0), used["storage_gb"] - p["storage_gb"]),
         "egress_gb": max(F(0), used["egress_gb"] - p["egress_gb"]),
+        # Edge Function은 100만 회 단위로 청구된다고 보고 올림(문서 해석에 따른 모형의 선택).
         "edge_packs": math.ceil(max(0, used["edge_calls"] - p["edge_invocations"]) / 1_000_000),
         "db_gb": max(F(0), used["db_mb"] / USAGE["mb_per_gb"] - p["db_disk_gb"]),
     }
+    # 스펜드 캡을 끄면 초과분이 청구되고, 켜면 초과 사용이 막혀 총액이 기본 요금에서 멈춘다(blocked_with_cap 참고).
     if spend_cap_off:
         lines["mau"] = over["mau"] * F(str(o["mau_usd_each"]))
         lines["storage"] = over["storage_gb"] * F(str(o["storage_usd_per_gb_month"]))
@@ -104,6 +116,7 @@ def pro_cost(mau, month, spend_cap_off=True):
         lines["edge"] = over["edge_packs"] * o["edge_usd_per_million"]
         lines["db_disk"] = over["db_gb"] * F(str(o["db_disk_usd_per_gb"]))
     total = sum(lines.values())
+    # 캡을 켠 경우 어떤 항목이 막히는지만 목록으로 돌려준다.
     blocked = [k for k, v in over.items() if v > 0] if not spend_cap_off else []
     return {"total": total, "lines": lines, "over": over, "blocked_with_cap": blocked}
 
@@ -112,6 +125,7 @@ def vercel_hobby_mau():
     h = PRICING["vercel"]["hobby"]
     pu = per_user()
     return {
+        # Vercel Hobby 한도 / 사용자당 사용량 = 한도에 닿는 MAU. 둘 중 작은 쪽이 먼저 한계.
         "transfer_mau": F(h["fast_data_transfer_gb"] * USAGE["mb_per_gb"]) / pu["static_mb"],
         "requests_mau": F(h["cdn_requests"]) / pu["web_requests"],
     }
@@ -124,6 +138,7 @@ def netlify_free(mau, deploys=None):
     pu = per_user()
     deploys = USAGE["deploys_per_month"] if deploys is None else deploys
     parts = {
+        # Netlify는 배포, 전송, 요청이 모두 크레딧으로 환산된다.
         "deploys": F(deploys * c["production_deploy"]),
         "bandwidth": mau * pu["static_mb"] / USAGE["mb_per_gb"] * c["bandwidth_per_gb"],
         "requests": F(mau * pu["web_requests"], 10_000) * c["web_requests_per_10k"],
@@ -131,11 +146,13 @@ def netlify_free(mau, deploys=None):
     total = sum(parts.values())
     per_user_credit = (pu["static_mb"] / USAGE["mb_per_gb"] * c["bandwidth_per_gb"]
                        + F(pu["web_requests"], 10_000) * c["web_requests_per_10k"])
+    # 배포로 쓴 크레딧을 뺀 나머지를 사용자 1명당 크레딧으로 나눈 값 = 무료 안에서 감당하는 최대 MAU.
     max_mau = (n["free"]["credits"] - parts["deploys"]) / per_user_credit
     return {"parts": parts, "total": total, "within": total <= n["free"]["credits"],
             "per_user_credit": per_user_credit, "max_mau_at_deploys": max_mau}
 
 
+# AI 단가는 가상 값(달러). 호스팅 요금과 별개로 든다.
 def ai_cost(mau):
     return mau * per_user()["ai_images"] * F(str(USAGE["hypothetical_ai_cost_usd_per_image"]))
 

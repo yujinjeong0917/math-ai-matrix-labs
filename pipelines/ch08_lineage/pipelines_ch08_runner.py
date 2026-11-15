@@ -25,6 +25,7 @@ import pipelines_ch08_steps as S
 
 # KFP 가벼운 컴포넌트는 함수 몸통을 명령 문자열에 그대로 넣는다(7장 results/kfp_ir_2.17.0.json의 command 참고).
 # 몸통이 부르는 모듈(pipelines_ch08_steps, pipelines_ch08_data)의 코드는 이미지 안에 있고, 명령 문자열에는 없다.
+# 7장의 컴파일 결과 대신 같은 정보(task, 입력·출력, 명령 문자열)를 직접 적은 dict. 캐시 키의 "명령" 필드는 여기 적힌 몸통 문자열이다
 PIPELINE = {
     "name": "churn-ch08",
     "params": {"seed": 1, "n_rows": 4000, "shift": 1.0, "data_version": "", "impl": "numpy", "threshold": 0.5},
@@ -60,6 +61,7 @@ class Registry:
     def __init__(self, repo="registry.example.com/churn"):
         self.repo, self.tags, self.blobs = repo, {}, {}
 
+    # 다이제스트 = 내용의 해시 앞 16자리(교육용으로 줄임). 같은 태그에 다른 내용을 올리면 태그가 새 다이제스트로 옮겨 간다
     def push(self, tag, content):
         digest = hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()[:16]
         self.blobs[digest] = dict(content)
@@ -73,6 +75,7 @@ class Registry:
         if "@sha256:" in ref:
             d = ref.split("@sha256:")[1]
         else:
+            # name:tag 형태 참조는 지금 태그가 가리키는 다이제스트를 찾는다. 다이제스트 참조는 그 내용만 가리킨다
             d = self.tags[ref.rsplit(":", 1)[1]]
         return d, self.blobs[d]
 
@@ -83,8 +86,10 @@ def _sha(obj):
 
 def cache_key(policy, inputs, params, outputs, image_ref, image_digest, command, env):
     """inputs: 키 -> artifact dict(id, sha). 정책별로 지문에 들어가는 필드 묶음을 만든다."""
+    # KFP 정책: 입력 결과 파일은 내용이 아니라 artifact ID, 이미지는 참조 문자열(image_ref)이 지문에 들어간다. 그래서 태그 아래 이미지 내용이 바뀌어도 지문은 같다
     if policy in ("kfp-2.17.2", "kfp-master"):
         container = {"image": image_ref, "cmdArgs": [command], "pvcNames": []}
+        # master 정책만 환경변수를 지문에 넣는다
         if policy == "kfp-master" and env:
             container["env"] = dict(env)
         return {
@@ -94,6 +99,7 @@ def cache_key(policy, inputs, params, outputs, image_ref, image_digest, command,
             "outputParametersSpec": {},
             "containerSpec": container,
         }
+    # content 정책(비교용 가상): 입력 내용 해시와 이미지 다이제스트를 지문에 넣는다
     if policy == "content":
         return {"inputs": {k: a["sha"] for k, a in inputs.items()}, "params": dict(params), "outputs": dict(outputs),
                 "image_digest": image_digest, "command": command, "env": dict(env or {})}
@@ -117,12 +123,15 @@ def run(store, registry, root, image_ref, args=None, policy="kfp-2.17.2", cachin
         task_env = dict((env or {}).get(name, {}))
         params = {k: args[k] for k in spec["params"]}
         inputs = {k: store.artifact(produced[src]) for k, src in spec["inputs"].items()}
+        # task가 시작하는 순간의 이미지를 찾는다. 태그 참조면 그 시점의 태그가 가리키는 이미지
         digest, image = registry.resolve(image_ref)  # task가 뜨는 순간 이미지 이름을 레지스트리에서 찾는다
         key = cache_key(policy, inputs, params, spec["outputs"], image_ref, digest, spec["command"], task_env)
+        # 캐시를 끈 task는 지문을 빈 문자열로 두고, 조회도 등록도 하지 않는다
         fp = fingerprint(key) if use_cache else ""
         props = {"params": params, "image_ref": image_ref, "image_digest": digest, "env": task_env, "policy": policy}
         rec = {"task": name, "fingerprint": fp[:12]}
         t0 = time.perf_counter()
+        # 캐시 적중이면 실행하지 않고 이전 실행의 출력 artifact ID를 그대로 가져와 이 실행의 OUTPUT으로 건다
         hit = store.get_cache(fp, pipeline["name"], namespace) if use_cache else None
         if hit is not None:
             outs = store.outputs_of(hit)
@@ -135,6 +144,7 @@ def run(store, registry, root, image_ref, args=None, policy="kfp-2.17.2", cachin
             rec["status"] = "CACHED"
         else:
             paths = {k: Path(root) / run_id / name / k for k in spec["outputs"]}
+            # 단계 함수에 이미지 내용과 환경변수를 넘긴다. 이미지 안의 기본값(source_version_default)이 여기로 들어간다
             ctx = {"image": image, "env": task_env}
             if name == "prepare":
                 meta = S.prepare(params["seed"], params["n_rows"], params["shift"], paths["train_data"], paths["valid_data"],
@@ -151,6 +161,7 @@ def run(store, registry, root, image_ref, args=None, policy="kfp-2.17.2", cachin
                 store.put_event(aid, eid, "OUTPUT", k)
                 produced[(name, k)] = aid
             if use_cache:
+                # 새로 실행한 결과만 캐시 표에 등록
                 store.put_cache(fp, pipeline["name"], namespace, eid)
             rec["status"] = "RAN"
         rec["seconds"] = time.perf_counter() - t0

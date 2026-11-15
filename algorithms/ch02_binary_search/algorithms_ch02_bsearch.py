@@ -41,13 +41,18 @@ class OutOfRange(Exception):
 
 
 def lower_bound(a, x, counter=None):
-    """x 이상인 첫 칸의 위치. 모두 x 보다 작으면 len(a)."""
+    """x 이상인 첫 칸의 위치. 모두 x 보다 작으면 len(a).
+
+    입력 a 는 오름차순 정렬(같은 값 허용). 시간 O(log n): 반복마다 hi - lo 가 약 절반이 된다.
+    반복 수 상한은 ceil(log2(n+1)) (max_steps_bound). 추가 공간 O(1).
+    """
     lo, hi = 0, len(a)
     while lo < hi:
         mid = lo + (hi - lo) // 2  # 고정 폭 정수에서도 넘치지 않는 꼴. 파이썬 int 에서는 (lo+hi)//2 와 같다
         if counter is not None:
             counter.comparisons += 1
             counter.steps += 1
+        # 두 갈래 모두 hi - lo 를 엄격히 줄인다: lo = mid + 1 > lo, hi = mid < hi (lo < hi 라서 mid < hi)
         if a[mid] < x:
             lo = mid + 1  # I1 유지: a[mid] < x 이고 a 가 정렬돼 있으니 mid 이하가 모두 x 보다 작다
         else:
@@ -56,7 +61,7 @@ def lower_bound(a, x, counter=None):
 
 
 def linear_lower_bound(a, x, counter=None):
-    """앞에서부터 하나씩 본다. 비교 횟수는 답의 위치 + 1 (끝까지 가면 n)."""
+    """앞에서부터 하나씩 본다. 비교 횟수는 답의 위치 + 1 (끝까지 가면 n). 시간 O(n), 비교 대상."""
     for i, v in enumerate(a):
         if counter is not None:
             counter.comparisons += 1
@@ -67,6 +72,7 @@ def linear_lower_bound(a, x, counter=None):
 
 def check_invariant(a, x, lo, hi):
     """반열린 구간 불변식 I1, I2 를 그대로 검사한다. (이름, 성립 여부, 설명) 목록을 돌려준다."""
+    # lo, hi 가 배열 범위를 벗어난 버그 변형도 검사할 수 있게 min/max 로 잘라서 본다
     i1 = all(a[i] < x for i in range(0, max(0, min(lo, len(a)))))
     i2 = all(a[i] >= x for i in range(max(0, hi), len(a)))
     return [
@@ -86,6 +92,7 @@ def _read(a, mid):
 
 def _variant_step(name, a, x, lo, hi):
     """변형별로 한 반복을 실행한다. (새 lo, 새 hi, mid, 비교 결과) 를 돌려준다."""
+    # 변형 a~d 는 일부러 고정 폭 오버플로 걱정이 없는 (lo+hi)//2 를 쓴다. 차이는 아래 갱신식뿐이다.
     mid = (lo + hi) // 2
     v = _read(a, mid)
     less = v < x
@@ -116,6 +123,7 @@ def run_variant(name, a, x, trace=False):
     반환: {"outcome": "ok"|"wrong"|"no_stop"|"out_of_range", "answer", "steps", "trace"}
     trace=True 이면 단계마다 상태와 불변식 판정을 남긴다(공통 스키마 step/op/state/invariants).
     """
+    # 정답 판(lower_bound)을 기준값(truth)으로 두고, 변형의 답이 다르면 "wrong" 으로 센다.
     start_hi, cond = VARIANTS[name]
     lo, hi = 0, start_hi(len(a))
     truth = lower_bound(a, x)
@@ -132,7 +140,7 @@ def run_variant(name, a, x, trace=False):
     steps = 0
     try:
         while cond(lo, hi):
-            if steps >= MAX_STEPS:
+            if steps >= MAX_STEPS:  # 멈추지 않는 변형(b)을 유한 시간에 잡는 장치
                 raise NonTermination()
             before = hi - lo
             lo, hi, mid, less = _variant_step(name, a, x, lo, hi)
@@ -154,6 +162,7 @@ def run_variant(name, a, x, trace=False):
 
 
 def sorted_arrays(max_len, values=(0, 2, 4, 6, 8)):
+    # combinations_with_replacement 는 입력 순서대로 뽑으므로 values 가 오름차순이면 결과도 오름차순 배열이다.
     """길이 0..max_len 의 모든 정렬(같은 값 허용) 배열을 길이 순, 같은 길이 안에서는 사전 순으로."""
     from itertools import combinations_with_replacement
 
@@ -211,6 +220,7 @@ def mid_overflow_demo(low=1_500_000_000, high=2_000_000_000):
         warnings.simplefilter("always")
         s = lo + hi
         naive = s // np.int32(2)
+    # 아래 두 번째 블록: 배열 덧셈은 경고 없이 값이 감긴다(감긴 값 = 참 합 - 2^32)
     scalar_warn = [str(m.message) for m in w]
     with warnings.catch_warnings(record=True) as w2:
         warnings.simplefilter("always")
@@ -233,6 +243,7 @@ def sample_index_linear(cdf, u):
     누적확률 cdf 에서 u 이하인 칸 수를 센다. 칸을 모두 본다(V 번 비교)."""
     import numpy as np
 
+    # 선형 방식: cdf[k] <= u 인 칸의 수 = u 보다 큰 첫 칸의 위치(bisect_right). 시간 O(V)
     return (np.asarray(cdf) <= u).sum(-1)
 
 
@@ -240,4 +251,5 @@ def sample_index_bisect(cdf, u):
     """같은 답을 이분 탐색으로 얻는다. 'u 이하인 칸 수' = u 보다 큰 첫 칸의 위치 = bisect_right."""
     import numpy as np
 
+    # side="right": 같은 값이면 오른쪽 끝 위치. cdf 는 단조 비감소여야 한다. 시간 O(log V)
     return np.searchsorted(cdf, u, side="right")

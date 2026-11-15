@@ -22,6 +22,7 @@ import pipelines_ch07_model_np as M
 
 # prepare가 쓰는 파일 이름. 실패 예제 A에서는 누군가 prepare만 고쳐 이름을 바꾼 상황을
 # 환경 변수 CH07_PREP_SUFFIX로 흉내 낸다(예: "_v2" -> train_v2.npz). run_all.sh는 옛 이름을 그대로 읽는다.
+# 실패 예제 A: prepare가 저장하는 파일 이름만 환경변수로 바꿔, 이름을 안 따라간 다음 단계가 옛 파일을 읽는 상황을 만든다
 def _names():
     sfx = os.environ.get("CH07_PREP_SUFFIX", "")
     return f"train{sfx}.npz", f"valid{sfx}.npz"
@@ -36,6 +37,7 @@ def _save_table(path, table, meta):
     다른 파일이 생기고 다음 단계가 못 찾는다(kfp.local로 실제로 돌려 보다 겪은 실패). 그래서 파일 핸들로 쓴다."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "wb") as f:
+        # 표 배열과 함께 만든 날(seed, shift 등)을 _meta 항목에 JSON 문자열로 넣어 둔다
         np.savez(f, _meta=np.array(json.dumps(meta)), **table)
 
 
@@ -50,6 +52,7 @@ def prepare(seed, n_rows, shift, train_path, valid_path):
     """오늘의 표를 만들고 학습 3/4, 검증 1/4로 나눠 저장한다. CH07_PREP_FAIL=1이면 아무것도 쓰기 전에 실패한다."""
     if os.environ.get("CH07_PREP_FAIL") == "1":
         raise RuntimeError("prepare: 원천 테이블을 읽다가 실패했다(흉내)")
+    # 표를 만들고 n_rows의 3/4는 학습, 나머지는 검증. 분할 시드도 seed를 쓴다
     t = D.make_table(seed, n_rows, shift=shift)
     tr, va = D.split(t, n_rows * 3 // 4, seed)
     meta = {"seed": seed, "shift": shift, "n_rows": n_rows}
@@ -65,6 +68,7 @@ def train(data_path, model_path, impl="numpy", steps=400):
         model = M.train(table, fit=MT.fit_logistic, steps=steps)
     else:
         model = M.train(table, steps=steps)
+    # 학습에 쓴 파일의 지문과 시드·shift를 모델에 적는다. 나중에 평가가 어느 데이터로 학습한 모델을 평가했는지 비교하는 근거
     model["trained_on"] = {"sha": fingerprint(data_path), "seed": meta["seed"], "shift": meta["shift"]}
     Path(model_path).parent.mkdir(parents=True, exist_ok=True)
     Path(model_path).write_text(json.dumps(model))
@@ -75,6 +79,7 @@ def evaluate(model_path, data_path, metrics_path, threshold=0.5):
     model = json.loads(Path(model_path).read_text())
     table, meta = load_table(data_path)
     m = M.evaluate(model, table, threshold)
+    # 평가에 쓴 파일의 지문과 시드·shift. trained_on과 시드가 다르면 연결이 어긋난 것
     m["evaluated_on"] = {"sha": fingerprint(data_path), "seed": meta["seed"], "shift": meta["shift"]}
     m["trained_on"] = model["trained_on"]
     Path(metrics_path).parent.mkdir(parents=True, exist_ok=True)

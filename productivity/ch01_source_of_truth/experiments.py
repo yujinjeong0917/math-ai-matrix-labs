@@ -34,12 +34,13 @@ import productivity_ch01_project as P  # noqa: E402
 import productivity_ch01_sim as S  # noqa: E402
 
 OUT = HERE / "results" / "ch01.json"
-CHECKED = "2026-10-10"
-QS = [0.7, 0.8, 0.9, 0.95]
-SEEDS = 5000
+CHECKED = "2026-10-10"  # 결과 검증일(문자열 기록용, 계산에는 쓰이지 않는다)
+QS = [0.7, 0.8, 0.9, 0.95]  # 손으로 옮길 때 성공할 확률 q의 네 단계
+SEEDS = 5000  # 무작위 카드 시나리오 반복 수
 
 
 def table(state):
+    """자리 x 값 상태를 한국어 라벨의 표(dict)로 바꾼다. 사람이 읽는 JSON용."""
     return {P.VALUE_LABEL[v]: {P.PLACE_LABEL[p]: P.render(v, state[p][v]) for p in P.PLACES} for v in P.VALUES}
 
 
@@ -47,6 +48,7 @@ def e0_hand():
     q, k, m = P.HAND["q"], P.HAND["k"], P.HAND["m"]
     return {
         "q": q, "k": k, "m": m,
+        # 독립 가정: 자리마다 맞출 확률이 서로 무관하다(correlated 실험은 E5, E6에서 따로 본다)
         "one_change_all_right": round(q ** (k - 1), 4),          # 0.81
         "after_m_never_wrong": round((q ** (k - 1)) ** m, 4),     # 0.81^8
         "k2_after_m": round(q ** m, 4),                           # 손으로 옮기는 곳이 하나면
@@ -124,6 +126,7 @@ def e5_montecarlo():
         row = {}
         for name, corr in modes:
             mode = "copy" if name.startswith("copy") else name
+            # 시드를 (q, s)마다 고정해 실행할 때마다 같은 결과가 나온다. int(q * 100)은 0.7 -> 70처럼 소수 오차 없이 정수가 되는 값만 쓴다
             rs = [S.simulate(mode, q, random.Random(10_000 * int(q * 100) + s), correlated=corr) for s in range(SEEDS)]
             row[name] = {
                 "final_mismatch": round(statistics.mean(r["final_mismatch"] for r in rs), 3),
@@ -145,6 +148,7 @@ def e6_generic():
     for corr in (False, True):
         for k in range(1, 6):
             for q in QS:
+                # 세 구현(식, 순수 파이썬 2만 번, NumPy 20만 번)의 격차가 표본 크기에 맞는 오차 안인지 아래에서 최댓값으로 본다
                 ex = S.generic_exact(k, q, m, corr)
                 py = S.generic_python(k, q, m, 20_000, seed=k * 1000 + int(q * 100) + (7 if corr else 0), correlated=corr)
                 npv = N.generic_numpy(k, q, m, 200_000, seed=k * 1000 + int(q * 100) + (7 if corr else 0), correlated=corr)
@@ -160,7 +164,7 @@ def e6_generic():
 
 def broken_register():
     """흔히 보는 모양으로 망가뜨린 등록부: 요금 원본이 둘, 운영 시간을 운영 시트에 다시 적음, 화면 구성을 Notion에 둠, 알림 없음."""
-    reg = copy.deepcopy(P.REGISTER)
+    reg = copy.deepcopy(P.REGISTER)  # 원본 REGISTER는 건드리지 않는다
     by = {it["id"]: it for it in reg}
     reg.append({"id": "I06b", "name": "시간당 요금", "kind": "number", "tool": "sheets", "where": "운영표!요금", "owner": "하린",
                 "refs": [], "notify": "시트 변경 알림"})
@@ -189,6 +193,7 @@ def write_data():
 
 
 def write_checks(e1, e3, e4):
+    """독자가 자기 기록을 한 줄씩 더하도록 예시 두 줄이 든 checks/ch01.csv를 만든다. 열 이름은 본문 표와 같다."""
     (HERE / "checks").mkdir(exist_ok=True)
     with open(HERE / "checks" / "ch01.csv", "w", newline="") as f:
         w = csv.writer(f)

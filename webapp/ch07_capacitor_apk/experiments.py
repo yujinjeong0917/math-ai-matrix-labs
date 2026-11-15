@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
+# 같은 이름의 모듈(webapp_ch07_*)을 이 폴더에서 바로 import하려고 경로 맨 앞에 넣는다
 sys.path.insert(0, str(HERE))
 
 import webapp_ch07_config as C  # noqa: E402
@@ -25,6 +26,7 @@ import webapp_ch07_signing as G  # noqa: E402
 import webapp_ch07_update as U  # noqa: E402
 
 OUT = HERE / "results" / "ch07.json"
+# 예시 프로젝트 두 벌: good은 점검을 통과하도록, mistake는 흔한 실수를 일부러 심어 둔 판(모두 가짜 값)
 GOOD = HERE / "project" / "cardnews_good"
 MISTAKE = HERE / "project" / "cardnews_mistake"
 
@@ -37,6 +39,7 @@ def e0_files():
     return out
 
 
+# E2는 e1을 인자로 받지만 실제로는 쓰지 않고 다시 점검한다(시그니처만 맞춘 형태)
 def e1_checker():
     out = {}
     for folder in (GOOD, MISTAKE):
@@ -73,18 +76,22 @@ def e3_signing():
 def e4_versions():
     ex = U.version_code_examples()
     plan_ok = [ex[n] for n in ("1.0.0", "1.0.1", "1.0.3", "1.1.0")]
+    # 세 번째 값이 앞보다 낮은 잘못된 계획 -> 인덱스 2에서 처음 어긋난다
     plan_bad = [10000, 10001, 10000, 10003]
     return {"rule": "큰 변경 × 10000 + 중간 변경 × 100 + 작은 수정", "examples": ex,
             "plan_ok": plan_ok, "plan_ok_first_break": U.plan_is_increasing(plan_ok),
             "plan_bad": plan_bad, "plan_bad_first_break": U.plan_is_increasing(plan_bad),
-            "play_max": C.PLAY_MAX_VERSION_CODE, "max_major_under_play": C.PLAY_MAX_VERSION_CODE // 10000}
+            "play_max": C.PLAY_MAX_VERSION_CODE, # 큰 변경 자리가 10000 단위라 2.1e9 // 10000 = 210000번째 큰 버전까지 쓸 수 있다
+            "max_major_under_play": C.PLAY_MAX_VERSION_CODE // 10000}
 
 
 def e6_hash():
     a = G.demo_apk_bytes("1.0.1")
     b = bytearray(a)
+    # 바이트열 끝은 줄바꿈이라 [-2]가 버전 문자열의 마지막 글자다
     b[-2] = ord("2")  # 마지막 숫자 한 글자만 바꾼 파일
     ha, hb = G.sha256_file_bytes(a), G.sha256_file_bytes(bytes(b))
+    # SHA-256은 입력이 한 글자만 달라도 해시가 크게 바뀐다(눈사태 효과). 우연히 같은 자리 수를 센다
     same_pos = sum(1 for x, y in zip(ha, hb) if x == y)
     return {"bytes": len(a), "sha256_original": ha, "sha256_one_char_changed": hb,
             "hex_digits_same_position": same_pos, "hex_digits": len(ha)}
@@ -104,6 +111,7 @@ def main():
         "e6_hash": e6_hash(),
         "e7_change_table": U.CHANGE_TABLE,
     }
+    # results/ch07.json을 덮어쓴다. test_results_file_matches가 이 파일을 읽어 대조한다
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(json.dumps(res, ensure_ascii=False, indent=1))

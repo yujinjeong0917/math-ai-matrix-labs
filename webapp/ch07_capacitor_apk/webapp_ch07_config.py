@@ -21,7 +21,7 @@ HERE = Path(__file__).parent
 SOURCES = HERE / "data" / "sources_2026-10-10.json"
 ANDROID = "{http://schemas.android.com/apk/res/android}"
 
-# Application ID 규칙: 점으로 나뉜 두 토막 이상, 토막마다 글자로 시작, 글자·숫자·밑줄만
+# (정규식) Application ID 규칙: 점으로 나뉜 두 토막 이상, 토막마다 글자로 시작, 글자·숫자·밑줄만
 APP_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$")
 
 # 플러그인 문서가 요구하는 권한(조건부). 여기 없는 위험 권한은 "쓰는 곳 없음"으로 본다.
@@ -39,6 +39,7 @@ def load_sources():
 
 
 def _line_of(text, needle):
+    # 줄 번호는 1부터. 처음 일치한 줄만 돌려주고, 없으면 None(함정: 같은 글자가 여러 번 있으면 첫 줄)
     for i, line in enumerate(text.splitlines(), 1):
         if needle in line:
             return i
@@ -68,6 +69,7 @@ def check_capacitor_config(folder):
         out.append(_finding("server_cleartext", "막음", path.name, _line_of(text, '"cleartext"'),
                             "server.cleartext: true는 암호화 안 된 HTTP를 허용해요. 운영용이 아니에요",
                             "cap_server_cleartext"))
+    # 기본값이 https라 키가 없으면 정상으로 본다
     scheme = server.get("androidScheme", "https")
     if scheme != "https":
         out.append(_finding("android_scheme", "확인", path.name, _line_of(text, '"androidScheme"'),
@@ -99,6 +101,7 @@ def check_manifest(folder, features):
         out.append(_finding("manifest_debuggable", "막음", path.name, _line_of(text, "debuggable"),
                             "debuggable을 직접 적지 말아요. 개발 빌드에는 도구가 알아서 붙여요",
                             "android_debuggable"))
+    # Android 12부터 intent-filter가 있는 컴포넌트는 exported를 명시해야 한다(근거 id android_exported)
     for act in app.findall("activity"):
         if act.find("intent-filter") is not None and act.get(ANDROID + "exported") is None:
             out.append(_finding("activity_exported", "막음", path.name, _line_of(text, act.get(ANDROID + "name")),
@@ -112,6 +115,7 @@ def check_manifest(folder, features):
         line = _line_of(text, name + '"')
         if name in ALWAYS_OK:
             continue
+        # 저장소 권한은 갤러리 저장 또는 Documents/ExternalStorage 사용 때만 필요하고, maxSdkVersion으로 새 기기 요청을 막는다
         if name in STORAGE:
             needed = features["camera"]["save_to_gallery"] or any(
                 d in ("Documents", "ExternalStorage") for d in features["filesystem"]["directories"])
@@ -134,6 +138,7 @@ def read_gradle(folder):
     build = (folder / "build.gradle").read_text(encoding="utf-8")
     variables = (folder / "variables.gradle").read_text(encoding="utf-8")
 
+    # 정규식 한 번으로 값 하나를 뽑는 단순 파서. gradle을 실제로 해석하지 않으므로 형식이 다르면 None(한계)
     def grab(pattern, text, cast=str):
         m = re.search(pattern, text)
         return cast(m.group(1)) if m else None
@@ -165,6 +170,7 @@ def check_gradle(folder, cfg):
         out.append(_finding("version_code_range", "막음", "build.gradle", _line_of(g["_build"], "versionCode"),
                             f"versionCode {vc}는 1 이상 {PLAY_MAX_VERSION_CODE} 이하의 정수여야 해요",
                             "android_versioncode"))
+    # 예시 규칙과 어긋나면 "확인" 수준. 규칙 자체가 이 장의 예시이므로 막지는 않는다
     elif encode_version(g["versionName"]) not in (None, vc):
         out.append(_finding("version_code_rule", "확인", "build.gradle", _line_of(g["_build"], "versionCode"),
                             f"versionName {g['versionName']}이면 예시 규칙으로는 versionCode {encode_version(g['versionName'])}인데 {vc}예요",
@@ -178,6 +184,7 @@ def check_gradle(folder, cfg):
 
 def check_secrets_in_folder(folder):
     out = []
+    # 공백 기준으로 쪼갠 단순 비교라 패턴(*.jks 등)은 해석하지 못한다(한계)
     ignore = (folder / "gitignore.txt").read_text(encoding="utf-8").split()
     for p in sorted(folder.iterdir()):
         if p.suffix in SECRET_FILE_SUFFIXES:
@@ -191,6 +198,7 @@ def check_secrets_in_folder(folder):
 
 
 def key_years(days):
+    # 일 -> 연 환산. 윤년 평균 365.25
     return days / 365.25
 
 
@@ -226,6 +234,7 @@ def check_project(folder):
     gradle, f3 = check_gradle(folder, cfg)
     f4 = check_secrets_in_folder(folder)
     f5 = check_key_validity(features)
+    # 파일별 점검 결과를 한 목록으로 합친다. 순서는 파일 점검 순서
     findings = f1 + f2 + f3 + f4 + f5
     gradle.pop("_build")
     return {
@@ -248,6 +257,7 @@ def main(argv):
         where = f"{f['file']}:{f['line']}" if f["line"] else f["file"]
         print(f"{f['level']}  {where:28s} {f['rule']:22s} {f['message']}")
     print(f"막음 {res['blocking']}건, 확인 {res['review']}건")
+    # 종료 코드: 막음이 1건 이상이면 1(CI 등에서 릴리스 차단용)
     return 1 if res["blocking"] else 0
 
 

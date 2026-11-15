@@ -26,6 +26,8 @@ import random
 
 
 class Counter:
+    """comparisons 는 트리 키 비교, rotations 는 회전 수, single/double 은 회전 종류별 횟수, sift 는 힙 비교 수."""
+
     def __init__(self):
         self.comparisons = 0
         self.rotations = 0
@@ -39,6 +41,8 @@ def _c(counter):
 
 
 class Node:
+    """이진 트리 노드. h 는 노드 자신을 포함한 부분 트리 높이(AVL 에서만 유지)."""
+
     __slots__ = ("key", "left", "right", "h")
 
     def __init__(self, key):
@@ -51,7 +55,7 @@ class Node:
 # ---------------------------------------------------------------- 관찰용 함수
 
 def height(node):
-    """저장된 값이 아니라 구조에서 다시 센 높이. 깊은 트리에서도 넘치지 않게 반복으로 센다."""
+    """저장된 값이 아니라 구조에서 다시 센 높이. 깊은 트리에서도 넘치지 않게 반복으로 센다. 시간 O(n)."""
     best, stack = 0, [(node, 1)] if node else []
     while stack:
         nd, d = stack.pop()
@@ -64,6 +68,8 @@ def height(node):
 
 
 def inorder(node):
+    # 반복 중위 순회(왼쪽 끝까지 내려가 스택에 쌓고, 꺼내며 오른쪽으로). 시간 O(n).
+    # BST 면 결과가 오름차순이라 check_bst_order 가 이것으로 불변식을 검사한다.
     out, stack, cur = [], [], node
     while stack or cur:
         while cur:
@@ -94,6 +100,8 @@ def size(node):
 
 def _heights_postorder(node):
     """{id(노드): 구조에서 센 높이}. 반복 후위 순회."""
+    # (노드, 자식 처리 끝남 여부)를 쌓는다: 처음 꺼내면 자식을 먼저 처리하도록 다시 넣고, 두 번째로 꺼낼 때 높이를 정한다.
+    # id(노드)를 키로 쓰는 것은 같은 키가 서로 다른 노드가 되는 일이 없다는 전제 없이 노드 자체로 구분하기 위해서다.
     hs, stack = {}, [(node, False)] if node else []
     while stack:
         nd, done = stack.pop()
@@ -142,6 +150,7 @@ def check_bst_order(root):
 def check_avl(root):
     """[(이름, 성립 여부, 설명)]. 균형 인수와 저장된 높이를 구조와 대조한다."""
     bfs = balance_factors(root)
+    # 불변식: 모든 노드의 균형 인수 |왼쪽 높이 - 오른쪽 높이| <= 1. 저장된 h 도 실제와 같아야 회전 판단이 믿을 만하다
     bad = sorted(k for k, b in bfs.items() if abs(b) > 1)
     hs = _heights_postorder(root)
     stored_ok = all(nd.h == hs[id(nd)] for nd in _nodes(root))
@@ -155,6 +164,9 @@ def check_avl(root):
 # ---------------------------------------------------------------- 균형 장치 없는 BST
 
 class BST:
+    """균형을 맞추지 않는 이진 탐색 트리. 삽입·검색 시간은 높이에 비례: 평균(무작위 순서) O(log n),
+    정렬된 순서로 넣으면 높이 n 이라 O(n). 불변식: 왼쪽 부분 트리 키 < 노드 키 < 오른쪽 부분 트리 키."""
+
     def __init__(self, counter=None):
         self.root = None
         self.n = 0
@@ -168,7 +180,7 @@ class BST:
             return True
         cur = self.root
         while True:
-            self.c.comparisons += 1
+            self.c.comparisons += 1  # 한 번의 비교가 같다/작다/크다 셋을 가른다고 센다(파일 위 셈 규칙)
             if key == cur.key:
                 return False
             if key < cur.key:
@@ -186,6 +198,7 @@ class BST:
 
     def insert_recursive(self, key):
         """교과서식 재귀판. 깊이가 파이썬 재귀 한도에 닿으면 RecursionError 가 난다."""
+        # 재귀 깊이 = 트리 높이라, 정렬된 입력에서는 파이썬 재귀 한도(보통 1000)를 넘는 것이 함정이다
         def rec(node):
             if node is None:
                 self.n += 1
@@ -209,6 +222,8 @@ class BST:
 
     def delete(self, key):
         """Hibbard 식 삭제: 자식이 둘이면 오른쪽 부분 트리의 최솟값으로 바꾼다. 반복판."""
+        # 경우 셋: 잎, 자식 하나, 자식 둘. 자식이 둘이면 중위 후속자(오른쪽 부분 트리 최솟값)의 키를 복사하고
+        # 그 후속자 노드(왼쪽 자식이 없음)를 대신 지운다. 이 삭제는 비교 수를 세지 않는다.
         parent, cur = None, self.root
         while cur and cur.key != key:
             parent, cur = cur, (cur.left if key < cur.key else cur.right)
@@ -238,6 +253,7 @@ def _h(node):
 
 
 def _fix(node):
+    # 자식의 높이가 이미 맞다는 가정에서 이 노드의 높이를 다시 계산(회전·재균형 뒤 아래에서 위로 호출)
     node.h = 1 + max(_h(node.left), _h(node.right))
 
 
@@ -250,6 +266,7 @@ def rotate_right(y):
        / \\              / \\
       A   B            B   C
     """
+    # 회전은 포인터 세 개만 바꾸므로 O(1). 먼저 y 를 고친 뒤 x 를 고친다: x 의 높이가 y 의 새 높이에 의존하기 때문
     x = y.left
     y.left = x.right
     x.right = y
@@ -277,6 +294,9 @@ class AVL:
         self.hook = hook
 
     def rebalance(self, node):
+        # 삽입·삭제 뒤 재귀가 돌아오며 각 노드에서 호출. bf = 왼쪽 높이 - 오른쪽 높이.
+        # bf > 1 이면 왼쪽이 무겁다: 왼쪽 자식의 왼쪽이 더 높거나 같으면(>=) 단일 회전, 아니면 이중 회전.
+        # 같을 때(>=)는 삭제에서만 생기며 단일 회전이 맞다. 삽입은 한 번의 회전으로 높이가 원래대로 돌아간다.
         _fix(node)
         bf = _h(node.left) - _h(node.right)
         if -1 <= bf <= 1:
@@ -312,6 +332,8 @@ class AVL:
         return out
 
     def insert(self, key):
+        # 시간 O(log n): 높이가 약 1.44 log2 n 이하(테스트의 C_PHI * log2(n+1))로 유지되므로 재귀 깊이와 비교 수가 모두 로그 단위.
+        # added 를 리스트로 둔 것은 안쪽 함수가 바깥 변수를 바꾸려는 방법(nonlocal 대신)
         added = [False]
 
         def rec(node):
@@ -335,6 +357,7 @@ class AVL:
     def delete(self, key):
         removed = [False]
 
+        # pop_min: 부분 트리에서 최솟값 노드를 떼어 내고 (새 부분 트리, 떼어 낸 노드)를 돌려준다. 내려온 경로를 다시 재균형한다
         def pop_min(node):
             if node.left is None:
                 return node.right, node
@@ -355,6 +378,7 @@ class AVL:
                     return node.right
                 if node.right is None:
                     return node.left
+                # 자식이 둘: 오른쪽 최솟값 노드 m 으로 이 노드를 통째로 바꾼다(키 복사 대신 노드 교체)
                 node.right, m = pop_min(node.right)
                 m.left, m.right = node.left, node.right
                 node = m
@@ -377,6 +401,7 @@ class AVL:
 
 def min_avl_nodes(h):
     """N(0) = 0, N(1) = 1, N(h) = N(h-1) + N(h-2) + 1. 높이 h 인 AVL 트리가 가질 수 있는 가장 적은 노드 수."""
+    # 점화식: 높이 h 인 가장 마른 AVL 은 뿌리 + 높이 h-1 짜리 + 높이 h-2 짜리. 피보나치 수열에서 1 을 뺀 꼴이라 N(h) 는 약 phi^h 로 자란다
     a, b = 0, 1
     if h == 0:
         return 0
@@ -388,6 +413,7 @@ def min_avl_nodes(h):
 def fibonacci_tree_keys(h):
     """높이 h 이면서 노드가 N(h)개뿐인 AVL 트리(피보나치 트리)를 만들고, 그 트리를 BST 에 넣었을 때
     같은 모양이 되는 넣는 순서(너비 우선)를 돌려준다. 키는 1..N(h)."""
+    # 중위 순서로 키를 1.. 부여하며 짓는다(lo 는 이 부분 트리가 쓸 첫 키). 왼쪽을 h-1, 오른쪽을 h-2 로 짓는다
     def build(h, lo):
         if h == 0:
             return None, lo
@@ -399,6 +425,7 @@ def fibonacci_tree_keys(h):
         _fix(node)
         return node, nxt2
     root, _ = build(h, 1)
+    # 너비 우선으로 나열하면 부모가 자식보다 먼저 나오므로, 이 순서로 BST 에 넣으면 같은 모양이 된다
     order, q = [], [root] if root else []
     while q:
         nd = q.pop(0)
@@ -420,6 +447,8 @@ class BinaryHeap:
         self.c.sift += 1
         return x < y
 
+    # 불변식: 모든 i>0 에서 부모 a[(i-1)//2] <= a[i] (0 부터 센 배열, 자식은 2i+1, 2i+2). 높이가 log2 n 이라
+    # push, pop 은 각각 O(log n). 이진 힙은 BST 와 달리 전체 순서는 보장하지 않고 최솟값만 뿌리에 둔다.
     def push(self, x):
         a = self.a
         a.append(x)
@@ -435,6 +464,7 @@ class BinaryHeap:
     def _sift_down(self, i):
         a, n = self.a, len(self.a)
         while True:
+            # s 는 i, 왼쪽, 오른쪽 중 가장 작은 칸(smallest). 부모보다 작은 자식이 없으면 멈춘다
             l, r, s = 2 * i + 1, 2 * i + 2, i
             if l < n and self._less(a[l], a[s]):
                 s = l
@@ -447,6 +477,7 @@ class BinaryHeap:
 
     def pop(self):
         a = self.a
+        # 마지막 원소를 뿌리로 올리고 내려 보낸다(빈 힙이면 IndexError)
         top = a[0]
         last = a.pop()
         if a:
@@ -455,7 +486,7 @@ class BinaryHeap:
         return top
 
     def heapify(self, xs):
-        """Floyd 식: 마지막 부모부터 뿌리까지 거꾸로 sift-down. 비교 수는 2n 이하."""
+        """Floyd 식: 마지막 부모부터 뿌리까지 거꾸로 sift-down. 비교 수는 2n 이하. 시간 O(n)(n 번 push 의 O(n log n)보다 적다)."""
         self.a = list(xs)
         for i in range(len(self.a) // 2 - 1, -1, -1):
             self._sift_down(i)
@@ -475,6 +506,7 @@ def orders(name, n, rng=None):
     keys = list(range(1, n + 1))
     if name == "sorted":
         return keys
+    # sorted 와 zigzag 는 BST 에 넣으면 둘 다 높이 n 의 사슬이 된다(테스트가 확인). random 은 평균적으로 얕다
     if name == "zigzag":  # 1, n, 2, n-1, ...  양쪽 끝에서 번갈아 넣는다
         out, lo, hi = [], 1, n
         while lo <= hi:
@@ -510,6 +542,7 @@ def snapshot(root):
     """[[키, 중위 순위, 깊이, 균형 인수], ...] 와 간선 [[부모 키, 자식 키], ...]."""
     if root is None:
         return [], []
+    # rank: 중위 순서 번호(가로 위치로 쓰기 위한 값). 키가 서로 다르다는 전제
     rank = {k: i for i, k in enumerate(inorder(root))}
     d = depths(root)
     bfs = balance_factors(root)
@@ -527,6 +560,7 @@ def trace_inserts(keys, kind):
     """kind = 'bst' | 'avl'. 단계: [설명, 넣은 키, 노드, 간선, 높이, 누적 비교, 누적 회전, 깨진 노드 목록, 중위 정렬 여부, 단계 종류]."""
     c = Counter()
     steps = [["빈 트리", None, [], [], 0, 0, 0, [], True, "start"]]
+    # holder 는 hook 과 바깥 반복이 공유하는 상태(지금 넣는 키, 마지막 회전 이름, 트리 참조)
     holder = {}
 
     def hook(ev, node):

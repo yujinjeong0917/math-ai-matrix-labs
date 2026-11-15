@@ -50,6 +50,7 @@ def e0_first_screen():
     }
 
 
+# 지렛대 값(leverage) h_i = 1/n + (x_i - xbar)^2 / Sxx. 한 점이 회귀선을 얼마나 끌어당기는지(단순회귀 공식)
 def _leverage(x):
     x = np.asarray(x, float)
     return 1 / len(x) + (x - x.mean()) ** 2 / np.sum((x - x.mean()) ** 2)
@@ -74,6 +75,7 @@ def e1_anscombe():
             "resid_sorted_by_x": [float(v) for v in (y - p)[np.argsort(x, kind="stable")]],
         }
     x, y = cases.anscombe()["3"]
+    # 인덱스 2는 원문 번호로 3번째 관측. 번호는 1부터 센다(위 argmax에 +1을 붙인 이유)
     keep = np.arange(11) != 2  # 관측 3 (x=13, y=12.74)
     c3 = m.fit_line(x[keep], y[keep])
     out["set3_without_obs3"] = {"b0": c3[0], "b1": c3[1], "r2": m.r2(y[keep], m.predict_line(c3, x[keep]))}
@@ -88,6 +90,7 @@ def e2_offset(n=200, seed=0):
     sweep = {}
     for s in (0.5, 1.0, 2.0, 5.0):
         _, ps = cases.case_offset(n, s, seed)
+        # formula는 R^2 = 1 - n s^2/SST의 손 계산. 코드 r2와 같아야 한다
         sweep[str(s)] = {"r2": m.r2(y, ps), "r2corr": m.squared_corr(y, ps), "formula": 1 - n * s**2 / m.sst(y)}
     ys, ps2 = cases.case_scaled(n, 2.0, seed)
     return {
@@ -118,12 +121,14 @@ def e3_extrapolation(seed=0):
 
 
 def e4_window_sweep(seeds=50):
+    # 학습은 항상 [0,5]. 테스트 구간 위치만 바꿔 학습 R^2 - 테스트 R^2의 격차를 본다
     windows = {"[0,5] 같은 범위": (0.0, 5.0), "[0,1] 같은 범위, 좁은 왼쪽 끝": (0.0, 1.0), "[4,5] 같은 범위, 좁은 오른쪽 끝": (4.0, 5.0), "[2.5,7.5] 반쯤 밖": (2.5, 7.5),
                "[5,10] 밖": (5.0, 10.0), "[7.5,12.5] 더 밖": (7.5, 12.5)}
     out = {}
     for name, w in windows.items():
         tr, te, gap, tec, qte = [], [], [], [], []
         for s in range(seeds):
+            # 시드를 1000대로 둬 E3(시드 0)과 겹치지 않게 한다
             xtr, ytr, xte, yte = cases.case_extrapolation(seed=1000 + s, test=w)
             lin = m.fit_line(xtr, ytr)
             a = m.r2(ytr, m.predict_line(lin, xtr))
@@ -150,6 +155,7 @@ def e5_bootstrap_rank(B=1000, n_test=50):
     models = {}
     for name, s in (("A", 101), ("B", 202)):
         r = np.random.default_rng(s)
+        # 두 모델은 같은 형태(2차 다항식)지만 학습 표본 12개가 서로 다르다. 테스트 세트는 둘이 공통
         xtr, ytr = cases.quad_sample(0.0, 5.0, 12, r)
         models[name] = m.predict_poly(m.fit_poly(xtr, ytr, 2), xte)
     full = {k: {"r2": m.r2(yte, p), "rmse": m.rmse(yte, p)} for k, p in models.items()}
@@ -157,6 +163,7 @@ def e5_bootstrap_rank(B=1000, n_test=50):
     agree = b_rmse = b_r2 = 0
     r2a, r2b, ra, rb = [], [], [], []
     for _ in range(B):
+        # 부트스트랩: 테스트 관측을 복원추출(같은 인덱스로 정답과 두 모델 예측을 함께 뽑는다)
         idx = br.integers(0, n_test, n_test)
         y = yte[idx]
         sa, sb = m.r2(y, models["A"][idx]), m.r2(y, models["B"][idx])
@@ -181,6 +188,7 @@ def e6_definitions():
     c = m.fit_line(x, y, intercept=False)
     p = m.predict_line(c, x)
     xi, yi = np.array([1.0, 2, 3]), np.array([10.0, 11, 10])
+    # 같은 데이터에 절편을 넣으면 기울기가 0(평균 수평선)이 되어 R^2 = 0
     ci = m.fit_line(xi, yi)
     pi = m.predict_line(ci, xi)
     rng = np.random.default_rng(3)

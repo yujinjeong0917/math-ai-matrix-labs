@@ -20,14 +20,17 @@ import numpy as np
 NUMERIC = ["tenure_months", "monthly_fee", "support_calls", "usage_hours", "age", "discount_rate"]
 CATEGORICAL = {"plan": 3, "region": 4}
 LABEL = "churned"
+# 요금 분포의 평균·표준편차(원). fee_shift는 이 표준편차의 배수로 평균을 옮긴다
 FEE_MEAN, FEE_STD = 55_000, 15_000
 
 
 def make_table(data_seed, n_rows, shift=0.0, fee_shift=0.0, fee_coef=1.6, fee_usage_corr=0.0):
     rng = np.random.default_rng(data_seed)
     tenure = rng.integers(1, 73, n_rows).astype(float)
+    # 반올림·상한 처리 전의 요금. 난수를 뽑는 순서는 8장 생성기와 같게 유지해야 기본값이 8장 v1과 같은 표가 된다
     fee_raw = rng.normal(FEE_MEAN, FEE_STD, n_rows)
     calls = rng.poisson(np.clip(3.0 - tenure / 30.0, 0.2, None)).astype(float)
+    # 상관을 만들기 전의 사용 시간
     usage_raw = rng.normal(40, 12, n_rows)
     age = rng.integers(19, 76, n_rows).astype(float)
     discount = rng.uniform(0.0, 0.3, n_rows)
@@ -38,12 +41,15 @@ def make_table(data_seed, n_rows, shift=0.0, fee_shift=0.0, fee_coef=1.6, fee_us
         r = float(fee_usage_corr)
         z_fee = (fee_raw - FEE_MEAN) / FEE_STD
         z_use = (usage_raw - 40) / 12
+        # 표준화한 요금 z_fee에 계수 r, 독립 성분 z_use에 sqrt(1-r^2)를 곱해 더하면 요금과 상관이 r이면서 평균 40, 표준편차 12는 그대로(정규분포의 성질)
         usage_raw = 40 + 12 * (r * z_fee + np.sqrt(1.0 - r * r) * z_use)  # 여전히 N(40, 12^2)
+    # fee_shift 표준편차만큼 평균을 옮긴 뒤 자르고 100원 단위로 반올림. 이탈 로짓은 이 옮긴 요금으로 계산한다
     fee = np.round(np.clip(fee_raw + fee_shift * FEE_STD, 15_000, 120_000), -2)
     usage = np.clip(usage_raw, 0, 200)
     logit = (
         -0.3
         + shift
+        # 요금 항의 계수를 fee_coef로 바꿀 수 있다(기본 1.6). 줄이면 입력은 그대로인데 요금과 이탈의 관계만 약해진다
         + fee_coef * (fee - 55_000) / 15_000
         - 1.3 * (tenure - 36) / 20
         + 0.5 * (calls - 1.8)
@@ -60,6 +66,7 @@ def make_table(data_seed, n_rows, shift=0.0, fee_shift=0.0, fee_coef=1.6, fee_us
     }
 
 
+# 수치 6열을 (행, 6) 행렬로. 열 순서는 NUMERIC과 같다. 드리프트 검사의 입력
 def numeric_matrix(table):
     return np.column_stack([table[k] for k in NUMERIC])
 

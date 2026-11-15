@@ -39,6 +39,7 @@ torch.set_num_threads(2)
 HERE = Path(__file__).parent
 RES = HERE / "results"
 OUT = RES / "ch07.json"
+# 어제 데이터(시드 0, 평상시)와 오늘 데이터(시드 1, shift 1.0). 연결이 어긋났을 때 어느 날 데이터를 썼는지 시드로 구별된다
 YESTERDAY = {"seed": 0, "shift": 0.0}
 TODAY = {"seed": 1, "shift": 1.0}
 
@@ -64,6 +65,7 @@ def _metrics_of(run):
 def e1(tmp):
     ir = G.compile(P.churn_pipeline)
     out = {}
+    # (아래 A, B, C는 파일 이름 규약 스크립트와 그래프 파이프라인에서 같은 실수를 각각 만들어 비교한다)
     # 기준: 오늘 데이터를 제대로 이었을 때
     truth = GL.run_glue(tmp / "clean", **TODAY)
     out["today_correct"] = brief(truth["metrics"])
@@ -71,6 +73,7 @@ def e1(tmp):
     out["yesterday"] = brief(yday["metrics"])
 
     # A: prepare의 출력 이름이 train_v2.npz / valid_v2.npz로 바뀜. 스크립트는 옛 이름을 읽는다
+    # 어제 실행의 파일이 남은 폴더에서 오늘 실행을 돌린다. 이름이 바뀐 새 파일 대신 옛 파일을 읽어도 종료 코드는 0일 수 있다
     w = tmp / "A"
     GL.run_glue(w, **YESTERDAY)
     a = GL.run_glue(w, **TODAY, extra_env={"CH07_PREP_SUFFIX": "_v2"})
@@ -132,6 +135,7 @@ def e1(tmp):
             m = json.loads(Path(ev["outputs"]["metrics"]["uri"] + ".json").read_text())
             bad |= m["trained_on"]["seed"] != cfg["seed"] or m["evaluated_on"]["seed"] != cfg["seed"]
         dag_bad += bad
+    # 20가지 순서 중 결과가 오염된 순서 수를 센다. 파일 위치가 run_id별로 분리된 그래프 쪽은 오염이 없어야 한다
     out["C"] = {"orders": len(orders), "glue_contaminated_orders": glue_bad, "glue_runs_train_eval_mismatch": glue_mixed,
                 "dag_contaminated_orders": dag_bad}
     return out

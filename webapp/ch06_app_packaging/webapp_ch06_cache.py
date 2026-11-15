@@ -33,11 +33,13 @@ PAGE_GETS = ["/", "/images/logo.svg", "/style.css", "/fonts/card-sans.woff2", "/
              "/app.min.js", "/templates/index.json", "/templates/notice.json"]
 ACTION_POST = "/api/generate-image"
 
+# none = 서비스 워커 없음(비교 기준), mixed = sw.js의 routes 표대로 경로마다 다른 전략.
 STRATEGIES = ("none", "cache-first", "network-first", "stale-while-revalidate", "mixed")
 
 
 def load_sw_config(text=None):
     text = SW.read_text(encoding="utf-8") if text is None else text
+    # sw.js 안의 CONFIG 객체 리터럴만 정규식으로 잘라 JSON으로 읽는다(JS 전체를 해석하지 않는다. 그래서 config 블록은 JSON으로도 유효해야 한다).
     m = re.search(r"/\* config:start \*/\s*const CONFIG = (\{.*?\});\s*/\* config:end \*/", text, re.S)
     if not m:
         raise ValueError("sw.js 에 config 블록이 없어요")
@@ -45,17 +47,20 @@ def load_sw_config(text=None):
 
 
 def file_bytes(path):
+    # "/"는 디스크에서 index.html. 크기는 압축 전 바이트.
     rel = "index.html" if path == "/" else path.lstrip("/")
     return (PUBLIC / rel).stat().st_size
 
 
 def route_strategy(config, path, navigate):
+    # routes는 위에서부터 차례로 보고 처음 맞는 규칙을 쓴다(순서가 의미). navigate는 문서 이동 요청에만 맞는다.
     for r in config["routes"]:
         if r["match"] == "navigate":
             if navigate:
                 return r["strategy"]
         elif r["match"] == "*" or path.startswith(r["match"]):
             return r["strategy"]
+    # 어떤 규칙에도 안 맞을 때의 기본값(안전하게 캐시를 쓰지 않음).
     return "network-only"
 
 
@@ -66,14 +71,18 @@ class World:
         assert strategy in STRATEGIES
         self.strategy = strategy
         self.config = config or load_sw_config()
+        # 서버의 파일별 버전 번호(처음 1). 배포하면 올라간다. 캐시가 가진 번호와 비교해 옛 버전인지(stale) 판정한다.
         self.server = {p: 1 for p in set(PAGE_GETS) | set(self.config["precache"])}
         self.server_sw = 1                      # 서버에 올라간 sw.js 의 버전
+        # none 전략에서만 쓰는 브라우저 HTTP 캐시(1장의 하루 max-age 규칙).
         self.http_cache = {}                    # path -> 버전 (none 전략에서만 씀)
         self.sw_active = None                   # 활성 서비스 워커의 버전
+        # 새 서비스 워커가 설치를 마치고 기다리는 상태: (버전, 새 캐시). 다음 방문 시작에 활성화된다.
         self.sw_waiting = None                  # 설치를 마치고 기다리는 버전과 그 캐시
         self.cache = {}                         # Cache Storage: path -> 버전
 
     # ---------- 배포 ----------
+    # bump_sw=False는 파일은 바꿨는데 sw.js(버전)를 안 바꾼 실수를 재현한다. 브라우저가 sw.js가 바뀐 것을 못 봐 새 캐시를 만들지 않는다.
     def deploy(self, changed, bump_sw=True):
         for p in changed:
             self.server[p] += 1
@@ -82,6 +91,7 @@ class World:
 
     # ---------- 방문 ----------
     def visit(self, online):
+        # 방문 한 번의 집계. stale = 서버의 최신 버전과 다른 것을 받은 수, failed = 못 받은 요청 수.
         rec = {"online": online, "network_requests": 0, "network_bytes": 0, "from_cache": 0,
                "stale": 0, "failed": 0, "page_opened": False, "stale_paths": [], "background_requests": 0}
 
@@ -93,6 +103,7 @@ class World:
         def served(path, version, from_cache):
             if from_cache:
                 rec["from_cache"] += 1
+            # 받은 버전이 서버 최신과 다르면 옛 버전을 준 것.
             if version != self.server[path]:
                 rec["stale"] += 1
                 rec["stale_paths"].append(path)
@@ -101,6 +112,7 @@ class World:
             self.sw_active, self.cache = self.sw_waiting
             self.sw_waiting = None
 
+        # 첫 방문에는 sw_active가 없어 이 방문은 서비스 워커가 맡지 않는다(그래서 모든 요청이 네트워크).
         controlled = self.strategy != "none" and self.sw_active is not None
         for path in PAGE_GETS:
             navigate = path == "/"
@@ -110,11 +122,13 @@ class World:
                 ok = self._sw_get(path, navigate, online, net, served, rec)
             if not ok:
                 rec["failed"] += 1
+                # 문서(/)를 못 받으면 이후 요청을 보지 않고 끝낸다(페이지가 열리지 않음).
                 if navigate:                                    # 문서를 못 받으면 페이지가 안 열린다
                     return rec
             elif navigate:
                 rec["page_opened"] = True
 
+        # POST는 Cache API에 넣을 수 없어 어느 전략이든 온라인일 때만 된다(모형의 가정, 위 docstring 참고).
         if online:                                              # AI 배경 버튼: POST 는 캐시에 못 넣는다
             rec["network_requests"] += 1
         else:
@@ -122,21 +136,26 @@ class World:
 
         if self.strategy != "none" and online:
             if self.sw_active is None:                          # 첫 방문: 등록하고 설치(precache)
+                # 첫 방문: 설치 단계에서 precache 12개를 네트워크로 받는다(페이지 8개와 겹쳐도 다시 받는 것으로 센다).
                 self.cache = {p: net(p) for p in self.config["precache"]}
                 self.sw_active = self.server_sw
             else:                                               # 업데이트 확인: sw.js 를 받아 비교
                 rec["network_requests"] += 1
+                # 온라인 방문마다 sw.js를 한 번 받아 버전 비교(sw.js는 no-cache). 업데이트 확인의 비용.
                 rec["network_bytes"] += SW.stat().st_size
+                # sw.js가 바뀌었을 때만 새 서비스 워커가 설치(precache 새로 받기)를 시작한다.
                 if self.server_sw != self.sw_active:
                     self.sw_waiting = (self.server_sw, {p: net(p) for p in self.config["precache"]})
         return rec
 
     def _http_get(self, path, online, net, served):
+        # none 전략: HTML은 no-cache라 매번 서버에 확인하고 받는다(여기서는 네트워크로 센다).
         if path == "/":                                         # no-cache: 쓰기 전에 서버에 확인
             if not online:
                 return False
             served(path, net(path), False)
             return True
+        # 나머지는 max-age(하루)라 묻지 않고 저장본. 배포로 바뀌어도 하루 동안은 옛것을 준다(stale).
         if path in self.http_cache:                             # max-age 하루: 묻지 않고 저장본
             served(path, self.http_cache[path], True)
             return True
@@ -148,8 +167,10 @@ class World:
         return True
 
     def _sw_get(self, path, navigate, online, net, served, rec):
+        # mixed면 요청마다 routes 표로 전략을 고른다.
         strategy = self.strategy if self.strategy != "mixed" else route_strategy(self.config, path, navigate)
         hit = self.cache.get(path)
+        # cache-first: 캐시에 있으면 그것을 주고 네트워크를 보지 않는다. 가장 빠르지만 버전을 바꾸지 않으면 계속 옛것.
         if strategy == "cache-first":
             if hit is not None:
                 served(path, hit, True)
@@ -159,6 +180,7 @@ class World:
             self.cache[path] = net(path)
             served(path, self.cache[path], False)
             return True
+        # network-first: 온라인이면 항상 새로 받고(캐시도 갱신), 오프라인일 때만 캐시.
         if strategy == "network-first":
             if online:
                 self.cache[path] = net(path)
@@ -168,6 +190,7 @@ class World:
                 served(path, hit, True)
                 return True
             return False
+        # SWR: 캐시본을 먼저 주고 뒤에서 새로 받아 캐시만 고친다. 이번 방문은 옛것, 다음 방문부터 새것. 요청 수는 network-first와 같다.
         if strategy == "stale-while-revalidate":
             if hit is not None:
                 served(path, hit, True)
@@ -187,7 +210,9 @@ class World:
 
 
 # 기본 시나리오: 첫 방문 → 지하철(오프라인) → 배포 → 두 번 온라인 → 다시 오프라인
+# 배포에서 바뀌는 파일 3개(문서, 템플릿 JSON, 앱 코드). 전략별 stale 수의 기대값이 여기서 나온다.
 DEPLOY_CHANGED = ["/", "/templates/notice.json", "/app.min.js"]
+# 방문 5번 + 배포 1번: 첫 온라인, 오프라인, (배포), 온라인, 온라인, 오프라인.
 SCENARIO = [("visit", True), ("visit", False), ("deploy", None), ("visit", True), ("visit", True), ("visit", False)]
 
 
@@ -200,6 +225,7 @@ def run(strategy, bump_sw=True, scenario=SCENARIO, changed=DEPLOY_CHANGED):
         else:
             visits.append(w.visit(arg))
     keys = ("network_requests", "network_bytes", "from_cache", "stale", "failed", "background_requests")
+    # 방문별 집계를 합산. page_opened는 불리언이라 sum이 열린 횟수가 된다.
     total = {k: sum(v[k] for v in visits) for k in keys}
     total["pages_opened"] = sum(v["page_opened"] for v in visits)
     return {"strategy": strategy, "bump_sw": bump_sw, "visits": visits, "total": total}

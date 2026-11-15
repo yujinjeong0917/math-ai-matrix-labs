@@ -31,6 +31,7 @@ from pathlib import Path  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = Path(__file__).parent
+# 같은 폴더의 모듈(productivity_chNN_*)을 어느 디렉터리에서 실행해도 찾도록 경로를 앞에 넣는다
 sys.path.insert(0, str(HERE))
 
 import productivity_ch06_graph as G  # noqa: E402
@@ -38,11 +39,12 @@ import productivity_ch06_registry as R  # noqa: E402
 import productivity_ch06_sim as S  # noqa: E402
 
 OUT = HERE / "results" / "ch06.json"
-SEEDS = 1000
-Q = 0.9
+SEEDS = 1000  # 방식마다 반복하는 무작위 주(week) 수(run_week의 시드 0..999)
+Q = 0.9  # 사람 확인 간선 하나를 제대로 옮길 확률(가정). E3에서 0.7~0.95로 바꿔 본다
 
 
 def e0_hand():
+    """E0: 취소 규정 문구가 네 곳에 있을 때 복사 방식(손 3곳)과 규칙 방식(손 1곳)의 "하나라도 틀릴 확률", 틀린 곳 수 기댓값, 한 주 손 고치기 횟수. 그래프 식과 같은 값인지도 함께 낸다."""
     h = R.HAND
     m = h["miss"]
     q = 1 - m
@@ -68,6 +70,7 @@ def e0_hand():
 
 
 def e1_validate():
+    """E1: 현재 등록부가 규칙을 통과하는지(base_problems가 빈 목록), 위반 세 가지(양방향, 값을 두 곳에서 받음, 원본과 끊긴 위치)를 일부러 넣었을 때 validate가 잡는 목록."""
     base = G.validate(R.ITEMS)
     bad = copy.deepcopy(R.ITEMS)
     # 위반 1: Sheets 기준 칸에서도 Notion 기준값을 고치게 양방향으로 잇는다
@@ -80,7 +83,7 @@ def e1_validate():
     found = G.validate(bad)
     counts = R.count_methods()
     hops = {k: G.human_hops(it) for k, it in R.ITEMS.items()}
-    max_h = max(v["human"] for h in hops.values() for v in h.values())
+    max_h = max(v["human"] for h in hops.values() for v in h.values())  # 원본에서 가장 멀리 가는 길의 사람 확인 간선 수
     return {"base_problems": base, "injected": 3, "found": [f"{k}: {msg}" for k, msg in found],
             "n_items": len(R.ITEMS), "n_locations": sum(len(R.locations(k)) for k in R.ITEMS),
             "edges": counts, "max_human_hops": max_h,
@@ -100,8 +103,9 @@ def tool_pairs():
 
 
 def e2_week(q=Q):
+    """E2: 변경 12개 x 방식 5개 x 시드 SEEDS개의 평균 관찰값(summarize), 시드 0 한 번의 어긋난 위치 예시, 가장 자주 어긋나는 위치 상위 6개."""
     res = {reg: S.summarize(reg, q, SEEDS) for reg in S.REGIMES}
-    # 한 시드에서 어디가 틀렸는지 예시(rules)
+    # 한 시드(0)에서 어디가 틀렸는지 예시. 방식별로 같은 시드를 쓰지만 방식마다 난수 소비가 달라 같은 주는 아니다
     ex = {}
     for reg in S.REGIMES:
         r = S.run_week(reg, q, random.Random(0))
@@ -119,6 +123,7 @@ def e2_week(q=Q):
 
 
 def e3_sweep():
+    """E3: q = 0.7, 0.8, 0.9, 0.95로 바꿔 방식별 핵심 관찰값(불일치, 체크리스트 미충족, 숨은 불일치, 추적 불가, 분, 하나라도 어긋난 비율)을 낸다."""
     out = {}
     for q in (0.7, 0.8, 0.9, 0.95):
         out[str(q)] = {reg: {k: v for k, v in S.summarize(reg, q, SEEDS).items()
@@ -129,6 +134,7 @@ def e3_sweep():
 
 
 def e4_formula():
+    """E4: 원본에서 시작한 이벤트만으로 registry 방식을 4000번 돌린 평균 불일치와 그래프 식의 이론값을 나란히 둔다(sim_se는 평균의 표준오차)."""
     src_events = [e for e in R.EVENTS if e["where"] == R.ITEMS[e["item"]]["src"]]
     out = []
     for q in (0.7, 0.9):
@@ -141,9 +147,10 @@ def e4_formula():
 
 
 def e5_detection():
+    """E5: 자동화가 깨진 뒤 알아채기까지 걸린 일수의 평균, 중앙값, 90번째 백분위, 14일 뒤에도 모르는 비율. 알아채는 확률(하루 0.1)은 가정이다."""
     out = {}
     for kind in ("email_creator_here", "email_creator_gone", "silent", "heartbeat"):
-        rng = random.Random(5)
+        rng = random.Random(5)  # 종류마다 같은 시드로 시작해 종류 사이의 차이만 본다
         days = [S.detection_days(kind, rng) for _ in range(SEEDS)]
         days.sort()
         out[kind] = {"mean_days": round(statistics.mean(days), 2), "median": days[len(days) // 2],
@@ -153,6 +160,7 @@ def e5_detection():
 
 
 def e6_two_way():
+    """E6: 동기화 지연 1, 5, 30분에서 양방향이 옛 값에 덮인 편집과 두 칸이 갈라진 날을 센다(한 방향은 비교용). 하루 8시간, 시간당 1건 편집이 기본값."""
     out = []
     for d in (1, 5, 30):
         two = S.two_way_sync(d)
@@ -163,10 +171,12 @@ def e6_two_way():
 
 
 def e7_webhook():
+    """E7: 같은 페이지를 간격 10초, 1분, 3분, 10분으로 두 번 고칠 때 도착 순서대로 적용하면 옛 값으로 끝나는 비율(식과 시뮬레이션)."""
     return [S.webhook_order(g) for g in (10, 60, 180, 600)]
 
 
 def e9_breakeven(week):
+    """E9: 자동화 3개를 만드는 시간(setup)을 한 주에 아끼는 시간으로 나눠 손익분기 주 수를 어림한다. 시간 값은 모두 가정이고, 자동화가 안 깨질 때만 성립한다."""
     m = week["means"]
     saved = round(m["rules"]["minutes"] - m["auto_naive"]["minutes"], 2)  # 자동화가 깨지지 않을 때 아끼는 시간
     setup = m["auto_guarded"]["setup_minutes"]
@@ -178,6 +188,7 @@ def e9_breakeven(week):
 
 
 def e10_handoff(seed=0, q=Q):
+    """E10: rules 방식 시드 0의 주말 상태를 3장 체크리스트(디자인 -> 개발)와 5장 checks(운영 -> 기획)에 그대로 대어 본 결과를 두 건의 인수인계 기록으로 만든다."""
     r = S.run_week("rules", q, random.Random(seed))
     wrong = set(r["wrong"])
     # 디자인 -> 개발: Figma와 Notion 할 일로 가는 간선의 받는 곳을 하나씩 대조(3장 체크리스트의 문구·링크 줄)
@@ -200,6 +211,7 @@ def e10_handoff(seed=0, q=Q):
 
 
 def write_data():
+    """등록부, 이벤트·사건·권한·자동화 후보를 data/*.json으로 쓴다(독자가 모형의 입력을 볼 수 있게)."""
     (HERE / "data").mkdir(exist_ok=True)
     (HERE / "data" / "registry.json").write_text(json.dumps(R.ITEMS, ensure_ascii=False, indent=1))
     (HERE / "data" / "events.json").write_text(json.dumps(
@@ -208,10 +220,12 @@ def write_data():
 
 
 def write_handoff(h):
+    """E10의 두 인수인계 기록을 data/handoff_records.json으로 쓴다."""
     (HERE / "data" / "handoff_records.json").write_text(json.dumps(h, ensure_ascii=False, indent=1))
 
 
 def write_checks(week, h=None):
+    """독자가 자기 기록을 더하도록 방식별 예시 줄과 인수인계 두 줄이 든 checks/ch06.csv를 쓴다. 날짜 "2026-10-08"은 결과 검증일 표기다."""
     (HERE / "checks").mkdir(exist_ok=True)
     m = week["means"]
     with open(HERE / "checks" / "ch06.csv", "w", newline="") as f:
@@ -231,6 +245,7 @@ def write_checks(week, h=None):
 
 
 def main():
+    """데이터와 점검 파일을 쓴 뒤 E0~E10을 돌려 results/ch06.json에 저장한다. E2 결과(week)를 E9가 다시 쓰므로 순서를 바꾸면 안 된다. 시드가 고정이라 결과는 매번 같다."""
     write_data()
     week = e2_week()
     hand = e10_handoff()

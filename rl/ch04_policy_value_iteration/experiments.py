@@ -38,7 +38,7 @@ torch.set_num_threads(2)
 HERE = Path(__file__).parent
 OUT = HERE / "results" / "ch04.json"
 LOG = HERE / "logs" / "ch04_rollouts.jsonl"
-THETA = 1e-10
+THETA = 1e-10  # 수렴 허용오차 theta: 가치 반복·수정 정책 반복이 앞뒤 차이 < THETA 에서 멈춘다
 
 
 def timed(fn, reps=5):
@@ -51,6 +51,7 @@ def timed(fn, reps=5):
 
 
 def arrows(pi, term, w):
+    """정책 pi[S]를 화살표 문자열 행으로 바꾼다(종료 칸은 ◎). w: 격자 너비. 칸 번호 = 행 * w + 열."""
     rows = []
     for r in range(len(pi) // w):
         rows.append("".join("◎" if term[r * w + c] else g.ARROWS[pi[r * w + c]] for c in range(w)))
@@ -58,8 +59,10 @@ def arrows(pi, term, w):
 
 
 def optimal(P, R, gamma):
+    # 기준값 V*, pi*: 가치 반복을 theta=1e-13 으로 촘촘히 돌린 뒤 탐욕 정책을 뽑고
     V, _ = m.value_iteration(P, R, gamma, theta=1e-13)
     pi = m.greedy_policy(V, P, R, gamma, tie="first")
+    # 그 정책을 직접 풀이로 다시 평가해 반복 오차가 섞이지 않은 V^{pi*}를 쓴다
     V = m.evaluate_exact(pi, P, R, gamma)
     return V, pi
 
@@ -79,6 +82,7 @@ def e0_corridor(gamma=0.9):
         cur = new
     Vk, vi_rows = np.zeros(3), [[0.0, 0.0]]
     for _ in range(4):
+        # 식: V_{k+1} = T V_k  (가치 반복의 손계산 표)
         Vk = m.bellman_T(Vk, P, R, gamma)
         vi_rows.append([round(float(x), 6) for x in Vk[:2]])
     return {"gamma": gamma, "pi_iterations": len(hist), "converged": ok, "steps": steps,
@@ -90,6 +94,7 @@ def e1_ties(gamma=0.95, max_iter=1000, seeds=range(10)):
     S = P.shape[0]
     V_star, pi_star = optimal(P, R, gamma)
     Q = m.q_from_v(V_star, P, R, gamma)
+    # 동률 후보: 식 Q(s,a) >= max_a Q(s,a) - TIE_TOL. 비종료 칸마다 최적 행동 개수가 n_best이고, 그 곱이 최적 결정론 정책 수
     best = Q >= Q.max(axis=1, keepdims=True) - m.TIE_TOL
     n_best = best.sum(axis=1)[~term]
     out = {"gamma": gamma, "n_states": S, "nonterminal": int((~term).sum()),
@@ -108,6 +113,7 @@ def e1_ties(gamma=0.95, max_iter=1000, seeds=range(10)):
         rng = np.random.default_rng(sd)
         pi, V, hist, ok = m.policy_iteration(P, R, gamma, pi0=pi0, tie="random", rng=rng, max_iter=max_iter)
         errs = [float(np.max(np.abs(h["V"] - V_star))) for h in hist]
+        # 정책의 가치가 V*에 1e-12 안으로 처음 닿은 반복(1부터 셈). 이후에도 정책이 계속 바뀌는지가 실패 1의 핵심
         first_opt = next(i + 1 for i, e in enumerate(errs) if e < 1e-12)
         ch = np.array([h["changed"] for h in hist])
         runs.append({"seed": sd, "converged": ok, "iterations": len(hist), "first_optimal_iter": first_opt,
@@ -133,6 +139,7 @@ def e2_gamma_one(K=50):
     for gamma in (1.0, 0.9):
         V, norms, diffs = np.zeros(9), [], []
         for _ in range(K):
+            # 식: V_{k+1} = T V_k. gamma=1 이면 norm이 k에 비례해 커지고 diff가 0으로 가지 않는다
             V2 = m.bellman_T(V, P, R, gamma)
             diffs.append(float(np.max(np.abs(V2 - V))))
             V = V2
@@ -141,7 +148,7 @@ def e2_gamma_one(K=50):
     # gamma=1이면 직접 풀이도 망가진다: 최적 정책(구석에 머물기)의 I - P^pi
     V_s, pi_s = optimal(P, R, 0.9)
     Ppi, rpi = m.policy_mats(pi_s, P, R)
-    A = np.eye(9) - 1.0 * Ppi
+    A = np.eye(9) - 1.0 * Ppi  # 식: I - gamma P^pi 에 gamma = 1 을 대입. 행 합이 1인 P^pi라 특이행렬이 된다
     try:
         np.linalg.solve(A, rpi)
         solve = "ok"
@@ -162,6 +169,7 @@ def e3_compare(n=20, gamma=0.99, reps=5):
 
     (pi, V, hist, ok), t = timed(lambda: m.policy_iteration(P, R, gamma, tie="first"), reps)
     k = len(hist)
+    # 정책 반복의 비용: 반복마다 개선 S*A 백업 + 직접 풀이 (2/3)S^3 FLOP (평가 백업은 따로 세지 않는다)
     res["methods"]["PI"] = {"iterations": k, "backups": k * S * A, "solve_flops": int(k * (2 / 3) * S ** 3),
                             "time_s": t, "err": float(np.max(np.abs(V - V_star))),
                             "policy_diff_cells": int((pi != pi_star).sum()), "changed": [h["changed"] for h in hist]}
@@ -173,11 +181,12 @@ def e3_compare(n=20, gamma=0.99, reps=5):
     # 탐욕 정책이 처음으로 최적이 된(그 뒤로 계속 최적) 스윕
     Vk, opt_at, last_bad = np.zeros(S), None, 0
     for kk in range(1, len(hist) + 1):
-        Vk = m.bellman_T(Vk, P, R, gamma)
+        Vk = m.bellman_T(Vk, P, R, gamma)  # 식: V_k = T V_{k-1}
         pk = m.greedy_policy(Vk, P, R, gamma)
+        # 탐욕 정책 pk의 진짜 가치 V^{pk}가 V*에서 1e-9보다 멀면 "아직 최적 아님". 마지막으로 아니었던 스윕을 기록
         if np.max(np.abs(m.evaluate_exact(pk, P, R, gamma) - V_star)) > 1e-9:
             last_bad = kk
-    opt_at = last_bad + 1
+    opt_at = last_bad + 1  # 그다음 스윕부터 계속 최적(허용오차 1e-9 기준)
     err_at_opt = hist[opt_at - 1][1]
     res["methods"]["VI"] = {"iterations": len(hist), "backups": len(hist) * S * A, "time_s": t,
                             "err": float(np.max(np.abs(V - V_star))), "policy_diff_cells": int((pi != pi_star).sum()),
@@ -190,6 +199,7 @@ def e3_compare(n=20, gamma=0.99, reps=5):
                                       "policy_diff_cells": int((pi != pi_star).sum())}
     # 같은 단위로 맞추기: 이 구현은 백업 하나가 조밀한 다음 칸 합(곱셈·덧셈 2S번)이다. 정책 반복은 직접 풀이 FLOP를 더한다.
     for v in res["methods"].values():
+        # 백업 1번 = 조밀한 다음 칸 합 S개의 곱·덧셈 = 2S FLOP (이 구현 기준. 희소 구현이면 달라진다)
         v["dense_flops"] = int(v["backups"] * 2 * S + v.get("solve_flops", 0))
     return res, (P, R, term, V_star, pi_star)
 
@@ -201,10 +211,11 @@ def e4_gammas(n=10, gammas=(0.9, 0.99, 0.999), eps=1e-6):
     for gamma in gammas:
         V_star, pi_star = optimal(P, R, gamma)
         V, hist = m.value_iteration(P, R, gamma, theta=1e-14, V_star=V_star)
+        # 정답 오차 < eps 가 처음 되는 스윕 수(이 hist는 theta=1e-14로 돌려 eps 도달 전에 멈추지 않는다고 가정)
         k_err = next(i + 1 for i, (_, e) in enumerate(hist) if e < eps)
         Vk, last_bad = np.zeros(S), 0
         for kk in range(1, k_err + 1):
-            Vk = m.bellman_T(Vk, P, R, gamma)
+            Vk = m.bellman_T(Vk, P, R, gamma)  # 식: V_k = T V_{k-1}
             pk = m.greedy_policy(Vk, P, R, gamma)
             if np.max(np.abs(m.evaluate_exact(pk, P, R, gamma) - V_star)) > 1e-9:
                 last_bad = kk
@@ -214,6 +225,7 @@ def e4_gammas(n=10, gammas=(0.9, 0.99, 0.999), eps=1e-6):
         rate = float((es[-1] / es[k_err // 2 - 1]) ** (1 / (k_err - k_err // 2))) if k_err > 4 else None
         keep = ~term
         Ppi, _ = m.policy_mats(pi_star, P, R)
+        # 최적 정책의 비종료 칸 부분 행렬의 스펙트럼 반경 rho. 실제 오차 감소율은 대략 gamma * rho (3장과 같은 논리)
         rho = float(np.max(np.abs(np.linalg.eigvals(Ppi[np.ix_(keep, keep)]))))
         rows.append({"gamma": gamma, "rho_nonterminal_pistar": rho, "gamma_rho": gamma * rho, "vi_sweeps_to_eps": k_err, "theory_sweeps": m.theory_vi_sweeps(eps, gamma),
                      "theory_with_Vstar_norm": int(np.ceil(np.log(eps / np.max(np.abs(V_star))) / np.log(gamma))),
@@ -236,6 +248,7 @@ def e5_monotone(P, R, gamma=0.99):
     S = P.shape[0]
     pi, V, hist, ok = m.policy_iteration(P, R, gamma)
     Vs = [h["V"] for h in hist]
+    # 식: V^{pi_{k+1}} >= V^{pi_k} (정책 개선 정리). 칸별 증가량의 최솟값이 음수가 아니어야 한다(동률 허용폭 1e-9 안의 잡음 제외)
     mins = [float(np.min(Vs[i + 1] - Vs[i])) for i in range(len(Vs) - 1)]
     return {"V_start_per_iter": [round(float(v[0]), 6) for v in Vs], "min_increase_per_iter": mins,
             "mean_V_per_iter": [round(float(v.mean()), 6) for v in Vs]}
@@ -247,6 +260,7 @@ def e6_contraction(P, R, gamma=0.99, pairs=100):
     for _ in range(pairs):
         V, U = rng.normal(0, 5, P.shape[0]), rng.normal(0, 5, P.shape[0])
         TV, TU = m.bellman_T(V, P, R, gamma), m.bellman_T(U, P, R, gamma)
+        # 식: ||T V - T U||_inf / ||V - U||_inf <= gamma  (축약 비율. max_ratio가 gamma를 넘으면 안 된다)
         ratios.append(float(np.max(np.abs(TV - TU)) / np.max(np.abs(V - U))))
     return {"pairs": pairs, "gamma": gamma, "max_ratio": max(ratios), "min_ratio": min(ratios)}
 
@@ -279,6 +293,7 @@ def e8_rollouts(P, R, term, V_star, pi_star, gamma=0.99, seeds=range(10), episod
                 if sd == 0 and ep == 0:
                     log.append({"seed": sd, "episode": ep, "t": t, "s": s, "a": a, "r": r, "s_next": s2, "done": done,
                                 "info": {}})
+                # 식: G = sum_t gamma^t r_t  (할인 리턴. disc = gamma^t 를 매 걸음 곱해 간다). 평균 G가 V*(시작)와 맞는지 비교
                 G += disc * r
                 disc *= gamma
                 s = s2
@@ -300,9 +315,9 @@ def e9_frames(gamma=0.95):
     pi = np.zeros(36, dtype=np.int64)
     frames = [arrows(pi, term, 6)]
     for it in range(1, 50):
-        V = m.evaluate_exact(pi, P, R, gamma)
-        new = m.greedy_policy(V, P, R, gamma, tie="first")
-        frames.append(arrows(new, term, 6))
+        V = m.evaluate_exact(pi, P, R, gamma)  # 평가: 식 (I - gamma P^pi) V = r^pi
+        new = m.greedy_policy(V, P, R, gamma, tie="first")  # 개선: 식 pi'(s) = argmax_a Q^pi(s,a)
+        frames.append(arrows(new, term, 6))  # 바뀌지 않은 마지막 반복의 프레임도 저장된다
         if np.array_equal(new, pi):
             break
         pi = new

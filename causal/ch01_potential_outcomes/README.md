@@ -1,5 +1,19 @@
 # 1장 실습. 잠재결과, ATE·ATT·ITT, 선택 편향
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [같은 사람의 쿠폰 있을 때와 없을 때를 왜 함께 볼 수 없을까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/01-potential-outcomes.html)
+
+```bash
+cd causal/ch01_potential_outcomes
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `potential_outcomes.py` | 1장 실습: 잠재결과, ATE·ATT·ITT, 선택 편향. 모든 숫자는 가상(예시용)이다. |
+<!-- sync:end -->
+
 웹 챕터: 인과추론 트랙 1장 「같은 사람의 쿠폰 있을 때와 없을 때를 왜 함께 볼 수 없을까요?」
 
 가상(예시용) 쿠폰 장난감으로 세 가지를 확인합니다.

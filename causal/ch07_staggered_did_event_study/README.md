@@ -1,5 +1,19 @@
 # 7장 실습. 시차 도입 이중차분과 이벤트스터디
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [지역마다 쿠폰 도입일이 다르면 어떻게 비교해야 할까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/07-staggered-did-event-study.html)
+
+```bash
+cd causal/ch07_staggered_did_event_study
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `staggered.py` | 7장 실습: 시차 도입 이중차분, 이벤트스터디, 이원고정효과(TWFE)의 가중치 함정. |
+<!-- sync:end -->
+
 웹 챕터: https://math-ai-matrix-pi.vercel.app/tracks/causal/07-staggered-did-event-study.html
 
 가상 온라인 마켓에서 지역 A는 3주차, 지역 B는 7주차에 쿠폰을 시작하고 지역 C는 끝까지 쿠폰이 없습니다(지역당 가게 20곳, 10주). 쿠폰 효과는 시작 후 주가 지날수록 커지도록 정해 두었어요(첫 주 +3, 둘째 주 +6, ... 천 원 단위 가상). 이 데이터에서

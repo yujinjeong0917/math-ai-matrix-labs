@@ -1,5 +1,20 @@
 # 9장. 누구나 만드는 시대에 남는 것 (`ch09_ai_coding_era`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [9장 누구나 만드는 시대](https://math-ai-matrix-pi.vercel.app/tracks/webapp/09-ai-coding-era.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch09_ai_coding_era
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 9장 실험. `uv run python webapp/ch09_ai_coding_era/experiments.py` 로 실행한다. |
+| `webapp_ch09_checklist.py` | 1인 개발 앱 출시 실전 9장: 1~8장을 묶은 "출시 전 점검표". |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/09-ai-coding-era.html`
 
 트랙 마지막 장이다. 1~8장 실습 결과를 모아 "출시 전 점검표" 하나로 만들고, 관통 프로젝트인 카드뉴스 편집기의 두 판(AI로 처음 빨리 만든 첫 판, 고친 출시 후보)에 같은 점검표를 돌린다.

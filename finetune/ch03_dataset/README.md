@@ -1,5 +1,21 @@
 # 3장. 학습 데이터 만들기: 대화 템플릿, 정제, 검증 세트 (`ch03_dataset`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [3장 학습 데이터](https://math-ai-matrix-pi.vercel.app/tracks/finetune/03-dataset.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch03_dataset
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 3장 실험. `uv run python finetune/ch03_dataset/experiments.py` 로 실행한다. |
+| `ft_ch03_clean.py` | 정제, 중복·거의 중복 찾기, 평가 세트 누수 검사, 학습·검증 나누기. |
+| `ft_ch03_template.py` | 대화 템플릿 적용기와 손실 마스킹(가르치기용). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/03-dataset.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 모델을 만드는 이야기)에서, 지난 답변 600쌍(1장의 가정) 가운데 눈으로 다 볼 수 있게 뽑은 표본 83쌍을 학습 데이터로 바꾼다. GPU·네트워크·API 키 없이 돈다.

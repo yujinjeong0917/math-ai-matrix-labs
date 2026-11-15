@@ -1,5 +1,19 @@
 # 0장 실습. 예측, 개입, 반사실
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [매출이 올랐으면 새 기능 덕분일까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/00-prediction-intervention-counterfactual.html)
+
+```bash
+cd causal/ch00_prediction_intervention_counterfactual
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `prediction_vs_intervention.py` | 0장 실습: 예측과 개입, 반사실. 모든 숫자는 가상(예시용) 장난감이며 시드를 고정했다. |
+<!-- sync:end -->
+
 웹 챕터: 인과추론 트랙 0장 「매출이 올랐으면 새 기능 덕분일까요?」
 
 가상(예시용) 온라인 마켓 장난감에서 진짜 효과를 알고 있을 때, 세 가지 읽기가 얼마나 맞는지 잽니다. 난수는 `random.Random(seed).random()`만 쓰고 표준정규는 Box-Muller로 만들어서, 파이썬 버전이 달라도 같은 숫자가 나옵니다.

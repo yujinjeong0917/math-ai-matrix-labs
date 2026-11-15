@@ -1,5 +1,21 @@
 # 1장. 파인튜닝이 필요한 때: 프롬프트·RAG와 무엇이 다를까 (`ch01_when_finetune`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [1장 파인튜닝이 필요한 때](https://math-ai-matrix-pi.vercel.app/tracks/finetune/01-when-finetune.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch01_when_finetune
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 1장 실험. `uv run python finetune/ch01_when_finetune/experiments.py` 로 실행한다. |
+| `finetune_ch01_compare.py` | 같은 문의 세트에 프롬프트(P)·검색(R)·파인튜닝(F)을 대 보고, 남는 실패를 센다. |
+| `finetune_ch01_retrieve.py` | 아주 작은 검색기: 한국어 글자 두 개씩(바이그램) 겹치는 수로 문서를 고른다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/01-when-finetune.html`
 
 관통 프로젝트("AI 도구 실전" 트랙의 가상 팀이 고객 문의 답변 초안 모델을 직접 만든다)의 첫 단계. 같은 문의 40건에 프롬프트 고치기(P), 검색해서 붙이기(R, RAG), 파인튜닝(F)을 대 보고, 실패 종류마다 무엇이 남는지 GPU·네트워크·API 키 없이 센다.

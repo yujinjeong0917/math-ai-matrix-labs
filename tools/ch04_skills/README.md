@@ -1,5 +1,21 @@
 # 4장. 같은 지시를 매번 붙여넣지 않으려면 (`ch04_skills`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [4장 스킬·프로젝트 지침](https://math-ai-matrix-pi.vercel.app/tracks/tools/04-skills.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch04_skills
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 4장 실험. `uv run python tools/ch04_skills/experiments.py` 로 실행한다. |
+| `tools_ch04_budget.py` | 스킬을 "전부 싣기"와 "앞머리만 + 쓰는 것만 본문"으로 실을 때 드는 토큰 수. |
+| `tools_ch04_frontmatter.py` | SKILL.md 앞머리(frontmatter) 읽기와 규칙 검사. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/04-skills.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")에서, 점점 길어진 작업 지시를 매번 붙여넣는 대신 프로젝트 지침 파일(AGENTS.md)과 스킬(SKILL.md)로 나눴을 때 대화마다 실리는 토큰이 어떻게 달라지는지를 네트워크·API 키 없이 재현한다.

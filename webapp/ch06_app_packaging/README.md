@@ -1,5 +1,24 @@
 # 6장. 웹앱을 앱으로 만드는 네 가지 길 (`ch06_app_packaging`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [6장 앱으로 포장하기](https://math-ai-matrix-pi.vercel.app/tracks/webapp/06-app-packaging.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch06_app_packaging
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 6장 실험. `uv run python webapp/ch06_app_packaging/experiments.py` 로 실행한다. |
+| `webapp_ch06_cache.py` | 1인 개발 앱 출시 실전 6장: 오프라인 캐시 전략 모형. |
+| `webapp_ch06_icons.py` | 1인 개발 앱 출시 실전 6장: 앱 아이콘(PNG)을 표준 라이브러리로 만들고 읽는다. |
+| `webapp_ch06_manifest.py` | 1인 개발 앱 출시 실전 6장: manifest.json 검사기. |
+| `webapp_ch06_paths.py` | 1인 개발 앱 출시 실전 6장: 네 가지 길 비교표와 조건별 고르기. |
+| `webapp_ch06_server.py` | 1인 개발 앱 출시 실전 6장: PWA로 바꾼 카드뉴스 편집기를 내 컴퓨터에서 띄우는 서버(표준 라이브러리). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/06-app-packaging.html`
 
 1장에서 만든 카드뉴스 편집기를 PWA(홈 화면에 추가해 앱처럼 쓰는 웹앱)로 바꾸고, 네 가지 길(PWA, WebView 포장, 크로스플랫폼, 네이티브)을 공식 문서로 확인한 구조로 비교한다.

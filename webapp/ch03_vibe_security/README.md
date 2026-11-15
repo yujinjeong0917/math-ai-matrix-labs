@@ -1,5 +1,23 @@
 # 3장. 바이브코딩 앱이 자주 놓치는 보안 다섯 가지 (`ch03_vibe_security`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [3장 자주 놓치는 보안](https://math-ai-matrix-pi.vercel.app/tracks/webapp/03-vibe-security.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch03_vibe_security
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 3장 실험. `uv run python webapp/ch03_vibe_security/experiments.py` 로 실행한다. |
+| `webapp_ch03_app.py` | 1인 개발 앱 출시 실전 3장: 보안 다섯 가지를 켜고 끌 수 있는 작은 가상 앱(표준 라이브러리 http.server). |
+| `webapp_ch03_ratelimit.py` | 1인 개발 앱 출시 실전 3장: 사용자별 토큰 버킷 사용량 제한. |
+| `webapp_ch03_rls.py` | 1인 개발 앱 출시 실전 3장: 행 수준 보안(RLS)을 sqlite와 파이썬으로 다시 만든 모형. |
+| `webapp_ch03_upload.py` | 1인 개발 앱 출시 실전 3장: 카드 배경 그림 업로드 검증. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/03-vibe-security.html`
 
 1장 카드뉴스 편집기에 로그인, 카드 저장(DB), 관리 화면, 배경 그림 업로드, AI 배경 만들기를 붙인 작은 가상 앱(sqlite + 표준 라이브러리 `http.server`)을 만들고, AI로 빠르게 만든 앱이 자주 놓치는 다섯 가지를 각각 "고치기 전 / 고친 뒤"로 같은 입력에 돌려 비교한다. 공격 방법이 아니라 점검 목록과 방어 코드가 목적이다.

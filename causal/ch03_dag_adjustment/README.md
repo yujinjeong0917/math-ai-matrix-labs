@@ -1,5 +1,19 @@
 # 3장 실습. 무엇을 통제해야 할까요?
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [회귀식에 무엇을 넣고 무엇을 빼야 할까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/03-dag-adjustment.html)
+
+```bash
+cd causal/ch03_dag_adjustment
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `dag_adjustment.py` | 3장 실습: 무엇을 통제해야 하나. 교란·매개·충돌변수. 모든 숫자는 가상(예시용)이다. |
+<!-- sync:end -->
+
 웹 챕터: 인과추론 트랙 3장 「회귀식에 무엇을 넣고 무엇을 빼야 할까요?」
 
 가상(예시용) 쿠폰 장난감에서 쿠폰이 월 구매액에 주는 전체 효과는 2.0입니다(직접 0.5 + 장바구니 크기를 거친 몫 1.5×1.0). 세 변수를 회귀식에 넣고 빼면서 쿠폰 계수가 2.0을 맞히는지 봅니다.

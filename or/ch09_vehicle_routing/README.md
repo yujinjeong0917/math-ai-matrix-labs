@@ -1,5 +1,19 @@
 # 9장. 배송 경로를 어떻게 묶을까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [배송 경로를 어떻게 묶어야 가장 짧을까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/09-vehicle-routing.html)
+
+```bash
+cd or/ch09_vehicle_routing
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `routing.py` | 9장. 배송 경로 묶기 (VRP, 차량 경로 문제). 표준 라이브러리만 사용, 정지점 8곳을 전수 탐색으로 푼다. |
+<!-- sync:end -->
+
 정지점 8곳(수요 합 25박스), 차량 용량 10박스인 가상 도시에서 경로 묶기(VRP)를 전수 탐색으로 풉니다. 단순 순서 묶기, 가까운 곳 먼저 규칙과 정확한 최적값을 비교하고, 시간창과 교통 혼잡을 넣어 답이 깨지는 모습을 봅니다. 거리는 맨해튼 거리(분과 같은 단위), 정지점마다 내려놓는 시간은 5분입니다. 좌표·수요·시간창은 모두 학습용 가상값입니다.
 
 ```bash

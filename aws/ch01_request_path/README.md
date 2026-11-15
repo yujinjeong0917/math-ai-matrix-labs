@@ -1,5 +1,19 @@
 # 1장 · 요청 한 건은 어디를 지나가나
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [요청 한 건은 어디를 지나 답이 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/01-request-path.html)
+
+```bash
+cd aws/ch01_request_path
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `request_path.py` | 요청 한 건의 경로를 단계 표로 만들고, 가장 작은 시간 한도·크기 한도에 걸리는지 검사한다. |
+<!-- sync:end -->
+
 요청 한 건의 경로를 단계 표로 만들고, 경로에서 가장 작은 시간 한도·크기 한도에 걸리는지 검사합니다. 한도 값은 `limits_2026-11-14.json`에 공식 문서 URL과 함께 적어 두었어요. 단계별 시간(ms)은 가상 값입니다. AWS 계정과 네트워크는 쓰지 않아요.
 
 ## 실행

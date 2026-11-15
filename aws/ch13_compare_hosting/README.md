@@ -1,5 +1,19 @@
 # 13장 · AWS 밖의 후보를 조건표로 거르기
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [AWS 밖 서비스에도 같은 조건표를 던지면 무엇이 남나요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/13-compare-hosting.html)
+
+```bash
+cd aws/ch13_compare_hosting
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `hosting_filter.py` | AWS 밖 후보(Cloud Run, Azure ML, Cloudflare, 무료 호스팅)를 조건표로 거른다. |
+<!-- sync:end -->
+
 Cloud Run, Azure ML, Cloudflare(Workers AI·R2), Vercel, Netlify, Render, Fly.io, Hugging Face Spaces를 같은 입력 조건으로 거릅니다. 특정 서비스를 추천하지 않고 `BLOCKED`, `CANDIDATE`, `CANDIDATE_WITH_UNKNOWNS`로만 나눕니다. 계정·네트워크·비용이 필요 없습니다.
 
 ## 실행

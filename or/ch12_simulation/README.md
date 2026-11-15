@@ -1,5 +1,19 @@
 # 12장. 식으로 못 풀면 무엇을 할까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [식으로 풀 수 없는 문제는 어떻게 답을 낼까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/12-discrete-event-simulation.html)
+
+```bash
+cd or/ch12_simulation
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `simulation.py` | 12장. 이산사건 시뮬레이션. 상담 센터(상담원 c명, 선착순, 한 줄 대기)를 사건 목록(heapq)으로 돌린다. |
+<!-- sync:end -->
+
 시간대별 도착률(처음 2시간 분당 0.36건, 이후 0.16건)과 로그정규 처리 시간(평균 5분)인 상담 센터를 사건 목록(heapq)으로 시뮬레이션합니다. 닫힌 식이 없는 조건입니다. 엔진은 먼저 M/M/1에서 이론값과 대조해 검증한 뒤 씁니다. 8시간 근무를 시드 1~20으로 20번 반복하고 95% 신뢰구간(t 임계값 2.093)을 냅니다. 숫자는 학습용 가상값입니다.
 
 ```bash

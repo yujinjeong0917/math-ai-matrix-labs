@@ -1,5 +1,22 @@
 # 1장. 최신본이 두 개면 아무도 최신본을 모른다 (`ch01_source_of_truth`)
 
+<!-- sync:start -->
+> [협업 도구가 어긋날 때](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/productivity) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [1장 같은 숫자가 세 파일에 있으면 무엇을 믿어야 할까](https://math-ai-matrix-pi.vercel.app/tracks/productivity/01-source-of-truth.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q productivity/ch01_source_of_truth
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 생산성 도구 1장 비교 실험. `OMP_NUM_THREADS=2 uv run python productivity/ch01_source_of_truth/experiments.py` 로 실행한다. |
+| `productivity_ch01_np.py` | 생산성 도구 1장 일반 모형의 NumPy 구현. productivity_ch01_sim.generic_python 과 같은 모형을 한꺼번에 뽑아 센다. |
+| `productivity_ch01_project.py` | 생산성 도구 1장 데이터: 관통 프로젝트 "동네 스터디룸 예약"의 값 3개, 자리 3곳, 시나리오 카드 8장, 원본 등록부 15항목. |
+| `productivity_ch01_sim.py` | 생산성 도구 1장 모형: 복사 방식과 원본 등록부 방식에 같은 변경 카드를 넣고 어긋난 칸을 센다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/productivity/01-source-of-truth.html`
 
 Figma·Notion·Google Sheets를 띄우지 않고, 관통 프로젝트(동네 스터디룸 예약)의 값 3개(시간당 요금, 운영 시간, 취소 규정)를

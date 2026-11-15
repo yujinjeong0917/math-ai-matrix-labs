@@ -1,5 +1,22 @@
 # 4장. 브라우저 기반과 서버 기반: 기능마다 어디서 돌릴까 (`ch04_browser_vs_server`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [4장 브라우저와 서버](https://math-ai-matrix-pi.vercel.app/tracks/webapp/04-browser-vs-server.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch04_browser_vs_server
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 4장 실험. `uv run python webapp/ch04_browser_vs_server/experiments.py` 로 실행한다. |
+| `webapp_ch04_cost.py` | 기능을 서버로 옮기면 요청 수·대기 시간·서버비가 어떻게 바뀌는지 세는 모형. |
+| `webapp_ch04_decide.py` | 기능마다 어디서 돌릴지 정하는 판단표. |
+| `webapp_ch04_storage.py` | 브라우저 저장소에 무엇이 얼마나 들어가고, 언제 지워지는지 세는 모형. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/04-browser-vs-server.html`
 
 1장 카드뉴스 편집기의 기능 7개(편집, 미리보기, 템플릿 고르기, AI 배경 생성, 최종 PNG 출력, 임시 저장, 보관 저장)를 "보이면 안 되는 것이 있나 → 기기를 바꿔도 남아야 하나 → 얼마나 빨리, 얼마나 자주"의 순서로 판단해 브라우저와 서버로 나눈다. 그다음 미리보기나 최종 PNG 렌더를 서버로 옮겼을 때 요청 수, 대기 시간, 한 달 서버비(Vercel Pro 서울 리전, Netlify 크레딧)가 어떻게 바뀌는지 센다. 브라우저 저장소(localStorage, IndexedDB)에 무엇이 얼마나 들어가고 언제 지워지는지도 MDN 규칙으로 모형을 만든다.

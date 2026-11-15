@@ -1,5 +1,19 @@
 # 11장 · 재시도가 같은 문의를 두 번 처리하면 어떻게 하나요?
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [재시도가 같은 문의를 두 번 처리하면 어떻게 하나요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/11-retry-duplicates.html)
+
+```bash
+cd aws/ch11_retry_duplicates
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `retry_sim.py` | 재시도와 중복 배달이 같은 작업을 몇 번 실행하게 만드는지 센다. |
+<!-- sync:end -->
+
 한 작업자가 메시지를 묶음으로 받아 차례로 처리할 때 가시성 제한 시간 때문에 다시 보이는 메시지 수, Lambda 비동기 호출의 최대 실행 횟수, 멱등 키 유무에 따른 부작용 횟수, SQS FIFO의 5분 중복 제거 구간을 모형으로 계산합니다. AWS 호출은 없어요.
 
 ## 실행

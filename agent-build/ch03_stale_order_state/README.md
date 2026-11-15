@@ -1,5 +1,19 @@
 # 3장 · 조회할 때와 환불할 때 사이에 주문 상태가 바뀌면 어떻게 되나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [조회할 때와 환불할 때 사이에 주문 상태가 바뀌면 어떻게 되나요](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/03-stale-order-state.html)
+
+```bash
+cd agent-build/ch03_stale_order_state
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `stale_order_state.py` | 3장: 에이전트의 조회 -> 판단 -> 실행 사이에 다른 작업자가 주문 상태를 바꾸는 모든 끼어들기 순서를 나열해 센다. |
+<!-- sync:end -->
+
 에이전트의 단계(조회 → 판단 → 실행)와 다른 작업자의 단계를 줄 세우는 모든 순서를 `itertools.combinations`로 나열하고, 순서마다 한 번씩 차례로 실행해 낡은 조회로 실행된 건수, 돈이 두 번 나간 건수, 전이표가 막은 건수를 세요. 표준 라이브러리만 쓰고 난수와 시간이 없어요.
 
 ## 실행

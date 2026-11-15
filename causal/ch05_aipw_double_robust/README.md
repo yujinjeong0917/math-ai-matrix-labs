@@ -1,5 +1,19 @@
 # 5장 실습. AIPW와 이중강건
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [결과모형과 가중치 중 하나가 틀리면 효과 추정은 어떻게 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/05-aipw-double-robust.html)
+
+```bash
+cd causal/ch05_aipw_double_robust
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `aipw.py` | 5장 실습: AIPW(증강 역확률가중)와 이중강건, 교차적합. 표준 라이브러리만 사용합니다. |
+<!-- sync:end -->
+
 웹 챕터: https://math-ai-matrix-pi.vercel.app/tracks/causal/05-aipw-double-robust.html
 
 가상 온라인 마켓 쿠폰 효과(진짜 값 +8.0, 천 원 단위 가상)를 네 가지 조합으로 추정합니다. 결과모형(쿠폰이 없을 때/있을 때 주문액을 x로 예측)과 성향점수모형(쿠폰 받을 확률)을 각각 맞게(2차식) 또는 틀리게(1차식) 두고, 결과모형만 쓰는 방법·IPW·AIPW를 비교합니다. 마지막에 과적합하는 1-최근접 결과모형으로 교차적합이 무엇을 바꾸는지 봅니다.

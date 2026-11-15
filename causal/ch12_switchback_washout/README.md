@@ -1,5 +1,19 @@
 # 12장. 스위치백과 세척기간
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [지역을 나눌 수 없다면 시간대마다 켰다 꺼서 효과를 잴 수 있을까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/12-switchback-washout.html)
+
+```bash
+cd causal/ch12_switchback_washout
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `switchback.py` | 12장 스위치백과 세척기간. 표준 라이브러리만 쓴다. 가상 온라인 마켓: 지역 한 곳의 '오후 타임세일 문구'를 시간대마다 켰다 껐다 한다. |
+<!-- sync:end -->
+
 한 지역의 문구를 시간대마다 켰다 끄는 스위치백 실험에서, 이월효과(tau=+6, 1칸 뒤 -3, 2칸 뒤 -1.5)가 있을 때 블록 길이와 세척기간(블록이 바뀐 직후 버리는 슬롯 수)에 따라 추정값이 어떻게 달라지는지 300번 반복해 잽니다. 진짜 정상상태 효과는 6-3-1.5 = 1.5입니다.
 
 ## 실행

@@ -1,5 +1,21 @@
 # 6장. 에이전트에게 맡기면 어디서 멈출까 (`ch06_agents`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [6장 에이전트](https://math-ai-matrix-pi.vercel.app/tracks/tools/06-agents.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch06_agents
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 6장 실험. `uv run python tools/ch06_agents/experiments.py` 로 실행한다. |
+| `tools_ch06_chain.py` | AI 도구 실전 6장: 단계가 이어질 때의 성공 확률을 닫힌 식(분수)으로 계산한다. |
+| `tools_ch06_loop.py` | AI 도구 실전 6장: 주간 보고서 반복을 워크플로와 에이전트로 돌려 보는 시뮬레이션(고정 시드). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/06-agents.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")의 한 주 반복(5장의 Notion 2번·Figma 4번 읽기, 세기, 인용 모으기, 2·3장의 보고서 절 12개, 이 장에서 더한 페이지 만들기와 팀 채널 알림, 모두 22단계)을 워크플로(정해진 순서)와 에이전트(다음 행동을 모델이 고름)로 돌려, 단계가 길어질 때 성공률이 어떻게 줄고 확인 지점·다시 하기·사람 승인이 무엇을 바꾸는지 네트워크·API 키 없이 재현한다.

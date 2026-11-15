@@ -1,5 +1,22 @@
 # 2장. 디자인 파일을 주고받던 시절 (`ch02_figma_structure`)
 
+<!-- sync:start -->
+> [협업 도구가 어긋날 때](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/productivity) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [2장 왜 ‘최종_수정2’ 파일이 계속 생길까](https://math-ai-matrix-pi.vercel.app/tracks/productivity/02-figma-structure.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q productivity/ch02_figma_structure
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 생산성 도구 2장 비교 실험. `uv run python productivity/ch02_figma_structure/experiments.py` 로 실행한다. |
+| `productivity_ch02_layout.py` | 생산성 도구 2장: auto layout 최소 구현과, 같은 화면을 고정 좌표로 얼린 판. |
+| `productivity_ch02_project.py` | 관통 프로젝트 "동네 스터디룸 예약"의 화면 4개를 두 가지 파일로 만든다. |
+| `productivity_ch02_sync.py` | 생산성 도구 2장: 두 사람이 같은 시안을 고칠 때, 합치는 방식에 따라 무엇이 사라지나. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/productivity/02-figma-structure.html`
 
 Figma를 띄우지 않고, 디자인 파일을 "레이어와 속성의 모음"으로 단순화한 파이썬 모형에서

@@ -1,5 +1,19 @@
 # 6장 · 에이전트가 이 고객의 주문만 만지게 하려면 어디서 막아야 하나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [에이전트가 이 고객의 주문만 만지게 하려면 어디서 막아야 하나요?](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/06-scoped-permissions.html)
+
+```bash
+cd agent-build/ch06_scoped_permissions
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `scoped_permissions.py` | 6장 · 에이전트가 이 고객의 주문만 만지게 하려면 어디서 막아야 하나요? (표준 라이브러리만) |
+<!-- sync:end -->
+
 가짜 모델은 메시지의 주문번호를 그대로 도구에 넘겨요. 같은 요청 20건(본인 10, 타인 6, 등록된 가족 대리 4)을 도구 권한 변형 6개에 넣고, 남의 주문 조회·환불이 나간 수와 정당한 요청이 막힌 수를 세요. 표준 라이브러리만 쓰고 난수가 없어요. 금액은 원(가상)이에요.
 
 ## 실행

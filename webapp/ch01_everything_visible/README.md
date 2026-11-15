@@ -1,5 +1,22 @@
 # 1장. 브라우저에 내려온 건 왜 다 보일까 (`ch01_everything_visible`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [1장 보이는 것과 지켜지는 것](https://math-ai-matrix-pi.vercel.app/tracks/webapp/01-everything-visible.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch01_everything_visible
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 1장 실험. `uv run python webapp/ch01_everything_visible/experiments.py` 로 실행한다. |
+| `webapp_ch01_build.py` | 1인 개발 앱 출시 실전 1장: 실습용 편집기의 "빌드" 흉내. |
+| `webapp_ch01_server.py` | 1인 개발 앱 출시 실전 1장: 실습용 카드뉴스 편집기 서버(표준 라이브러리 http.server). |
+| `webapp_ch01_visible.py` | 1인 개발 앱 출시 실전 1장: 우리 편집기를 열 때 브라우저가 받는 요청을 흉내 낸 모형. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/01-everything-visible.html`
 
 관통 프로젝트(직접 만든 작은 "카드뉴스 편집기" 웹앱)를 표준 라이브러리 `http.server`로 띄우고, 화면을 그리려고 브라우저가 받아 가는 파일(HTML·CSS·JS·폰트·이미지·템플릿 JSON)과, 받아 가지 않고 서버에만 남는 것(가짜 AI 키, 이미지 생성 지시문, 원본 고해상도 템플릿)을 나눠 센다.

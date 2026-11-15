@@ -1,5 +1,22 @@
 # 5장. 스프레드시트 사고는 왜 반복되나 (`ch05_sheets`)
 
+<!-- sync:start -->
+> [협업 도구가 어긋날 때](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/productivity) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [5장 평균 하나가 조용히 틀렸다면](https://math-ai-matrix-pi.vercel.app/tracks/productivity/05-sheets.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q productivity/ch05_sheets
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 생산성 도구 5장 비교 실험. `uv run python productivity/ch05_sheets/experiments.py` 로 실행한다. |
+| `productivity_ch05_data.py` | 5장 합성 데이터: 동네 스터디룸 예약 서비스의 2주 운영 기록. |
+| `productivity_ch05_sheet.py` | 자유 입력 시트 모형: 범위 수식, 행 추가, 자동 형식 변환, 행 수 상한이 있는 형식으로 저장. |
+| `productivity_ch05_workbook.py` | 명세 통합 문서 모형: raw(붙여 넣기만) -> clean(수식으로만 정리) -> pivot -> metrics, 그리고 checks. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/productivity/05-sheets.html`
 
 Google Sheets를 띄우지 않고, 관통 프로젝트(동네 스터디룸 예약)의 2주 운영 데이터(합성, 지점 20곳, 예약 2,460건)로

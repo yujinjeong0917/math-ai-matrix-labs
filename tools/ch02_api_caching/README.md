@@ -1,5 +1,22 @@
 # 2장. 같은 앞부분을 또 보내면 왜 돈이 덜 들까 (`ch02_api_caching`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [2장 API·프롬프트 캐싱](https://math-ai-matrix-pi.vercel.app/tracks/tools/02-api-caching.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch02_api_caching
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 2장 실험. `uv run python tools/ch02_api_caching/experiments.py` 로 실행한다. |
+| `tools_ch02_cache.py` | AI 도구 실전 2장: 프롬프트 캐시 모형과 비용 계산. |
+| `tools_ch02_project.py` | AI 도구 실전 2장: 관통 프로젝트(주간 고객 문의 요약 보고서)의 호출 시나리오. |
+| `tools_ch02_request.py` | AI 도구 실전 2장: API 요청 메시지 읽기와 "작은 SDK" 흉내. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/02-api-caching.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")에서, 지시문 + 예시 + 이번 주 문의 묶음(약 3만 2천 토큰, 가정값)을 API로 12번 보낼 때 비용이 어떻게 나오고 프롬프트 캐싱으로 얼마나 줄어드는지를 네트워크·API 키 없이 재현한다.

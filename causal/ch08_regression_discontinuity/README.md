@@ -1,5 +1,19 @@
 # 8장 실습. 회귀불연속(RDD)
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [기준선 바로 위아래 고객을 비교해도 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/08-regression-discontinuity.html)
+
+```bash
+cd causal/ch08_regression_discontinuity
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `rdd.py` | 8장 실습: 회귀불연속(RDD). 표준 라이브러리만 사용합니다. |
+<!-- sync:end -->
+
 웹 챕터: https://math-ai-matrix-pi.vercel.app/tracks/causal/08-regression-discontinuity.html
 
 가상 온라인 마켓에서 전월 구매액(x, 만 원)이 10 이상인 고객에게만 쿠폰을 줍니다. 다음 달 주문액에 쿠폰이 만드는 진짜 효과 +10.0(천 원, 가상)을 단순 비교, 전체에 직선 하나, 기준선 근처만 쓰는 국소 선형으로 추정하고, 대역폭(기준선 양쪽에서 얼마나 멀리까지 쓸지)을 바꿔 봅니다. 기준선 직전에 구매액을 채워서 올린 고객이 있을 때 구간별 고객 수와 추정값이 어떻게 변하는지도 봅니다.

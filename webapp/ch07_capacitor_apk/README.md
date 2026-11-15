@@ -1,5 +1,22 @@
 # 7장. Capacitor로 APK 만들기: 스토어 없이 배포까지 (`ch07_capacitor_apk`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [7장 Capacitor APK](https://math-ai-matrix-pi.vercel.app/tracks/webapp/07-capacitor-apk.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch07_capacitor_apk
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 7장 실험. `uv run python webapp/ch07_capacitor_apk/experiments.py` 로 실행한다. |
+| `webapp_ch07_config.py` | Capacitor 설정 점검기 (1인 개발 앱 출시 실전 7장). |
+| `webapp_ch07_signing.py` | 서명 키 관리 점검표 (1인 개발 앱 출시 실전 7장). |
+| `webapp_ch07_update.py` | 스토어 없이 APK를 나눠 줄 때의 설치·업데이트 모형 (1인 개발 앱 출시 실전 7장). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/07-capacitor-apk.html`
 
 6장에서 PWA로 만든 카드뉴스 편집기를 Capacitor로 Android 앱(APK)에 담는다고 해 보고, 그때 쓰는 설정 파일을 한 줄씩 읽고 점검한다. 이어서 가상의 행사장 주문 앱을 태블릿 8대에 스토어 없이 나눠 주는 하루를 모형으로 돌려, 서명 키와 versionCode가 업데이트를 어떻게 정하는지 센다.

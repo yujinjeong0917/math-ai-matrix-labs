@@ -1,5 +1,19 @@
 # 10장 · 청구서는 요청 수가 아니라 어디에서 커질까요?
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [청구서는 요청 수가 아니라 어디에서 커질까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/10-cost-leaks.html)
+
+```bash
+cd aws/ch10_cost_leaks
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `cost_inputs.py` | 비용이 새는 곳을 단가 없이 수량으로 먼저 센다. |
+<!-- sync:end -->
+
 유휴 시간, 시작할 때 내려받는 데이터, 로그 보관 기간, 남은 이전 버전을 단가 없이 수량(시간·GB)으로 셉니다. 단가는 독자가 AWS Pricing Calculator에서 확인해 `unit_prices`에 넣어야 금액이 나오고, 비어 있으면 그 줄은 HOLD예요. 1GB는 10^9바이트입니다.
 
 ## 실행

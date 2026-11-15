@@ -1,5 +1,19 @@
 # 0장. 예측 오차가 작은 쪽이 항상 더 좋은 결정을 줄까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [예측값을 받았는데 무엇을 더 결정해야 하나요?](https://math-ai-matrix-pi.vercel.app/tracks/or/00-forecast-vs-decision.html)
+
+```bash
+cd or/ch00_forecast_vs_decision
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `forecast_vs_decision.py` | 0장: 예측 오차(MAE)가 작다고 결정이 좋은 것은 아니다. 모든 숫자는 가상 예시용. |
+<!-- sync:end -->
+
 세 지역(A·B·C)에 운동화 재고 60켤레를 나눠 보내는 가상 문제에서, 평균 절대 오차(MAE)가 더 작은 예측이 오히려 더 나쁜 배분을 낳는 장면을 재현합니다. 모든 숫자는 설명을 위해 일부러 만든 가상 값이며 실제 판매 자료가 아닙니다.
 
 ## 실행

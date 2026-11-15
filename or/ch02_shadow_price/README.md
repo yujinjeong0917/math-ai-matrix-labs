@@ -1,5 +1,20 @@
 # 2장. 기계 한 시간이 더 생기면 얼마의 가치가 있나
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [기계 한 시간이 더 생기면 얼마의 가치가 있나요?](https://math-ai-matrix-pi.vercel.app/tracks/or/02-shadow-price.html)
+
+```bash
+cd or/ch02_shadow_price
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `lp2d.py` | 1장: 두 상품 생산량 선형계획. 표준 라이브러리만 쓴다. 모든 숫자는 가상 예시용. |
+| `shadow_price.py` | 2장: 쌍대 변수(그림자가격)와 민감도. 표준 라이브러리만 쓴다. 모든 숫자는 가상 예시용. |
+<!-- sync:end -->
+
 1장과 같은 가상 선형계획에서 쌍대 변수(그림자가격)를 두 길로 확인합니다. (1) 제약의 우변을 바꿔 다시 풀어 최적값 곡선의 기울기와 꺾이는 지점을 찾고, (2) 쌍대 인증서(`A^T y >= c`, `y >= 0`, 쓰고 남는 제약의 `y = 0`, `b·y = 최적값`)를 검사합니다.
 
 ## 실행

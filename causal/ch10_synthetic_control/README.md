@@ -1,5 +1,19 @@
 # 10장. 합성통제
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [비슷한 비교 지역이 없다면 여러 지역을 섞어 하나 만들 수 있을까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/10-synthetic-control.html)
+
+```bash
+cd causal/ch10_synthetic_control
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `synth.py` | 10장 합성통제. 표준 라이브러리만 쓴다. 가상 온라인 마켓: 지역 A에만 무료배송을 켠 뒤 주간 주문지수. |
+<!-- sync:end -->
+
 처치 지역 1곳과 대조 후보 8곳, 처치 전 20주·후 8주의 가상 주문지수에서 합이 1이고 음수가 아닌 가중치를 좌표 탐색으로 찾아 합성 대조 지역을 만듭니다. 처치 지역이 대조 후보들의 볼록결합 안에 있는 경우와 밖에 있는 경우(사전 적합 실패)에서 효과 추정값, 처치 전 RMSPE, 단순 평균 대조, 가짜 처치 검정(후/전 RMSPE 비율의 순위)을 비교합니다.
 
 ## 실행

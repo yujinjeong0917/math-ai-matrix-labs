@@ -1,5 +1,19 @@
 # 2장 · 도구에 넘기는 값이 형식은 맞는데 뜻이 틀리면 누가 잡나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [도구에 넘기는 값이 형식은 맞는데 뜻이 틀리면 누가 잡나요](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/02-tool-arguments.html)
+
+```bash
+cd agent-build/ch02_tool_arguments
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `tool_arguments.py` | 2장: 도구 호출 값 30개(고정 목록)를 두 단계로 검사해, 누가 무엇을 잡는지 센다. |
+<!-- sync:end -->
+
 모델이 만들었다고 치는 `issue_refund` 호출 30개(`calls.json`, 고정)를 스키마 검사와 의미 검사에 차례로 넣고, 무엇이 어디서 걸리는지 세요. 호출마다 `intended`(고객이 실제로 원한 값)를 함께 적어 두어 채점에만 써요. 표준 라이브러리만 쓰고 난수가 없어요.
 
 ## 실행

@@ -1,5 +1,19 @@
 # 5장 · 금액이 얼마부터 사람에게 물어야 하나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [금액이 얼마부터 사람에게 물어야 하나요?](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/05-approval-threshold.html)
+
+```bash
+cd agent-build/ch05_approval_threshold
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `approval_threshold.py` | 5장 · 금액이 얼마부터 사람에게 물어야 하나요? (표준 라이브러리만, 난수 없음) |
+<!-- sync:end -->
+
 환불 요청 100건(`refund_requests.json`, 가상 금액, 원)에 승인 문턱을 바꿔 가며 사람 승인 건수와 승인 없이 나가는 금액을 세고, 같은 주문의 환불을 여러 요청으로 쪼갰을 때 문턱이 뚫리는지 확인하는 장난감 실험이에요. 파이썬 표준 라이브러리만 쓰고 난수가 없어서 몇 번을 돌려도 같은 값이 나와요.
 
 ## 실행

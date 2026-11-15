@@ -1,5 +1,21 @@
 # 7장. 영상·이미지 도구는 무엇이 다를까 (`ch07_image_video`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [7장 영상·이미지 도구](https://math-ai-matrix-pi.vercel.app/tracks/tools/07-image-video.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch07_image_video
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 7장 실험. `uv run python tools/ch07_image_video/experiments.py` 로 실행한다. |
+| `tools_ch07_cost.py` | AI 도구 실전 7장: 영상·이미지 생성 비용 계산. |
+| `tools_ch07_diffusion.py` | AI 도구 실전 7장: 숫자 하나짜리 "그림"으로 해 보는 잡음 제거 장난감. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/07-image-video.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")에서, 보고서와 팀 공지에 붙일 15초 설명 영상과 표지 그림을 만들 때 값이 어떻게 나오는지 네트워크·API 키 없이 계산한다.

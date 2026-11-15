@@ -1,5 +1,19 @@
 # 6장 · Bedrock과 직접 호스팅은 무엇을 서로 대신하지 못하나
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [Bedrock과 직접 호스팅은 무엇을 서로 대신하지 못하나요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/06-bedrock-vs-self-hosting.html)
+
+```bash
+cd aws/ch06_bedrock_vs_self_hosting
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `hosting_fit.py` | Bedrock Custom Model Import(직접 가져오기)가 내 모델 조건을 받아 주는지 가리는 검사기와, |
+<!-- sync:end -->
+
 내 모델을 Bedrock Custom Model Import(가져온 모델을 Bedrock 입구로 서비스하는 기능)가 받아 주는지 조건별로 검사하고, 토큰 쿼터 차감과 5분 청구 창을 계산합니다. AWS를 호출하지 않고 가격을 넣지 않았어요.
 
 ## 실행

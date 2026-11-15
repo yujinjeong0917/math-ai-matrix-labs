@@ -1,5 +1,20 @@
 # 4장 · 환불이 두 번 나갔어요
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [환불이 두 번 나갔어요](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/04-double-refund.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q agent-build/ch04_double_refund
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `double_refund.py` | 4장: 환불 요청이 두 번 이상 실행되는지 방어 변형 A~D로 센다. 표준 라이브러리만 쓰고 난수가 없다. |
+| `experiments.py` | 환불이 두 번 나가는지 변형 A~D로 세어 results/ch04.json에 저장해요. |
+<!-- sync:end -->
+
 환불 서버가 느려서 응답이 안 올 때, 에이전트가 같은 환불을 다시 보내면 어떻게 되는지 세어 보는 장난감 실험이에요. 주문 10건에 장애 3개를 심고, 방어 방식 네 가지(변형 A~D)를 비교합니다. 파이썬 표준 라이브러리만 쓰고 난수가 없어서 몇 번을 돌려도 같은 값이 나와요.
 
 ## 실행

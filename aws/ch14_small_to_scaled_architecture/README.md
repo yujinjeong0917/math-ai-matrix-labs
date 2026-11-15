@@ -1,5 +1,19 @@
 # 14장 · 하루 20건의 첫 구성과 하루 2만 건의 성장 구성
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [하루 20건의 구성을 2만 건까지 그대로 키우면 무엇이 먼저 막히나요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/14-small-to-scaled-architecture.html)
+
+```bash
+cd aws/ch14_small_to_scaled_architecture
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `architecture_growth.py` | 같은 문의 답변 모델을 하루 20건과 하루 2만 건에서 비교한다. |
+<!-- sync:end -->
+
 같은 문의 답변 모델을 하루 20건과 하루 2만 건에서 비교합니다. 가격 대신 작업 시간·필요한 작업자 수·몰릴 때의 대기 시간을 계산하고, 그 숫자가 어떤 구성 요소를 요구하는지 판단합니다. AWS 계정이 필요 없습니다.
 
 ## 실행

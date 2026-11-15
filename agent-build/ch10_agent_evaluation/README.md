@@ -1,5 +1,19 @@
 # 10장 · 에이전트가 맞게 처리했는지 어떻게 재야 하나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [에이전트가 맞게 처리했는지 어떻게 재야 하나요?](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/10-agent-evaluation.html)
+
+```bash
+cd agent-build/ch10_agent_evaluation
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `evaluate.py` | 10장: 기록(trace) 20개를 결과만 채점할 때와 과정까지 채점할 때 비교한다. 전부 가상 기록이에요. |
+<!-- sync:end -->
+
 가상 문의 20건의 처리 기록(trace) 20개를 두 방식으로 채점한다. 결과 채점은 환불 서버를 다시 돌려서 실제로 나간 돈이 정답 금액과 같은지만 본다. 과정 채점은 기록의 도구 호출 순서를 규칙 세 개로 본다(환불 전에 주문 조회, 가상 문턱 50 이상 금액은 사람 승인 먼저, 같은 주문에 키가 다른 환불 두 번 금지). 기록은 `evaluate.py` 안의 표로 만들어지며 난수는 없다. 표준 라이브러리만 쓴다.
 
 ## 실행

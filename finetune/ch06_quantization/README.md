@@ -1,5 +1,20 @@
 # 6장. 최소한의 양자화: int8, 4bit, NF4가 숫자를 줄이는 법 (`ch06_quantization`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [6장 양자화](https://math-ai-matrix-pi.vercel.app/tracks/finetune/06-quantization.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch06_quantization
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 파인튜닝 트랙 6장 실험. `uv run python finetune/ch06_quantization/experiments.py` 로 실행한다. |
+| `ft_ch06_quant.py` | 파인튜닝 트랙 6장: 최소한의 양자화. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/06-quantization.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 쓰는 작은 모델을 만드는 이야기)에서, 기본 모델의 가중치를 8비트·4비트로 줄였다가 되돌릴 때 얼마나 틀리는지를 GPU·네트워크 없이 재현한다.

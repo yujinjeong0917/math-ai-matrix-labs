@@ -1,5 +1,19 @@
 # 4장 · 하루 20건인데 서버를 계속 켜 둬야 할까요?
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [하루 20건인데 서버를 계속 켜 둬야 할까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/04-serverless-or-endpoint.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q aws/ch04_serverless_or_endpoint
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `deployment_choice.py` | AWS 배포 후보를 가격이 아닌 실행 제약으로 먼저 거른다. |
+<!-- sync:end -->
+
 요청 수만으로 AWS 서비스를 고르지 않고, GPU·실행 메모리·건당 시간·허용 대기 시간으로 후보를 먼저 거릅니다. AWS 계정과 비용이 드는 리소스는 만들지 않아요.
 
 ## 실행

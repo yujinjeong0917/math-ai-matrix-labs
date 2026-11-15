@@ -1,5 +1,19 @@
 # 0장 · 환불 문의 한 건을 사람은 몇 단계로 처리하고, 그중 어디가 되돌릴 수 없나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [환불 문의 한 건의 도구 호출 순서에서 어디부터 되돌릴 수 없나요](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/00-refund-workflow.html)
+
+```bash
+cd agent-build/ch00_refund_workflow
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `refund_workflow.py` | 0장: 환불 문의 한 건을 단계로 풀어 도구 호출 수, 쓰기 호출 수, 되돌릴 수 없는 호출 수를 센다. |
+<!-- sync:end -->
+
 가상 문의 20건(환불 12, 교환 4, 배송조회 4)마다 필요한 도구 호출 순서를 `inquiries.json`에 고정해 두고, 호출 수, 쓰기 호출 수, 되돌릴 수 없는 호출 수를 세요. 가짜 모델도 서버도 없는 단순 집계이고, 파이썬 표준 라이브러리만 쓰며 난수가 없어요.
 
 ## 실행

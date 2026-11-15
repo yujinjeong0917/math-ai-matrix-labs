@@ -1,5 +1,19 @@
 # 11장 · 틀린 환불이 나갔을 때 원인을 어떻게 찾고 어떻게 바로잡나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [틀린 환불이 나갔을 때 원인을 어떻게 찾고 어떻게 바로잡나요?](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/11-trace-and-recovery.html)
+
+```bash
+cd agent-build/ch11_trace_and_recovery
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `trace_recovery.py` | 11장: 장애 6가지에서 원인 찾기 단계 수와 복구 경로를 세고, 4장 변형 C를 동시 요청 순서 전부에 돌린다. |
+<!-- sync:end -->
+
 환불 처리 일곱 단계(접수, 분류, 조회, 판단, 실행, 안내, 기록)에서 장애 6가지를 하나씩 심고, 요청 번호가 붙은 기록이 있을 때와 없을 때를 비교한다. 또 4장 변형 C(같은 키로 환불을 한 번만 내는 방식)를 같은 키의 요청 둘이 서버 걸음 세 개(확인, 실행, 저장)를 섞어 실행하는 20가지 순서 전부에 돌려, 4장이 재지 못한 동시 요청을 센다. 표준 라이브러리만 쓰고 난수는 없다.
 
 ## 실행

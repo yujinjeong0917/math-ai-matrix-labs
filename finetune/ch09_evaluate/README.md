@@ -1,5 +1,20 @@
 # 9장. 파인튜닝 결과 평가: 원래 모델보다 나아졌나 (`ch09_evaluate`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [9장 파인튜닝 결과 평가](https://math-ai-matrix-pi.vercel.app/tracks/finetune/09-evaluate.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch09_evaluate
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 9장 실험. `uv run python finetune/ch09_evaluate/experiments.py` 로 실행한다. |
+| `ft_ch09_eval.py` | 내 데이터로 LLM 파인튜닝하기 9장: 파인튜닝 결과 평가의 계산 모형. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/09-evaluate.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 모델 만들기)에서, 8장에서 학습한 모델이 원래 모델보다 정말 나아졌는지 재는 방법을 GPU 없이 연습하고, 오너가 직접 돌릴 Colab 노트북을 함께 둔다. **손실 곡선과 채점 데이터는 모두 가상이다. 실제 학습 결과 숫자가 아니다.**

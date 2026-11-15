@@ -1,5 +1,19 @@
 # 13장. 수요 예측이 틀려도 재고 계획이 버틸까요?
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [수요 예측이 틀려도 재고 계획이 버틸까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/13-robust-stock.html)
+
+```bash
+cd or/ch13_robust_stock
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `robust_stock.py` | 13장: 재고 100개를 두 지역에 나눠 두기. 수요 시나리오에 과적합한 계획과 강건한 계획을 비교한다. |
+<!-- sync:end -->
+
 운동화 100켤레를 지역 A·B에 나눠 둘 때, 예측 수요 한 점에 맞춘 계획과 흔들림을 넣은 강건 계획·후회 최소 계획의 이익을 비교하고, 시나리오 개수별 과적합 폭을 잰다. 모든 값은 학습용 가상값이다.
 
 ## 실행

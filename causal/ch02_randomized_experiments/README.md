@@ -1,5 +1,19 @@
 # 2장 실습. 무작위 실험이면 다 끝날까요?
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [무작위 실험이면 다 끝나나요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/02-randomized-experiments.html)
+
+```bash
+cd causal/ch02_randomized_experiments
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `randomized_experiments.py` | 2장 실습: 무작위 실험의 네 가지 함정. 모든 숫자는 가상(예시용)이다. |
+<!-- sync:end -->
+
 웹 챕터: 인과추론 트랙 2장 「무작위 실험이면 다 끝나나요?」
 
 가상(예시용) 온라인 마켓 장난감 네 개로, 무작위 배정이 맞히는 장면과 틀리는 장면을 진짜 효과와 대조합니다. 난수는 `random.Random(seed).random()`만 쓰며 정확히 절반을 고를 때도 난수 키 정렬을 씁니다.

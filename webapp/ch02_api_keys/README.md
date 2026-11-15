@@ -1,5 +1,22 @@
 # 2장. API 키 노출: 공개용 키와 비밀 키 구분하기 (`ch02_api_keys`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [2장 API 키 노출](https://math-ai-matrix-pi.vercel.app/tracks/webapp/02-api-keys.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch02_api_keys
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 2장 실험. `uv run python webapp/ch02_api_keys/experiments.py` 로 실행한다. |
+| `webapp_ch02_build.py` | 1인 개발 앱 출시 실전 2장: 환경 변수 값을 코드에 그대로 써 넣는 빌드 흉내. |
+| `webapp_ch02_rls.py` | 1인 개발 앱 출시 실전 2장: Supabase의 행 수준 보안(RLS)을 sqlite로 흉내 낸 모형. |
+| `webapp_ch02_scan.py` | 1인 개발 앱 출시 실전 2장: 배포 폴더에서 키 모양을 찾는 점검기. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/02-api-keys.html`
 
 1장에서 만든 카드뉴스 편집기에 "내 카드 저장하기"(Supabase)를 붙이면서, 브라우저 코드에 들어가도 되는 키와 서버에만 둬야 하는 키를 나눈다.

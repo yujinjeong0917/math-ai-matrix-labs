@@ -1,5 +1,20 @@
 # 8장. Unsloth로 무료 Colab에서 학습 돌리기 (`ch08_unsloth_colab`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [8장 Unsloth로 Colab 학습](https://math-ai-matrix-pi.vercel.app/tracks/finetune/08-unsloth-colab.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch08_unsloth_colab
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 8장 실험. `uv run python finetune/ch08_unsloth_colab/experiments.py` 로 실행한다. |
+| `ft_ch08_unsloth.py` | 8장 Unsloth·Colab 계산 모형. 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/08-unsloth-colab.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 모델 만들기)에서, 16GB GPU 한 장(예: NVIDIA T4)으로 Qwen2.5-7B-Instruct를 QLoRA로 학습할 때 메모리·스텝 수·에폭 시간을 GPU 없이 어림하고, 오너가 직접 돌릴 Colab 노트북을 함께 둔다.

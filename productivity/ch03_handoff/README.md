@@ -1,5 +1,21 @@
 # 3장. 개발자에게 넘길 때 무엇이 새나 (`ch03_handoff`)
 
+<!-- sync:start -->
+> [협업 도구가 어긋날 때](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/productivity) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [3장 시안만 넘기면 무엇이 빠질까](https://math-ai-matrix-pi.vercel.app/tracks/productivity/03-handoff.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q productivity/ch03_handoff
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 생산성 도구 3장 비교 실험. `uv run python productivity/ch03_handoff/experiments.py` 로 실행한다. |
+| `productivity_ch03_checks.py` | 생산성 도구 3장: 프로토타입을 그래프로 보고 검사한다 + 접근성 숫자 검사. |
+| `productivity_ch03_model.py` | 생산성 도구 3장: 디자인을 개발자에게 넘길 때 무엇이 빠지나. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/productivity/03-handoff.html`
 
 Figma를 띄우지 않고, 화면 4개를 "화면 x 상태 x 전환" 표로 만든 파이썬 모형에서 세 가지를 재현한다.

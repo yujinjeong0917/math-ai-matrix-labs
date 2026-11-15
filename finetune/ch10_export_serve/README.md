@@ -1,5 +1,20 @@
 # 10장. 내보내고 띄우기: 어댑터 합치기, GGUF, Ollama·vLLM (`ch10_export_serve`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [10장 내보내고 띄우기](https://math-ai-matrix-pi.vercel.app/tracks/finetune/10-export-serve.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch10_export_serve
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 10장 실험. `uv run python finetune/ch10_export_serve/experiments.py` 로 실행한다. |
+| `ft_ch10_export.py` | 10장 내보내고 띄우기 계산기. 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/10-export-serve.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 모델 만들기)의 마지막 장. 8장에서 4비트판 `unsloth/Qwen2.5-7B-Instruct-bnb-4bit` 위에 학습한 LoRA 어댑터(모든 선형층, r = 16)를 어떻게 내보내고 띄울지를 GPU·네트워크 없이 계산한다. 예시 모델 `Qwen/Qwen2.5-7B-Instruct`(Apache-2.0)는 추천이 아니라 예시다.

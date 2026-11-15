@@ -1,5 +1,22 @@
 # 5장. 정적 호스팅과 Supabase: 서버 없이 로그인·DB·파일 해결하기 (`ch05_static_supabase`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [5장 정적 호스팅·Supabase](https://math-ai-matrix-pi.vercel.app/tracks/webapp/05-static-supabase.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch05_static_supabase
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 5장 실험. `uv run python webapp/ch05_static_supabase/experiments.py` 로 실행한다. |
+| `webapp_ch05_costs.py` | 1인 개발 앱 출시 실전 5장: 무료 한도와 유료 전환 지점 계산. |
+| `webapp_ch05_edge.py` | 1인 개발 앱 출시 실전 5장: AI 배경 만들기를 Edge Function으로 옮긴 모형. |
+| `webapp_ch05_rules.py` | 1인 개발 앱 출시 실전 5장: data/policies.sql 의 규칙을 파이썬과 sqlite로 다시 만든 모형. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/05-static-supabase.html`
 
 카드뉴스 편집기를 "서버를 직접 운영하지 않는" 구성으로 옮긴다. 화면 파일은 정적 호스팅(Vercel·Netlify)에 올리고, 로그인·카드 저장·그림 파일·AI 배경 만들기는 Supabase의 Auth, Postgres+RLS, Storage, Edge Functions가 맡는다.

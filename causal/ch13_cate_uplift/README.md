@@ -1,5 +1,19 @@
 # 13장. CATE와 업리프트
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [누구에게 효과가 큰지 찾아 쿠폰을 그 고객에게만 줘도 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/13-cate-uplift.html)
+
+```bash
+cd causal/ch13_cate_uplift
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `cate_uplift.py` | 13장 실습: CATE, 업리프트, 사후 하위집단 탐색의 함정. 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 웹 챕터: `tracks/causal/13-cate-uplift.html`
 
 무작위로 쿠폰을 준 가상 온라인 마켓(고객 20,000명, 시드 2)에서 고객 유형별 효과(CATE)를 재고, 그 추정으로 쿠폰 대상을 고르는 업리프트 정책을 보류 데이터로 평가합니다. 이어서 효과가 모든 고객에게 0인 세계에서 하위집단을 뒤지면 얼마나 자주 가짜 발견이 나오는지 200번 반복해 셉니다.

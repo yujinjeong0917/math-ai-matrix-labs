@@ -1,5 +1,19 @@
 # 9장 · 새 모델은 몇 건을 보고 나서 전체로 바꿔야 할까요?
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [새 모델은 몇 건을 보고 나서 전체로 바꿔야 할까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/09-canary-rollback.html)
+
+```bash
+cd aws/ch09_canary_rollback
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `canary_sim.py` | 새 모델을 천천히 바꿀 때 필요한 표본 수·경보 기준·겹쳐 켜 두는 시간을 계산한다. |
+<!-- sync:end -->
+
 새 모델을 일부 요청에만 먼저 보낼 때 필요한 노출 건수, 경보 기준의 오경보·감지 확률, 두 묶음이 함께 켜지는 시간을 계산합니다. AWS 계정과 비용이 드는 리소스는 만들지 않아요. 가격은 다루지 않습니다.
 
 ## 실행

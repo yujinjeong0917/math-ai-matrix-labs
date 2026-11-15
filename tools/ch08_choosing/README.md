@@ -1,5 +1,23 @@
 # 8장. 도구를 무엇으로 고를까 (`ch08_choosing`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [8장 도구 고르는 기준](https://math-ai-matrix-pi.vercel.app/tracks/tools/08-choosing.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch08_choosing
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 8장 실험. `uv run python tools/ch08_choosing/experiments.py` 로 실행한다. |
+| `tools_ch08_checklist.py` | 도구 선택 점검표. 팀의 조건으로 후보 구성마다 질문 10개를 판정한다. |
+| `tools_ch08_cost.py` | 1~7장 결과를 한 달 비용 표로 모은다. |
+| `tools_ch08_data.py` | AI 도구 실전 8장 데이터: 약관 표, 앞 장 결과 스냅숏, 이번 주 문의 장난감. |
+| `tools_ch08_injection.py` | 프롬프트 주입 장난감 2판. 5장 장난감을 이어받아 방어를 겹겹이 쌓는다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/08-choosing.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")의 마지막 장이다. 1~5장에서 붙인 도구를 놓고 비용, 데이터 처리 약관, 프롬프트 주입 세 갈래로 고르는 기준을 세우고, 질문 10개짜리 점검표로 후보 구성 4개를 판정한다. 네트워크·API 키 없이 재현한다.

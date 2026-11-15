@@ -1,5 +1,19 @@
 # 11장. 얼마를 쌓아 둘까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [재고는 얼마나 쌓아 둬야 품절도 폐기도 줄일 수 있을까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/11-inventory-eoq-newsvendor.html)
+
+```bash
+cd or/ch11_inventory
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `inventory.py` | 11장. 얼마를 쌓아 둘까. EOQ, 뉴스벤더(단일 시즌 발주), 안전재고. 모든 숫자는 학습용 가상값. |
+<!-- sync:end -->
+
 가상 숫자로 세 가지를 계산하고 전수 탐색·시뮬레이션과 대조합니다.
 
 1. EOQ(경제적 주문량): 연 수요 2,400개, 주문 1회 30,000원, 개당 연 보관비 1,200원

@@ -1,5 +1,19 @@
 # 9장. 도구변수와 LATE
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [쿠폰 알림을 도구로 쓰면 쿠폰의 진짜 효과를 가려낼 수 있을까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/09-instrumental-variables.html)
+
+```bash
+cd causal/ch09_instrumental_variables
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `iv.py` | 9장 도구변수. 표준 라이브러리만 쓴다. 가상 온라인 마켓의 장난감 데이터. |
+<!-- sync:end -->
+
 쿠폰 알림(무작위 권유)을 도구로 써서 쿠폰 사용의 효과를 추정합니다. 쿠폰을 쓴 사람과 안 쓴 사람의 단순 비교, Wald 추정량(알림이 지출을 바꾼 정도 ÷ 알림이 쿠폰 사용을 바꾼 정도), 첫 단계 F, 약한 도구에서 추정값이 흩어지는 정도, 배제제약을 어겼을 때의 편향을 같은 장난감 데이터에서 잽니다. 진짜 효과를 아는 가상 데이터라 맞는 장면과 틀리는 장면을 함께 봅니다.
 
 ## 실행

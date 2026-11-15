@@ -1,5 +1,19 @@
 # 10장. 이용률을 올리면 왜 대기가 폭증할까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [이용률을 올리면 왜 대기가 폭증할까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/10-queueing-utilization.html)
+
+```bash
+cd or/ch10_queueing
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `queueing.py` | 10장. 이용률과 대기. 상담원 1명이 문의를 선착순으로 처리하는 M/M/1 모형(가상 숫자). |
+<!-- sync:end -->
+
 상담원 1명, 평균 처리 5분, 도착이 무작위인 M/M/1 모형의 공식값과 Lindley 점화식 시뮬레이션(seed=7, 20만 건)을 대조합니다. 평균 체류 시간이 목표를 지켜도 30분을 넘기는 고객이 얼마나 되는지, 처리 시간이 일정할 때 대기가 절반이 되는 이유(Pollaczek-Khinchine 식)도 봅니다. 숫자는 학습용 가상값입니다.
 
 ```bash

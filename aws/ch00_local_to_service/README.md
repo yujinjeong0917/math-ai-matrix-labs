@@ -1,5 +1,19 @@
 # 0장 · 로컬 모델이 서비스가 되려면 무엇이 더 필요한가
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [내 노트북에서 잘 돌던 모델이 서비스가 되려면 무엇이 더 필요할까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/00-local-to-service.html)
+
+```bash
+cd aws/ch00_local_to_service
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `service_gap.py` | 로컬 모델이 서비스가 되기 전에 비어 있는 항목을 찾는다. AWS 호출 없음, 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 노트북에서 돌던 모델에 하루 20건과 2만 건이 들어올 때 얼마나 많은 작업이 겹치는지 재고, 서비스로 내놓기 전에 답해야 할 여덟 물음 중 비어 있는 것을 찾습니다. AWS 계정과 네트워크는 쓰지 않아요.
 
 ## 실행

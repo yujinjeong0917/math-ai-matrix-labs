@@ -1,5 +1,19 @@
 # 5장. 정수계획: 상담원 1.6명을 배치하라는 해, 그대로 써도 될까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [상담원 1.6명을 배치하라는 해, 그대로 써도 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/05-integer-programming.html)
+
+```bash
+cd or/ch05_integer_programming
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `integer_programming.py` | 5장. 상담 인력 배치: LP 완화, 분기한정, 전수 탐색 대조. |
+<!-- sync:end -->
+
 무엇을 재나: 가상의 상담 인력 배치(정규·시간제)에서 LP 완화 해, 반올림 해, 분기한정 해, 전수 탐색 해를 같은 문제에서 대조한다. 계수는 모두 예시용 가상값이다.
 
 실행(이 폴더 안에서):

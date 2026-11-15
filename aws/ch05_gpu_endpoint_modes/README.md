@@ -1,5 +1,19 @@
 # 5장 · GPU 엔드포인트는 언제 켜 둘 가치가 있나
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [GPU 엔드포인트는 언제 켜 둘 가치가 있나요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/05-gpu-endpoint-modes.html)
+
+```bash
+cd aws/ch05_gpu_endpoint_modes
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `endpoint_modes.py` | GPU 엔드포인트 세 방식(실시간·비동기·배치)을 AWS 계정 없이 계산으로 견주는 도구. |
+<!-- sync:end -->
+
 SageMaker 실시간·비동기·배치 세 방식을 "몇 대가 필요한가", "한도에 걸리는가", "0대에서 깨어나면 몇 초 늦는가"로 견주는 계산 실습입니다. AWS 계정이 없어도 돌고, AWS를 호출하지 않으며, 가격은 어디에도 넣지 않았어요.
 
 ## 실행

@@ -1,5 +1,19 @@
 # 3장 · 누가 무엇을 할 수 있나
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [누가 무엇을 할 수 있어야 할까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/03-iam-least-privilege.html)
+
+```bash
+cd aws/ch03_iam_least_privilege
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `policy_scan.py` | IAM 정책 JSON을 읽어 과한 권한을 찾는다. AWS 호출 없음, 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 IAM 정책 JSON을 읽어 `"*"` 권한, 서비스 전체 권한(`s3:*`), 모든 리소스(`"*"`), 어떤 역할이든 넘기는 `iam:PassRole`을 찾습니다. 또 "기본 거부, 명시적 Deny 우선" 규칙으로 요청 하나가 허용되는지 계산해요. AWS 계정은 쓰지 않아요.
 
 ## 실행

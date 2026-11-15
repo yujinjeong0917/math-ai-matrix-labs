@@ -1,5 +1,19 @@
 # 7장 · 고객 메시지나 주문 메모 안의 지시를 에이전트가 따르면 어떻게 되나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [고객 메시지나 주문 메모 안의 지시를 에이전트가 따르면 어떻게 되나요?](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/07-prompt-injection.html)
+
+```bash
+cd agent-build/ch07_prompt_injection
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `prompt_injection.py` | 7장 · 고객 메시지나 주문 메모 안의 "지시"를 에이전트가 따르면 어떻게 되나요? (방어·점검용 장난감) |
+<!-- sync:end -->
+
 방어·점검용 장난감이에요. 실제 서비스나 실제 모델을 건드리지 않고, 규칙표로 움직이는 가짜 에이전트만 써요. 가짜 에이전트는 "글에 지시처럼 들리는 말(`AGENT_CUES`)이 있고 글이 요구하는 동작이 있으면 따른다"는 약한 규칙 하나로 고정돼 있어요. 입력 20건(고객 메시지 8, 주문 메모 6, 택배 기록 6)을 방어 변형 5개에 넣고 무단 실행 건수를 세요. 표준 라이브러리만 쓰고 난수가 없어요.
 
 ## 실행

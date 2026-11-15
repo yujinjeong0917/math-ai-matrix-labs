@@ -1,5 +1,19 @@
 # 12장 · 고객이 쓴 문장을 로그에 얼마나 남겨도 될까요?
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [고객이 쓴 문장을 로그에 얼마나 남겨도 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/12-prompt-log-privacy.html)
+
+```bash
+cd aws/ch12_prompt_log_privacy
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `log_policy.py` | 프롬프트 로그의 마스킹과 보관 기간을 AWS 없이 점검한다. |
+<!-- sync:end -->
+
 정규식 4개로 만든 학습용 마스킹, CloudWatch Logs 보관 기간 허용 값 검사, 보관 기간별 저장량·최대 잔존 일수 계산, 로그 그룹 설정 점검을 AWS 없이 돌립니다.
 
 ## 실행

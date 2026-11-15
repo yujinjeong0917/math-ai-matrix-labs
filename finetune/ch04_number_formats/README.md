@@ -1,5 +1,21 @@
 # 4장. fp32, fp16, bf16: 숫자 형식이 학습을 망가뜨리는 순간 (`ch04_number_formats`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [4장 숫자 형식](https://math-ai-matrix-pi.vercel.app/tracks/finetune/04-number-formats.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch04_number_formats
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 4장 실험. `uv run python finetune/ch04_number_formats/experiments.py` 로 실행한다. |
+| `ft_ch04_formats.py` | fp32 · fp16 · bf16 숫자 형식을 표준 라이브러리만으로 재현한다. |
+| `ft_ch04_scaling.py` | 넘침·사라짐 재현, loss scaling, 동적 스케일러, fp32 주 가중치(master weights) 흉내. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/04-number-formats.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 작은 모델을 만든다)에서 학습 설정의 `fp16`·`bf16` 칸이 무엇을 바꾸는지, GPU 없이 표준 라이브러리로 재현한다.

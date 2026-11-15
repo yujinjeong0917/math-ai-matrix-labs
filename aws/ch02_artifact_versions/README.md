@@ -1,5 +1,19 @@
 # 2장 · 파일과 모델은 어디에 둘까
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [모델 파일과 실행 환경은 어디에 두고 어떻게 버전을 맞출까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/02-artifacts-s3-ecr.html)
+
+```bash
+cd aws/ch02_artifact_versions
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `artifact_rules.py` | 모델 파일(S3)과 컨테이너 이미지(ECR)의 버전 기록이 같은 릴리스를 가리키는지 검사한다. |
+<!-- sync:end -->
+
 릴리스 기록(`release_manifest.json`)이 모델 파일(S3)과 컨테이너 이미지(ECR)를 같은 버전으로 가리키는지 규칙 7개로 검사하고, S3에 버전을 쌓을 때의 저장량과 멀티파트 업로드 파트 수를 계산합니다. AWS 계정은 쓰지 않아요.
 
 ## 실행

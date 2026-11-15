@@ -1,5 +1,20 @@
 # 5장. GPU 메모리 계산: 7B 모델에는 몇 GB가 필요할까 (`ch05_gpu_memory`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [5장 GPU 메모리 계산](https://math-ai-matrix-pi.vercel.app/tracks/finetune/05-gpu-memory.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch05_gpu_memory
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 5장 실험. `uv run python finetune/ch05_gpu_memory/experiments.py` 로 실행한다. |
+| `ft_ch05_memory.py` | 5장 GPU 메모리 계산기. 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/05-gpu-memory.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 모델 만들기)에서, 공개 가중치 모델 하나(예: `Qwen/Qwen2.5-7B`, Apache-2.0, 추천이 아니라 예시)를 학습할 때 GPU 메모리가 어디에 얼마나 드는지 GPU·네트워크 없이 계산한다.

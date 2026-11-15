@@ -1,5 +1,22 @@
 # 6장. 세 도구를 무엇으로 잇나 (`ch06_connect`)
 
+<!-- sync:start -->
+> [협업 도구가 어긋날 때](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/productivity) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [6장 Figma·Notion·Sheets 사이, 무엇을 자동화할까](https://math-ai-matrix-pi.vercel.app/tracks/productivity/06-connect.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q productivity/ch06_connect
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 생산성 도구 6장 비교 실험. `OMP_NUM_THREADS=2 uv run python productivity/ch06_connect/experiments.py` 로 실행한다. |
+| `productivity_ch06_graph.py` | 6장 등록부를 방향 그래프로 본다: 노드 = 정보가 놓인 위치, 간선 = 원본 -> 참조 방향. |
+| `productivity_ch06_registry.py` | 생산성 도구 6장 데이터: 관통 프로젝트 "동네 스터디룸 예약"의 기준 원본 등록부, 1주 변경 이벤트 12개, 권한 표, 자동화 후보. |
+| `productivity_ch06_sim.py` | 6장 모형: 1주 변경 이벤트 12개를 다섯 가지 방식으로 세 도구에 넣고, 끝났을 때 다섯 가지를 센다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/productivity/06-connect.html`
 
 Figma·Notion·Google Sheets를 띄우지 않고, 관통 프로젝트(동네 스터디룸 예약)의 정보 항목 12개가 놓인 위치 34곳과

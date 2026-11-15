@@ -1,5 +1,19 @@
 # 8장. 교대 근무: 규칙과 희망을 같이 지키는 일정
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [교대 근무표는 규칙과 희망을 어떻게 같이 지킬까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/08-shift-scheduling.html)
+
+```bash
+cd or/ch08_shift_scheduling
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `shift_scheduling.py` | 8장. 교대 근무를 어떻게 짤까: 제약 프로그래밍의 생각을 작은 역추적 탐색으로 재현. |
+<!-- sync:end -->
+
 무엇을 재나: 4명, 7일, 낮 2명 + 야간 1명 교대표를 하드 제약(야간 후 휴식, 연속 근무 3일 이하, 주 6일 이하, 야간 2번 이하)과 휴무 희망 벌점으로 풀고, 가지치기 유무·독립 검사기·작은 크기 전수 탐색으로 대조한다. 숫자는 모두 예시용이다. 이 코드는 OR-Tools CP-SAT이 아니라, 제약 프로그래밍의 생각을 작게 재현한 역추적 탐색이다.
 
 실행(이 폴더 안에서):

@@ -1,5 +1,22 @@
 # 4장. 문서는 왜 서로 연결돼야 하나 (`ch04_notion_relations`)
 
+<!-- sync:start -->
+> [협업 도구가 어긋날 때](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/productivity) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [4장 “왜 이렇게 정했지?”를 나중에도 찾으려면](https://math-ai-matrix-pi.vercel.app/tracks/productivity/04-notion-relations.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q productivity/ch04_notion_relations
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 생산성 도구 4장 비교 실험. `uv run python productivity/ch04_notion_relations/experiments.py` 로 실행한다. |
+| `productivity_ch04_data.py` | 생산성 도구 4장 데이터: 관통 프로젝트 "동네 스터디룸 예약"의 결정 10개, 할 일 20개, 스펙 4개(합성). |
+| `productivity_ch04_pages.py` | 생산성 도구 4장: 일반 페이지 방식(관계 없음)과 찾는 사람의 규칙. |
+| `productivity_ch04_relational.py` | 생산성 도구 4장: 관계형 방식(Notion 데이터베이스의 relation·rollup을 흉내 낸 표). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/productivity/04-notion-relations.html`
 
 Notion을 띄우지 않고, 관통 프로젝트의 결정 10개·할 일 20개·스펙 4개를 두 가지로 만든 파이썬 모형에서 재현한다.

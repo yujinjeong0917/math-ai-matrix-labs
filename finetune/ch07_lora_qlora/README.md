@@ -1,5 +1,20 @@
 # 7장. LoRA와 QLoRA: 전체 대신 작은 행렬만 학습하기 (`ch07_lora_qlora`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [7장 LoRA와 QLoRA](https://math-ai-matrix-pi.vercel.app/tracks/finetune/07-lora-qlora.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch07_lora_qlora
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 내 데이터로 LLM 파인튜닝하기 7장 실험. `uv run python finetune/ch07_lora_qlora/experiments.py` 로 실행한다. |
+| `ft_ch07_lora.py` | 7장 LoRA와 QLoRA 계산기. 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/07-lora-qlora.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 우리 말투로 쓰는 모델 만들기)에서, 5장의 예시 모델 `Qwen/Qwen2.5-7B`(추천이 아니라 예시)에 LoRA를 붙일 때 학습하는 숫자가 몇 개이고 메모리가 얼마인지, QLoRA로 4비트에 얼리면 5장의 "4.28GB + α"가 실제로 얼마가 되는지 GPU·네트워크 없이 계산한다.

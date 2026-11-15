@@ -1,5 +1,21 @@
 # 8장. 첫 출시 플랫폼 고르기: iOS, 안드로이드, 웹 (`ch08_platform_choice`)
 
+<!-- sync:start -->
+> [1인 개발 앱 출시 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/webapp) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [8장 플랫폼 고르기](https://math-ai-matrix-pi.vercel.app/tracks/webapp/08-platform-choice.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q webapp/ch08_platform_choice
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 1인 개발 앱 출시 실전 8장 실험. `uv run python webapp/ch08_platform_choice/experiments.py` 로 실행한다. |
+| `webapp_ch08_fees.py` | 월 매출 가정에서 스토어 수수료와 웹 결제(PG) 수수료를 비교하는 계산기 (1인 개발 앱 출시 실전 8장). |
+| `webapp_ch08_select.py` | 첫 출시 플랫폼 후보를 '조건 충족 목록'으로 내는 선택 도구 (1인 개발 앱 출시 실전 8장). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/webapp/08-platform-choice.html`
 
 7장에서는 행사장 태블릿을 우리가 골라서 APK로 충분했다. 이번에는 손님 휴대폰처럼 기기를 고를 수 없을 때, 관통 프로젝트(카드뉴스 편집기)의 첫 출시를 웹·안드로이드·iOS 중 어디로 할지 따진다.

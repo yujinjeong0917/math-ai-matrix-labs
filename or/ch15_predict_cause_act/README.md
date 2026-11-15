@@ -1,5 +1,19 @@
 # 15장. 구매를 잘 맞히는 예측으로 광고 예산을 정해도 될까요?
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [구매를 잘 맞히는 예측으로 광고 예산을 정해도 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/15-predict-cause-act.html)
+
+```bash
+cd or/ch15_predict_cause_act
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `loop.py` | 15장: 예측 -> 증분효과 -> 행동 -> 측정. 관찰 ROAS 순서와 증분 ROAS 순서가 갈리는 가상 시장. |
+<!-- sync:end -->
+
 가상 시장에서 예측(노출된 사람의 구매율) -> 증분효과(무작위 대조) -> 행동(예산 5천만원 배분) -> 측정(집행하며 10% 대조) 고리를 돌려, 관찰 ROAS 순서와 증분 ROAS 순서의 배분 결과를 비교한다. 돈 단위는 천원이고 모든 값은 학습용 가상값이다. 참 효과는 시뮬레이션이라 알 수 있다.
 
 ## 실행

@@ -1,5 +1,19 @@
 # 9장 · 문의 한 건을 처리하는 데 호출이 몇 번이고 사용자는 얼마나 기다리나요?
 
+<!-- sync:start -->
+> [에이전트 만들기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/agent-build) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [문의 한 건을 처리하는 데 호출이 몇 번이고 사용자는 얼마나 기다리나요?](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/09-cost-and-latency.html)
+
+```bash
+cd agent-build/ch09_cost_and_latency
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `cost_latency.py` | 9장: 문의 한 건의 호출 수, 입력 누적, 대기 시간을 센다. 전부 가상 값이고 단가는 입력 변수예요. |
+<!-- sync:end -->
+
 환불 문의 한 건을 에이전트가 처리할 때 모델 호출 수, 입력 토큰 누적, 대기 시간을 계산식으로 센다. 모든 입력값(시스템 프롬프트 길이, 도구 결과 길이, 도구 응답 시간, 모델 대기 시간 계수)은 `cost_latency.py` 위쪽의 가상 값이다. 단가는 코드에 고정하지 않고 `cost_units(결과, 입력 단가, 출력 단가)`에 부르는 쪽이 넣는다. 파이썬 표준 라이브러리만 쓰고 난수는 없다.
 
 ## 실행

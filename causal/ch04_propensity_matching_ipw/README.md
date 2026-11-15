@@ -1,5 +1,19 @@
 # 4장 실습. 성향점수·매칭·IPW
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [비슷한 고객끼리 비교하면 쿠폰 효과를 알 수 있을까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/04-propensity-matching-ipw.html)
+
+```bash
+cd causal/ch04_propensity_matching_ipw
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `propensity.py` | 4장 실습: 성향점수, 매칭, 역확률가중(IPW). 표준 라이브러리만 사용합니다. |
+<!-- sync:end -->
+
 웹 챕터: https://math-ai-matrix-pi.vercel.app/tracks/causal/04-propensity-matching-ipw.html
 
 가상 온라인 마켓에서 쿠폰이 구매 활동이 많은 고객에게 더 자주 갔을 때, 단순 비교·성향점수 IPW(역확률가중)·1:1 매칭이 진짜 효과 +8.0(천 원, 가상)을 얼마나 맞히는지 잽니다. 진짜 효과는 데이터를 만들 때 정해 두었으니 정답과 직접 비교할 수 있어요. 쿠폰이 상위 고객에게 거의 몰려 겹침이 무너진 장면도 같이 돌립니다.

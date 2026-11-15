@@ -1,5 +1,19 @@
 # 14장. 민감도, 위약검정, 외적타당도
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [이 결론은 보이지 않는 변수와 다른 지역에서도 버틸까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/14-sensitivity-placebo-external-validity.html)
+
+```bash
+cd causal/ch14_sensitivity_placebo
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `robustness.py` | 14장 실습: 민감도 분석, 위약검정, 외적타당도. 표준 라이브러리만 쓴다. |
+<!-- sync:end -->
+
 웹 챕터: `tracks/causal/14-sensitivity-placebo-external-validity.html`
 
 세 가지를 한 파일에서 재현합니다.

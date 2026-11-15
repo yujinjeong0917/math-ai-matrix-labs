@@ -1,5 +1,19 @@
 # 7장. 최대유량·최소절단: 병목 연결을 늘리면 흐름이 그만큼 늘어날까
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [병목 연결을 늘리면 흐름이 그만큼 늘어날까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/07-max-flow-min-cut.html)
+
+```bash
+cd or/ch07_max_flow_min_cut
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `max_flow.py` | 7장. 병목은 어느 연결인가: 최대유량·최소절단. |
+<!-- sync:end -->
+
 무엇을 재나: 6개 점, 8개 연결의 가상 주문 처리망에서 에드먼즈-카프 최대유량, 잔여 그래프의 최소절단, 모든 절단 열거, 연결 증설 효과를 확인한다. 용량 단위는 건/시간(가상)이다.
 
 실행(이 폴더 안에서):

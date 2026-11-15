@@ -1,5 +1,20 @@
 # 2장. Hugging Face 지도: Hub, transformers, datasets, PEFT, TRL은 각각 무엇을 하나 (`ch02_huggingface_map`)
 
+<!-- sync:start -->
+> [내 데이터로 LLM 파인튜닝하기](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/finetune) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [2장 Hugging Face 지도](https://math-ai-matrix-pi.vercel.app/tracks/finetune/02-huggingface-map.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q finetune/ch02_huggingface_map
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | 파인튜닝 트랙 2장 실험. `uv run python finetune/ch02_huggingface_map/experiments.py` 로 실행한다. |
+| `ft_ch02_hfmap.py` | 파인튜닝 트랙 2장: Hugging Face 저장소 파일을 네트워크 없이 읽는다. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/finetune/02-huggingface-map.html`
 
 관통 프로젝트(작은 팀이 고객 문의 답변 초안을 쓰는 작은 모델을 만드는 이야기)에서, 학습에 쓸 공개 모델 저장소를 열어 파일을 한 줄씩 읽는다. 네트워크 없이 `data/`에 넣어 둔 실제 파일(커밋 해시로 고정)과 직접 만든 예시 파일만 읽는다.

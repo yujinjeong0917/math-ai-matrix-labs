@@ -1,5 +1,22 @@
 # 5장. Notion·Figma를 AI와 이으면 무엇이 쉬워지고 무엇이 그대로일까 (`ch05_notion_figma`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [5장 Notion·Figma 잇기](https://math-ai-matrix-pi.vercel.app/tracks/tools/05-notion-figma.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch05_notion_figma
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 5장 실험. `uv run python tools/ch05_notion_figma/experiments.py` 로 실행한다. |
+| `tools_ch05_data.py` | AI 도구 실전 5장: Notion 문의 데이터베이스와 Figma 화면 문구를 흉내 낸 로컬 데이터. |
+| `tools_ch05_mcp.py` | AI 도구 실전 5장: MCP 모양의 도구 서버 흉내 (프로세스 안에서만 돈다, 네트워크 없음). |
+| `tools_ch05_roundtrip.py` | AI 도구 실전 5장: "이번 주 문의 요약 -> 화면 문구 점검" 왕복과 프롬프트 주입 장난감. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/05-notion-figma.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")에서, 고객 문의는 Notion 데이터베이스에, 앱 화면 문구는 Figma 파일에 있다고 두고 "이번 주 문의 요약 → 고객이 인용한 화면 문구 점검" 왕복을 네트워크·API 키 없이 재현한다.

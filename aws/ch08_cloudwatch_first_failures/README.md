@@ -1,5 +1,19 @@
 # 8장 · CloudWatch에서 어떤 실패를 먼저 봐야 하나
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [CloudWatch에서 어떤 실패를 먼저 봐야 하나요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/08-cloudwatch-first-failures.html)
+
+```bash
+cd aws/ch08_cloudwatch_first_failures
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `alarm_check.py` | CloudWatch 경보가 지표 값열을 보고 언제 울리는지 AWS 없이 따라가 보는 검사기. |
+<!-- sync:end -->
+
 지표 값열(1분마다 한 값)을 경보 규칙으로 따라가며 어떤 경보가 몇 분째에 먼저 울리는지, 누락 데이터 처리 방식이 상태를 어떻게 바꾸는지, 마이크로초·밀리초 단위 착각이 어떻게 항상 울리는 경보를 만드는지 AWS 없이 확인합니다.
 
 ## 실행

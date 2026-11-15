@@ -1,5 +1,19 @@
 # 7장 · API Gateway·인증·사용량 제한을 어디에 둘까
 
+<!-- sync:start -->
+> [AWS 배포·운영](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/aws) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [API Gateway·인증·사용량 제한을 어디에 둘까요?](https://math-ai-matrix-pi.vercel.app/tracks/aws/07-api-gateway-auth-throttle.html)
+
+```bash
+cd aws/ch07_gateway_auth_throttle
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `gateway_throttle.py` | API Gateway의 토큰 버킷 제한과 재시도를 AWS 없이 흉내 내는 계산기. |
+<!-- sync:end -->
+
 토큰 버킷(초당 채워지는 토큰과 최대 버킷 크기로 요청을 받는 방식) 제한이 몇 건을 받고 몇 건에 429를 돌려주는지, 클라이언트가 재시도하면 요청이 몇 번으로 불어나는지, 30초짜리 모델이 동기 API 입구를 통과하는지 AWS 없이 계산합니다.
 
 ## 실행

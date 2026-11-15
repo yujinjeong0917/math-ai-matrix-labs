@@ -1,5 +1,25 @@
 # 3장. 모델은 왜 내 파일을 못 볼까, 도구마다 따로 이으면 무엇이 터질까 (`ch03_tools_mcp`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [3장 도구 호출·MCP](https://math-ai-matrix-pi.vercel.app/tracks/tools/03-tools-mcp.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch03_tools_mcp
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 3장 실험. `uv run python tools/ch03_tools_mcp/experiments.py` 로 실행한다. |
+| `tools_ch03_client.py` | AI 도구 실전 3장: 표준 라이브러리로 만든 아주 작은 MCP 클라이언트(stdio). |
+| `tools_ch03_config.py` | AI 도구 실전 3장: MCP 설정 JSON(mcpServers 블록) 읽기. |
+| `tools_ch03_count.py` | AI 도구 실전 3장: 앱 N개와 도구 M개를 잇는 연결 수. |
+| `tools_ch03_data.py` | AI 도구 실전 3장: 관통 프로젝트의 문의 데이터(가상). |
+| `tools_ch03_loop.py` | AI 도구 실전 3장: 도구 호출 고리(tool-use loop)와 관통 프로젝트 계산. |
+| `tools_ch03_server.py` | AI 도구 실전 3장: 표준 라이브러리로 만든 아주 작은 MCP 서버(stdio). |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/03-tools-mcp.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")에서, 2장까지 사람이 매주 복사해 붙여 넣던 문의 120건을 모델이 도구로 직접 읽게 바꾼다. 네트워크·API 키 없이, 표준 라이브러리 파이썬만으로 재현한다.

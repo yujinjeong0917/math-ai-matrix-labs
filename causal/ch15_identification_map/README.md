@@ -1,5 +1,19 @@
 # 15장. 내 데이터 구조에는 무엇을 써야 하나
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [내 데이터 구조에는 어떤 방법을 써야 할까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/15-identification-map.html)
+
+```bash
+cd causal/ch15_identification_map
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `id_map.py` | 15장 실습: 식별 전략 선택 지도. 같은 데이터에 방법을 바꿔 대 보고, 데이터 구조에서 후보를 고른다. |
+<!-- sync:end -->
+
 웹 챕터: `tracks/causal/15-identification-map.html`
 
 두 가지를 합니다.

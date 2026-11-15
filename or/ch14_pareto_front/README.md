@@ -1,5 +1,19 @@
 # 14장. 비용과 지역 간 공정성을 가중치 하나로 합쳐도 될까요?
 
+<!-- sync:start -->
+> [경영과학](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/or) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [비용과 지역 간 공정성을 가중치 하나로 합쳐도 될까요?](https://math-ai-matrix-pi.vercel.app/tracks/or/14-pareto-front.html)
+
+```bash
+cd or/ch14_pareto_front
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `pareto_front.py` | 14장: 배송 속도 개선 인력을 세 지역에 나눌 때 비용과 지역 간 격차 중 무엇을 줄일까. |
+<!-- sync:end -->
+
 세 지역(A·B·C)에 배송 인력을 0~6명 배치하는 343개 경우를 모두 나열해 총비용과 가장 느린 지역의 배송일로 파레토 전선(15개)을 만들고, 가중합이 뽑는 점(8개)과 못 뽑는 점(7개), ε-제약이 찾는 점을 비교한다. 모든 값은 학습용 가상값이다.
 
 ## 실행

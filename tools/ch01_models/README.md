@@ -1,5 +1,21 @@
 # 1장. 같은 질문인데 왜 모델마다 답과 값이 다를까 (`ch01_models`)
 
+<!-- sync:start -->
+> [AI 도구 실전](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/tools) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [1장 모델 고르기](https://math-ai-matrix-pi.vercel.app/tracks/tools/01-models.html)
+
+```bash
+uv sync   # 저장소 루트에서 한 번
+uv run pytest -q tools/ch01_models
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `experiments.py` | AI 도구 실전 1장 실험. `uv run python tools/ch01_models/experiments.py` 로 실행한다. |
+| `tools_ch01_answers.py` | AI 도구 실전 1장: 같은 질문에 답이 갈리는 이유를 숫자로 흉내 낸다. |
+| `tools_ch01_cost.py` | AI 도구 실전 1장: 모델 비교표 읽기와 "우리 일에 드는 한 달 비용" 계산기. |
+<!-- sync:end -->
+
 웹 챕터: `math-ai-matrix/tracks/tools/01-models.html`
 
 관통 프로젝트(가상의 작은 팀이 만드는 "주간 고객 문의 요약 보고서")의 첫 단계다. Claude·GPT·Gemini·DeepSeek·Grok의 공식 문서를 2026-10-10에 읽고 옮긴 비교표로, 같은 일(한 번에 입력 32,150토큰, 출력 700토큰, 한 주 12번)을 맡길 때 한 달에 얼마가 드는지 네트워크·API 키 없이 계산한다.

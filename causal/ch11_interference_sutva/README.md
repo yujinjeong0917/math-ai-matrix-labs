@@ -1,5 +1,19 @@
 # 11장. 간섭과 SUTVA
 
+<!-- sync:start -->
+> [인과추론](https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal) 트랙 · 전체 목차는 [저장소 README](https://github.com/yujinjeong0917/math-ai-matrix-labs)
+> 웹 챕터: [내 쿠폰이 이웃의 지출까지 바꾸면 A/B 테스트는 무엇을 재고 있을까요?](https://math-ai-matrix-pi.vercel.app/tracks/causal/11-interference-sutva.html)
+
+```bash
+cd causal/ch11_interference_sutva
+python3 -m unittest -q   # 표준 라이브러리만 사용
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `interference.py` | 11장 간섭과 SUTVA. 표준 라이브러리만 쓴다. 가상 온라인 마켓: 친구 초대 쿠폰. |
+<!-- sync:end -->
+
 1000명(커뮤니티 20개 x 50명)의 가상 친구 네트워크에서, 내 쿠폰이 이웃 지출에 번지는 정도(gamma)를 0, +4, -4로 바꿔 가며 개인 단위 무작위 A/B와 커뮤니티 단위 무작위의 추정값을 '전원 처치 대 전원 미처치'의 진짜 효과와 비교합니다.
 
 ## 실행

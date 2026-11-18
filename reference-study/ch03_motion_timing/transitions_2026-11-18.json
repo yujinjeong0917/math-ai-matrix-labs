@@ -1,0 +1,82 @@
+{
+  "source": "math-ai-matrix/assets/site.css (2026-11-18 열람). 화면 녹화가 아니라 CSS에 적힌 값이다.",
+  "transitions": [
+    {
+      "line": 170,
+      "selector": ".btn",
+      "property": "transform",
+      "seconds": 0.12,
+      "easing": "ease",
+      "pressed": "transform: scale(0.95)",
+      "reduced_motion": "transition: none"
+    },
+    {
+      "line": 185,
+      "selector": ".pill",
+      "property": "transform",
+      "seconds": 0.12,
+      "easing": "ease",
+      "pressed": "transform: scale(0.95)",
+      "reduced_motion": null
+    },
+    {
+      "line": 207,
+      "selector": "a.card",
+      "property": "transform",
+      "seconds": 0.12,
+      "easing": "ease",
+      "pressed": "transform: scale(0.98)",
+      "reduced_motion": null
+    },
+    {
+      "line": 257,
+      "selector": ".gnav__theme, .gnav__burger",
+      "property": "transform",
+      "seconds": 0.12,
+      "easing": "ease",
+      "pressed": "transform: scale(0.95)",
+      "reduced_motion": null
+    },
+    {
+      "line": 308,
+      "selector": ".gnav__chev",
+      "property": "transform",
+      "seconds": 0.2,
+      "easing": "ease",
+      "pressed": "rotate(180deg) when aria-expanded=true",
+      "reduced_motion": "transition: none"
+    },
+    {
+      "line": 496,
+      "selector": ".mx-page .chip-card",
+      "property": "transform",
+      "seconds": 0.12,
+      "easing": "ease",
+      "pressed": "transform: scale(0.98) (.mx-page a.chip-card:active)",
+      "reduced_motion": "transition: none"
+    },
+    {
+      "line": 613,
+      "selector": ".mx-page .hero-action",
+      "property": "transform",
+      "seconds": 0.12,
+      "easing": "ease",
+      "pressed": "transform: scale(0.95)",
+      "reduced_motion": null
+    }
+  ],
+  "checked_elsewhere": {
+    "note": "2026-11-18에 파일을 열어 transition, @keyframes, animation 글자를 직접 찾은 결과. 코드가 아니라 손으로 찾은 값이다.",
+    "files": [
+      "index.html(인라인 style)",
+      "tracks/index.html(인라인 style)",
+      "tracks/causal/06-difference-in-differences.html(인라인 style)",
+      "assets/anim.css",
+      "assets/anim.js",
+      "assets/nav.js"
+    ],
+    "inline_transition_rules": 0,
+    "keyframes_or_animation": 0,
+    "site_css_keyframes_or_animation": 0
+  }
+}

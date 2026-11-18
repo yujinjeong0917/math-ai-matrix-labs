@@ -1,0 +1,1650 @@
+{
+ "source": "math-ai-matrix 의 세 화면 파일에서 <main> 안 <a href> 를 일회성 스크립트로 뽑은 스냅샷(2026-11-18). 전역 메뉴(header)와 푸터는 <main> 밖이라 넣지 않았다.",
+ "date": "2026-11-18",
+ "origin": "https://math-ai-matrix-pi.vercel.app",
+ "kinds": {
+  "same_page": "같은 쪽 안으로 가는 # 링크",
+  "external": "사이트 밖 링크",
+  "internal": "사이트 안 다른 쪽(또는 파일)으로 가는 링크",
+  "other": "mailto 등"
+ },
+ "screens": {
+  "home": {
+   "file": "index.html",
+   "page": "/",
+   "sha256": "4073a975638d0e1312a676b2725c2b7fc29399adf138c613a7de612d324b4103",
+   "bytes": 31777,
+   "file_wide_chapter_hrefs": [],
+   "links": [
+    {
+     "href": "/matrix/",
+     "kind": "internal",
+     "resolved": "/matrix/"
+    },
+    {
+     "href": "/tracks/",
+     "kind": "internal",
+     "resolved": "/tracks/"
+    },
+    {
+     "href": "/foundations/",
+     "kind": "internal",
+     "resolved": "/foundations/"
+    },
+    {
+     "href": "/guide/",
+     "kind": "internal",
+     "resolved": "/guide/"
+    },
+    {
+     "href": "/tracks/#math",
+     "kind": "internal",
+     "resolved": "/tracks/#math"
+    },
+    {
+     "href": "/matrix/",
+     "kind": "internal",
+     "resolved": "/matrix/"
+    },
+    {
+     "href": "/advanced/",
+     "kind": "internal",
+     "resolved": "/advanced/"
+    },
+    {
+     "href": "/tracks/#llm",
+     "kind": "internal",
+     "resolved": "/tracks/#llm"
+    },
+    {
+     "href": "/tracks/#finetune",
+     "kind": "internal",
+     "resolved": "/tracks/#finetune"
+    },
+    {
+     "href": "/tracks/#rl",
+     "kind": "internal",
+     "resolved": "/tracks/#rl"
+    },
+    {
+     "href": "/tracks/#algorithms",
+     "kind": "internal",
+     "resolved": "/tracks/#algorithms"
+    },
+    {
+     "href": "/architectures/",
+     "kind": "internal",
+     "resolved": "/architectures/"
+    },
+    {
+     "href": "/llm/",
+     "kind": "internal",
+     "resolved": "/llm/"
+    },
+    {
+     "href": "/agents/",
+     "kind": "internal",
+     "resolved": "/agents/"
+    },
+    {
+     "href": "/recsys/",
+     "kind": "internal",
+     "resolved": "/recsys/"
+    },
+    {
+     "href": "/tracks/#evaluation",
+     "kind": "internal",
+     "resolved": "/tracks/#evaluation"
+    },
+    {
+     "href": "/tracks/#aws",
+     "kind": "internal",
+     "resolved": "/tracks/#aws"
+    },
+    {
+     "href": "/tracks/#pipelines",
+     "kind": "internal",
+     "resolved": "/tracks/#pipelines"
+    },
+    {
+     "href": "/evaluation/",
+     "kind": "internal",
+     "resolved": "/evaluation/"
+    },
+    {
+     "href": "/xai/",
+     "kind": "internal",
+     "resolved": "/xai/"
+    },
+    {
+     "href": "/mlops/",
+     "kind": "internal",
+     "resolved": "/mlops/"
+    },
+    {
+     "href": "/tracks/#work-ai",
+     "kind": "internal",
+     "resolved": "/tracks/#work-ai"
+    },
+    {
+     "href": "/tracks/#tools",
+     "kind": "internal",
+     "resolved": "/tracks/#tools"
+    },
+    {
+     "href": "/tracks/#webapp",
+     "kind": "internal",
+     "resolved": "/tracks/#webapp"
+    },
+    {
+     "href": "/tracks/#productivity",
+     "kind": "internal",
+     "resolved": "/tracks/#productivity"
+    },
+    {
+     "href": "/tracks/#waiting-ux",
+     "kind": "internal",
+     "resolved": "/tracks/#waiting-ux"
+    },
+    {
+     "href": "/tracks/#reference-study",
+     "kind": "internal",
+     "resolved": "/tracks/#reference-study"
+    },
+    {
+     "href": "/work-ai/",
+     "kind": "internal",
+     "resolved": "/work-ai/"
+    },
+    {
+     "href": "/product/",
+     "kind": "internal",
+     "resolved": "/product/"
+    },
+    {
+     "href": "/marketing/",
+     "kind": "internal",
+     "resolved": "/marketing/"
+    },
+    {
+     "href": "/process-mining/",
+     "kind": "internal",
+     "resolved": "/process-mining/"
+    },
+    {
+     "href": "/concepts/pca/",
+     "kind": "internal",
+     "resolved": "/concepts/pca/"
+    },
+    {
+     "href": "/concepts/gradient-descent/",
+     "kind": "internal",
+     "resolved": "/concepts/gradient-descent/"
+    },
+    {
+     "href": "/concepts/backprop/",
+     "kind": "internal",
+     "resolved": "/concepts/backprop/"
+    },
+    {
+     "href": "/concepts/bayes-theorem/",
+     "kind": "internal",
+     "resolved": "/concepts/bayes-theorem/"
+    },
+    {
+     "href": "/concepts/kl-divergence/",
+     "kind": "internal",
+     "resolved": "/concepts/kl-divergence/"
+    },
+    {
+     "href": "/concepts/condition-number/",
+     "kind": "internal",
+     "resolved": "/concepts/condition-number/"
+    },
+    {
+     "href": "/concepts/transformer-2017/",
+     "kind": "internal",
+     "resolved": "/concepts/transformer-2017/"
+    },
+    {
+     "href": "/concepts/chain-of-thought/",
+     "kind": "internal",
+     "resolved": "/concepts/chain-of-thought/"
+    },
+    {
+     "href": "/concepts/lora-peft/",
+     "kind": "internal",
+     "resolved": "/concepts/lora-peft/"
+    },
+    {
+     "href": "/concepts/rlhf/",
+     "kind": "internal",
+     "resolved": "/concepts/rlhf/"
+    },
+    {
+     "href": "/concepts/matrix-factorization/",
+     "kind": "internal",
+     "resolved": "/concepts/matrix-factorization/"
+    },
+    {
+     "href": "/concepts/two-tower-model/",
+     "kind": "internal",
+     "resolved": "/concepts/two-tower-model/"
+    },
+    {
+     "href": "/concepts/eval-mae-rmse/",
+     "kind": "internal",
+     "resolved": "/concepts/eval-mae-rmse/"
+    },
+    {
+     "href": "/concepts/shap-value/",
+     "kind": "internal",
+     "resolved": "/concepts/shap-value/"
+    },
+    {
+     "href": "/concepts/lime/",
+     "kind": "internal",
+     "resolved": "/concepts/lime/"
+    },
+    {
+     "href": "/concepts/data-drift/",
+     "kind": "internal",
+     "resolved": "/concepts/data-drift/"
+    },
+    {
+     "href": "/concepts/aws-lambda/",
+     "kind": "internal",
+     "resolved": "/concepts/aws-lambda/"
+    },
+    {
+     "href": "/concepts/srm-sample-ratio-mismatch/",
+     "kind": "internal",
+     "resolved": "/concepts/srm-sample-ratio-mismatch/"
+    },
+    {
+     "href": "/concepts/north-star-metric/",
+     "kind": "internal",
+     "resolved": "/concepts/north-star-metric/"
+    },
+    {
+     "href": "/concepts/mmm-marketing-mix-model/",
+     "kind": "internal",
+     "resolved": "/concepts/mmm-marketing-mix-model/"
+    },
+    {
+     "href": "/concepts/adstock/",
+     "kind": "internal",
+     "resolved": "/concepts/adstock/"
+    },
+    {
+     "href": "/concepts/alpha-algorithm/",
+     "kind": "internal",
+     "resolved": "/concepts/alpha-algorithm/"
+    },
+    {
+     "href": "/matrix/",
+     "kind": "internal",
+     "resolved": "/matrix/"
+    },
+    {
+     "href": "/advanced/",
+     "kind": "internal",
+     "resolved": "/advanced/"
+    },
+    {
+     "href": "/architectures/",
+     "kind": "internal",
+     "resolved": "/architectures/"
+    },
+    {
+     "href": "/llm/",
+     "kind": "internal",
+     "resolved": "/llm/"
+    },
+    {
+     "href": "/agents/",
+     "kind": "internal",
+     "resolved": "/agents/"
+    },
+    {
+     "href": "/recsys/",
+     "kind": "internal",
+     "resolved": "/recsys/"
+    },
+    {
+     "href": "/evaluation/",
+     "kind": "internal",
+     "resolved": "/evaluation/"
+    },
+    {
+     "href": "/xai/",
+     "kind": "internal",
+     "resolved": "/xai/"
+    },
+    {
+     "href": "/mlops/",
+     "kind": "internal",
+     "resolved": "/mlops/"
+    },
+    {
+     "href": "/product/",
+     "kind": "internal",
+     "resolved": "/product/"
+    },
+    {
+     "href": "/marketing/",
+     "kind": "internal",
+     "resolved": "/marketing/"
+    },
+    {
+     "href": "/process-mining/",
+     "kind": "internal",
+     "resolved": "/process-mining/"
+    },
+    {
+     "href": "/foundations/",
+     "kind": "internal",
+     "resolved": "/foundations/"
+    },
+    {
+     "href": "/concepts/clt/",
+     "kind": "internal",
+     "resolved": "/concepts/clt/"
+    }
+   ]
+  },
+  "tracks": {
+   "file": "tracks/index.html",
+   "page": "/tracks/",
+   "sha256": "57fd80928f25cd756547e3245463e0b192e3a10dfc4664f079c12a8c0efff366",
+   "bytes": 69426,
+   "file_wide_chapter_hrefs": [],
+   "links": [
+    {
+     "href": "/",
+     "kind": "internal",
+     "resolved": "/"
+    },
+    {
+     "href": "#math",
+     "kind": "same_page",
+     "resolved": "/tracks/#math"
+    },
+    {
+     "href": "#llm",
+     "kind": "same_page",
+     "resolved": "/tracks/#llm"
+    },
+    {
+     "href": "#finetune",
+     "kind": "same_page",
+     "resolved": "/tracks/#finetune"
+    },
+    {
+     "href": "#aws",
+     "kind": "same_page",
+     "resolved": "/tracks/#aws"
+    },
+    {
+     "href": "#evaluation",
+     "kind": "same_page",
+     "resolved": "/tracks/#evaluation"
+    },
+    {
+     "href": "#or",
+     "kind": "same_page",
+     "resolved": "/tracks/#or"
+    },
+    {
+     "href": "#causal",
+     "kind": "same_page",
+     "resolved": "/tracks/#causal"
+    },
+    {
+     "href": "#rl",
+     "kind": "same_page",
+     "resolved": "/tracks/#rl"
+    },
+    {
+     "href": "#algorithms",
+     "kind": "same_page",
+     "resolved": "/tracks/#algorithms"
+    },
+    {
+     "href": "#pipelines",
+     "kind": "same_page",
+     "resolved": "/tracks/#pipelines"
+    },
+    {
+     "href": "#work-ai",
+     "kind": "same_page",
+     "resolved": "/tracks/#work-ai"
+    },
+    {
+     "href": "#tools",
+     "kind": "same_page",
+     "resolved": "/tracks/#tools"
+    },
+    {
+     "href": "#webapp",
+     "kind": "same_page",
+     "resolved": "/tracks/#webapp"
+    },
+    {
+     "href": "#productivity",
+     "kind": "same_page",
+     "resolved": "/tracks/#productivity"
+    },
+    {
+     "href": "#agent-build",
+     "kind": "same_page",
+     "resolved": "/tracks/#agent-build"
+    },
+    {
+     "href": "#waiting-ux",
+     "kind": "same_page",
+     "resolved": "/tracks/#waiting-ux"
+    },
+    {
+     "href": "#reference-study",
+     "kind": "same_page",
+     "resolved": "/tracks/#reference-study"
+    },
+    {
+     "href": "math/00-reading-formulas.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/00-reading-formulas.html"
+    },
+    {
+     "href": "math/05-derivatives.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/05-derivatives.html"
+    },
+    {
+     "href": "/concepts/linear-regression-normal-equation/",
+     "kind": "internal",
+     "resolved": "/concepts/linear-regression-normal-equation/"
+    },
+    {
+     "href": "/architectures/transformer-walkthrough.html",
+     "kind": "internal",
+     "resolved": "/architectures/transformer-walkthrough.html"
+    },
+    {
+     "href": "#pipelines",
+     "kind": "same_page",
+     "resolved": "/tracks/#pipelines"
+    },
+    {
+     "href": "#work-ai",
+     "kind": "same_page",
+     "resolved": "/tracks/#work-ai"
+    },
+    {
+     "href": "/#g-math",
+     "kind": "internal",
+     "resolved": "/#g-math"
+    },
+    {
+     "href": "math/00-reading-formulas.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/00-reading-formulas.html"
+    },
+    {
+     "href": "math/01-vectors.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/01-vectors.html"
+    },
+    {
+     "href": "math/02-dot-product.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/02-dot-product.html"
+    },
+    {
+     "href": "math/03-matrices.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/03-matrices.html"
+    },
+    {
+     "href": "math/04-functions.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/04-functions.html"
+    },
+    {
+     "href": "math/05-derivatives.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/05-derivatives.html"
+    },
+    {
+     "href": "math/06-chain-rule.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/06-chain-rule.html"
+    },
+    {
+     "href": "math/07-gradients.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/07-gradients.html"
+    },
+    {
+     "href": "math/08-probability-expectation.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/08-probability-expectation.html"
+    },
+    {
+     "href": "math/09-variance-covariance.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/09-variance-covariance.html"
+    },
+    {
+     "href": "math/10-pca-eigenvectors.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/10-pca-eigenvectors.html"
+    },
+    {
+     "href": "math/11-svd.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/11-svd.html"
+    },
+    {
+     "href": "math/12-linear-model.html",
+     "kind": "internal",
+     "resolved": "/tracks/math/12-linear-model.html"
+    },
+    {
+     "href": "/#g-build",
+     "kind": "internal",
+     "resolved": "/#g-build"
+    },
+    {
+     "href": "llm/01-bigram.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/01-bigram.html"
+    },
+    {
+     "href": "llm/02-ngram.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/02-ngram.html"
+    },
+    {
+     "href": "llm/03-tokenizer.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/03-tokenizer.html"
+    },
+    {
+     "href": "llm/04-embedding-mlp.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/04-embedding-mlp.html"
+    },
+    {
+     "href": "llm/05-rnn-lstm.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/05-rnn-lstm.html"
+    },
+    {
+     "href": "llm/06-attention-seq2seq.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/06-attention-seq2seq.html"
+    },
+    {
+     "href": "llm/07-self-attention.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/07-self-attention.html"
+    },
+    {
+     "href": "llm/08-positional.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/08-positional.html"
+    },
+    {
+     "href": "llm/09-residual-norm.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/09-residual-norm.html"
+    },
+    {
+     "href": "llm/10-train-gpt.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/10-train-gpt.html"
+    },
+    {
+     "href": "llm/11-decoding.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/11-decoding.html"
+    },
+    {
+     "href": "llm/12-kv-cache.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/12-kv-cache.html"
+    },
+    {
+     "href": "llm/13-scaling.html",
+     "kind": "internal",
+     "resolved": "/tracks/llm/13-scaling.html"
+    },
+    {
+     "href": "/#g-build",
+     "kind": "internal",
+     "resolved": "/#g-build"
+    },
+    {
+     "href": "finetune/01-when-finetune.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/01-when-finetune.html"
+    },
+    {
+     "href": "finetune/02-huggingface-map.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/02-huggingface-map.html"
+    },
+    {
+     "href": "finetune/03-dataset.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/03-dataset.html"
+    },
+    {
+     "href": "finetune/04-number-formats.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/04-number-formats.html"
+    },
+    {
+     "href": "finetune/05-gpu-memory.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/05-gpu-memory.html"
+    },
+    {
+     "href": "finetune/06-quantization.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/06-quantization.html"
+    },
+    {
+     "href": "finetune/07-lora-qlora.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/07-lora-qlora.html"
+    },
+    {
+     "href": "finetune/08-unsloth-colab.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/08-unsloth-colab.html"
+    },
+    {
+     "href": "finetune/09-evaluate.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/09-evaluate.html"
+    },
+    {
+     "href": "finetune/10-export-serve.html",
+     "kind": "internal",
+     "resolved": "/tracks/finetune/10-export-serve.html"
+    },
+    {
+     "href": "/#g-ops",
+     "kind": "internal",
+     "resolved": "/#g-ops"
+    },
+    {
+     "href": "aws/00-local-to-service.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/00-local-to-service.html"
+    },
+    {
+     "href": "aws/01-request-path.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/01-request-path.html"
+    },
+    {
+     "href": "aws/02-artifacts-s3-ecr.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/02-artifacts-s3-ecr.html"
+    },
+    {
+     "href": "aws/03-iam-least-privilege.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/03-iam-least-privilege.html"
+    },
+    {
+     "href": "aws/04-serverless-or-endpoint.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/04-serverless-or-endpoint.html"
+    },
+    {
+     "href": "aws/05-gpu-endpoint-modes.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/05-gpu-endpoint-modes.html"
+    },
+    {
+     "href": "aws/06-bedrock-vs-self-hosting.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/06-bedrock-vs-self-hosting.html"
+    },
+    {
+     "href": "aws/07-api-gateway-auth-throttle.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/07-api-gateway-auth-throttle.html"
+    },
+    {
+     "href": "aws/08-cloudwatch-first-failures.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/08-cloudwatch-first-failures.html"
+    },
+    {
+     "href": "aws/09-canary-rollback.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/09-canary-rollback.html"
+    },
+    {
+     "href": "aws/10-cost-leaks.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/10-cost-leaks.html"
+    },
+    {
+     "href": "aws/11-retry-duplicates.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/11-retry-duplicates.html"
+    },
+    {
+     "href": "aws/12-prompt-log-privacy.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/12-prompt-log-privacy.html"
+    },
+    {
+     "href": "aws/13-compare-hosting.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/13-compare-hosting.html"
+    },
+    {
+     "href": "aws/14-small-to-scaled-architecture.html",
+     "kind": "internal",
+     "resolved": "/tracks/aws/14-small-to-scaled-architecture.html"
+    },
+    {
+     "href": "/#g-ops",
+     "kind": "internal",
+     "resolved": "/#g-ops"
+    },
+    {
+     "href": "eval/01-mae-rmse.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/01-mae-rmse.html"
+    },
+    {
+     "href": "eval/02-rmse-mae-ratio.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/02-rmse-mae-ratio.html"
+    },
+    {
+     "href": "eval/03-r-squared.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/03-r-squared.html"
+    },
+    {
+     "href": "eval/04-mape.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/04-mape.html"
+    },
+    {
+     "href": "eval/05-mase.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/05-mase.html"
+    },
+    {
+     "href": "eval/06-normalized-bias.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/06-normalized-bias.html"
+    },
+    {
+     "href": "eval/07-casebook.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/07-casebook.html"
+    },
+    {
+     "href": "eval/08-classification.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/08-classification.html"
+    },
+    {
+     "href": "eval/09-clustering.html",
+     "kind": "internal",
+     "resolved": "/tracks/eval/09-clustering.html"
+    },
+    {
+     "href": "/#g-build",
+     "kind": "internal",
+     "resolved": "/#g-build"
+    },
+    {
+     "href": "rl/00-map.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/00-map.html"
+    },
+    {
+     "href": "rl/01-bandit.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/01-bandit.html"
+    },
+    {
+     "href": "rl/02-mdp-bellman.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/02-mdp-bellman.html"
+    },
+    {
+     "href": "rl/03-policy-evaluation.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/03-policy-evaluation.html"
+    },
+    {
+     "href": "rl/04-policy-value-iteration.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/04-policy-value-iteration.html"
+    },
+    {
+     "href": "rl/05-monte-carlo.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/05-monte-carlo.html"
+    },
+    {
+     "href": "rl/06-td-sarsa-qlearning.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/06-td-sarsa-qlearning.html"
+    },
+    {
+     "href": "rl/07-nstep-td-lambda.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/07-nstep-td-lambda.html"
+    },
+    {
+     "href": "rl/08-function-approx.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/08-function-approx.html"
+    },
+    {
+     "href": "rl/09-dqn.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/09-dqn.html"
+    },
+    {
+     "href": "rl/10-policy-gradient.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/10-policy-gradient.html"
+    },
+    {
+     "href": "rl/11-trpo-ppo.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/11-trpo-ppo.html"
+    },
+    {
+     "href": "rl/bridge-rlhf-dpo.html",
+     "kind": "internal",
+     "resolved": "/tracks/rl/bridge-rlhf-dpo.html"
+    },
+    {
+     "href": "/#g-build",
+     "kind": "internal",
+     "resolved": "/#g-build"
+    },
+    {
+     "href": "algorithms/01-complexity.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/01-complexity.html"
+    },
+    {
+     "href": "algorithms/02-binary-search.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/02-binary-search.html"
+    },
+    {
+     "href": "algorithms/03-sorting-bound.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/03-sorting-bound.html"
+    },
+    {
+     "href": "algorithms/04-hashing.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/04-hashing.html"
+    },
+    {
+     "href": "algorithms/05-balanced-tree.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/05-balanced-tree.html"
+    },
+    {
+     "href": "algorithms/06-graph-traversal.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/06-graph-traversal.html"
+    },
+    {
+     "href": "algorithms/07-shortest-path.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/07-shortest-path.html"
+    },
+    {
+     "href": "algorithms/08-greedy.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/08-greedy.html"
+    },
+    {
+     "href": "algorithms/09-divide-conquer.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/09-divide-conquer.html"
+    },
+    {
+     "href": "algorithms/10-dynamic-programming.html",
+     "kind": "internal",
+     "resolved": "/tracks/algorithms/10-dynamic-programming.html"
+    },
+    {
+     "href": "/#g-ops",
+     "kind": "internal",
+     "resolved": "/#g-ops"
+    },
+    {
+     "href": "pipelines/01-reproduce.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/01-reproduce.html"
+    },
+    {
+     "href": "pipelines/02-hidden-debt.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/02-hidden-debt.html"
+    },
+    {
+     "href": "pipelines/03-tracking.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/03-tracking.html"
+    },
+    {
+     "href": "pipelines/04-container.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/04-container.html"
+    },
+    {
+     "href": "pipelines/05-jenkins-ci.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/05-jenkins-ci.html"
+    },
+    {
+     "href": "pipelines/06-release.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/06-release.html"
+    },
+    {
+     "href": "pipelines/07-kfp.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/07-kfp.html"
+    },
+    {
+     "href": "pipelines/08-lineage.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/08-lineage.html"
+    },
+    {
+     "href": "pipelines/09-drift.html",
+     "kind": "internal",
+     "resolved": "/tracks/pipelines/09-drift.html"
+    },
+    {
+     "href": "/work-ai/",
+     "kind": "internal",
+     "resolved": "/work-ai/"
+    },
+    {
+     "href": "work-ai/01-chat-model-agent.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/01-chat-model-agent.html"
+    },
+    {
+     "href": "work-ai/02-vague-request.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/02-vague-request.html"
+    },
+    {
+     "href": "work-ai/03-long-document-context.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/03-long-document-context.html"
+    },
+    {
+     "href": "work-ai/04-search-and-sources.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/04-search-and-sources.html"
+    },
+    {
+     "href": "work-ai/05-checking-answers.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/05-checking-answers.html"
+    },
+    {
+     "href": "work-ai/06-customer-data-privacy.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/06-customer-data-privacy.html"
+    },
+    {
+     "href": "work-ai/07-chat-or-automation.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/07-chat-or-automation.html"
+    },
+    {
+     "href": "work-ai/08-approval-and-permissions.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/08-approval-and-permissions.html"
+    },
+    {
+     "href": "work-ai/09-where-to-start.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/09-where-to-start.html"
+    },
+    {
+     "href": "work-ai/10-measure-after-launch.html",
+     "kind": "internal",
+     "resolved": "/tracks/work-ai/10-measure-after-launch.html"
+    },
+    {
+     "href": "/#g-business",
+     "kind": "internal",
+     "resolved": "/#g-business"
+    },
+    {
+     "href": "tools/01-models.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/01-models.html"
+    },
+    {
+     "href": "tools/02-api-caching.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/02-api-caching.html"
+    },
+    {
+     "href": "tools/03-tools-mcp.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/03-tools-mcp.html"
+    },
+    {
+     "href": "tools/04-skills.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/04-skills.html"
+    },
+    {
+     "href": "tools/05-notion-figma.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/05-notion-figma.html"
+    },
+    {
+     "href": "tools/06-agents.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/06-agents.html"
+    },
+    {
+     "href": "tools/07-image-video.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/07-image-video.html"
+    },
+    {
+     "href": "tools/08-choosing.html",
+     "kind": "internal",
+     "resolved": "/tracks/tools/08-choosing.html"
+    },
+    {
+     "href": "or/00-forecast-vs-decision.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/00-forecast-vs-decision.html"
+    },
+    {
+     "href": "or/01-product-mix-lp.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/01-product-mix-lp.html"
+    },
+    {
+     "href": "or/02-shadow-price.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/02-shadow-price.html"
+    },
+    {
+     "href": "or/03-budget-allocation.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/03-budget-allocation.html"
+    },
+    {
+     "href": "or/04-local-vs-global.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/04-local-vs-global.html"
+    },
+    {
+     "href": "or/05-integer-programming.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/05-integer-programming.html"
+    },
+    {
+     "href": "or/06-assignment-transport.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/06-assignment-transport.html"
+    },
+    {
+     "href": "or/07-max-flow-min-cut.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/07-max-flow-min-cut.html"
+    },
+    {
+     "href": "or/08-shift-scheduling.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/08-shift-scheduling.html"
+    },
+    {
+     "href": "or/09-vehicle-routing.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/09-vehicle-routing.html"
+    },
+    {
+     "href": "or/10-queueing-utilization.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/10-queueing-utilization.html"
+    },
+    {
+     "href": "or/11-inventory-eoq-newsvendor.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/11-inventory-eoq-newsvendor.html"
+    },
+    {
+     "href": "or/12-discrete-event-simulation.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/12-discrete-event-simulation.html"
+    },
+    {
+     "href": "or/13-robust-stock.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/13-robust-stock.html"
+    },
+    {
+     "href": "or/14-pareto-front.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/14-pareto-front.html"
+    },
+    {
+     "href": "or/15-predict-cause-act.html",
+     "kind": "internal",
+     "resolved": "/tracks/or/15-predict-cause-act.html"
+    },
+    {
+     "href": "causal/00-prediction-intervention-counterfactual.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/00-prediction-intervention-counterfactual.html"
+    },
+    {
+     "href": "causal/01-potential-outcomes.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/01-potential-outcomes.html"
+    },
+    {
+     "href": "causal/02-randomized-experiments.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/02-randomized-experiments.html"
+    },
+    {
+     "href": "causal/03-dag-adjustment.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/03-dag-adjustment.html"
+    },
+    {
+     "href": "causal/04-propensity-matching-ipw.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/04-propensity-matching-ipw.html"
+    },
+    {
+     "href": "causal/05-aipw-double-robust.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/05-aipw-double-robust.html"
+    },
+    {
+     "href": "causal/06-difference-in-differences.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/06-difference-in-differences.html"
+    },
+    {
+     "href": "causal/07-staggered-did-event-study.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/07-staggered-did-event-study.html"
+    },
+    {
+     "href": "causal/08-regression-discontinuity.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/08-regression-discontinuity.html"
+    },
+    {
+     "href": "causal/09-instrumental-variables.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/09-instrumental-variables.html"
+    },
+    {
+     "href": "causal/10-synthetic-control.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/10-synthetic-control.html"
+    },
+    {
+     "href": "causal/11-interference-sutva.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/11-interference-sutva.html"
+    },
+    {
+     "href": "causal/12-switchback-washout.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/12-switchback-washout.html"
+    },
+    {
+     "href": "causal/13-cate-uplift.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/13-cate-uplift.html"
+    },
+    {
+     "href": "causal/14-sensitivity-placebo-external-validity.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/14-sensitivity-placebo-external-validity.html"
+    },
+    {
+     "href": "causal/15-identification-map.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/15-identification-map.html"
+    },
+    {
+     "href": "/#g-business",
+     "kind": "internal",
+     "resolved": "/#g-business"
+    },
+    {
+     "href": "webapp/01-everything-visible.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/01-everything-visible.html"
+    },
+    {
+     "href": "webapp/02-api-keys.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/02-api-keys.html"
+    },
+    {
+     "href": "webapp/03-vibe-security.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/03-vibe-security.html"
+    },
+    {
+     "href": "webapp/04-browser-vs-server.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/04-browser-vs-server.html"
+    },
+    {
+     "href": "webapp/05-static-supabase.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/05-static-supabase.html"
+    },
+    {
+     "href": "webapp/06-app-packaging.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/06-app-packaging.html"
+    },
+    {
+     "href": "webapp/07-capacitor-apk.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/07-capacitor-apk.html"
+    },
+    {
+     "href": "webapp/08-platform-choice.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/08-platform-choice.html"
+    },
+    {
+     "href": "webapp/09-ai-coding-era.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/09-ai-coding-era.html"
+    },
+    {
+     "href": "webapp/10-launch-page.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/10-launch-page.html"
+    },
+    {
+     "href": "webapp/11-store-submission.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/11-store-submission.html"
+    },
+    {
+     "href": "webapp/12-product-analytics.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/12-product-analytics.html"
+    },
+    {
+     "href": "webapp/13-release-learning.html",
+     "kind": "internal",
+     "resolved": "/tracks/webapp/13-release-learning.html"
+    },
+    {
+     "href": "/#g-business",
+     "kind": "internal",
+     "resolved": "/#g-business"
+    },
+    {
+     "href": "productivity/01-source-of-truth.html",
+     "kind": "internal",
+     "resolved": "/tracks/productivity/01-source-of-truth.html"
+    },
+    {
+     "href": "productivity/02-figma-structure.html",
+     "kind": "internal",
+     "resolved": "/tracks/productivity/02-figma-structure.html"
+    },
+    {
+     "href": "productivity/03-handoff.html",
+     "kind": "internal",
+     "resolved": "/tracks/productivity/03-handoff.html"
+    },
+    {
+     "href": "productivity/04-notion-relations.html",
+     "kind": "internal",
+     "resolved": "/tracks/productivity/04-notion-relations.html"
+    },
+    {
+     "href": "productivity/05-sheets.html",
+     "kind": "internal",
+     "resolved": "/tracks/productivity/05-sheets.html"
+    },
+    {
+     "href": "productivity/06-connect.html",
+     "kind": "internal",
+     "resolved": "/tracks/productivity/06-connect.html"
+    },
+    {
+     "href": "/#g-build",
+     "kind": "internal",
+     "resolved": "/#g-build"
+    },
+    {
+     "href": "agent-build/00-refund-workflow.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/00-refund-workflow.html"
+    },
+    {
+     "href": "agent-build/01-ticket-routing.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/01-ticket-routing.html"
+    },
+    {
+     "href": "agent-build/02-tool-arguments.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/02-tool-arguments.html"
+    },
+    {
+     "href": "agent-build/03-stale-order-state.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/03-stale-order-state.html"
+    },
+    {
+     "href": "agent-build/04-double-refund.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/04-double-refund.html"
+    },
+    {
+     "href": "agent-build/05-approval-threshold.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/05-approval-threshold.html"
+    },
+    {
+     "href": "agent-build/06-scoped-permissions.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/06-scoped-permissions.html"
+    },
+    {
+     "href": "agent-build/07-prompt-injection.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/07-prompt-injection.html"
+    },
+    {
+     "href": "agent-build/08-context-limit.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/08-context-limit.html"
+    },
+    {
+     "href": "agent-build/09-cost-and-latency.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/09-cost-and-latency.html"
+    },
+    {
+     "href": "agent-build/10-agent-evaluation.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/10-agent-evaluation.html"
+    },
+    {
+     "href": "agent-build/11-trace-and-recovery.html",
+     "kind": "internal",
+     "resolved": "/tracks/agent-build/11-trace-and-recovery.html"
+    },
+    {
+     "href": "/#g-business",
+     "kind": "internal",
+     "resolved": "/#g-business"
+    },
+    {
+     "href": "waiting-ux/00-perceived-vs-actual.html",
+     "kind": "internal",
+     "resolved": "/tracks/waiting-ux/00-perceived-vs-actual.html"
+    },
+    {
+     "href": "waiting-ux/01-time-attention.html",
+     "kind": "internal",
+     "resolved": "/tracks/waiting-ux/01-time-attention.html"
+    },
+    {
+     "href": "waiting-ux/02-loading-feedback.html",
+     "kind": "internal",
+     "resolved": "/tracks/waiting-ux/02-loading-feedback.html"
+    },
+    {
+     "href": "waiting-ux/03-when-effects-weaken.html",
+     "kind": "internal",
+     "resolved": "/tracks/waiting-ux/03-when-effects-weaken.html"
+    },
+    {
+     "href": "waiting-ux/04-experiment-design.html",
+     "kind": "internal",
+     "resolved": "/tracks/waiting-ux/04-experiment-design.html"
+    },
+    {
+     "href": "waiting-ux/05-reading-effects.html",
+     "kind": "internal",
+     "resolved": "/tracks/waiting-ux/05-reading-effects.html"
+    },
+    {
+     "href": "/#g-business",
+     "kind": "internal",
+     "resolved": "/#g-business"
+    },
+    {
+     "href": "reference-study/00-first-impression.html",
+     "kind": "internal",
+     "resolved": "/tracks/reference-study/00-first-impression.html"
+    },
+    {
+     "href": "reference-study/01-layout-lines.html",
+     "kind": "internal",
+     "resolved": "/tracks/reference-study/01-layout-lines.html"
+    },
+    {
+     "href": "reference-study/02-contrast-type-scale.html",
+     "kind": "internal",
+     "resolved": "/tracks/reference-study/02-contrast-type-scale.html"
+    },
+    {
+     "href": "reference-study/03-motion-timing.html",
+     "kind": "internal",
+     "resolved": "/tracks/reference-study/03-motion-timing.html"
+    },
+    {
+     "href": "reference-study/04-flow-choices.html",
+     "kind": "internal",
+     "resolved": "/tracks/reference-study/04-flow-choices.html"
+    },
+    {
+     "href": "reference-study/05-gray-box-rules.html",
+     "kind": "internal",
+     "resolved": "/tracks/reference-study/05-gray-box-rules.html"
+    },
+    {
+     "href": "https://github.com/yujinjeong0917/math-ai-matrix-labs",
+     "kind": "external",
+     "resolved": "https://github.com/yujinjeong0917/math-ai-matrix-labs"
+    }
+   ]
+  },
+  "chapter": {
+   "file": "tracks/causal/06-difference-in-differences.html",
+   "page": "/tracks/causal/06-difference-in-differences.html",
+   "sha256": "3f27f90102b1af51313fc8913c63c7d14cdcd11b6fc110b43ff797d715bdffe4",
+   "bytes": 32873,
+   "file_wide_chapter_hrefs": [],
+   "links": [
+    {
+     "href": "/tracks/#causal",
+     "kind": "internal",
+     "resolved": "/tracks/#causal"
+    },
+    {
+     "href": "00-prediction-intervention-counterfactual.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/00-prediction-intervention-counterfactual.html"
+    },
+    {
+     "href": "01-potential-outcomes.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/01-potential-outcomes.html"
+    },
+    {
+     "href": "02-randomized-experiments.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/02-randomized-experiments.html"
+    },
+    {
+     "href": "03-dag-adjustment.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/03-dag-adjustment.html"
+    },
+    {
+     "href": "04-propensity-matching-ipw.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/04-propensity-matching-ipw.html"
+    },
+    {
+     "href": "05-aipw-double-robust.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/05-aipw-double-robust.html"
+    },
+    {
+     "href": "07-staggered-did-event-study.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/07-staggered-did-event-study.html"
+    },
+    {
+     "href": "08-regression-discontinuity.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/08-regression-discontinuity.html"
+    },
+    {
+     "href": "09-instrumental-variables.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/09-instrumental-variables.html"
+    },
+    {
+     "href": "10-synthetic-control.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/10-synthetic-control.html"
+    },
+    {
+     "href": "11-interference-sutva.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/11-interference-sutva.html"
+    },
+    {
+     "href": "12-switchback-washout.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/12-switchback-washout.html"
+    },
+    {
+     "href": "13-cate-uplift.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/13-cate-uplift.html"
+    },
+    {
+     "href": "14-sensitivity-placebo-external-validity.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/14-sensitivity-placebo-external-validity.html"
+    },
+    {
+     "href": "15-identification-map.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/15-identification-map.html"
+    },
+    {
+     "href": "img/06-comic-1.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-1.webp"
+    },
+    {
+     "href": "img/06-comic-2.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-2.webp"
+    },
+    {
+     "href": "img/06-comic-3.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-3.webp"
+    },
+    {
+     "href": "img/06-comic-4.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-4.webp"
+    },
+    {
+     "href": "img/06-comic-2.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-2.webp"
+    },
+    {
+     "href": "img/06-comic-3.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-3.webp"
+    },
+    {
+     "href": "img/06-comic-4.webp",
+     "kind": "internal",
+     "resolved": "/tracks/causal/img/06-comic-4.webp"
+    },
+    {
+     "href": "/concepts/difference-in-differences/",
+     "kind": "internal",
+     "resolved": "/concepts/difference-in-differences/"
+    },
+    {
+     "href": "/concepts/synthetic-control/",
+     "kind": "internal",
+     "resolved": "/concepts/synthetic-control/"
+    },
+    {
+     "href": "/concepts/switchback-experiment-washout/",
+     "kind": "internal",
+     "resolved": "/concepts/switchback-experiment-washout/"
+    },
+    {
+     "href": "https://arxiv.org/abs/1803.09015",
+     "kind": "external",
+     "resolved": "https://arxiv.org/abs/1803.09015"
+    },
+    {
+     "href": "https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal/ch06_difference_in_differences",
+     "kind": "external",
+     "resolved": "https://github.com/yujinjeong0917/math-ai-matrix-labs/tree/main/causal/ch06_difference_in_differences"
+    },
+    {
+     "href": "05-aipw-double-robust.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/05-aipw-double-robust.html"
+    },
+    {
+     "href": "07-staggered-did-event-study.html",
+     "kind": "internal",
+     "resolved": "/tracks/causal/07-staggered-did-event-study.html"
+    }
+   ]
+  }
+ }
+}

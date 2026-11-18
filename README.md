@@ -25,6 +25,8 @@
 | [`or/`](or/) | 경영과학 | 16 | 1/16장만 `uv` 환경 필요 | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/or/00-forecast-vs-decision.html) |
 | [`causal/`](causal/) | 인과추론 | 16 | 1/16장만 `uv` 환경 필요 | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/causal/00-prediction-intervention-counterfactual.html) |
 | [`agent-build/`](agent-build/) | 에이전트 만들기 | 12 | 1/12장만 `uv` 환경 필요 | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/agent-build/00-refund-workflow.html) |
+| [`waiting-ux/`](waiting-ux/) | 기다림을 설계하다 | 6 | 표준 라이브러리만 | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/waiting-ux/00-perceived-vs-actual.html) |
+| [`reference-study/`](reference-study/) | 디자이너의 시선으로 레퍼런스 읽기 | 6 | 표준 라이브러리만 | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/reference-study/00-first-impression.html) |
 
 ## 실행
 
@@ -33,7 +35,7 @@
 uv sync                      # Python 3.12, 버전은 uv.lock으로 고정
 uv run python scripts/run_all_tests.py   # 모든 장 테스트를 장 폴더마다 따로 실행
 
-# 표준 라이브러리만 쓰는 트랙:  (설치 없이 장 폴더에서)
+# 표준 라이브러리만 쓰는 트랙: waiting-ux, reference-study (설치 없이 장 폴더에서)
 cd aws/ch11_retry_duplicates && python3 -m unittest -q
 python3 scripts/run_all_tests.py aws or causal agent-build   # 이 트랙들만 한 번에
 ```

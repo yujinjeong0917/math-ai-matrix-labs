@@ -11,7 +11,7 @@
 
 | 트랙 폴더 | 이름 | 장 수 | 필요한 것 | 웹 |
 |---|---|---|---|---|
-| [`llm/`](llm/) | 밑바닥부터 만드는 LLM | 13 | `uv` 환경 필요(numpy·torch·pytest) | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/llm/01-bigram.html) |
+| [`llm/`](llm/) | 밑바닥부터 만드는 LLM | 14 | `uv` 환경 필요(numpy·torch·pytest) | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/llm/01-bigram.html) |
 | [`rl/`](rl/) | 밑바닥부터 만드는 강화학습 | 13 | `uv` 환경 필요(numpy·torch·pytest) | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/rl/00-map.html) |
 | [`eval/`](eval/) | 모델 평가 | 9 | `uv` 환경 필요(numpy·torch·pytest) | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/eval/01-mae-rmse.html) |
 | [`algorithms/`](algorithms/) | 그림으로 익히는 알고리즘 | 10 | `uv` 환경 필요(numpy·torch·pytest) | [웹 트랙](https://math-ai-matrix-pi.vercel.app/tracks/algorithms/01-complexity.html) |

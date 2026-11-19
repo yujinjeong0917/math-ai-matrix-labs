@@ -1,6 +1,6 @@
 # 밑바닥부터 만드는 LLM
 
-[저장소 전체 목차](https://github.com/yujinjeong0917/math-ai-matrix-labs) · [웹에서 이 트랙 보기](https://math-ai-matrix-pi.vercel.app/tracks/llm/01-bigram.html) · 장 13개
+[저장소 전체 목차](https://github.com/yujinjeong0917/math-ai-matrix-labs) · [웹에서 이 트랙 보기](https://math-ai-matrix-pi.vercel.app/tracks/llm/01-bigram.html) · 장 14개
 
 ## 실행
 
@@ -26,3 +26,4 @@ uv run pytest -q llm   # `uv` 환경 필요(numpy·torch·pytest)
 | [`ch11_decoding/`](ch11_decoding/) | 11장 디코딩 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/llm/11-decoding.html) |
 | [`ch12_kv_cache/`](ch12_kv_cache/) | 12장 KV cache | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/llm/12-kv-cache.html) |
 | [`ch13_scaling/`](ch13_scaling/) | 13장 스케일링 법칙 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/llm/13-scaling.html) |
+| [`ch14_moe/`](ch14_moe/) | 14장 전문가 혼합과 비슷한 갈래들 | [웹 챕터](https://math-ai-matrix-pi.vercel.app/tracks/llm/14-moe-routing.html) |

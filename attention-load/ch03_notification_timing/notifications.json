@@ -1,0 +1,13 @@
+{
+  "note": "가상 쇼핑 앱이 주문 입력 중에 보낼 수 있는 알림 8개와 설계자의 손 판단(예시용, 측정값 아님)",
+  "notifications": [
+    {"text": "선택한 사이즈 재고가 1켤레 남았어요", "relevant": true, "action_now": true, "irreversible": false},
+    {"text": "쿠폰이 적용되어 결제 금액이 바뀌었어요", "relevant": true, "action_now": false, "irreversible": false},
+    {"text": "등록한 카드의 한도가 부족해요", "relevant": true, "action_now": true, "irreversible": false},
+    {"text": "지난 주문의 주소를 바꿀 수 있는 시간이 남았어요", "relevant": false, "action_now": true, "irreversible": false},
+    {"text": "이런 상품은 어때요", "relevant": false, "action_now": false, "irreversible": false},
+    {"text": "다른 기기에서 로그인했어요", "relevant": false, "action_now": false, "irreversible": true},
+    {"text": "친구를 초대하면 혜택이 있어요", "relevant": false, "action_now": false, "irreversible": false},
+    {"text": "지난 주문의 리뷰를 남겨 주세요", "relevant": false, "action_now": true, "irreversible": false}
+  ]
+}
